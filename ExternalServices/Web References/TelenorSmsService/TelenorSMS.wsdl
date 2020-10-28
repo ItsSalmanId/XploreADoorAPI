@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="SendTelenorSMS">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RecipentName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="PhoneNumbers" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="SMS_Text" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="TeamName" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendTelenorSMSResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SendTelenorSMSResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendBulkSMS_GEP">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RecipentName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="PhoneNumbers" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="SMS_Text" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="TeamName" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendBulkSMS_GEPResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SendBulkSMS_GEPResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="_SendBulkSMS_Network">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RecipentName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="PhoneNumbers" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="SMS_Text" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="TeamName" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="_SendBulkSMS_NetworkResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="_SendBulkSMS_NetworkResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendTelenorSMS_Urdu">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RecipentName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="PhoneNumbers" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="SMS_Text" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="TeamName" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SendTelenorSMS_UrduResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SendTelenorSMS_UrduResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="string" nillable="true" type="s:string" />
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="SendTelenorSMSSoapIn">
+    <wsdl:part name="parameters" element="tns:SendTelenorSMS" />
+  </wsdl:message>
+  <wsdl:message name="SendTelenorSMSSoapOut">
+    <wsdl:part name="parameters" element="tns:SendTelenorSMSResponse" />
+  </wsdl:message>
+  <wsdl:message name="SendBulkSMS_GEPSoapIn">
+    <wsdl:part name="parameters" element="tns:SendBulkSMS_GEP" />
+  </wsdl:message>
+  <wsdl:message name="SendBulkSMS_GEPSoapOut">
+    <wsdl:part name="parameters" element="tns:SendBulkSMS_GEPResponse" />
+  </wsdl:message>
+  <wsdl:message name="_SendBulkSMS_NetworkSoapIn">
+    <wsdl:part name="parameters" element="tns:_SendBulkSMS_Network" />
+  </wsdl:message>
+  <wsdl:message name="_SendBulkSMS_NetworkSoapOut">
+    <wsdl:part name="parameters" element="tns:_SendBulkSMS_NetworkResponse" />
+  </wsdl:message>
+  <wsdl:message name="SendTelenorSMS_UrduSoapIn">
+    <wsdl:part name="parameters" element="tns:SendTelenorSMS_Urdu" />
+  </wsdl:message>
+  <wsdl:message name="SendTelenorSMS_UrduSoapOut">
+    <wsdl:part name="parameters" element="tns:SendTelenorSMS_UrduResponse" />
+  </wsdl:message>
+  <wsdl:message name="SendTelenorSMSHttpGetIn">
+    <wsdl:part name="RecipentName" type="s:string" />
+    <wsdl:part name="PhoneNumbers" type="s:string" />
+    <wsdl:part name="SMS_Text" type="s:string" />
+    <wsdl:part name="TeamName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SendTelenorSMSHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="SendBulkSMS_GEPHttpGetIn">
+    <wsdl:part name="RecipentName" type="s:string" />
+    <wsdl:part name="PhoneNumbers" type="s:string" />
+    <wsdl:part name="SMS_Text" type="s:string" />
+    <wsdl:part name="TeamName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SendBulkSMS_GEPHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="_SendBulkSMS_NetworkHttpGetIn">
+    <wsdl:part name="RecipentName" type="s:string" />
+    <wsdl:part name="PhoneNumbers" type="s:string" />
+    <wsdl:part name="SMS_Text" type="s:string" />
+    <wsdl:part name="TeamName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="_SendBulkSMS_NetworkHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="SendTelenorSMS_UrduHttpGetIn">
+    <wsdl:part name="RecipentName" type="s:string" />
+    <wsdl:part name="PhoneNumbers" type="s:string" />
+    <wsdl:part name="SMS_Text" type="s:string" />
+    <wsdl:part name="TeamName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SendTelenorSMS_UrduHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="SendTelenorSMSHttpPostIn">
+    <wsdl:part name="RecipentName" type="s:string" />
+    <wsdl:part name="PhoneNumbers" type="s:string" />
+    <wsdl:part name="SMS_Text" type="s:string" />
+    <wsdl:part name="TeamName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SendTelenorSMSHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="SendBulkSMS_GEPHttpPostIn">
+    <wsdl:part name="RecipentName" type="s:string" />
+    <wsdl:part name="PhoneNumbers" type="s:string" />
+    <wsdl:part name="SMS_Text" type="s:string" />
+    <wsdl:part name="TeamName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SendBulkSMS_GEPHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="_SendBulkSMS_NetworkHttpPostIn">
+    <wsdl:part name="RecipentName" type="s:string" />
+    <wsdl:part name="PhoneNumbers" type="s:string" />
+    <wsdl:part name="SMS_Text" type="s:string" />
+    <wsdl:part name="TeamName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="_SendBulkSMS_NetworkHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="SendTelenorSMS_UrduHttpPostIn">
+    <wsdl:part name="RecipentName" type="s:string" />
+    <wsdl:part name="PhoneNumbers" type="s:string" />
+    <wsdl:part name="SMS_Text" type="s:string" />
+    <wsdl:part name="TeamName" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="SendTelenorSMS_UrduHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:portType name="Service1Soap">
+    <wsdl:operation name="SendTelenorSMS">
+      <wsdl:input message="tns:SendTelenorSMSSoapIn" />
+      <wsdl:output message="tns:SendTelenorSMSSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendBulkSMS_GEP">
+      <wsdl:input message="tns:SendBulkSMS_GEPSoapIn" />
+      <wsdl:output message="tns:SendBulkSMS_GEPSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="_SendBulkSMS_Network">
+      <wsdl:input message="tns:_SendBulkSMS_NetworkSoapIn" />
+      <wsdl:output message="tns:_SendBulkSMS_NetworkSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendTelenorSMS_Urdu">
+      <wsdl:input message="tns:SendTelenorSMS_UrduSoapIn" />
+      <wsdl:output message="tns:SendTelenorSMS_UrduSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="Service1HttpGet">
+    <wsdl:operation name="SendTelenorSMS">
+      <wsdl:input message="tns:SendTelenorSMSHttpGetIn" />
+      <wsdl:output message="tns:SendTelenorSMSHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendBulkSMS_GEP">
+      <wsdl:input message="tns:SendBulkSMS_GEPHttpGetIn" />
+      <wsdl:output message="tns:SendBulkSMS_GEPHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="_SendBulkSMS_Network">
+      <wsdl:input message="tns:_SendBulkSMS_NetworkHttpGetIn" />
+      <wsdl:output message="tns:_SendBulkSMS_NetworkHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendTelenorSMS_Urdu">
+      <wsdl:input message="tns:SendTelenorSMS_UrduHttpGetIn" />
+      <wsdl:output message="tns:SendTelenorSMS_UrduHttpGetOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="Service1HttpPost">
+    <wsdl:operation name="SendTelenorSMS">
+      <wsdl:input message="tns:SendTelenorSMSHttpPostIn" />
+      <wsdl:output message="tns:SendTelenorSMSHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendBulkSMS_GEP">
+      <wsdl:input message="tns:SendBulkSMS_GEPHttpPostIn" />
+      <wsdl:output message="tns:SendBulkSMS_GEPHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="_SendBulkSMS_Network">
+      <wsdl:input message="tns:_SendBulkSMS_NetworkHttpPostIn" />
+      <wsdl:output message="tns:_SendBulkSMS_NetworkHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SendTelenorSMS_Urdu">
+      <wsdl:input message="tns:SendTelenorSMS_UrduHttpPostIn" />
+      <wsdl:output message="tns:SendTelenorSMS_UrduHttpPostOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Service1Soap" type="tns:Service1Soap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="SendTelenorSMS">
+      <soap:operation soapAction="http://tempuri.org/SendTelenorSMS" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendBulkSMS_GEP">
+      <soap:operation soapAction="http://tempuri.org/SendBulkSMS_GEP" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="_SendBulkSMS_Network">
+      <soap:operation soapAction="http://tempuri.org/_SendBulkSMS_Network" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendTelenorSMS_Urdu">
+      <soap:operation soapAction="http://tempuri.org/SendTelenorSMS_Urdu" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="Service1Soap12" type="tns:Service1Soap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="SendTelenorSMS">
+      <soap12:operation soapAction="http://tempuri.org/SendTelenorSMS" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendBulkSMS_GEP">
+      <soap12:operation soapAction="http://tempuri.org/SendBulkSMS_GEP" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="_SendBulkSMS_Network">
+      <soap12:operation soapAction="http://tempuri.org/_SendBulkSMS_Network" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendTelenorSMS_Urdu">
+      <soap12:operation soapAction="http://tempuri.org/SendTelenorSMS_Urdu" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="Service1HttpGet" type="tns:Service1HttpGet">
+    <http:binding verb="GET" />
+    <wsdl:operation name="SendTelenorSMS">
+      <http:operation location="/SendTelenorSMS" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendBulkSMS_GEP">
+      <http:operation location="/SendBulkSMS_GEP" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="_SendBulkSMS_Network">
+      <http:operation location="/_SendBulkSMS_Network" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendTelenorSMS_Urdu">
+      <http:operation location="/SendTelenorSMS_Urdu" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="Service1HttpPost" type="tns:Service1HttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="SendTelenorSMS">
+      <http:operation location="/SendTelenorSMS" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendBulkSMS_GEP">
+      <http:operation location="/SendBulkSMS_GEP" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="_SendBulkSMS_Network">
+      <http:operation location="/_SendBulkSMS_Network" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SendTelenorSMS_Urdu">
+      <http:operation location="/SendTelenorSMS_Urdu" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Service1">
+    <wsdl:port name="Service1Soap" binding="tns:Service1Soap">
+      <soap:address location="http://172.16.0.71/TelenorAPI/TelenorSMS.asmx" />
+    </wsdl:port>
+    <wsdl:port name="Service1Soap12" binding="tns:Service1Soap12">
+      <soap12:address location="http://172.16.0.71/TelenorAPI/TelenorSMS.asmx" />
+    </wsdl:port>
+    <wsdl:port name="Service1HttpGet" binding="tns:Service1HttpGet">
+      <http:address location="http://172.16.0.71/TelenorAPI/TelenorSMS.asmx" />
+    </wsdl:port>
+    <wsdl:port name="Service1HttpPost" binding="tns:Service1HttpPost">
+      <http:address location="http://172.16.0.71/TelenorAPI/TelenorSMS.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

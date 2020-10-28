@@ -1,0 +1,195 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+    <style>
+        body, table, td {
+            font-family: 'Roboto' !important;
+            margin: 0px;
+            padding: 0px;
+            border: none;
+        }
+
+        table {
+            border-collapse: separate;
+        }
+
+        p {
+            color: #333;
+            margin: 0px;
+            font-family: 'Roboto' !important;
+        }
+
+        img {
+            border: 0px;
+        }
+    </style>
+</head>
+<body>
+    <div id="fox-print-1" class="page-print collapse">
+        <div class="encounter-body" style="width:730px;">
+
+
+            <div class="encounter-print-body" id="PrintBody">
+                <table style="width:100%;">
+                    <tr>
+                        <td>
+                            <table style="border-bottom:1px solid #12222E;width:100%;">
+                                <tbody>
+                                    <tr style="font-size:13pt !important;">
+                                        <td width="43%" style="vertical-align:top; margin-top:15px;">
+                                            <b>Fox Rehabilitation</b> <br />
+                                            7 Carnegie Plaza, Cherry Hill<br />
+                                            NJ 08003-1000, USA<br />
+                                            <b>Phone:</b> +1(877) 407-3422
+                                        </td>
+                                        <td width="14%" align="center">
+                                            <img style="width: 100px;" src="https://fox.mtbc.com/assets/images/logo.png" alt="Logo Image" />
+                                        </td>
+                                        <td width="43%" align="right">
+                                            <b>[[PATIENT_NAME]]</b><br />
+                                            <b>DOB:</b>  [[PATIENT_DOB]]<br />
+                                            <b>MRN:</b>  [[PATIENT_MRN]]<br />
+                                            <b>Home Address:</b>  [[PATIENT_HOME_ADDRESS]]<br />
+                                            [[PATIENT_HOME_ADDRESS_2]]<br />
+                                            <b>Pri. Ins:</b>  [[PATIENT_PRI_INS]] <br />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <table style="width:100%;">
+                                                <tbody>
+                                                    <tr>
+                                                        <td width="70px">
+                                                            <img id="QRImage" style="width: 70px; height: 70px;margin:6px;" src="[[QRCode]]" alt="QR Image" />
+                                                        </td>
+                                                        <td align="center">
+                                                            <div style="font-size: 20pt; font-weight: bold !important;">THERAPY TREATMENT REFERRAL</div>
+                                                            <div style="font-size: 16pt; font-weight: bold !important;">***REQUEST***</div>
+                                                        </td>
+                                                        <td width="70px"></td>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="height:10px;"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table style="width:100%;">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <b>Source</b> <br />
+                                            Document Type:  [[DOCUMENT_TYPE]]<br />
+                                            Ordering Referral Source:  [[ORS]] <br />
+                                            Sender:  [[SENDER]] <br />
+                                            Treatment Location:  [[TREATMENT_LOCATION]] <br />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="height:10px;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <b>Diagnosis Information</b> <br />
+
+                                            <span></span>[[Diagnosis_Information]] <br />
+
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="height:10px;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <b>Procedure Information</b> <br />
+                                            <span style="font-weight: bold !important;">Disciplines:  [[discipline]]</span> <br />
+                                            Speciality Program:  [[specialty_program]]<br />
+                                            Urgent referral:  [[is_urgent_Referral]]<br />
+                                            <span id="URGENT">
+                                                Reason for urgency:  [[reason_urgency]]<br />
+                                            </span>
+                                            <span id="EVALUATE_TREAT">
+                                                Home Health & Hospice Name (where patient id to be treated/evaluated):  [[HHH_NAME]] <br />
+                                                Home Health & Hospice Contact Number:  [[HHH_NUMBER]] <br />
+                                            </span>
+                                            Verbal Order:  [[is_verbal_order]]<br />
+                                            <span id="VERBAL">
+                                                Verbal Order Details: On Behalf Of:  [[on_behalf_of]]. Received By:  [[received_by]]. Date:  [[verbal_date]] <span>Time:  [[verbal_time]] PM</span>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="height:10px;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <b>Additional Notes / Reason for Referral:  </b> [[additional_notes]]
+                                            <br />
+                                            <br />
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="height:20px;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Provider Name: [[provider_name]] <br />
+
+                                            NPI:  [[provider_NPI]]<br />
+
+                                            Phone:  [[provider_phone]]<br />
+
+                                            Fax:  [[provider_fax]]<br />
+
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Requested Date:  [[provider_date]]
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="height:30px;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Signature:
+                                            <img style="width:30%; height: 60px;margin:6px;" src="[[Signature]]" alt="Signature" />
+                                            <p style="display:inline-block;width:30%;margin:6px;"></p>
+                                            Date: <span style="display:inline-block;border-bottom:1px solid #12222E;width:30%;"> [[current_Date]]</span>
+                                        </td>
+                                    </tr>
+									  <tr>
+                                        <td>
+                                            Comments: [[Comments]]</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="height:50px;"></td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+
+
+
+
+

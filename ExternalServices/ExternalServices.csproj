@@ -1,0 +1,729 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D0A38AEA-EBCD-486C-8208-37AF4925784B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FOX.ExternalServices</RootNamespace>
+    <AssemblyName>FOX.ExternalServices</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="itextsharp">
+      <HintPath>..\Libraries\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\Fox.ExternalServices\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\replifax\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="SmsService.cs" />
+    <Compile Include="Softlinks\replixfaxService.cs" />
+    <Compile Include="Web References\PatientEligibilityService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+    <Compile Include="Web References\SundrySmsService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+    <Compile Include="Web References\TelenorSmsService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FOX.DataModels\FOX.DataModels.csproj">
+      <Project>{9c6c8755-6d00-4077-aa6c-2df8f811ac8c}</Project>
+      <Name>FOX.DataModels</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.blockPhrAccount_SoftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.createPhrAccount_SoftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.deletePhrMergedAccounts1_SoftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.deletePhrMergedAccounts2_SoftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.deletePhrMergedAccounts3_SoftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.getDetailedPhrMergedAccounts1_SoftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.getDetailedPhrMergedAccounts2_SoftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.getMergedPatientAccount_SoftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.getPatientAccount_SoftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.getPhrAdditionalAccount_SoftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.getPhrChildVerification_SoftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.sendSMSResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.updatePatientNotesTemplates_v1Response.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.updatePhrAccount_SoftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.updatePhrMergedAccountsPhoneDeleteResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.updatePhrMergedAccountsPhoneEmail1_SoftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.updatePhrMergedAccountsPhoneEmail2_SoftResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.updateProvidersNotesTemplatesResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\FOX.ExternalServices.Fox.ExternalServices.WEB_PHR_SOFT_IPHR_PIN_GenerationResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\Fox.ExternalServices\Sundry.wsdl" />
+    <None Include="Service References\replifax\fax11.wsdl" />
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GetConfigOutput1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GetConfigResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SetConfigOutput1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SetConfigResponse1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmRecipientSendAuth2Output1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmRecipientSendAuth2Response1.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Web References\PatientEligibilityService\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\PatientEligibilityService\Service.wsdl" />
+    <None Include="Web References\PatientEligibilityService\Service.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Web References\PatientEligibilityService\Service0.wsdl" />
+    <None Include="Web References\PatientEligibilityService\Service0.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Web References\PatientEligibilityService\Service1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Web References\SundrySmsService\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\SundrySmsService\Sundry.wsdl" />
+    <None Include="Web References\TelenorSmsService\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\TelenorSmsService\TelenorSMS.wsdl" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\Fox.ExternalServices\" />
+    <WCFMetadataStorage Include="Service References\replifax\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\replifax\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\replifax\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.AddDepartmentOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.AddDepartmentResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.AddPhoneBookEntryOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.AddPhoneBookEntryResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.AddPhoneBookGroupEntryOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.AddPhoneBookGroupEntryResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.AddPhoneBookGroupOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.AddPhoneBookGroupResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.AddUserOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.AddUserResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.CreateBarcodeOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.CreateBarcodeResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.DeleteCoverPageOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.DeleteCoverPageResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.DeleteDepartmentOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.DeleteDepartmentResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.DeletePhoneBookEntryOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.DeletePhoneBookEntryResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.DeletePhoneBookGroupEntryOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.DeletePhoneBookGroupEntryResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.DeletePhoneBookGroupOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.DeletePhoneBookGroupResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.DeleteReceiveFaxOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.DeleteReceiveFaxResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.DeleteSendFaxOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.DeleteSendFaxResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.DeleteUserOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.DeleteUserResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.EnumerateBillingStatementOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.EnumerateBillingStatementResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.EnumerateCoverPagesOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.EnumerateCoverPagesResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GenerateUserPasswordOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GenerateUserPasswordResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GetBillingStatementContentOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GetBillingStatementContentResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GetCoverPageOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GetCoverPageResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GetEmailNotifyTemplateOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GetEmailNotifyTemplateResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GetReceiveFaxContentOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GetReceiveFaxContentResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GetSendFaxContentOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GetSendFaxContentResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GetServerConfigOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GetServerConfigResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GetServerInfoOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.GetServerInfoResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.LinkSmRecipientOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.LinkSmRecipientResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.LoginOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.LoginResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.LogoutOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.LogoutResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ModifyDepartmentOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ModifyDepartmentResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ModifyPhoneBookEntryOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ModifyPhoneBookEntryResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ModifyPhoneBookGroupOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ModifyPhoneBookGroupResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ModifyReceiveFaxOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ModifyReceiveFaxResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ModifySendFaxOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ModifySendFaxResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ModifyServerConfigOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ModifyServerConfigResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ModifyUserOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ModifyUserResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.NotifyReceiveFaxOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.NotifyReceiveFaxResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.QueryClientLicenseOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.QueryClientLicenseResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.QueryDepartmentOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.QueryDepartmentResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.QueryPhoneBookEntryOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.QueryPhoneBookEntryResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.QueryPhoneBookGroupOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.QueryPhoneBookGroupResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.QueryReceiveFaxOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.QueryReceiveFaxResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.QuerySendFaxOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.QuerySendFaxResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.QueryServerConfigOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.QueryServerConfigResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.QueryUserOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.QueryUserResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.RenderCoverPageOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.RenderCoverPageResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ResendFaxOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ResendFaxResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ReservedPolyOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.ReservedPolyResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.RouteReceiveFaxOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.RouteReceiveFaxResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SaveCoverPageOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SaveCoverPageResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SendFaxOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SendFaxResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmCancelSendMessageOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmCancelSendMessageResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmConfirmRegisterRecipientOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmConfirmRegisterRecipientResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmConfirmResetRecipientPasswordOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmConfirmResetRecipientPasswordResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmConfirmUnsubscribeRecipientOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmConfirmUnsubscribeRecipientResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmCreateRecipientOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmCreateRecipientResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmDeleteRecipientOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmDeleteRecipientResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmGetRecipientInfoOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmGetRecipientInfoResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmGetRecvMessageAttachmentOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmGetRecvMessageAttachmentResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmGetRecvMessageExtOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmGetRecvMessageExtResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmGetSendMessageAttachmentOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmGetSendMessageAttachmentResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmGetSendMessageExtOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmGetSendMessageExtResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmInitRegisterRecipientOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmInitRegisterRecipientResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmInitResetRecipientPasswordOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmInitResetRecipientPasswordResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmInitUnsubscribeRecipientOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmInitUnsubscribeRecipientResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmLoginRecipientOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmLoginRecipientResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmLogoutRecipientOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmLogoutRecipientResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmModifyRecipientOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmModifyRecipientResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmModifyRecvMessageOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmModifyRecvMessageResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmNotifySendMessageOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmNotifySendMessageResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmQueryRecvMessageOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmQueryRecvMessageResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmQuerySendMessageOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmQuerySendMessageResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmSendMessageOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.SmSendMessageResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.UpdateEmailNotifyTemplateOutput.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\FOX.ExternalServices.replifax.UpdateEmailNotifyTemplateResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\replifax\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="http://10.10.30.145:8010/">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\PatientEligibilityService\</RelPath>
+      <UpdateFromURL>http://10.10.30.145:8010/</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>FOX_ExternalServices_PatientEligibilityService_Service</CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://172.16.0.71/TelenorAPI/TelenorSMS.asmx%3fop=_SendBulkSMS_Network">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\TelenorSmsService\</RelPath>
+      <UpdateFromURL>http://172.16.0.71/TelenorAPI/TelenorSMS.asmx%3fop=_SendBulkSMS_Network</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>FOX_ExternalServices_TelenorSmsService_Service1</CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://qa-webservices.mtbc.com/Sundry/Sundry.asmx">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\SundrySmsService\</RelPath>
+      <UpdateFromURL>http://qa-webservices.mtbc.com/Sundry/Sundry.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>FOX_ExternalServices_SundrySmsService_Sundry</CachedSettingsPropName>
+    </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Web References\PatientEligibilityService\Service.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Fox.ExternalServices\Sundry.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Fox.ExternalServices\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Fox.ExternalServices\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\Fox.ExternalServices\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Web References\TelenorSmsService\TelenorSMS.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Web References\SundrySmsService\Sundry.disco" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

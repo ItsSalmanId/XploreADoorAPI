@@ -1,0 +1,1067 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="WEB_PHR_SOFT_IPHR_PIN_Generation">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="objiPHRSignUp" type="tns:PHR_PIN_GENERATION" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="PHR_PIN_GENERATION">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="FirstName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="LastName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="User_Phone" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Email" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Email_Subject" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Email_Body" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SMS_Body" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PracticeName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Practice_Code" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Patient_Account" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="WEB_PHR_SOFT_IPHR_PIN_GenerationResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="WEB_PHR_SOFT_IPHR_PIN_GenerationResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ValidationSoapHeader" type="tns:ValidationSoapHeader" />
+      <s:complexType name="ValidationSoapHeader">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="ValidUserID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ValidPassword" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DeviceInfo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ApplicationName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="MachineName" type="s:string" />
+        </s:sequence>
+        <s:anyAttribute />
+      </s:complexType>
+      <s:element name="getMergedPatientAccount_Soft">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="practiceCode" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="patientAccount" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getMergedPatientAccount_SoftResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="getMergedPatientAccount_SoftResult" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getPatientAccount_Soft">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="practiceCode" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="mergedPatientAccount" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getPatientAccount_SoftResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="getPatientAccount_SoftResult" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getDetailedPhrMergedAccounts1_Soft">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="practiceCode" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="patientAccount" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getDetailedPhrMergedAccounts1_SoftResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="getDetailedPhrMergedAccounts1_SoftResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getDetailedPhrMergedAccounts2_Soft">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="practiceCode" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="patientAccount" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="mergedPatientAccount" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getDetailedPhrMergedAccounts2_SoftResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="getDetailedPhrMergedAccounts2_SoftResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getPhrAdditionalAccount_Soft">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="practiceCode" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="patientAccount" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getPhrAdditionalAccount_SoftResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="getPhrAdditionalAccount_SoftResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getPhrChildVerification_Soft">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="practiceCode" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="mergedPatientAccount" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="getPhrChildVerification_SoftResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="getPhrChildVerification_SoftResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="updatePhrMergedAccountsPhoneEmail1_Soft">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="practiceCode" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="patientAccount" type="s:long" />
+            <s:element minOccurs="0" maxOccurs="1" name="newCellPhone" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="newEmailId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="oldEmailId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="oldCellPhone" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="updatePhrMergedAccountsPhoneEmail1_SoftResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="updatePhrMergedAccountsPhoneEmail1_SoftResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="updatePhrMergedAccountsPhoneEmail2_Soft">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="practiceCode" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="patientAccount" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="mergedPatientAccount" type="s:long" />
+            <s:element minOccurs="0" maxOccurs="1" name="emailId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="cellPhone" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="updatePhrMergedAccountsPhoneEmail2_SoftResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="updatePhrMergedAccountsPhoneEmail2_SoftResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="updatePhrMergedAccountsPhoneDelete">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="practiceCode" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="patientAccount" type="s:long" />
+            <s:element minOccurs="0" maxOccurs="1" name="newCellPhone" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="emailId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="oldCellPhone" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="updatePhrMergedAccountsPhoneDeleteResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="updatePhrMergedAccountsPhoneDeleteResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="deletePhrMergedAccounts1_Soft">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="practiceCode" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="patientAccount" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="deletePhrMergedAccounts1_SoftResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="deletePhrMergedAccounts1_SoftResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="deletePhrMergedAccounts2_Soft">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="practiceCode" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="patientAccount" type="s:long" />
+            <s:element minOccurs="0" maxOccurs="1" name="emailId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="cellPhone" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="deletePhrMergedAccounts2_SoftResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="deletePhrMergedAccounts2_SoftResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="deletePhrMergedAccounts3_Soft">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="practiceCode" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="patientAccount" type="s:long" />
+            <s:element minOccurs="1" maxOccurs="1" name="mergedPatientAccount" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="deletePhrMergedAccounts3_SoftResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="deletePhrMergedAccounts3_SoftResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="createPhrAccount_Soft">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ObjPhrloginAndAccountPractices" type="tns:PhrloginAndAccountPractices" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="PhrloginAndAccountPractices">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="cellPhone" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="email" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="firstName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="homeCell" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="lastName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="patientAccount" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PHRPassword" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="practiceCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="userId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SSN" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="createPhrAccount_SoftResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="createPhrAccount_SoftResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="updatePhrAccount_Soft">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="practiceCode" type="s:long" />
+            <s:element minOccurs="0" maxOccurs="1" name="oldEmail" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="newEmail" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="oldCellPhone" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="NewcellPhone" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="patientAccount" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="modifiedby" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="block" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="password" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="updatePhrAccount_SoftResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="updatePhrAccount_SoftResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="blockPhrAccount_Soft">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="practiceCode" type="s:long" />
+            <s:element minOccurs="0" maxOccurs="1" name="email" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="cellPhone" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="strOperation" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="blockPhrAccount_SoftResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="blockPhrAccount_SoftResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="updateProvidersNotesTemplates">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="pn" type="tns:ProviderNotes" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ProviderNotes">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="Value" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="PatientAccount" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ClaimNo" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="PatientPaidCash" type="s:double" />
+          <s:element minOccurs="1" maxOccurs="1" name="PatientPaidCheckAmount" type="s:double" />
+          <s:element minOccurs="1" maxOccurs="1" name="PatientPaidCreditCard" type="s:double" />
+          <s:element minOccurs="1" maxOccurs="1" name="AmountAdjusted" type="s:double" />
+          <s:element minOccurs="0" maxOccurs="1" name="CheckNo" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="DueAmount" type="s:double" />
+          <s:element minOccurs="0" maxOccurs="1" name="UserName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DeviceInfo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PracticeCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PaymentPostingCategory" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="updateProvidersNotesTemplatesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="updateProvidersNotesTemplatesResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="updatePatientNotesTemplates_v1">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="pn" type="tns:ProviderNotes" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="updatePatientNotesTemplates_v1Response">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="updatePatientNotesTemplates_v1Result">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="sendSMS">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="objCSSendSMS" type="tns:CSSendSMS" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="CSSendSMS">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="smsBody" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="userPhone" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="sendSMSResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="sendSMSResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:any minOccurs="0" maxOccurs="unbounded" namespace="http://www.w3.org/2001/XMLSchema" processContents="lax" />
+                  <s:any minOccurs="1" namespace="urn:schemas-microsoft-com:xml-diffgram-v1" processContents="lax" />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="WEB_PHR_SOFT_IPHR_PIN_GenerationSoapIn">
+    <wsdl:part name="parameters" element="tns:WEB_PHR_SOFT_IPHR_PIN_Generation" />
+  </wsdl:message>
+  <wsdl:message name="WEB_PHR_SOFT_IPHR_PIN_GenerationSoapOut">
+    <wsdl:part name="parameters" element="tns:WEB_PHR_SOFT_IPHR_PIN_GenerationResponse" />
+  </wsdl:message>
+  <wsdl:message name="WEB_PHR_SOFT_IPHR_PIN_GenerationValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="getMergedPatientAccount_SoftSoapIn">
+    <wsdl:part name="parameters" element="tns:getMergedPatientAccount_Soft" />
+  </wsdl:message>
+  <wsdl:message name="getMergedPatientAccount_SoftSoapOut">
+    <wsdl:part name="parameters" element="tns:getMergedPatientAccount_SoftResponse" />
+  </wsdl:message>
+  <wsdl:message name="getMergedPatientAccount_SoftValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="getPatientAccount_SoftSoapIn">
+    <wsdl:part name="parameters" element="tns:getPatientAccount_Soft" />
+  </wsdl:message>
+  <wsdl:message name="getPatientAccount_SoftSoapOut">
+    <wsdl:part name="parameters" element="tns:getPatientAccount_SoftResponse" />
+  </wsdl:message>
+  <wsdl:message name="getPatientAccount_SoftValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="getDetailedPhrMergedAccounts1_SoftSoapIn">
+    <wsdl:part name="parameters" element="tns:getDetailedPhrMergedAccounts1_Soft" />
+  </wsdl:message>
+  <wsdl:message name="getDetailedPhrMergedAccounts1_SoftSoapOut">
+    <wsdl:part name="parameters" element="tns:getDetailedPhrMergedAccounts1_SoftResponse" />
+  </wsdl:message>
+  <wsdl:message name="getDetailedPhrMergedAccounts1_SoftValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="getDetailedPhrMergedAccounts2_SoftSoapIn">
+    <wsdl:part name="parameters" element="tns:getDetailedPhrMergedAccounts2_Soft" />
+  </wsdl:message>
+  <wsdl:message name="getDetailedPhrMergedAccounts2_SoftSoapOut">
+    <wsdl:part name="parameters" element="tns:getDetailedPhrMergedAccounts2_SoftResponse" />
+  </wsdl:message>
+  <wsdl:message name="getDetailedPhrMergedAccounts2_SoftValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="getPhrAdditionalAccount_SoftSoapIn">
+    <wsdl:part name="parameters" element="tns:getPhrAdditionalAccount_Soft" />
+  </wsdl:message>
+  <wsdl:message name="getPhrAdditionalAccount_SoftSoapOut">
+    <wsdl:part name="parameters" element="tns:getPhrAdditionalAccount_SoftResponse" />
+  </wsdl:message>
+  <wsdl:message name="getPhrAdditionalAccount_SoftValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="getPhrChildVerification_SoftSoapIn">
+    <wsdl:part name="parameters" element="tns:getPhrChildVerification_Soft" />
+  </wsdl:message>
+  <wsdl:message name="getPhrChildVerification_SoftSoapOut">
+    <wsdl:part name="parameters" element="tns:getPhrChildVerification_SoftResponse" />
+  </wsdl:message>
+  <wsdl:message name="getPhrChildVerification_SoftValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="updatePhrMergedAccountsPhoneEmail1_SoftSoapIn">
+    <wsdl:part name="parameters" element="tns:updatePhrMergedAccountsPhoneEmail1_Soft" />
+  </wsdl:message>
+  <wsdl:message name="updatePhrMergedAccountsPhoneEmail1_SoftSoapOut">
+    <wsdl:part name="parameters" element="tns:updatePhrMergedAccountsPhoneEmail1_SoftResponse" />
+  </wsdl:message>
+  <wsdl:message name="updatePhrMergedAccountsPhoneEmail1_SoftValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="updatePhrMergedAccountsPhoneEmail2_SoftSoapIn">
+    <wsdl:part name="parameters" element="tns:updatePhrMergedAccountsPhoneEmail2_Soft" />
+  </wsdl:message>
+  <wsdl:message name="updatePhrMergedAccountsPhoneEmail2_SoftSoapOut">
+    <wsdl:part name="parameters" element="tns:updatePhrMergedAccountsPhoneEmail2_SoftResponse" />
+  </wsdl:message>
+  <wsdl:message name="updatePhrMergedAccountsPhoneEmail2_SoftValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="updatePhrMergedAccountsPhoneDeleteSoapIn">
+    <wsdl:part name="parameters" element="tns:updatePhrMergedAccountsPhoneDelete" />
+  </wsdl:message>
+  <wsdl:message name="updatePhrMergedAccountsPhoneDeleteSoapOut">
+    <wsdl:part name="parameters" element="tns:updatePhrMergedAccountsPhoneDeleteResponse" />
+  </wsdl:message>
+  <wsdl:message name="updatePhrMergedAccountsPhoneDeleteValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="deletePhrMergedAccounts1_SoftSoapIn">
+    <wsdl:part name="parameters" element="tns:deletePhrMergedAccounts1_Soft" />
+  </wsdl:message>
+  <wsdl:message name="deletePhrMergedAccounts1_SoftSoapOut">
+    <wsdl:part name="parameters" element="tns:deletePhrMergedAccounts1_SoftResponse" />
+  </wsdl:message>
+  <wsdl:message name="deletePhrMergedAccounts1_SoftValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="deletePhrMergedAccounts2_SoftSoapIn">
+    <wsdl:part name="parameters" element="tns:deletePhrMergedAccounts2_Soft" />
+  </wsdl:message>
+  <wsdl:message name="deletePhrMergedAccounts2_SoftSoapOut">
+    <wsdl:part name="parameters" element="tns:deletePhrMergedAccounts2_SoftResponse" />
+  </wsdl:message>
+  <wsdl:message name="deletePhrMergedAccounts2_SoftValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="deletePhrMergedAccounts3_SoftSoapIn">
+    <wsdl:part name="parameters" element="tns:deletePhrMergedAccounts3_Soft" />
+  </wsdl:message>
+  <wsdl:message name="deletePhrMergedAccounts3_SoftSoapOut">
+    <wsdl:part name="parameters" element="tns:deletePhrMergedAccounts3_SoftResponse" />
+  </wsdl:message>
+  <wsdl:message name="deletePhrMergedAccounts3_SoftValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="createPhrAccount_SoftSoapIn">
+    <wsdl:part name="parameters" element="tns:createPhrAccount_Soft" />
+  </wsdl:message>
+  <wsdl:message name="createPhrAccount_SoftSoapOut">
+    <wsdl:part name="parameters" element="tns:createPhrAccount_SoftResponse" />
+  </wsdl:message>
+  <wsdl:message name="createPhrAccount_SoftValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="updatePhrAccount_SoftSoapIn">
+    <wsdl:part name="parameters" element="tns:updatePhrAccount_Soft" />
+  </wsdl:message>
+  <wsdl:message name="updatePhrAccount_SoftSoapOut">
+    <wsdl:part name="parameters" element="tns:updatePhrAccount_SoftResponse" />
+  </wsdl:message>
+  <wsdl:message name="updatePhrAccount_SoftValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="blockPhrAccount_SoftSoapIn">
+    <wsdl:part name="parameters" element="tns:blockPhrAccount_Soft" />
+  </wsdl:message>
+  <wsdl:message name="blockPhrAccount_SoftSoapOut">
+    <wsdl:part name="parameters" element="tns:blockPhrAccount_SoftResponse" />
+  </wsdl:message>
+  <wsdl:message name="blockPhrAccount_SoftValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="updateProvidersNotesTemplatesSoapIn">
+    <wsdl:part name="parameters" element="tns:updateProvidersNotesTemplates" />
+  </wsdl:message>
+  <wsdl:message name="updateProvidersNotesTemplatesSoapOut">
+    <wsdl:part name="parameters" element="tns:updateProvidersNotesTemplatesResponse" />
+  </wsdl:message>
+  <wsdl:message name="updateProvidersNotesTemplatesValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="updatePatientNotesTemplates_v1SoapIn">
+    <wsdl:part name="parameters" element="tns:updatePatientNotesTemplates_v1" />
+  </wsdl:message>
+  <wsdl:message name="updatePatientNotesTemplates_v1SoapOut">
+    <wsdl:part name="parameters" element="tns:updatePatientNotesTemplates_v1Response" />
+  </wsdl:message>
+  <wsdl:message name="updatePatientNotesTemplates_v1ValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:message name="sendSMSSoapIn">
+    <wsdl:part name="parameters" element="tns:sendSMS" />
+  </wsdl:message>
+  <wsdl:message name="sendSMSSoapOut">
+    <wsdl:part name="parameters" element="tns:sendSMSResponse" />
+  </wsdl:message>
+  <wsdl:message name="sendSMSValidationSoapHeader">
+    <wsdl:part name="ValidationSoapHeader" element="tns:ValidationSoapHeader" />
+  </wsdl:message>
+  <wsdl:portType name="SundrySoap">
+    <wsdl:operation name="WEB_PHR_SOFT_IPHR_PIN_Generation">
+      <wsdl:input message="tns:WEB_PHR_SOFT_IPHR_PIN_GenerationSoapIn" />
+      <wsdl:output message="tns:WEB_PHR_SOFT_IPHR_PIN_GenerationSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getMergedPatientAccount_Soft">
+      <wsdl:input message="tns:getMergedPatientAccount_SoftSoapIn" />
+      <wsdl:output message="tns:getMergedPatientAccount_SoftSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getPatientAccount_Soft">
+      <wsdl:input message="tns:getPatientAccount_SoftSoapIn" />
+      <wsdl:output message="tns:getPatientAccount_SoftSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getDetailedPhrMergedAccounts1_Soft">
+      <wsdl:input message="tns:getDetailedPhrMergedAccounts1_SoftSoapIn" />
+      <wsdl:output message="tns:getDetailedPhrMergedAccounts1_SoftSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getDetailedPhrMergedAccounts2_Soft">
+      <wsdl:input message="tns:getDetailedPhrMergedAccounts2_SoftSoapIn" />
+      <wsdl:output message="tns:getDetailedPhrMergedAccounts2_SoftSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getPhrAdditionalAccount_Soft">
+      <wsdl:input message="tns:getPhrAdditionalAccount_SoftSoapIn" />
+      <wsdl:output message="tns:getPhrAdditionalAccount_SoftSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="getPhrChildVerification_Soft">
+      <wsdl:input message="tns:getPhrChildVerification_SoftSoapIn" />
+      <wsdl:output message="tns:getPhrChildVerification_SoftSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="updatePhrMergedAccountsPhoneEmail1_Soft">
+      <wsdl:input message="tns:updatePhrMergedAccountsPhoneEmail1_SoftSoapIn" />
+      <wsdl:output message="tns:updatePhrMergedAccountsPhoneEmail1_SoftSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="updatePhrMergedAccountsPhoneEmail2_Soft">
+      <wsdl:input message="tns:updatePhrMergedAccountsPhoneEmail2_SoftSoapIn" />
+      <wsdl:output message="tns:updatePhrMergedAccountsPhoneEmail2_SoftSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="updatePhrMergedAccountsPhoneDelete">
+      <wsdl:input message="tns:updatePhrMergedAccountsPhoneDeleteSoapIn" />
+      <wsdl:output message="tns:updatePhrMergedAccountsPhoneDeleteSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="deletePhrMergedAccounts1_Soft">
+      <wsdl:input message="tns:deletePhrMergedAccounts1_SoftSoapIn" />
+      <wsdl:output message="tns:deletePhrMergedAccounts1_SoftSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="deletePhrMergedAccounts2_Soft">
+      <wsdl:input message="tns:deletePhrMergedAccounts2_SoftSoapIn" />
+      <wsdl:output message="tns:deletePhrMergedAccounts2_SoftSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="deletePhrMergedAccounts3_Soft">
+      <wsdl:input message="tns:deletePhrMergedAccounts3_SoftSoapIn" />
+      <wsdl:output message="tns:deletePhrMergedAccounts3_SoftSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="createPhrAccount_Soft">
+      <wsdl:input message="tns:createPhrAccount_SoftSoapIn" />
+      <wsdl:output message="tns:createPhrAccount_SoftSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="updatePhrAccount_Soft">
+      <wsdl:input message="tns:updatePhrAccount_SoftSoapIn" />
+      <wsdl:output message="tns:updatePhrAccount_SoftSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="blockPhrAccount_Soft">
+      <wsdl:input message="tns:blockPhrAccount_SoftSoapIn" />
+      <wsdl:output message="tns:blockPhrAccount_SoftSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="updateProvidersNotesTemplates">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Providers notes claim automation.</wsdl:documentation>
+      <wsdl:input message="tns:updateProvidersNotesTemplatesSoapIn" />
+      <wsdl:output message="tns:updateProvidersNotesTemplatesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="updatePatientNotesTemplates_v1">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Patient Notes Templates.</wsdl:documentation>
+      <wsdl:input message="tns:updatePatientNotesTemplates_v1SoapIn" />
+      <wsdl:output message="tns:updatePatientNotesTemplates_v1SoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="sendSMS">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">SendSMS get userphone and SMSbody paramter. SMS log mentain on CJNJDB4 server.</wsdl:documentation>
+      <wsdl:input message="tns:sendSMSSoapIn" />
+      <wsdl:output message="tns:sendSMSSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="SundrySoap" type="tns:SundrySoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="WEB_PHR_SOFT_IPHR_PIN_Generation">
+      <soap:operation soapAction="http://tempuri.org/WEB_PHR_SOFT_IPHR_PIN_Generation" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:WEB_PHR_SOFT_IPHR_PIN_GenerationValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getMergedPatientAccount_Soft">
+      <soap:operation soapAction="http://tempuri.org/getMergedPatientAccount_Soft" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:getMergedPatientAccount_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPatientAccount_Soft">
+      <soap:operation soapAction="http://tempuri.org/getPatientAccount_Soft" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:getPatientAccount_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getDetailedPhrMergedAccounts1_Soft">
+      <soap:operation soapAction="http://tempuri.org/getDetailedPhrMergedAccounts1_Soft" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:getDetailedPhrMergedAccounts1_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getDetailedPhrMergedAccounts2_Soft">
+      <soap:operation soapAction="http://tempuri.org/getDetailedPhrMergedAccounts2_Soft" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:getDetailedPhrMergedAccounts2_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPhrAdditionalAccount_Soft">
+      <soap:operation soapAction="http://tempuri.org/getPhrAdditionalAccount_Soft" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:getPhrAdditionalAccount_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPhrChildVerification_Soft">
+      <soap:operation soapAction="http://tempuri.org/getPhrChildVerification_Soft" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:getPhrChildVerification_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updatePhrMergedAccountsPhoneEmail1_Soft">
+      <soap:operation soapAction="http://tempuri.org/updatePhrMergedAccountsPhoneEmail1_Soft" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:updatePhrMergedAccountsPhoneEmail1_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updatePhrMergedAccountsPhoneEmail2_Soft">
+      <soap:operation soapAction="http://tempuri.org/updatePhrMergedAccountsPhoneEmail2_Soft" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:updatePhrMergedAccountsPhoneEmail2_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updatePhrMergedAccountsPhoneDelete">
+      <soap:operation soapAction="http://tempuri.org/updatePhrMergedAccountsPhoneDelete" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:updatePhrMergedAccountsPhoneDeleteValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deletePhrMergedAccounts1_Soft">
+      <soap:operation soapAction="http://tempuri.org/deletePhrMergedAccounts1_Soft" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:deletePhrMergedAccounts1_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deletePhrMergedAccounts2_Soft">
+      <soap:operation soapAction="http://tempuri.org/deletePhrMergedAccounts2_Soft" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:deletePhrMergedAccounts2_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deletePhrMergedAccounts3_Soft">
+      <soap:operation soapAction="http://tempuri.org/deletePhrMergedAccounts3_Soft" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:deletePhrMergedAccounts3_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createPhrAccount_Soft">
+      <soap:operation soapAction="http://tempuri.org/createPhrAccount_Soft" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:createPhrAccount_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updatePhrAccount_Soft">
+      <soap:operation soapAction="http://tempuri.org/updatePhrAccount_Soft" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:updatePhrAccount_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="blockPhrAccount_Soft">
+      <soap:operation soapAction="http://tempuri.org/blockPhrAccount_Soft" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:blockPhrAccount_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateProvidersNotesTemplates">
+      <soap:operation soapAction="http://tempuri.org/updateProvidersNotesTemplates" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:updateProvidersNotesTemplatesValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updatePatientNotesTemplates_v1">
+      <soap:operation soapAction="http://tempuri.org/updatePatientNotesTemplates_v1" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:updatePatientNotesTemplates_v1ValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="sendSMS">
+      <soap:operation soapAction="http://tempuri.org/sendSMS" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:sendSMSValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="SundrySoap12" type="tns:SundrySoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="WEB_PHR_SOFT_IPHR_PIN_Generation">
+      <soap12:operation soapAction="http://tempuri.org/WEB_PHR_SOFT_IPHR_PIN_Generation" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:WEB_PHR_SOFT_IPHR_PIN_GenerationValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getMergedPatientAccount_Soft">
+      <soap12:operation soapAction="http://tempuri.org/getMergedPatientAccount_Soft" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:getMergedPatientAccount_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPatientAccount_Soft">
+      <soap12:operation soapAction="http://tempuri.org/getPatientAccount_Soft" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:getPatientAccount_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getDetailedPhrMergedAccounts1_Soft">
+      <soap12:operation soapAction="http://tempuri.org/getDetailedPhrMergedAccounts1_Soft" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:getDetailedPhrMergedAccounts1_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getDetailedPhrMergedAccounts2_Soft">
+      <soap12:operation soapAction="http://tempuri.org/getDetailedPhrMergedAccounts2_Soft" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:getDetailedPhrMergedAccounts2_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPhrAdditionalAccount_Soft">
+      <soap12:operation soapAction="http://tempuri.org/getPhrAdditionalAccount_Soft" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:getPhrAdditionalAccount_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getPhrChildVerification_Soft">
+      <soap12:operation soapAction="http://tempuri.org/getPhrChildVerification_Soft" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:getPhrChildVerification_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updatePhrMergedAccountsPhoneEmail1_Soft">
+      <soap12:operation soapAction="http://tempuri.org/updatePhrMergedAccountsPhoneEmail1_Soft" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:updatePhrMergedAccountsPhoneEmail1_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updatePhrMergedAccountsPhoneEmail2_Soft">
+      <soap12:operation soapAction="http://tempuri.org/updatePhrMergedAccountsPhoneEmail2_Soft" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:updatePhrMergedAccountsPhoneEmail2_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updatePhrMergedAccountsPhoneDelete">
+      <soap12:operation soapAction="http://tempuri.org/updatePhrMergedAccountsPhoneDelete" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:updatePhrMergedAccountsPhoneDeleteValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deletePhrMergedAccounts1_Soft">
+      <soap12:operation soapAction="http://tempuri.org/deletePhrMergedAccounts1_Soft" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:deletePhrMergedAccounts1_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deletePhrMergedAccounts2_Soft">
+      <soap12:operation soapAction="http://tempuri.org/deletePhrMergedAccounts2_Soft" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:deletePhrMergedAccounts2_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="deletePhrMergedAccounts3_Soft">
+      <soap12:operation soapAction="http://tempuri.org/deletePhrMergedAccounts3_Soft" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:deletePhrMergedAccounts3_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="createPhrAccount_Soft">
+      <soap12:operation soapAction="http://tempuri.org/createPhrAccount_Soft" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:createPhrAccount_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updatePhrAccount_Soft">
+      <soap12:operation soapAction="http://tempuri.org/updatePhrAccount_Soft" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:updatePhrAccount_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="blockPhrAccount_Soft">
+      <soap12:operation soapAction="http://tempuri.org/blockPhrAccount_Soft" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:blockPhrAccount_SoftValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateProvidersNotesTemplates">
+      <soap12:operation soapAction="http://tempuri.org/updateProvidersNotesTemplates" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:updateProvidersNotesTemplatesValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updatePatientNotesTemplates_v1">
+      <soap12:operation soapAction="http://tempuri.org/updatePatientNotesTemplates_v1" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:updatePatientNotesTemplates_v1ValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="sendSMS">
+      <soap12:operation soapAction="http://tempuri.org/sendSMS" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:sendSMSValidationSoapHeader" part="ValidationSoapHeader" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Sundry">
+    <wsdl:port name="SundrySoap" binding="tns:SundrySoap">
+      <soap:address location="http://qa-webservices.mtbc.com/Sundry/Sundry.asmx" />
+    </wsdl:port>
+    <wsdl:port name="SundrySoap12" binding="tns:SundrySoap12">
+      <soap12:address location="http://qa-webservices.mtbc.com/Sundry/Sundry.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

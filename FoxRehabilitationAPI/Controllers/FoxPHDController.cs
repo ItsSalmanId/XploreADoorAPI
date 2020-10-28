@@ -1,0 +1,90 @@
+﻿using FOX.BusinessOperations.FoxPHDService;
+using FOX.DataModels.Models.FoxPHD;
+using FoxRehabilitationAPI.Filters;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+
+namespace FoxRehabilitationAPI.Controllers
+{
+    [Authorize]
+    [ExceptionHandlingFilter]
+    public class FoxPHDController : BaseApiController
+    {
+        private readonly IFoxPHDService _IFoxPHDService;
+        public FoxPHDController(IFoxPHDService PHDServices)
+        {
+            _IFoxPHDService = PHDServices;
+        }
+        [HttpPost]
+        public HttpResponseMessage GetPatientInformation(PatientsSearchRequest ObjPatientSearchRequest)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetPatientInformation(ObjPatientSearchRequest, GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage DeleteCallDetailRecordInformation(PHDCallDetail ObjPHDCallDetailRequest)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.DeleteCallDetailRecordInformation(ObjPHDCallDetailRequest, GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage GetPHDCallDetailsInformation(CallDetailsSearchRequest ObjCallDetailsSearchRequest)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetPHDCallDetailsInformation(ObjCallDetailsSearchRequest, GetProfile()));
+        }
+        [HttpGet]
+        public HttpResponseMessage GetDropdownLists()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetDropdownLists(GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage AddUpdatePHDCallDetailInformation(PHDCallDetail ObjPHDCallDetailRequest)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.AddUpdatePHDCallDetailInformation(ObjPHDCallDetailRequest, GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage AddUpdateVerificationInformation(PhdPatientVerification ObjPhdPatientVerification)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.AddUpdateVerificationInformation(ObjPhdPatientVerification, GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage ExportToExcelPHD(CallDetailsSearchRequest ObjCallDetailsSearchRequest)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.ExportToExcelPHD(ObjCallDetailsSearchRequest, GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage AddUpdateRecordingName(PHDCallDetail ObjCallDetailsSearchRequest)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.AddUpdateRecordingName(ObjCallDetailsSearchRequest, GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage GetUnmappedCalls(UnmappedCallsSearchRequest reg)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetUnmappedCalls(reg, GetProfile()));
+        }
+        [HttpGet]
+        public HttpResponseMessage GetFoxDocumentTypes()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetFoxDocumentTypes(GetProfile()));
+        }
+        [HttpGet]
+        public HttpResponseMessage GetFollowUpCalls()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetFollowUpCalls(GetProfile()));
+        }
+        [HttpGet]
+        public HttpResponseMessage GetCaseDetails()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetCaseDetails(GetProfile()));
+        }
+        [HttpGet]
+        public HttpResponseMessage GetExportAdvancedDailyReports(string callerUserID)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetExportAdvancedDailyReports(GetProfile(), callerUserID));
+        }
+        [HttpPost]
+        public HttpResponseMessage ExportAdvancedDailyReport(ExportAdvancedDailyReport advancedregionreq)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.ExportAdvancedDailyReport(advancedregionreq, GetProfile()));
+        }
+    }
+}

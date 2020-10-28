@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9C6C8755-6D00-4077-AA6C-2DF8F811AC8C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FOX.DataModels</RootNamespace>
+    <AssemblyName>FOX.DataModels</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Libraries\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Context\DBContextAdjusmentApproval.cs" />
+    <Compile Include="Context\DbContextCases.cs" />
+    <Compile Include="Context\DbContextClaim.cs" />
+    <Compile Include="Context\DbContextCommon.cs" />
+    <Compile Include="Context\DbContextCorrectedClaims.cs" />
+    <Compile Include="Context\DbContextDashboard.cs" />
+    <Compile Include="Context\DBContextExceptionLog.cs" />
+    <Compile Include="Context\DBContextFoxPHD.cs" />
+    <Compile Include="Context\DbContextIndexinfo.cs" />
+    <Compile Include="Context\DbContextIndexinformation.cs" />
+    <Compile Include="Context\DBContextMTBCPatientInsurance.cs" />
+    <Compile Include="Context\DbContextPatient.cs" />
+    <Compile Include="Context\DBContextPatientDocuments.cs" />
+    <Compile Include="Context\DbContextPatientInsurance.cs" />
+    <Compile Include="Context\DbContextPatientNew.cs" />
+    <Compile Include="Context\DbContextPatientSurvey.cs" />
+    <Compile Include="Context\DBContextQualityAssurance.cs" />
+    <Compile Include="Context\DBContextReconciliations.cs" />
+    <Compile Include="Context\DbContextReporting.cs" />
+    <Compile Include="Context\DBContextScheduler.cs" />
+    <Compile Include="Context\DbContextSearchOrder.cs" />
+    <Compile Include="Context\DbContextSecurity.cs" />
+    <Compile Include="Context\DBContextQueue.cs" />
+    <Compile Include="Context\DbContextSettings.cs" />
+    <Compile Include="Context\DbContextTasks.cs" />
+    <Compile Include="Context\SpContext.cs" />
+    <Compile Include="EntityHelper.cs" />
+    <Compile Include="GenericRepository\GenericRepository.cs" />
+    <Compile Include="GenericRepository\SpRepository.cs" />
+    <Compile Include="HelperClasses\CSVHelper.cs" />
+    <Compile Include="HelperClasses\HelperClasses.cs" />
+    <Compile Include="Models\AdjustmentApproval\AdjustmentApproval.cs" />
+    <Compile Include="Models\ADUser\LDAPUser.cs" />
+    <Compile Include="Models\AssignedQueueModel\AssignedQueue.cs" />
+    <Compile Include="Models\Authorization\Authorization.cs" />
+    <Compile Include="Models\BaseModel.cs" />
+    <Compile Include="Models\CasesModel\CasesModel.cs" />
+    <Compile Include="Models\CommonModel\Common.cs" />
+    <Compile Include="Models\CompleteQueueModel\CompleteQueue.cs" />
+    <Compile Include="Models\CorrectedClaims\CorrectedClaims.cs" />
+    <Compile Include="Models\DashboardModel\Dashboard.cs" />
+    <Compile Include="Models\Exceptions\BusinessException.cs" />
+    <Compile Include="Models\Exceptions\ExceptionModel.cs" />
+    <Compile Include="Models\ExportToExcel\ExportToExcel.cs" />
+    <Compile Include="Models\ExternalUserModel\CityDetailByZipCodeRequestModel.cs" />
+    <Compile Include="Models\ExternalUserModel\CityDetailByZipCodeResponseModel.cs" />
+    <Compile Include="Models\ExternalUserModel\ExternalUserSignupResponseModel.cs" />
+    <Compile Include="Models\ExternalUserModel\FoxTBLPracticeOrganizationResponseModel.cs" />
+    <Compile Include="Models\ExternalUserModel\FOX_TBL_PRACTICE_ORGANIZATION.cs" />
+    <Compile Include="Models\ExternalUserModel\SmartIdentifierResponseModel.cs" />
+    <Compile Include="Models\ExternalUserModel\SmartSearchRequest.cs" />
+    <Compile Include="Models\ExternalUserModel\SmartSpecialitySearchResponseModel.cs" />
+    <Compile Include="Models\ExternalUserModel\Speciality.cs" />
+    <Compile Include="Models\ExternalUserModel\UserDetailsByNPIRequestModel.cs" />
+    <Compile Include="Models\ExternalUserModel\UserDetailsByNPIResponseModel.cs" />
+    <Compile Include="Models\ExternalUserModel\Zip_City_State.cs" />
+    <Compile Include="Models\Fax\Faxes.cs" />
+    <Compile Include="Models\FoxPHDModel\FoxPHD.cs" />
+    <Compile Include="Models\GeneralNotesModel\GeneralNoteModels.cs" />
+    <Compile Include="Models\GoogleRecaptcha\GoogleRecaptchaResponse.cs" />
+    <Compile Include="Models\GroupsModel\UserGroupsModel.cs" />
+    <Compile Include="Models\IndexedQueueModel\IndexedQueue.cs" />
+    <Compile Include="Models\IndexInfo\IndexInfo.cs" />
+    <Compile Include="Models\OriginalQueueModel\OriginalQueue.cs" />
+    <Compile Include="Models\PatientDocuments\PatientDocuments.cs" />
+    <Compile Include="Models\PatientSurvey\PatientSurvey.cs" />
+    <Compile Include="Models\Patient\Patient.cs" />
+    <Compile Include="Models\Patient\PatientClaim.cs" />
+    <Compile Include="Models\Patient\PatientInsurance.cs" />
+    <Compile Include="Models\QualityAsuranceModel\EvaluationSetupModel.cs" />
+    <Compile Include="Models\QualityAsuranceModel\PerformAuditModelcs.cs" />
+    <Compile Include="Models\QualityAsuranceModel\QAReportModel.cs" />
+    <Compile Include="Models\Reconciliation\Reconciliation.cs" />
+    <Compile Include="Models\Reporting\ReferralReport.cs" />
+    <Compile Include="Models\RequestForOrder\IndexInformation\IndexInformationModel.cs" />
+    <Compile Include="Models\RequestForOrder\RequestForOrderModel.cs" />
+    <Compile Include="Models\RequestForOrder\UploadOrderImages\UploadOrderImagesModel.cs" />
+    <Compile Include="Models\Scheduler\SchedulerModel.cs" />
+    <Compile Include="Models\SearchOrderModel\SearchOrder.cs" />
+    <Compile Include="Models\Security\BasicAuthenticationIdentity.cs" />
+    <Compile Include="Models\Security\PasswordHistory.cs" />
+    <Compile Include="Models\Security\ProfileToken.cs" />
+    <Compile Include="Models\Security\ReferralRegion.cs" />
+    <Compile Include="Models\Security\User.cs" />
+    <Compile Include="Models\Security\UserProfile.cs" />
+    <Compile Include="Models\SenderName\SenderNameModel.cs" />
+    <Compile Include="Models\SenderType\SenderTypeModel.cs" />
+    <Compile Include="Models\ServiceConfiguration\ServiceConfiguration.cs" />
+    <Compile Include="Models\Settings\ClinicianSetup\ClinicianSetup.cs" />
+    <Compile Include="Models\Settings\EmailConfig\EmailConfig.cs" />
+    <Compile Include="Models\Settings\FacilityLocation\FacilityLocation.cs" />
+    <Compile Include="Models\Settings\Practice\Practice.cs" />
+    <Compile Include="Models\Settings\ReferralSource\ReferralSource.cs" />
+    <Compile Include="Models\Settings\RoleAndRights\RoleAndRights.cs" />
+    <Compile Include="Models\Settings\User\User.cs" />
+    <Compile Include="Models\StatesModel\States.cs" />
+    <Compile Include="Models\SupervisorWorkModel\SupervisorWork.cs" />
+    <Compile Include="Models\TasksModel\TasksModel.cs" />
+    <Compile Include="Models\UnAssignedQueueModel\UnAssignedQueue.cs" />
+    <Compile Include="Models\UploadWorkOrderFiles\UploadWorkOrderFilesModel.cs" />
+    <Compile Include="Models\WorkOrderHistoryModel\WorkOrderHistory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FOX.DataModels", "FOX.DataModels\FOX.DataModels.csproj", "{9C6C8755-6D00-4077-AA6C-2DF8F811AC8C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FOX.BusinessOperations", "FOX.BusinessOperations\FOX.BusinessOperations.csproj", "{AB4A7D96-7609-456D-9FEF-9BB4D9FB7C81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExternalServices", "ExternalServices\ExternalServices.csproj", "{D0A38AEA-EBCD-486C-8208-37AF4925784B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoxRehabilitationAPI", "FoxRehabilitationAPI\FoxRehabilitationAPI.csproj", "{7B67705C-27C3-4BBD-B689-1F43F56C9665}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9C6C8755-6D00-4077-AA6C-2DF8F811AC8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C6C8755-6D00-4077-AA6C-2DF8F811AC8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C6C8755-6D00-4077-AA6C-2DF8F811AC8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C6C8755-6D00-4077-AA6C-2DF8F811AC8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB4A7D96-7609-456D-9FEF-9BB4D9FB7C81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB4A7D96-7609-456D-9FEF-9BB4D9FB7C81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB4A7D96-7609-456D-9FEF-9BB4D9FB7C81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB4A7D96-7609-456D-9FEF-9BB4D9FB7C81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0A38AEA-EBCD-486C-8208-37AF4925784B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0A38AEA-EBCD-486C-8208-37AF4925784B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0A38AEA-EBCD-486C-8208-37AF4925784B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0A38AEA-EBCD-486C-8208-37AF4925784B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B67705C-27C3-4BBD-B689-1F43F56C9665}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B67705C-27C3-4BBD-B689-1F43F56C9665}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B67705C-27C3-4BBD-B689-1F43F56C9665}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B67705C-27C3-4BBD-B689-1F43F56C9665}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 5
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://itportal:8080/tfs/defaultcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = FOX.BusinessOperations\\FOX.BusinessOperations.csproj
+		SccProjectName1 = FOX.BusinessOperations
+		SccLocalPath1 = FOX.BusinessOperations
+		SccProjectUniqueName2 = FOX.DataModels\\FOX.DataModels.csproj
+		SccProjectName2 = FOX.DataModels
+		SccLocalPath2 = FOX.DataModels
+		SccProjectUniqueName3 = ExternalServices\\ExternalServices.csproj
+		SccProjectName3 = ExternalServices
+		SccLocalPath3 = ExternalServices
+		SccProjectUniqueName4 = FoxRehabilitationAPI\\FoxRehabilitationAPI.csproj
+		SccProjectName4 = FoxRehabilitationAPI
+		SccLocalPath4 = FoxRehabilitationAPI
+	EndGlobalSection
+EndGlobal

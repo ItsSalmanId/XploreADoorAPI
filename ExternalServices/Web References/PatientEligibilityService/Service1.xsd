@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="MTBC270RequestData">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Address" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="City" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DateOfService" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DependentDOB" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DependentFirstName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DependentGender" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DependentLastName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="OrganizationNPI" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="OrganizationName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="OrganizationType" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PayerID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PayerName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ProviderFirstName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ProviderLastName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ProviderNPI" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ProviderSSN" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Relationship" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ServiceType" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="State" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SubscriberDateOfBirth" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SubscriberDateOfDeath" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SubscriberFirstName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SubscriberGender" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SubscriberGroupNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SubscriberLastName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SubscriberMemberID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SubscriberSSN" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="TaxID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Zip" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MTBC270RequestData" nillable="true" type="tns:MTBC270RequestData" />
+  <xs:complexType name="MTBCClientAuthentication">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ClientID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Password" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ReceiverID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MTBCClientAuthentication" nillable="true" type="tns:MTBCClientAuthentication" />
+  <xs:complexType name="MTBCData">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="AppointmentID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ClaimNo" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ClientID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ClientType" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="InsPayerDescriptionName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="InsuranceID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PatientAccount" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PayerType" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ServerName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ViewType" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="insPayerID" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MTBCData" nillable="true" type="tns:MTBCData" />
+  <xs:complexType name="MTBC837RequestData">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Claim_no" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="History_Updated" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IS_RTA_PAYER" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Pri_Sec_Oth_Type" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Request_Server" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MTBC837RequestData" nillable="true" type="tns:MTBC837RequestData" />
+</xs:schema>

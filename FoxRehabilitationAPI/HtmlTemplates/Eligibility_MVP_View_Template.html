@@ -1,0 +1,298 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        body {
+            font-family: "Roboto", sans-serif;
+            font-size: 13px;
+            color: #333f48;
+        }
+        .container .margin-b10 {
+            margin-bottom: 10px !important;
+        }
+
+        .custom-panel-head {
+            background: #4b5964;
+            padding: 8px 10px;
+        }
+
+        .custom-panel-body {
+            border: 1px solid #4b5964;
+            padding: 10px;
+        }
+
+        .container legend {
+            font-size: 12px;
+            margin-bottom: 0;
+            width: auto;
+            border: none;
+            color: #333;
+            background-color: transparent;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        b, strong {
+            font-weight: 700;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            min-height: .01%;
+        }
+
+        .container .table-theme th {
+            background: #68757f;
+            color: #fff;
+            font-weight: 400;
+            border-right: 1px solid #fff;
+            border-bottom: 0 none;
+            text-align: center;
+            font-weight: 500;
+            font-size: 13px;
+            padding: 4px;
+        }
+
+        .container .table-theme td {
+            color: #555;
+            font-size: 13px;
+            font-weight: 400;
+            padding: 4px;
+        }
+
+        .custom-panel-head h3 {
+            color: #fff;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .container .no-border, .container .no-border td {
+            border: none;
+        }
+
+        .container .margin-b0 {
+            margin-bottom: 0 !important;
+        }
+
+        table :not(.table-heading-dark-grey) {
+            margin-bottom: 10px !important;
+        }
+
+        .container .table td {
+            padding: 4px;
+        }
+
+        #eligibility-container table :not(.table-heading-dark-grey) {
+            margin-bottom: 10px !important;
+        }
+
+        .container .table-heading-orange {
+            background: #e45e21 none repeat scroll 0 0;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 7px;
+            text-align: left;
+            margin: 1px 0;
+            text-transform: capitalize;
+        }
+
+        .border-b tr {
+            border-bottom: 1px solid #d2d2d2;
+        }
+
+        .container .table th {
+            padding: 4px;
+            white-space: nowrap;
+        }
+        #global-portal .sortable li:before, #global-portal .sortable.add-review-list li:before, #global-portal .table-row-dragable tbody tr td:first-child:before {
+            font-variant-alternates: normal;
+            font-variant-caps: normal;
+            font-variant-east-asian: normal;
+            font-variant-ligatures: normal;
+            font-variant-numeric: normal;
+            font-variant-position: normal;
+        }
+
+        #xl-form body {
+            background-color: #fff;
+            margin: 0px;
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 0px;
+            font-size: 16px;
+            color: #333333;
+            text-rendering: optimizeLegibility;
+        }
+
+        #xl-form * {
+            margin: 0;
+            padding: 0;
+            outline: 0 !important;
+        }
+
+        #xl-form *, body, table, td {
+            margin: 0px;
+            padding: 1px;
+            border: none;
+        }
+
+        #xl-form .container {
+            width: 950px;
+            padding: 18px;
+            margin: 0 auto;
+            background-color: white;
+        }
+
+        #xl-form table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #xl-form td p {
+            text-align: justify;
+        }
+
+        #xl-form body {
+            font-size: 13px;
+            padding: 0 !important;
+            color: #333;
+            background: #ecf0f3;
+        }
+
+        #xl-form #mpv-coverage hr {
+            margin-top: 0;
+            margin-bottom: 0;
+            border: 0;
+            border-top: 1px solid #797777;
+        }
+
+        #xl-form .border-b td {
+            border-bottom: 1px solid #d2d2d2;
+        }
+
+        #xl-form .border-bottom {
+            border-bottom: 1px solid #d2d2d2;
+        }
+
+        #xl-form .border-r {
+            border-right: 1px solid #d2d2d2 !important;
+        }
+
+        #xl-form .no-border td, th {
+            border: none !important;
+        }
+
+        #xl-form .margin-b0 {
+            margin-bottom: 0px !important;
+        }
+
+        #xl-form .margin-b10 {
+            margin-bottom: 10px !important;
+        }
+
+        #xl-form .no-margin {
+            margin: 0px;
+        }
+
+        #xl-form .text-center {
+            text-align: center;
+        }
+
+        #xl-form .text-justify {
+            text-align: justify !important;
+        }
+
+        #xl-form .margin-0 {
+            margin: 0px;
+        }
+
+        #xl-form .d-inline-block {
+            display: inline-block;
+        }
+
+        #xl-form .d-block {
+            display: block;
+        }
+
+        #xl-form .text-right {
+            text-align: right;
+        }
+
+        #xl-form .border {
+            border: 1px solid #e6e6e6 !important;
+        }
+
+        #xl-form .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+            vertical-align: middle !important;
+        }
+
+        #xl-form .fw-600 {
+            font-weight: 600;
+        }
+
+        #xl-form .v-align-b {
+            vertical-align: bottom;
+        }
+
+        #xl-form .v-align {
+            vertical-align: middle;
+        }
+
+        #xl-form .fs-11 {
+            font-size: 11px;
+        }
+
+        #xl-form .fs-13 {
+            font-size: 13px;
+        }
+
+        #xl-form .fs-14 {
+            font-size: 14px;
+        }
+
+        #xl-form .fs-16 {
+            font-size: 16px !important;
+        }
+
+        #xl-form button.btn-rec:hover {
+            background-color: #dcdcdc;
+        }
+
+        #xl-form .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+            padding: 3px 5px;
+            font-size: 13px;
+            height: auto !important;
+        }
+
+        #xl-form .table-heading th {
+            background: #9fa0a2;
+            padding: 5px !important;
+            font-size: 14px !important;
+            color: white;
+        }
+
+        #xl-form .text-muted {
+            color: gray;
+        }
+
+        #xl-form .padding-l0 {
+            padding-left: 0 !important;
+        }
+
+        #xl-form .padding-r0 {
+            padding-right: 0 !important;
+        }
+
+        #xl-form .padding-l3 {
+            padding-left: 3px !important;
+        }
+
+        #xl-form tr.bg-grey {
+            background-color: #dadada;
+        }
+    </style>
+</head>
+<body><div id="eligibility-container"></div></body>
+</html>
