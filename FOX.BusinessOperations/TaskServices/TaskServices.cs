@@ -22,6 +22,8 @@ using FOX.BusinessOperations.CommonServices;
 using System.IO;
 using System.Globalization;
 using System.Threading;
+using System.Text;
+using System.Collections;
 
 namespace FOX.BusinessOperations.TaskServices
 {
@@ -1674,6 +1676,146 @@ namespace FOX.BusinessOperations.TaskServices
             {
                 throw ex;
             }
+        }
+        public TaskDashboardResponse GetTaskDashBoardData(TaskDashboardSearchRequest req, UserProfile profile)
+        {
+            TaskDashboardResponse taskDashboardResponse = new TaskDashboardResponse();
+            req.DATE_TO = Helper.GetCurrentDate();
+            if (!string.IsNullOrEmpty(req.DATE_FROM_STR))
+                req.DATE_FROM = Convert.ToDateTime(req.DATE_FROM_STR);
+            if (!string.IsNullOrEmpty(req.DATE_TO_STR))
+            { 
+                req.DATE_TO = Convert.ToDateTime(req.DATE_TO_STR);
+            }
+            SqlParameter _practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode  };
+            SqlParameter _groupIds = new SqlParameter { ParameterName = "GROUP_IDs", SqlDbType = SqlDbType.VarChar, Value = req.GROUP_IDs ?? (object)DBNull.Value };
+            SqlParameter _taskTypeIds = new SqlParameter { ParameterName = "TASK_TYPE_IDs", SqlDbType = SqlDbType.VarChar, Value = req.TASK_TYPE_IDs ?? (object)DBNull.Value };
+            SqlParameter _dateFrom = Helper.getDBNullOrValue("DATE_FROM", req.DATE_FROM.ToString() ?? "");
+            SqlParameter _dateTos = Helper.getDBNullOrValue("DATE_TO", req.DATE_TO.ToString() ?? "");
+            SqlParameter _timeFrame= new SqlParameter { ParameterName = "TIME_FRAME", SqlDbType = SqlDbType.VarChar, Value = req.TIME_FRAME ?? (object)DBNull.Value };
+            var openCloseStatus = SpRepository<TaskStatus>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_TASK_STATUS_DATA_FOR_DASHBOARD]
+                        @PRACTICE_CODE, @GROUP_IDs, @TASK_TYPE_IDs, @DATE_FROM, @DATE_TO, @TIME_FRAME", _practiceCode, _groupIds, _taskTypeIds, _dateFrom, _dateTos, _timeFrame);
+            taskDashboardResponse.TaskStatus = openCloseStatus;
+
+
+            SqlParameter _practiceCode1 = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+            SqlParameter _groupIds1 = new SqlParameter { ParameterName = "GROUP_IDs", SqlDbType = SqlDbType.VarChar, Value = req.GROUP_IDs ?? (object)DBNull.Value };
+            SqlParameter _taskTypeIds1 = new SqlParameter { ParameterName = "TASK_TYPE_IDs", SqlDbType = SqlDbType.VarChar, Value = req.TASK_TYPE_IDs ?? (object)DBNull.Value };
+            SqlParameter _dateFrom1 = Helper.getDBNullOrValue("DATE_FROM", req.DATE_FROM.ToString() ?? "");
+            SqlParameter _dateTos1 = Helper.getDBNullOrValue("DATE_TO", req.DATE_TO.ToString() ?? "");
+            SqlParameter _timeFrame1 = new SqlParameter { ParameterName = "TIME_FRAME", SqlDbType = SqlDbType.VarChar, Value = req.TIME_FRAME ?? (object)DBNull.Value };
+            var pastDueStatus = SpRepository<TaskDueDateStatus>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_TASK_PAST_DUE_DATE_DATA_FOR_DASHBOARD]
+                        @PRACTICE_CODE, @GROUP_IDs, @TASK_TYPE_IDs, @DATE_FROM, @DATE_TO, @TIME_FRAME", _practiceCode1, _groupIds1, _taskTypeIds1, _dateFrom1, _dateTos1, _timeFrame1);
+            taskDashboardResponse.TaskDueDateStatus = pastDueStatus;
+
+
+            SqlParameter _practiceCode2 = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+            SqlParameter _groupIds2 = new SqlParameter { ParameterName = "GROUP_IDs", SqlDbType = SqlDbType.VarChar, Value = req.GROUP_IDs ?? (object)DBNull.Value };
+            SqlParameter _taskTypeIds2 = new SqlParameter { ParameterName = "TASK_TYPE_IDs", SqlDbType = SqlDbType.VarChar, Value = req.TASK_TYPE_IDs ?? (object)DBNull.Value };
+            SqlParameter _dateFrom2 = Helper.getDBNullOrValue("DATE_FROM", req.DATE_FROM.ToString()?? "");
+            SqlParameter _dateTos2 = Helper.getDBNullOrValue("DATE_TO", req.DATE_TO.ToString()?? "");
+            SqlParameter _timeFram2 = new SqlParameter { ParameterName = "TIME_FRAME", SqlDbType = SqlDbType.VarChar, Value = req.TIME_FRAME ?? (object)DBNull.Value };
+            var avgClosureTime = SpRepository<TaskaAverageClosureTime>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_TASK_AVERAGE_CLOSURE_TIME_DATA_FOR_DASHBOARD]
+                        @PRACTICE_CODE, @GROUP_IDs, @TASK_TYPE_IDs, @DATE_FROM, @DATE_TO, @TIME_FRAME", _practiceCode2, _groupIds2, _taskTypeIds2, _dateFrom2, _dateTos2, _timeFram2);
+            if (avgClosureTime != null && avgClosureTime.Count != 0)
+            {
+                taskDashboardResponse.TaskaAverageClosureTime = avgClosureTime;
+            }
+            else
+            {
+                taskDashboardResponse.TaskaAverageClosureTime = new List<TaskaAverageClosureTime>();
+            }
+            SqlParameter _practiceCode3 = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+            SqlParameter _groupIds3 = new SqlParameter { ParameterName = "GROUP_IDs", SqlDbType = SqlDbType.VarChar, Value = req.GROUP_IDs ?? (object)DBNull.Value };
+            SqlParameter _taskTypeIds3 = new SqlParameter { ParameterName = "TASK_TYPE_IDs", SqlDbType = SqlDbType.VarChar, Value = req.TASK_TYPE_IDs ?? (object)DBNull.Value };
+            SqlParameter _dateFrom3 = Helper.getDBNullOrValue("@DateFromUser", req.DATE_FROM.ToString() ?? "");
+            SqlParameter _dateTos3 = Helper.getDBNullOrValue("@DateToUser", req.DATE_TO.ToString() ?? "");
+            SqlParameter _timeFrame3 = new SqlParameter { ParameterName = "TIME_FRAME", SqlDbType = SqlDbType.VarChar, Value = req.TIME_FRAME ?? (object)DBNull.Value };
+            var newTAskData = SpRepository<NewTaskStatus>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_NEW_TASK_DATA_FOR_DASHBOARD]
+                        @PRACTICE_CODE,@DateFromUser, @DateToUser, @GROUP_IDs, @TASK_TYPE_IDs,  @TIME_FRAME", _practiceCode3, _dateFrom3, _dateTos3, _groupIds3, _taskTypeIds3,  _timeFrame3);
+            taskDashboardResponse.NewTaskStatus = newTAskData;
+
+
+            SqlParameter _practiceCode4 = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+            SqlParameter _groupIds4 = new SqlParameter { ParameterName = "GROUP_IDs", SqlDbType = SqlDbType.VarChar, Value = req.GROUP_IDs ?? (object)DBNull.Value };
+            SqlParameter _taskTypeIds4 = new SqlParameter { ParameterName = "TASK_TYPE_IDs", SqlDbType = SqlDbType.VarChar, Value = req.TASK_TYPE_IDs ?? (object)DBNull.Value };
+            SqlParameter _dateFrom4 = Helper.getDBNullOrValue("@DateFromUser", req.DATE_FROM.ToString() ?? "");
+            SqlParameter _dateTos4 = Helper.getDBNullOrValue("@DateToUser", req.DATE_TO.ToString() ?? "");
+            SqlParameter _timeFrame4 = new SqlParameter { ParameterName = "TIME_FRAME", SqlDbType = SqlDbType.VarChar, Value = req.TIME_FRAME ?? (object)DBNull.Value };
+            var taskOverAllStatus = SpRepository<TaskOverAllStatus>.GetSingleObjectWithStoreProcedure(@"exec [FOX_PROC_GET_TASK_OVERALL_DATA_FOR_DASHBOARD]
+                        @PRACTICE_CODE, @GROUP_IDs, @TASK_TYPE_IDs, @DateFromUser, @DateToUser, @TIME_FRAME", _practiceCode4, _groupIds4, _taskTypeIds4, _dateFrom4, _dateTos4, _timeFrame4);
+            if(taskOverAllStatus !=null)
+            {
+                taskDashboardResponse.TaskOverAllStatus = taskOverAllStatus;
+                if (taskOverAllStatus.AVERAGE_CLOSURE != null)
+                {
+                    if(string.Equals(taskOverAllStatus.AVERAGE_CLOSURE.ToLower(), "1 days"))
+                    {
+                        taskOverAllStatus.AVERAGE_CLOSURE =  taskOverAllStatus.AVERAGE_CLOSURE.Substring(0, taskOverAllStatus.AVERAGE_CLOSURE.Length - 1);
+                    }
+                    if (string.Equals(taskOverAllStatus.AVERAGE_CLOSURE.ToLower(), "1 hours"))
+                    {
+                        taskOverAllStatus.AVERAGE_CLOSURE = taskOverAllStatus.AVERAGE_CLOSURE.Substring(0, taskOverAllStatus.AVERAGE_CLOSURE.Length - 1);
+                    }
+                }               
+            }
+            else
+            {
+                taskDashboardResponse.TaskOverAllStatus = new TaskOverAllStatus();    
+            }
+            SqlParameter _practiceCode5 = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+            SqlParameter _groupIds5 = new SqlParameter { ParameterName = "GROUP_IDs", SqlDbType = SqlDbType.VarChar, Value = req.GROUP_IDs ?? (object)DBNull.Value };
+            SqlParameter _taskTypeIds5 = new SqlParameter { ParameterName = "TASK_TYPE_IDs", SqlDbType = SqlDbType.VarChar, Value = req.TASK_TYPE_IDs ?? (object)DBNull.Value };
+            SqlParameter _dateFrom5 = new SqlParameter { ParameterName = "DATE_FROM", SqlDbType = SqlDbType.DateTime, Value = req.DATE_FROM.ToString() ?? ""};
+            SqlParameter _dateTos5 = new SqlParameter { ParameterName = "DATE_TO", SqlDbType = SqlDbType.DateTime, Value = req.DATE_TO.ToString() ?? ""};
+            SqlParameter _timeFrame5 = new SqlParameter { ParameterName = "TIME_FRAME", SqlDbType = SqlDbType.VarChar, Value = req.TIME_FRAME ?? (object)DBNull.Value };
+            var createdTasktypesdata = SpRepository<object>.getSpSqlDataAdapter(@"exec [FOX_PROC_GET_TASKTYPE_DATA_DASHBOARD_DYNAMICALLY] " + _practiceCode5.Value +",'" + _groupIds5.Value + "','" + _taskTypeIds5.Value + "','" + _dateFrom5.Value + "','" + _dateTos5.Value + "','" + _timeFrame5.Value + "'");
+            
+            DataTable dt = new DataTable();
+            createdTasktypesdata.Fill(dt);
+            if (dt.Rows.Count > 0)
+            {
+                var stringdata = DataTableToJSONWithStringBuilder(dt);
+                if (!string.IsNullOrEmpty(stringdata))
+                {
+                    taskDashboardResponse.TaskTypeDashboardDataString = stringdata;
+                }
+            }
+            return taskDashboardResponse;
+        }
+
+        public string DataTableToJSONWithStringBuilder(DataTable table)
+        {
+            var JSONString = new StringBuilder();
+            if (table.Rows.Count > 0)
+            {
+                JSONString.Append("[");
+                for (int i = 0; i < table.Rows.Count; i++)
+                {
+                    JSONString.Append("{");
+                    for (int j = 0; j < table.Columns.Count; j++)
+                    {
+                        if (j < table.Columns.Count - 1)
+                        {
+                            JSONString.Append("\"" + table.Columns[j].ColumnName.ToString() + "\":" + "\"" + table.Rows[i][j].ToString() + "\",");
+                        }
+                        else if (j == table.Columns.Count - 1)
+                        {
+                            JSONString.Append("\"" + table.Columns[j].ColumnName.ToString() + "\":" + "\"" + table.Rows[i][j].ToString() + "\"");
+                        }
+                    }
+                    if (i == table.Rows.Count - 1)
+                    {
+                        JSONString.Append("}");
+                    }
+                    else
+                    {
+                        JSONString.Append("},");
+                    }
+                }
+                JSONString.Append("]");
+            }
+            return JSONString.ToString();
         }
     }
 }
