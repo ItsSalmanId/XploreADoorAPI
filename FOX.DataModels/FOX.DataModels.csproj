@@ -75,6 +75,7 @@
     <Compile Include="Context\DbContextDashboard.cs" />
     <Compile Include="Context\DBContextExceptionLog.cs" />
     <Compile Include="Context\DBContextFoxPHD.cs" />
+    <Compile Include="Context\DBContextHrAutoEmails.cs" />
     <Compile Include="Context\DbContextIndexinfo.cs" />
     <Compile Include="Context\DbContextIndexinformation.cs" />
     <Compile Include="Context\DBContextMTBCPatientInsurance.cs" />
