@@ -23,5 +23,6 @@ namespace FOX.BusinessOperations.SettingsService.ClinicianSetupService
         bool CheckSSN(string SSN, UserProfile profile);
         List<ProviderLocationRes> GetSpecficProviderLocation(ProviderLocationReq obj, UserProfile Profile);
         ResponseModel ReadExcel(string filePath, long practiceCode, string userName);
+        bool DeleteClinician(DeleteClinicianModel obj, UserProfile profile);
     }
 }

@@ -230,4 +230,10 @@ namespace FOX.DataModels.Models.Security
         public string Admin_Password { get; set; }
         //public List <string> Decrypted_Password { get; set; }
     }
+    public class DeleteUserModel
+    {
+        public User user { get; set; }
+        public string reason { get; set; }
+        public bool _isADuser { get; set; }
+    }
 }

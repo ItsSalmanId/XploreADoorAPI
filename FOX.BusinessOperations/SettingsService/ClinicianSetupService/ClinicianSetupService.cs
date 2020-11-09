@@ -11,9 +11,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -458,6 +460,98 @@ namespace FOX.BusinessOperations.SettingsService.ClinicianSetupService
             }
             return false;
         }
+        public bool DeleteClinician(DeleteClinicianModel obj, UserProfile profile)
+        {
+            CultureInfo culture_info = Thread.CurrentThread.CurrentCulture;
+            TextInfo text_info = culture_info.TextInfo;
+            if (obj != null && obj.user != null)
+            {
+                var ClinicianData = _FoxProviderClassRepository.GetFirst(x => x.FOX_PROVIDER_ID == obj.user.FOX_PROVIDER_ID && !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode);
+                if (ClinicianData != null)
+                {
+                    ClinicianData.DELETED = true;
+                    ClinicianData.MODIFIED_BY = profile.UserName;
+                    ClinicianData.MODIFIED_DATE = DateTime.Now;
+                    _FoxProviderClassRepository.Update(ClinicianData);
+                    _dbContextSettings.SaveChanges();
+                    try
+                    {
+                        _FoxProviderClassRepository.Update(ClinicianData);
+                        _dbContextSettings.SaveChanges();
+                        #region email to Carey on Delete
 
+                        string subject = "Clinician profile deleted (" + ClinicianData.EMAIL + ")";
+                        obj.user.FIRST_NAME = string.IsNullOrEmpty(obj.user.FIRST_NAME) ? string.Empty : text_info.ToTitleCase(obj.user.FIRST_NAME);
+                        obj.user.LAST_NAME = string.IsNullOrEmpty(obj.user.LAST_NAME) ? string.Empty : text_info.ToTitleCase(obj.user.LAST_NAME);
+                        profile.FirstName = string.IsNullOrEmpty(profile.FirstName) ? string.Empty : text_info.ToTitleCase(profile.FirstName);
+                        profile.LastName = string.IsNullOrEmpty(profile.LastName) ? string.Empty : text_info.ToTitleCase(profile.LastName);
+
+                        var body = "";
+                        body += "<body>";
+
+                        body += "<p style='margin: 0px;'>A Clinician profile was deleted with the following specifics:</p><br />";
+                        body += "<table width='500'>";
+                        body += "<tr>";
+                        body += "<td>Profile deleted: </td>";
+                        body += "<td>" + obj.user.FIRST_NAME + " " + obj.user.LAST_NAME + (obj.user.FOX_PROVIDER_CODE != null && obj.user.FOX_PROVIDER_CODE != "" ? " - " + obj.user.FOX_PROVIDER_CODE + ". " : ". ") + obj.user.EMAIL + "</td>";
+                        body += "</tr>";
+
+                        body += "<tr>";
+                        body += "<td>By: </td>";
+                        body += "<td>" + profile.FirstName + " " + profile.LastName + ". " + profile.UserEmailAddress + " </td>";
+                        body += "</tr>";
+
+                        body += "<tr>";
+                        body += "<td>Date/Time: </td>";
+                        body += "<td>" + Helper.GetCurrentDate().ToString("MM / dd / yyyy hh: mm tt") + "</td>";
+                        body += "</tr>";
+
+                        body += "<tr>";
+                        body += "<td>Reason: </td>";
+                        body += "<td>" + obj.reason + "</td>";
+                        body += "</tr></table><br /><br />";
+
+                        body += "<p style='margin: 0px;'>Regards,</ p><br />";
+                        body += "<p style='margin: 0px;'>MTBC Support team</ p><br />";
+                        body += "</body>";
+
+                        string sendTo = string.Empty;
+                        List<string> _ccList = new List<string>();
+
+                        if (profile.PracticeCode == 1012714)
+                        {
+                            //    sendTo = "Carey.sambogna@foxrehab.org";
+                            //    _ccList.Add("support@foxrehab.org");
+                        }
+                        else
+                        {
+                            //sendTo = "muhammadali9@mtbc.com,Javedakhtar@MTBC.COM";
+                            //_ccList.Add("abdulsattar@MTBC.COM");
+                        }
+
+                        sendTo = "abdurrafay@mtbc.com,Javedakhtar@MTBC.COM";
+                        _ccList.Add("usmanfarooq@MTBC.COM");
+
+                        //Helper.SendEmail(sendTo, subject, body, null, _bccList, "noreply@mtbc.com");
+                        Helper.SendEmail(sendTo, subject, body, null, profile, _ccList);
+
+                        #endregion
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
