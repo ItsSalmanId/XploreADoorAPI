@@ -8,6 +8,6 @@ namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
     public interface IUploadDataService
     {
         List<PatientSurvey> GetLastUpload(long practiceCode);
-        ResponseModel ReadExcel(string filePath, long practiceCode, string userName);
+        ResponseModel ReadExcel(string filePath, UserProfile profile);
     }
 }

@@ -28,7 +28,7 @@ namespace FoxRehabilitationAPI.Controllers.PatientSurvey.UploadData
         public HttpResponseMessage ImportDataExcelToSQL(string filePath)
         {
             var profile = GetProfile();
-            return Request.CreateResponse(HttpStatusCode.OK, _uploadDataService.ReadExcel(filePath, profile.PracticeCode, profile.UserName));
+            return Request.CreateResponse(HttpStatusCode.OK, _uploadDataService.ReadExcel(filePath, profile));
         }
     }
 }
