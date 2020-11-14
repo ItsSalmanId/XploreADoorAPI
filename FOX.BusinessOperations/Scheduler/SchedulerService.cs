@@ -98,14 +98,15 @@ namespace FOX.BusinessOperations.Scheduler
             SqlParameter _region = new SqlParameter { ParameterName = "REGION", Value = reg.REGION };
             SqlParameter _location = new SqlParameter { ParameterName = "LOCATION", Value = reg.LOCATION.ToString() };
             SqlParameter _discipline = new SqlParameter { ParameterName = "DISCILPINE", Value = reg.DISCIPLINE };
+            SqlParameter _insurance = new SqlParameter { ParameterName = "INSURANCE", Value = reg.INSURANCE_ID };
             SqlParameter _currentPage = new SqlParameter { ParameterName = "CURRENT_PAGE", SqlDbType = SqlDbType.Int, Value = reg.CURRENT_PAGE };
             SqlParameter _recordPerPage = new SqlParameter { ParameterName = "RECORD_PER_PAGE", SqlDbType = SqlDbType.Int, Value = reg.RECORD_PER_PAGE };
             SqlParameter _sortBy = new SqlParameter { ParameterName = "SORT_BY", Value = reg.SORT_BY };
             SqlParameter _sortOrder = new SqlParameter { ParameterName = "SORT_ORDER", Value = reg.SORT_ORDER };
 
             returList = SpRepository<Appointment>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SCHEDULER_LIST
-                            @PATIENT_ACCOUNT, @PRACTICE_CODE, @SEARCH_TEXT, @DATE_FROM, @DATE_TO, @PROVIDER, @REASON, @STATUS,  @RESTRICT_STATUS, @RESTRICT_LOCATION, @REGION, @LOCATION, @DISCILPINE, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER"
-                           , _patientAccount, _practiceCode, _searchText, _dateFrom, _dateTos, _provider, _reason, _status, _restrict_status, _restrict_location, _region, _location, _discipline, _currentPage, _recordPerPage, _sortBy, _sortOrder);
+                            @PATIENT_ACCOUNT, @PRACTICE_CODE, @SEARCH_TEXT, @DATE_FROM, @DATE_TO, @PROVIDER, @REASON, @STATUS,  @RESTRICT_STATUS, @RESTRICT_LOCATION, @REGION, @LOCATION, @DISCILPINE, @INSURANCE, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER"
+                           , _patientAccount, _practiceCode, _searchText, _dateFrom, _dateTos, _provider, _reason, _status, _restrict_status, _restrict_location, _region, _location, _discipline, _insurance, _currentPage, _recordPerPage, _sortBy, _sortOrder);
 
             SqlParameter _patientAccount2 = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", Value = reg.PATIENT_ACCOUNT };
             SqlParameter _practiceCode2 = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
@@ -120,13 +121,14 @@ namespace FOX.BusinessOperations.Scheduler
             SqlParameter _region2 = new SqlParameter { ParameterName = "REGION", Value = reg.REGION };
             SqlParameter _location2 = new SqlParameter { ParameterName = "LOCATION", Value = reg.LOCATION.ToString() };
             SqlParameter _discipline2 = new SqlParameter { ParameterName = "DISCILPINE", Value = reg.DISCIPLINE };
+            SqlParameter _insurance2 = new SqlParameter { ParameterName = "INSURANCE", Value = reg.INSURANCE_ID };
             SqlParameter _currentPage2 = new SqlParameter { ParameterName = "CURRENT_PAGE", SqlDbType = SqlDbType.Int, Value = reg.CURRENT_PAGE };
             SqlParameter _recordPerPage2 = new SqlParameter { ParameterName = "RECORD_PER_PAGE", SqlDbType = SqlDbType.Int, Value = 0 };
             SqlParameter _sortBy2 = new SqlParameter { ParameterName = "SORT_BY", Value = reg.SORT_BY };
             SqlParameter _sortOrder2 = new SqlParameter { ParameterName = "SORT_ORDER", Value = reg.SORT_ORDER };
-          var fullList = SpRepository<Appointment>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SCHEDULER_LIST
-                            @PATIENT_ACCOUNT, @PRACTICE_CODE, @SEARCH_TEXT, @DATE_FROM, @DATE_TO, @PROVIDER, @REASON, @STATUS,  @RESTRICT_STATUS, @RESTRICT_LOCATION, @REGION, @LOCATION, @DISCILPINE, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER"
-                           , _patientAccount2, _practiceCode2, _searchText2, _dateFrom2, _dateTos2, _provider2, _reason2, _status2, _restrict_status2, _restrict_location2, _region2, _location2, _discipline2, _currentPage2, _recordPerPage2, _sortBy2, _sortOrder2);
+            var fullList = SpRepository<Appointment>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SCHEDULER_LIST
+                            @PATIENT_ACCOUNT, @PRACTICE_CODE, @SEARCH_TEXT, @DATE_FROM, @DATE_TO, @PROVIDER, @REASON, @STATUS,  @RESTRICT_STATUS, @RESTRICT_LOCATION, @REGION, @LOCATION, @DISCILPINE, @DISCILPINE, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER"
+                    , _patientAccount2, _practiceCode2, _searchText2, _dateFrom2, _dateTos2, _provider2, _reason2, _status2, _restrict_status2, _restrict_location2, _region2, _location2, _discipline2, _insurance2, _currentPage2, _recordPerPage2, _sortBy2, _sortOrder2);
 
             foreach (var item in returList)
             {
@@ -208,14 +210,15 @@ namespace FOX.BusinessOperations.Scheduler
             SqlParameter _region = new SqlParameter { ParameterName = "REGION", Value = reg.REGION };
             SqlParameter _location = new SqlParameter { ParameterName = "LOCATION", Value = reg.LOCATION.ToString() };
             SqlParameter _discipline = new SqlParameter { ParameterName = "DISCILPINE", Value = reg.DISCIPLINE };
+            SqlParameter _insurance = new SqlParameter { ParameterName = "INSURANCE", Value = reg.INSURANCE_ID };
             SqlParameter _currentPage = new SqlParameter { ParameterName = "CURRENT_PAGE", SqlDbType = SqlDbType.Int, Value = reg.CURRENT_PAGE };
             SqlParameter _recordPerPage = new SqlParameter { ParameterName = "RECORD_PER_PAGE", SqlDbType = SqlDbType.Int, Value = 0 };
             SqlParameter _sortBy = new SqlParameter { ParameterName = "SORT_BY", Value = reg.SORT_BY };
             SqlParameter _sortOrder = new SqlParameter { ParameterName = "SORT_ORDER", Value = reg.SORT_ORDER };
 
             returList = SpRepository<Appointment>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SCHEDULER_LIST
-                            @PATIENT_ACCOUNT, @PRACTICE_CODE, @SEARCH_TEXT, @DATE_FROM, @DATE_TO, @PROVIDER, @REASON, @STATUS,  @RESTRICT_STATUS, @RESTRICT_LOCATION, @REGION, @LOCATION, @DISCILPINE, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER"
-                            ,_patientAccount, _practiceCode, _searchText, _dateFrom, _dateTos, _provider, _reason, _status, _restrict_status, _restrict_location, _region, _location, _discipline, _currentPage, _recordPerPage, _sortBy, _sortOrder);
+                            @PATIENT_ACCOUNT, @PRACTICE_CODE, @SEARCH_TEXT, @DATE_FROM, @DATE_TO, @PROVIDER, @REASON, @STATUS,  @RESTRICT_STATUS, @RESTRICT_LOCATION, @REGION, @LOCATION, @DISCILPINE, @INSURANCE,@CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER"
+                , _patientAccount, _practiceCode, _searchText, _dateFrom, _dateTos, _provider, _reason, _status, _restrict_status, _restrict_location, _region, _location, _discipline, _insurance, _currentPage, _recordPerPage, _sortBy, _sortOrder);
 
             foreach (var item in returList)
             {
@@ -964,14 +967,14 @@ namespace FOX.BusinessOperations.Scheduler
                 req.CURRENT_PAGE = 1;
                 req.RECORD_PER_PAGE = 0;
                 var CalledFrom = "";
-                if (req.PATIENT_ACCOUNT == "0")
-                {
+                //if (req.PATIENT_ACCOUNT == "0")
+                //{
                     CalledFrom = "Daily_Appointment_List";
-                }
-                else
-                {
-                    CalledFrom = "Patient_Scheduler_List";
-                }
+                //}
+                //else
+                //{
+                //    CalledFrom = "Patient_Scheduler_List";
+                //}
 
                 string virtualPath = @"/" + profile.PracticeDocumentDirectory + "/" + "Fox/ExportedFiles/";
                 exportPath = HttpContext.Current.Server.MapPath("~" + virtualPath);
@@ -988,7 +991,11 @@ namespace FOX.BusinessOperations.Scheduler
                 for (int i = 0; i < result.Count(); i++)
                 {
                     //result[i].ROW = i + 1;
-                    if(result[i].HOME_PHONE != null && result[i].HOME_PHONE != "" && result[i].NAME != null && result[i].NAME != "")
+                    if (result[i].APPOINTMENT_DATE != null)
+                    {
+                        result[i].APPOINTMENT_DATE_STR = DateTime.Parse(result[i].APPOINTMENT_DATE_STR).Date.ToString("MM/dd/yyyy");
+                    }
+                    if (result[i].HOME_PHONE != null && result[i].HOME_PHONE != "" && result[i].NAME != null && result[i].NAME != "")
                     {
                       result[i].NAME = result[i].NAME + " - " + result[i].HOME_PHONE;
                     }

@@ -17,6 +17,7 @@ namespace FOX.DataModels.Models.Scheduler
         {
             [Key]
             public long APPOINTMENT_ID { get; set; }
+            public DateTime? APPOINTMENT_DATE { get; set; }
             [NotMapped]
             public int? ROW { get; set; }
             [NotMapped]
@@ -62,6 +63,8 @@ namespace FOX.DataModels.Models.Scheduler
             [NotMapped]
             public string PROVIDER { get; set; }
             [NotMapped]
+            public string DESCRIPTION { get; set; }
+            [NotMapped]
             public long? POS_ID { get; set; }
             [NotMapped]
             public string POS_CODE { get; set; }
@@ -79,7 +82,6 @@ namespace FOX.DataModels.Models.Scheduler
             public long? REGION_ID { get; set; }
             [NotMapped]
             public string REGION_CODE { get; set; }
-            public DateTime? APPOINTMENT_DATE { get; set; }
             public long? VISIT_TYPE_ID { get; set; }
             public string TIME_TO { get; set; }
             public long? PROVIDER_ID { get; set; }
@@ -199,6 +201,7 @@ namespace FOX.DataModels.Models.Scheduler
             public string SORT_BY { get; set; }
             public string SORT_ORDER { get; set; }
             public int TIME_FRAME { get; set; }
+            public string INSURANCE_ID { get; set; }
         }
         [Table("FOX_TBL_APPOINTMENT_STATUS")]
         public class AppointmentStatus : BaseModel
