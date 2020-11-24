@@ -2,6 +2,7 @@
 using FOX.DataModels.Models.Authorization;
 using FOX.DataModels.Models.CasesModel;
 using FOX.DataModels.Models.Patient;
+using FOX.DataModels.Models.Settings.FacilityLocation;
 using FoxRehabilitationAPI.Filters;
 using System;
 using System.Net;
@@ -26,7 +27,7 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return _patientServices.AddUpdatePatient(patient, GetProfile());
         }
-        [HttpPost]
+       [HttpPost]
 
         public HttpResponseMessage GetPatientList(PatientSearchRequest patientSearchRequest)
         {
@@ -512,6 +513,12 @@ namespace FoxRehabilitationAPI.Controllers
         {
             var profile = GetProfile();
             return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetInsuranc(ID, profile));
+        }
+        [HttpPost]
+        public HttpResponseMessage ResetCordinate(FacilityLocation loc)
+        {
+            var profile = GetProfile();
+            return Request.CreateResponse(HttpStatusCode.OK, _patientServices.ResetCoordinates(loc, GetProfile()));
         }
     }
 }
