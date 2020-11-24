@@ -178,6 +178,14 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("PRIORITY");
                 }
+                if(dc.Contains("CS_CASE_CATEGORY"))
+                {
+                    dc.Remove("CS_CASE_CATEGORY");
+                }
+                if (dc.Contains("FILE_PATH"))
+                {
+                    dc.Remove("FILE_PATH");
+                }
             }
             if(CalledFrom.Equals("Advanced_Daily_Report"))
             {
@@ -5087,7 +5095,7 @@ namespace FOX.BusinessOperations.CommonServices
                 }
                 if (dtcol.Contains("CALL_SCENARIO_NAME"))
                 {
-                    dtcol["CALL_SCENARIO_NAME"].ColumnName = "Scenario";
+                    dtcol["CALL_SCENARIO_NAME"].ColumnName = "Call Handling";
                 }
                 if (dtcol.Contains("CALL_REASON_NAME"))
                 {
@@ -5120,6 +5128,14 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dtcol.Contains("FOLLOW_UP_DATE_STR"))
                 {
                     dtcol["FOLLOW_UP_DATE_STR"].ColumnName = "Follow Up Date";
+                }
+                if (dtcol.Contains("CS_CASE_CATEGORY_NAME"))
+                {
+                    dtcol["CS_CASE_CATEGORY_NAME"].ColumnName = "Case Category";
+                }
+                if (dtcol.Contains("CS_Case_Status"))
+                {
+                    dtcol["CS_Case_Status"].ColumnName = "Case Status";
                 }
             }
             else if (dt.TableName == "Interface_Log_Report")

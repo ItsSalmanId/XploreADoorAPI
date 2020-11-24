@@ -26,6 +26,9 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<CSCustomerSupportInfo>().Property(t => t.CS_Case_No).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<CSCaseProgress>().Property(t => t.CS_Case_No).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<CSCaseHistory>().Property(t => t.CS_Track_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<CS_Case_Categories>().Property(t => t.CS_Category_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<PhdCallMapping>().Property(t => t.PHD_CALL_MAPPING_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<PhdCallLogHistory>().Property(t => t.PHD_CALL_LOG_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
         }
         public virtual DbSet<Patient> Patients { get; set; }
         public virtual DbSet<PHDCallDetail> AddUpdatePHDDetails { get; set; }
@@ -40,5 +43,8 @@ namespace FOX.DataModels.Context
         public virtual DbSet<CSCustomerSupportInfo> CSCustomerSupportInfos { get; set; }
         public virtual DbSet<CSCaseProgress> CSCaseProgresses { get; set; }
         public virtual DbSet<CSCaseHistory> CSCaseHistories { get; set; }
+        public virtual DbSet<CS_Case_Categories> CSCaseCategories { get; set; }
+        public virtual DbSet<PhdCallMapping> PhdCallMappings{ get; set; }
+        public virtual DbSet<PhdCallLogHistory> PhdCallLogHistories { get; set; }
     }
 }
