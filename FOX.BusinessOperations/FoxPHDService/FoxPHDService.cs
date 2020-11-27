@@ -40,6 +40,8 @@ namespace FOX.BusinessOperations.FoxPHDService
         private readonly GenericRepository<PatientAddress> _PatientAddressRepository;
         private readonly GenericRepository<PhdCallScenario> _PhdCallScenarioRepository;
         private readonly GenericRepository<PhdCallReason> _PhdCallReasonRepository;
+        private readonly GenericRepository<CS_Case_Categories> _caseCategoriesRepository;
+        private readonly GenericRepository<PhdCallLogHistory> _phdCallLogHistoryRepository;
         private readonly GenericRepository<PhdCallRequest> _PhdCallRequestRepository;
         private readonly GenericRepository<PhdPatientVerification> _PhdPatientVerificationRepository;
         private readonly GenericRepository<User> _userRepository;
@@ -57,6 +59,8 @@ namespace FOX.BusinessOperations.FoxPHDService
             _PhdCallScenarioRepository = new GenericRepository<PhdCallScenario>(_DBContextFoxPHD);
             _PhdCallReasonRepository = new GenericRepository<PhdCallReason>(_DBContextFoxPHD);
             _PhdCallRequestRepository = new GenericRepository<PhdCallRequest>(_DBContextFoxPHD);
+            _caseCategoriesRepository = new GenericRepository<CS_Case_Categories>(_DBContextFoxPHD);
+            _phdCallLogHistoryRepository = new GenericRepository<PhdCallLogHistory>(_DBContextFoxPHD);
             _PhdPatientVerificationRepository = new GenericRepository<PhdPatientVerification>(_DBContextFoxPHD);
             _userRepository = new GenericRepository<User>(_DBContextFoxPHD);
             _generalNotesRepository = new GenericRepository<FOX_TBL_GENERAL_NOTE>(_PatientContext);
@@ -1431,11 +1435,32 @@ namespace FOX.BusinessOperations.FoxPHDService
                 throw;
             }
         }
+        /// <summary>
+        /// This Function is used  to return the PHD Call
+        /// Log History Details.
+        /// </summary>
+        /// <param name="phdCallDetailID"></param>
+        /// <param name="userProfile"></param>
+        /// <returns></returns>
+        public List<PhdCallLogHistoryDetail> GetPhdCallLogHistoryDetails(string phdCallDetailID, UserProfile userProfile)
+        {
+            try
+            {
+                SqlParameter praticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", Value = userProfile.PracticeCode };
+                SqlParameter callDetailID = new SqlParameter { ParameterName = "FOX_PHD_CALL_DETAILS_ID", Value = phdCallDetailID };
+                List<PhdCallLogHistoryDetail> logCallDetails = SpRepository<PhdCallLogHistoryDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_CALL_HISTORY_DETAILS @PRACTICE_CODE, @FOX_PHD_CALL_DETAILS_ID", praticeCode, callDetailID);
+                if (logCallDetails == null)
+                {
+                    return logCallDetails = new List<PhdCallLogHistoryDetail>();
+                }
+                return logCallDetails;
+            }
+            catch (Exception)
+            {
 
                 throw;
             }
         }
-
         public void AddPHDLog(PHDCallDetail ObjPHDCallDetailRequest, string LogFor, string LogDetail, UserProfile profile)
         {
             PhdCallLogHistory phdCallLogHistory = new PhdCallLogHistory();
@@ -1475,3 +1500,4 @@ namespace FOX.BusinessOperations.FoxPHDService
         }
     }
 }
+    
