@@ -86,5 +86,29 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.ExportAdvancedDailyReport(advancedregionreq, GetProfile()));
         }
+        [HttpGet]
+        public HttpResponseMessage GetPhdCallLogHistoryDetail(string phdCallDetailID)
+        {
+            if (phdCallDetailID != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetPhdCallLogHistoryDetails(phdCallDetailID, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Phd Call ID is Empty");
+            }
+        }
+        [HttpGet]
+        public HttpResponseMessage GetWebSoftCaseStatusResponse(string sscmCaseNumber)
+        {
+            if (sscmCaseNumber != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetWebSoftCaseStatusResponses(sscmCaseNumber));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "SSCM Case Number is Null");
+            }
+        }
     }
 }

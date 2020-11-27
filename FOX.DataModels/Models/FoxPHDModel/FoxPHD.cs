@@ -483,5 +483,21 @@ namespace FOX.DataModels.Models.FoxPHD
         public string CALL_NO { get; set; }
         public DateTime? CALL_DATE { get; set; }
         public string CALL_DATE_STR { get; set; }
-}
+    }
+    public class WebSoftCaseStatusResponse
+    {
+        public string user_name { get; set; }
+        public string CS_Created_Date { get; set; }
+        public string CS_Created_By { get; set; }
+        public string CS_User_Response { get; set; }
+        public string CS_User_Client_Response_ID { get; set; }
+        public string cs_authorize { get; set; }
+        public bool CS_Show_On_Web { get; set; }
+        public string Delete { get; set; }
+        public string auto_generated_resp { get; set; }
+        public string CS_Expected_Closing_Date { get; set; }
+        public string User_Type { get; set; }
+        public string Department_Name { get; set; }
+        public long CS_Practice_Code { get; set; }
+    }
 }

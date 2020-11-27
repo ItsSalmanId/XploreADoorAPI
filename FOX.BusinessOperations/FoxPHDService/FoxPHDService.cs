@@ -1432,6 +1432,46 @@ namespace FOX.BusinessOperations.FoxPHDService
             }
         }
 
+                throw;
+            }
+        }
+
+        public void AddPHDLog(PHDCallDetail ObjPHDCallDetailRequest, string LogFor, string LogDetail, UserProfile profile)
+        {
+            PhdCallLogHistory phdCallLogHistory = new PhdCallLogHistory();
+            phdCallLogHistory.PHD_CALL_LOG_ID = Helper.getMaximumId("PHD_CALL_LOG_ID");
+            phdCallLogHistory.FOX_PHD_CALL_DETAILS_ID = ObjPHDCallDetailRequest.FOX_PHD_CALL_DETAILS_ID;
+            phdCallLogHistory.PRACTICE_CODE = ObjPHDCallDetailRequest.PRACTICE_CODE;
+            phdCallLogHistory.PATIENT_ACCOUNT = ObjPHDCallDetailRequest.PATIENT_ACCOUNT;
+            phdCallLogHistory.FOLLOW_UP_DATE = LogFor == "CALL_NOTES" ? null : ObjPHDCallDetailRequest.FOLLOW_UP_DATE;
+            phdCallLogHistory.CALL_DETAILS = LogDetail;
+            phdCallLogHistory.CALL_LOG_OF_TYPE = LogFor;
+            phdCallLogHistory.DELETED = false;
+            phdCallLogHistory.CREATED_BY = phdCallLogHistory.MODIFIED_BY = profile.UserName;
+            phdCallLogHistory.CREATED_DATE = phdCallLogHistory.MODIFIED_DATE = Helper.GetCurrentDate();
+            _phdCallLogHistoryRepository.Insert(phdCallLogHistory);
+            _phdCallLogHistoryRepository.Save();
+        }
+        public List<WebSoftCaseStatusResponse> GetWebSoftCaseStatusResponses(string sscmCaseNumber)
+        {
+            try
+            {
+                var result = new List<WebSoftCaseStatusResponse>();
+                if (!string.IsNullOrEmpty(sscmCaseNumber))
+                {
+                    SqlParameter sscmCaseNumberStr = new SqlParameter { ParameterName = "Caseno", SqlDbType = SqlDbType.VarChar, Value = sscmCaseNumber };
+                    result = SpRepository<WebSoftCaseStatusResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_MTBCSOFT_WEB_CASE_STATUS_PREV_COMMENTS @Caseno", sscmCaseNumberStr).ToList();
+                    if (result == null)
+                    {
+                        return new List<WebSoftCaseStatusResponse>();
+                    }
+                }
+                return result;
+            }
+            catch (NullReferenceException)
+            {
+                throw;
+            }
+        }
     }
 }
-    
