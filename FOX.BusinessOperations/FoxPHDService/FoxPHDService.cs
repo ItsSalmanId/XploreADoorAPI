@@ -697,8 +697,11 @@ namespace FOX.BusinessOperations.FoxPHDService
                             {
                                 if (existingLogfu != null && existingLogfu.Count() > 0)
                                 {
-                                    var LogDetailC = "Follow up cleared.";
-                                    AddPHDLog(ObjPHDCallDetailRequest, "FOLLOW_UP", LogDetailC, profile);
+                                    var LogDetailC = "Follow up cleared.";  
+                                    if (existingLogfu.FirstOrDefault().CALL_DETAILS != LogDetailC)
+                                    {
+                                        AddPHDLog(ObjPHDCallDetailRequest, "FOLLOW_UP", LogDetailC, profile);
+                                    }                                    
                                 }
                             }
 
