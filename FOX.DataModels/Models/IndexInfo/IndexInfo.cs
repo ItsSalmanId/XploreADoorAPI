@@ -507,6 +507,7 @@ namespace FOX.DataModels.Models.IndexInfo
         public string ERROR_MSG { get; set; }
         public string SENDER_TYPE { get; set; }
         public long? FOX_SOURCE_CATEGORY_ID { get; set; }
+        public bool? IS_OCR { get; set; }
     }
 
     public class Index_infoReq : BaseModel
@@ -667,7 +668,7 @@ namespace FOX.DataModels.Models.IndexInfo
                 //return $"<p><b>[{ CODE.ToTitleCase() }] {LAST_NAME.ToTitleCase()}, {FIRST_NAME.ToTitleCase()} </b><br /> { ADDRESS.ToTitleCase() }, { CITY.ToTitleCase() }, {STATE.ToTitleCase() }<br />Phone: {PHONE}</p>";
                 return $"<p>[{ CODE.ToTitleCase() }] {LAST_NAME.ToTitleCase()}, {FIRST_NAME.ToTitleCase()}&nbsp;&nbsp;&nbsp;NPI: {NPI}<br /> { ADDRESS.ToTitleCase() }, { CITY.ToTitleCase() }, {STATE.ToTitleCase() }<br />Phone: {PHONE.ApplyPhoneMask()}</p>";
             }
-        }
+        }   
 
         public bool IsRed
         {
