@@ -40,6 +40,7 @@ using SelectPdf;
 using System.Globalization;
 using FOX.DataModels.Models.FoxPHD;
 using FOX.DataModels.Models.SenderType;
+using FOX.DataModels.Models.StatesModel;
 
 namespace FOX.BusinessOperations.IndexInfoServices
 {
@@ -104,6 +105,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private readonly GenericRepository<ReferralSender> _referralSenderTypeRepository;
         private readonly GenericRepository<FOX_TBL_REFERRAL_SOURCE> _referralSourceTableRepository;
         private readonly GenericRepository<GROUP> _UserGroupseRepository;
+        private readonly GenericRepository<FOX_TBL_ZIP_STATE_COUNTY> _zipStateCountyRepository;
 
         public IndexInfoService()
         {
@@ -156,6 +158,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             _referralSenderTypeRepository = new GenericRepository<ReferralSender>(_DbContextCommon);
             _referralSourceTableRepository = new GenericRepository<FOX_TBL_REFERRAL_SOURCE>(_QueueContext);
             _UserGroupseRepository = new GenericRepository<GROUP>(_QueueContext);
+            _zipStateCountyRepository = new GenericRepository<FOX_TBL_ZIP_STATE_COUNTY>(_settings);
         }
         public void InsertUpdateDocuments(FOX_TBL_PATIENT_DOCUMENTS obj, UserProfile profile)
         {
@@ -1148,6 +1151,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             try
             {
                 //Get Data
+                ReferralRegion _accontManagerEmail = new ReferralRegion();
                 var wi = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = wORK_ID };
                 var emailData = SpRepository<IndexInfoEmail>.GetSingleObjectWithStoreProcedure(@"exec [FOX_GET_INDEX_ALL_INFO_EMAIL] @WORK_ID", wi);
                 if (emailData == null) { return; }
@@ -1182,8 +1186,54 @@ namespace FOX.BusinessOperations.IndexInfoServices
                             _bccList.Add(_emailList[i].EMAIL_ADDRESS);
                         }
                     }
+                   
+                   var patientDetails = _QueueRepository.GetFirst(x => x.WORK_ID == emailData.WORK_ID &&  x.DELETED == false);
+                    if(patientDetails != null)
+                    {
+                        var patientPOSLocation = _PatientPOSLocationRepository.GetMany(x => x.Patient_Account == patientDetails.PATIENT_ACCOUNT && x.Deleted == false && x.Is_Default == true).OrderByDescending(t => t.Modified_Date).FirstOrDefault();
+                        if(patientPOSLocation != null)
+                        {
+                           var activeLocation = _FacilityLocationRepository.GetFirst(x => x.LOC_ID == patientPOSLocation.Loc_ID && x.DELETED == false);
+                            if (activeLocation !=null && activeLocation.NAME.ToLower() == "private home")
+                            {
+                                var privateHomeDetails = _PatientAddressRepository.GetFirst(x => x.PATIENT_ACCOUNT == patientDetails.PATIENT_ACCOUNT && x.PATIENT_POS_ID == patientPOSLocation.Patient_POS_ID && x.DELETED == false);
+                                if(privateHomeDetails != null)
+                                {
+                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.ZIP_CODE.Substring(0, 5) == privateHomeDetails.ZIP.Substring(0,5));
+                                    if(referralRegionDetails != null)
+                                    {
+                                        _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID);
+                                    }
+                                   
+                                }
+                                
 
-                    var _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && (x.REFERRAL_REGION_NAME == emailData.REFERRAL_REGION_NAME || x.REFERRAL_REGION_CODE == emailData.REFERRAL_REGION_NAME));
+                            }
+                            else
+                            {
+                                if(activeLocation != null && activeLocation.Zip != null)
+                                {
+                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.ZIP_CODE.Substring(0, 5) == activeLocation.Zip.Substring(0, 5));
+                                    if(referralRegionDetails != null)
+                                    {
+                                        _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID);
+                                    }
+                                   
+                                }
+                             
+
+                            }
+                        }
+                       
+                    }
+                   
+                  
+                   
+
+
+
+                    //var _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && (x.REFERRAL_REGION_NAME == emailData.REFERRAL_REGION_NAME || x.REFERRAL_REGION_CODE == emailData.REFERRAL_REGION_NAME));
+                    
                     if (_accontManagerEmail != null)
                     {
                         if (string.IsNullOrEmpty(sendTo))
@@ -1220,8 +1270,45 @@ namespace FOX.BusinessOperations.IndexInfoServices
                             _bccList.Add(_emailList[i].EMAIL_ADDRESS);
                         }
                     }
+                    var patientDetails = _QueueRepository.GetFirst(x => x.WORK_ID == emailData.WORK_ID && x.DELETED == false);
+                    if (patientDetails != null)
+                    {
+                        var patientPOSLocation = _PatientPOSLocationRepository.GetMany(x => x.Patient_Account == patientDetails.PATIENT_ACCOUNT && x.Deleted == false && x.Is_Default == true).OrderByDescending(t => t.Modified_Date).FirstOrDefault();
+                        if (patientPOSLocation != null)
+                        {
+                            var activeLocation = _FacilityLocationRepository.GetFirst(x => x.LOC_ID == patientPOSLocation.Loc_ID && x.DELETED == false);
+                            if (activeLocation != null && activeLocation.NAME.ToLower() == "private home")
+                            {
+                                var privateHomeDetails = _PatientAddressRepository.GetFirst(x => x.PATIENT_ACCOUNT == patientDetails.PATIENT_ACCOUNT && x.PATIENT_POS_ID == patientPOSLocation.Patient_POS_ID && x.DELETED == false);
+                                if (privateHomeDetails != null)
+                                {
+                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.ZIP_CODE.Substring(0, 5) == privateHomeDetails.ZIP.Substring(0,5));
+                                    if (referralRegionDetails != null)
+                                    {
+                                        _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID);
+                                    }
 
-                    var _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && (x.REFERRAL_REGION_NAME == emailData.REFERRAL_REGION_NAME || x.REFERRAL_REGION_CODE == emailData.REFERRAL_REGION_NAME));
+                                }
+                            }
+                            else
+                            {
+                                if (activeLocation != null && activeLocation.Zip != null)
+                                {
+                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.ZIP_CODE.Substring(0, 5) == activeLocation.Zip.Substring(0, 5));
+                                    if (referralRegionDetails != null)
+                                    {
+                                        _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID);
+                                    }
+
+                                }
+
+
+                            }
+                        }
+
+                    }
+
+                    // _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && (x.REFERRAL_REGION_NAME == emailData.REFERRAL_REGION_NAME || x.REFERRAL_REGION_CODE == emailData.REFERRAL_REGION_NAME));
                     if (_accontManagerEmail != null)
                     {
                         if (string.IsNullOrEmpty(sendTo))
