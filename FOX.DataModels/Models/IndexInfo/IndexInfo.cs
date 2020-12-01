@@ -541,7 +541,27 @@ namespace FOX.DataModels.Models.IndexInfo
         public DateTime MODIFIED_DATE { get; set; }
         public bool DELETED { get; set; }
     }
-
+    public class PatientListResponse
+    {
+        public long ROW { get; set; }
+        public string FINANCIAL_CLASS_NAME { get; set; }
+        public int? FINANCIAL_CLASS_ID { get; set; }
+        public long? Patient_Account { get; set; }
+        public string MRN { get; set; }
+        public string First_Name { get; set; }
+        public string Last_Name { get; set; }
+        public string Middle_Name { get; set; }
+        public string FIRST_NAME_ALIAS { get; set; }
+        public string LAST_NAME_ALIAS { get; set; }
+        public string MIDDLE_INITIALS_ALIAS { get; set; }
+        public bool? Is_Patient_Alias { get; set; }
+        public string Date_Of_Birth { get; set; }
+        public string Gender { get; set; }
+        public string SSN { get; set; }
+        public long? PRACTICE_ORGANIZATION_ID { get; set; }
+        public double TOTAL_RECORD_PAGES { get; set; }
+        public int? TOTAL_RECORDS { get; set; }
+    }
     public class Documents
     {
         [Key]

@@ -24,7 +24,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         void InsertUpdateDocuments(FOX_TBL_PATIENT_DOCUMENTS obj, UserProfile profile);
         void DeleteDocuments(FOX_TBL_PATIENT_DOCUMENTS obj, UserProfile profile);
         ReferralSource InsertUpdateOrderingSource(ReferralSource obj, UserProfile profile);
-        List<IndexPatRes> GetIndexPatInfo(getPatientReq req, UserProfile Profile);
+        IndexPatRes GetIndexPatInfo(getPatientReq req, UserProfile Profile);
         //List<SourceSenderRes> GetSourceSener(UserProfile Profile);
         List<FOX_TBL_PATIENT_PROCEDURE> GetProceduresInfo(Index_infoReq obj, UserProfile Profile);
         List<FOX_TBL_PATIENT_DIAGNOSIS> GetDiagnosisInfo(Index_infoReq obj, UserProfile Profile);
@@ -64,5 +64,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
         ReferralPatientInfo getPatientReferralDetail(long work_id, UserProfile profile);
         ReferralSourceAndGroups getAllReferralSourceAndGroups(UserProfile profile);
         pendingBalanceAmount GetPatientBalance(long? PATIENT_ACCOUNT);
+        List<PatientListResponse> GetpatientsList(getPatientReq req, UserProfile Profile);
     }
 }

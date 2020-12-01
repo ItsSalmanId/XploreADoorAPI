@@ -310,5 +310,10 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetPatientBalance(patientAccount));
         }
+        [HttpPost]
+        public HttpResponseMessage GetpatientsList(getPatientReq obj)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetpatientsList(obj, GetProfile()));
+        }
     }
 }
