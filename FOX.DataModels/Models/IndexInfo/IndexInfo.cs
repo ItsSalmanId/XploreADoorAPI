@@ -719,6 +719,7 @@ namespace FOX.DataModels.Models.IndexInfo
         public string HHH_CODE { get; set; }
         public string HHH_DESCRIPTION { get; set; }
         public string Email { get; set; }
+        public string REFERRAL_REGION { get; set; }
     }
 
     public class SmartRefRegion
