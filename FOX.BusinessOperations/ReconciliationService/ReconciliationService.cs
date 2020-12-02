@@ -53,7 +53,7 @@ namespace FOX.BusinessOperations.ReconciliationService
         {
             try
             {
-                return SpRepository<ReconciliationStatus>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_STATUSES_TEST @PRACTICE_CODE"
+                return SpRepository<ReconciliationStatus>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_STATUSES @PRACTICE_CODE"
                     , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode });
             }
             catch (Exception ex) { throw ex; }
@@ -63,7 +63,7 @@ namespace FOX.BusinessOperations.ReconciliationService
         {
             try
             {
-                return SpRepository<ReconciliationDepositType>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_DEPOSIT_TYPES_TEST @PRACTICE_CODE"
+                return SpRepository<ReconciliationDepositType>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_DEPOSIT_TYPES @PRACTICE_CODE"
                     , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode });
             }
             catch (Exception ex) { throw ex; }
@@ -73,7 +73,7 @@ namespace FOX.BusinessOperations.ReconciliationService
         {
             try
             {
-                return SpRepository<FOX_TBL_RECONCILIATION_REASON>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_REASONS_test @PRACTICE_CODE"
+                return SpRepository<FOX_TBL_RECONCILIATION_REASON>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_REASONS @PRACTICE_CODE"
                     , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode });
             }
             catch (Exception ex) { throw ex; }
@@ -83,7 +83,7 @@ namespace FOX.BusinessOperations.ReconciliationService
         {
             try
             {
-                return SpRepository<ReconciliationCategory>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_CATEGORIES_TEST @PRACTICE_CODE"
+                return SpRepository<ReconciliationCategory>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_CATEGORIES @PRACTICE_CODE"
                      , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode });
             }
             catch (Exception ex) { throw ex; }
@@ -199,7 +199,7 @@ namespace FOX.BusinessOperations.ReconciliationService
 
                 //@PRACTICE_CODE, @IS_FOR_REPORT, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO, @FOX_TBL_INSURANCE_ID, @CATEGORY_IDS, 
                 //    @STATUS_ID, @DEPOSIT_TYPE_IDS, @CHECK_NOS, @AMOUNT, @AMOUNT_POSTED, @AMOUNT_NOT_POSTED, @CURRENT_USER, @SEARCH_TEXT, @CURRENT_PAGE, @RECORD_PER_PAGE"
-                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATIONS_CP_TEST 
+                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATIONS_CP 
                     @PRACTICE_CODE, @IS_FOR_REPORT, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO, @FOX_TBL_INSURANCE_NAME, 
                     @STATUS_ID, @CURRENT_USER, @SEARCH_TEXT, @CURRENT_PAGE, @RECORD_PER_PAGE,@SORT_BY ,@SORT_ORDER, @CP_TYPE"
                     , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
@@ -384,7 +384,7 @@ namespace FOX.BusinessOperations.ReconciliationService
         {
             try
             {
-                var result = SpRepository<ReconciliationCPLogs>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_CP_LOGS_TEST @PRACTICE_CODE, @RECONCILIATION_CP_ID, @SEARCH_STRING, @CURRENT_PAGE, @RECORD_PER_PAGE,@LOG_DETAIL,@REMARK_DETAIL",
+                var result = SpRepository<ReconciliationCPLogs>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_CP_LOGS @PRACTICE_CODE, @RECONCILIATION_CP_ID, @SEARCH_STRING, @CURRENT_PAGE, @RECORD_PER_PAGE,@LOG_DETAIL,@REMARK_DETAIL",
                     new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
                     , new SqlParameter { ParameterName = "RECONCILIATION_CP_ID", SqlDbType = SqlDbType.BigInt, Value = searchReq.RECONCILIATION_CP_ID }
                     , new SqlParameter("SEARCH_STRING", SqlDbType.VarChar) { Value = string.IsNullOrWhiteSpace(searchReq.SearchString) ? "" : searchReq.SearchString }
@@ -405,7 +405,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                 var dBData = _reconciliationCPRepository.GetFirst(e => e.RECONCILIATION_CP_ID == autoreconciliationToSave.RECONCILIATION_CP_ID && e.PRACTICE_CODE == profile.PracticeCode && !e.DELETED);
                 ReconciliationCP prevObj = null;
                 prevObj = (ReconciliationCP)dBData.Clone();
-                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_AUTO_RECONCILIATION_CP @PRACTICE_CODE,@USER_NAME,@RECONCILIATION_CP_ID,@AMOUNT_POSTED",
+                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_AUTO_RECONCILIATION_CP @PRACTICE_CODE,@USER_NAME,@RECONCILIATION_CP_ID,@AMOUNT_POSTED, @DATE_POSTED",
                     new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
                     , new SqlParameter { ParameterName = "USER_NAME", SqlDbType = SqlDbType.VarChar, Value = profile.UserName }
                     , new SqlParameter { ParameterName = "RECONCILIATION_CP_ID", SqlDbType = SqlDbType.BigInt, Value = autoreconciliationToSave.RECONCILIATION_CP_ID }
@@ -430,7 +430,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                 var dBData = _reconciliationCPRepository.GetFirst(e => e.RECONCILIATION_CP_ID == manualreconciliationToSave.RECONCILIATION_CP_ID && e.PRACTICE_CODE == profile.PracticeCode && !e.DELETED);
                 ReconciliationCP prevObj = null;
                 prevObj = (ReconciliationCP)dBData.Clone();
-                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_AUTO_RECONCILIATION_CP_TEST @PRACTICE_CODE,@USER_NAME,@RECONCILIATION_CP_ID,@AMOUNT_POSTED, @DATE_POSTED",
+                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_AUTO_RECONCILIATION_CP @PRACTICE_CODE,@USER_NAME,@RECONCILIATION_CP_ID,@AMOUNT_POSTED, @DATE_POSTED",
                     new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
                     , new SqlParameter { ParameterName = "USER_NAME", SqlDbType = SqlDbType.VarChar, Value = profile.UserName }
                     , new SqlParameter { ParameterName = "RECONCILIATION_CP_ID", SqlDbType = SqlDbType.BigInt, Value = manualreconciliationToSave.RECONCILIATION_CP_ID }
@@ -457,7 +457,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                 if(dBData!= null) {
                     prevObj = (ReconciliationCP)dBData.Clone();
                 }
-                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_UPDATE_AUTO_RECONCILIATION_CP_TEST @PRACTICE_CODE,@USER_NAME,@RECONCILIATION_CP_ID,@AMOUNT_POSTED",
+                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_UPDATE_AUTO_RECONCILIATION_CP @PRACTICE_CODE,@USER_NAME,@RECONCILIATION_CP_ID,@AMOUNT_POSTED",
                     new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
                     , new SqlParameter { ParameterName = "USER_NAME", SqlDbType = SqlDbType.VarChar, Value = profile.UserName }
                     , new SqlParameter { ParameterName = "RECONCILIATION_CP_ID", SqlDbType = SqlDbType.BigInt, Value = autoReconciliationToUpdate.RECONCILIATION_CP_ID }
@@ -580,7 +580,10 @@ namespace FOX.BusinessOperations.ReconciliationService
 
                 //if (prevObj != null && prevObj.RECONCILIATION_STATUS_ID == GetAssignedStatusId(profile))
                 //{
+                if (reconciliation.IS_RECONCILIED == true)
+                {
                     reconciliation.RECONCILIATION_STATUS_ID = GetClosedStatusId(profile);
+                }
                 //}
 
                 //if (prevObj != null && prevObj.AMOUNT_NOT_POSTED != 0 && reconciliationToSave.AMOUNT_NOT_POSTED == 0)
@@ -751,7 +754,7 @@ namespace FOX.BusinessOperations.ReconciliationService
         {
             try
             {
-                manualreconciliationToSave.REMARKS = "Manual Reconciliation";
+                //manualreconciliationToSave.REMARKS = "Manual Reconciliation";
                 var logsList = new List<ReconciliationCPLogs>();
                 if (dbData == null)
                 {
@@ -1241,7 +1244,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                     searchReq.DATE_TO = dateTimeTo;
                 }
 
-                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATIONS_CP_TEST 
+                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATIONS_CP 
                     @PRACTICE_CODE, @IS_FOR_REPORT, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO, @FOX_TBL_INSURANCE_NAME, 
                     @STATUS_ID, @CURRENT_USER, @SEARCH_TEXT, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER, @CP_TYPE"
                     , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
@@ -2412,7 +2415,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                 tempdata.TypeName = "RECONCILIATION_CP_IMPORT";
                 tempdata.Value = dt;
 
-            return  SpRepository<ReconciliationUploadResponse>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_INSERT_RECONCILIATION_EXCEL_DATA_TEST @PRACTICE_CODE, @USER_NAME, @RECONCILIATION_DATA", practiceCode, userName, tempdata);
+            return  SpRepository<ReconciliationUploadResponse>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_INSERT_RECONCILIATION_EXCEL_DATA @PRACTICE_CODE, @USER_NAME, @RECONCILIATION_DATA", practiceCode, userName, tempdata);
             
         }
 
@@ -2431,7 +2434,7 @@ namespace FOX.BusinessOperations.ReconciliationService
             SqlParameter checkNo = new SqlParameter("CHECK_NO", obj.CHECK_NO);
             SqlParameter currentpage = new SqlParameter("CURRENT_PAGE", obj.CurrentPage);
             SqlParameter recordsperpage = new SqlParameter("RECORD_PER_PAGE", SqlDbType.Int) { Value = 0 };
-            var result = SpRepository<SOFT_RECONCILIATION_PAYMENT>.GetListWithStoreProcedure(@"FOX_PROC_GET_DEPOSITSLIP_CLAIMS_TEST @STRPRACTICECODE,@STRDEPOSITID,@CHECK_NO,@CURRENT_PAGE,@RECORD_PER_PAGE", practiceCode, depositslipid,checkNo,currentpage,recordsperpage);
+            var result = SpRepository<SOFT_RECONCILIATION_PAYMENT>.GetListWithStoreProcedure(@"FOX_PROC_GET_DEPOSITSLIP_CLAIMS @STRPRACTICECODE,@STRDEPOSITID,@CHECK_NO,@CURRENT_PAGE,@RECORD_PER_PAGE", practiceCode, depositslipid,checkNo,currentpage,recordsperpage);
             if (result?.Count > 0)
             {
                 int CURRENT_PAGE = obj.CurrentPage - 1;
@@ -2466,7 +2469,7 @@ namespace FOX.BusinessOperations.ReconciliationService
         {
             SqlParameter practiceCode = new SqlParameter("STRPRACTICECODE", profile.PracticeCode);
             SqlParameter checkNo = new SqlParameter("CHECK_NO", softRequest.CHECK_NO);
-            var result = SpRepository<SOFT_RECONCILIATION_PAYMENT>.GetListWithStoreProcedure(@" FOX_PROC_GET_DEPOSITSLIP_CLAIMS_AMOUNT_TEST @STRPRACTICECODE,@CHECK_NO", practiceCode, checkNo);
+            var result = SpRepository<SOFT_RECONCILIATION_PAYMENT>.GetListWithStoreProcedure(@" FOX_PROC_GET_DEPOSITSLIP_CLAIMS_AMOUNT @STRPRACTICECODE,@CHECK_NO", practiceCode, checkNo);
             if(result!= null)
             {
                 return result;
