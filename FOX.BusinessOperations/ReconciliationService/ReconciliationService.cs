@@ -584,6 +584,11 @@ namespace FOX.BusinessOperations.ReconciliationService
                 {
                     reconciliation.RECONCILIATION_STATUS_ID = GetClosedStatusId(profile);
                 }
+                else
+                {
+                    reconciliation.RECONCILIATION_STATUS_ID = GetUnAssignedStatusId(profile);
+                    reconciliation.ASSIGNED_TO = "";
+                }
                 //}
 
                 //if (prevObj != null && prevObj.AMOUNT_NOT_POSTED != 0 && reconciliationToSave.AMOUNT_NOT_POSTED == 0)
@@ -653,6 +658,16 @@ namespace FOX.BusinessOperations.ReconciliationService
         public int? GetAssignedStatusId(UserProfile profile)
         {
             var assStatus = _reconciliationStatusRepository.GetFirst(e => e.STATUS_NAME == "Assigned" && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
+            if (assStatus != null)
+            {
+                return assStatus.RECONCILIATION_STATUS_ID;
+            }
+            return null;
+        }
+
+        public int? GetUnAssignedStatusId(UserProfile profile)
+        {
+            var assStatus = _reconciliationStatusRepository.GetFirst(e => e.STATUS_NAME == "Unassigned" && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
             if (assStatus != null)
             {
                 return assStatus.RECONCILIATION_STATUS_ID;
