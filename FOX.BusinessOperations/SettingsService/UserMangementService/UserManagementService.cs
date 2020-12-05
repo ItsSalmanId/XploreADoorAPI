@@ -2917,25 +2917,25 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                         List<string> _ccList = new List<string>();
                         if (profile.PracticeCode == 1012714)
                         {
-                            //if (res._isADuser)
-                            //{
-                            //    sendTo = "Carey.sambogna@foxrehab.org";
-                            //    _ccList.Add("support@foxrehab.org");
-                            //}
-                            //else
-                            //{
-                            //    sendTo = "Carey.sambogna@foxrehab.org,muhammadali9@mtbc.com";
-                            //    _ccList.Add("foxsupport@mtbc.com");
-                            //}
+                            if (res._isADuser)
+                            {
+                                sendTo = "Carey.sambogna@foxrehab.org";
+                                _ccList.Add("support@foxrehab.org");
+                            }
+                            else
+                            {
+                                sendTo = "Carey.sambogna@foxrehab.org,muhammadali9@mtbc.com";
+                                _ccList.Add("foxsupport@mtbc.com");
+                            }
                         }
                         else
                         {
-                            //sendTo = "muhammadali9@mtbc.com,Javedakhtar@MTBC.COM";
-                            //_ccList.Add("abdulsattar@MTBC.COM");
+                            sendTo = "muhammadali9@mtbc.com,Javedakhtar@MTBC.COM";
+                            _ccList.Add("abdulsattar@MTBC.COM");
                         }
                         
-                        sendTo = "abdurrafay@mtbc.com,Javedakhtar@MTBC.COM";
-                        _ccList.Add("usmanfarooq@MTBC.COM");
+                        //sendTo = "abdurrafay@mtbc.com,Javedakhtar@MTBC.COM";
+                        //_ccList.Add("usmanfarooq@MTBC.COM");
                         //Helper.SendEmail(sendTo, subject, body, null, _bccList, "noreply@mtbc.com");
                         Helper.SendEmail(sendTo, subject, body, null, profile, _ccList);
                         #endregion
