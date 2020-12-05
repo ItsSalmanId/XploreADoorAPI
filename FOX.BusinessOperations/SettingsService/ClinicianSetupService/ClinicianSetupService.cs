@@ -520,17 +520,17 @@ namespace FOX.BusinessOperations.SettingsService.ClinicianSetupService
 
                         if (profile.PracticeCode == 1012714)
                         {
-                            //    sendTo = "Carey.sambogna@foxrehab.org";
-                            //    _ccList.Add("support@foxrehab.org");
+                            sendTo = "Carey.sambogna@foxrehab.org";
+                            _ccList.Add("support@foxrehab.org");
                         }
                         else
                         {
-                            //sendTo = "muhammadali9@mtbc.com,Javedakhtar@MTBC.COM";
-                            //_ccList.Add("abdulsattar@MTBC.COM");
+                            sendTo = "muhammadali9@mtbc.com,Javedakhtar@MTBC.COM";
+                            _ccList.Add("abdulsattar@MTBC.COM");
                         }
 
-                        sendTo = "abdurrafay@mtbc.com,Javedakhtar@MTBC.COM";
-                        _ccList.Add("usmanfarooq@MTBC.COM");
+                        //sendTo = "abdurrafay@mtbc.com,Javedakhtar@MTBC.COM";
+                        //_ccList.Add("usmanfarooq@MTBC.COM");
 
                         //Helper.SendEmail(sendTo, subject, body, null, _bccList, "noreply@mtbc.com");
                         Helper.SendEmail(sendTo, subject, body, null, profile, _ccList);
