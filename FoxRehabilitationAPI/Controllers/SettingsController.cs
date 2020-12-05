@@ -497,6 +497,11 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _userServices.SetAutoLockTimeSetup(AutoLockTime, GetProfile()));
         }
+        [HttpPost]
+        public HttpResponseMessage DeleteUser(DeleteUserModel res)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _userServices.DeleteUser(res, GetProfile()));
+        }
     }
 }
 

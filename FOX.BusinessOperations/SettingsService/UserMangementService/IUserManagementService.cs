@@ -60,5 +60,6 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         void AddUpdateUserAdditionalInfo(long UserId, bool isElectronicPOC, DateTime CreatedDate, string CreatedBy, DateTime ModifiedDate, string ModifiedBy, bool Deleted);
         string RedirecToTalkEhr(UserProfile profile);
         bool SetAutoLockTimeSetup(int time, UserProfile profile);
+        bool DeleteUser(DeleteUserModel res, UserProfile profile);
     }
 }

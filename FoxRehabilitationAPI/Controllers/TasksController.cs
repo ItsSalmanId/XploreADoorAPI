@@ -194,5 +194,10 @@ namespace FoxRehabilitationAPI.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, _TaskServices.SetTaskTypeBit(model, GetProfile()));
          
         }
+        [HttpPost]
+        public HttpResponseMessage GetTaskDashboardData(TaskDashboardSearchRequest model)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _TaskServices.GetTaskDashBoardData(model, GetProfile()));
+        }
     }
 }

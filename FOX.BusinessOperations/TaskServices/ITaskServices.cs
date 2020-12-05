@@ -56,5 +56,6 @@ namespace FOX.BusinessOperations.TaskServices
         TaskWithHistory GetTask(long patientAccount, long caseId, long taskTypeId, UserProfile profile);
         List<FOX_TBL_TASK_TYPE> GetInactiveTaskTypeList(long practiceCode);
         string ExportToExcel(TaskSearchRequest taskSearchRequest, UserProfile profile);
+        TaskDashboardResponse GetTaskDashBoardData(TaskDashboardSearchRequest req, UserProfile profile);
     }
 }

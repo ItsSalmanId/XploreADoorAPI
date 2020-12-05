@@ -178,6 +178,14 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("PRIORITY");
                 }
+                if(dc.Contains("CS_CASE_CATEGORY"))
+                {
+                    dc.Remove("CS_CASE_CATEGORY");
+                }
+                if (dc.Contains("FILE_PATH"))
+                {
+                    dc.Remove("FILE_PATH");
+                }
             }
             if(CalledFrom.Equals("Advanced_Daily_Report"))
             {
@@ -4078,18 +4086,18 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("REGION_CODE");
                 }
-                if (dc.Contains("REGION_NAME"))
+                if (dc.Contains("STR_LENGTH"))
                 {
-                    dc.Remove("REGION_NAME");
+                    dc.Remove("STR_LENGTH");
                 }
                 if (dc.Contains("HOME_PHONE"))
                 {
                     dc.Remove("HOME_PHONE");
                 }
-                if (dc.Contains("APPOINTMENT_DATE"))
-                {
-                    dc.Remove("APPOINTMENT_DATE");
-                }
+                //if (dc.Contains("APPOINTMENT_DATE"))
+                //{
+                //    dc.Remove("APPOINTMENT_DATE");
+                //}
                 if (dc.Contains("VISIT_TYPE_ID"))
                 {
                     dc.Remove("VISIT_TYPE_ID");
@@ -4242,9 +4250,9 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("IS_PROVIDER_AVAILABLE");
                 }
-                if (dc.Contains("APPOINTMENT_DATE_STR"))
+                if (dc.Contains("APPOINTMENT_DATE"))
                 {
-                    dc.Remove("APPOINTMENT_DATE_STR");
+                    dc.Remove("APPOINTMENT_DATE");
                 }
                 if (dc.Contains("TIME_FROM_DATE"))
                 {
@@ -4262,7 +4270,79 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("IS_RECURSIVE");
                 }
-            }
+                if (dc.Contains("CANCELLATION_REASON_ID"))
+                {
+                    dc.Remove("CANCELLATION_REASON_ID");
+                }
+                if (dc.Contains("CANCELLATION_DESCRIPTION"))
+                {
+                    dc.Remove("CANCELLATION_DESCRIPTION");
+                }
+                if (dc.Contains("CANCELATIONREASON_ID"))
+                {
+                    dc.Remove("CANCELATIONREASON_ID");
+                }
+                if (dc.Contains("CANCELLATION_CODE"))
+                {
+                    dc.Remove("CANCELLATION_CODE");
+                }
+                if (dc.Contains("PATIENTA_ADDRESS_LONGITUDE"))
+                {
+                    dc.Remove("PATIENTA_ADDRESS_LONGITUDE");
+                }
+                if (dc.Contains("PATIENT_ADDRESS_LATITUDE"))
+                {
+                    dc.Remove("PATIENT_ADDRESS_LATITUDE");
+                }
+                if (dc.Contains("AL_LONGITUDE"))
+                {
+                    dc.Remove("AL_LONGITUDE");
+                }
+                if (dc.Contains("AL_LATITUDE"))
+                {
+                    dc.Remove("AL_LATITUDE");
+                }
+                if (dc.Contains("ACCURACY"))
+                {
+                    dc.Remove("ACCURACY");
+                }
+                if (dc.Contains("APPT_LATITUDE_STR"))
+                {
+                    dc.Remove("APPT_LATITUDE_STR");
+                }
+                if (dc.Contains("APPT_LONGITUDE_STR"))
+                {
+                    dc.Remove("APPT_LONGITUDE_STR");
+                }
+                if (dc.Contains("PATIENTA_ADDRESS_LONGITUDE_STR"))
+                {
+                    dc.Remove("PATIENTA_ADDRESS_LONGITUDE_STR");
+                }
+                if (dc.Contains("PATIENT_ADDRESS_LATITUDE_STR"))
+                {
+                    dc.Remove("PATIENT_ADDRESS_LATITUDE_STR");
+                }
+                if (dc.Contains("AL_LONGITUDE_STR"))
+                {
+                    dc.Remove("AL_LONGITUDE_STR");
+                }
+                if (dc.Contains("AL_LATITUDE_STR"))
+                {
+                    dc.Remove("AL_LATITUDE_STR");
+                }
+                if (dc.Contains("CITY"))
+                {
+                    dc.Remove("CITY");
+                }
+                if (dc.Contains("STATE"))
+                {
+                    dc.Remove("STATE");
+                }
+                if (dc.Contains("ZIP"))
+                {
+                    dc.Remove("ZIP");
+                }
+        }
             if (CalledFrom.Equals("Patient_Scheduler_List"))
             {
                 if (dc.Contains("APPOINTMENT_ID"))
@@ -4533,9 +4613,80 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("NAME");
                 }
+                if (dc.Contains("CANCELLATION_REASON_ID"))
+                {
+                    dc.Remove("CANCELLATION_REASON_ID");
+                }
+                if (dc.Contains("CANCELLATION_DESCRIPTION"))
+                {
+                    dc.Remove("CANCELLATION_DESCRIPTION");
+                }
+                if (dc.Contains("CANCELATIONREASON_ID"))
+                {
+                    dc.Remove("CANCELATIONREASON_ID");
+                }
+                if (dc.Contains("CANCELLATION_CODE"))
+                {
+                    dc.Remove("CANCELLATION_CODE");
+                }
+                if (dc.Contains("PATIENTA_ADDRESS_LONGITUDE"))
+                {
+                    dc.Remove("PATIENTA_ADDRESS_LONGITUDE");
+                }
+                if (dc.Contains("PATIENT_ADDRESS_LATITUDE"))
+                {
+                    dc.Remove("PATIENT_ADDRESS_LATITUDE");
+                }
+                if (dc.Contains("AL_LONGITUDE"))
+                {
+                    dc.Remove("AL_LONGITUDE");
+                }
+                if (dc.Contains("AL_LATITUDE"))
+                {
+                    dc.Remove("AL_LATITUDE");
+                }
+                if (dc.Contains("ACCURACY"))
+                {
+                    dc.Remove("ACCURACY");
+                }
+                if (dc.Contains("APPT_LATITUDE_STR"))
+                {
+                    dc.Remove("APPT_LATITUDE_STR");
+                }
+                if (dc.Contains("APPT_LONGITUDE_STR"))
+                {
+                    dc.Remove("APPT_LONGITUDE_STR");
+                }
+                if (dc.Contains("PATIENTA_ADDRESS_LONGITUDE_STR"))
+                {
+                    dc.Remove("PATIENTA_ADDRESS_LONGITUDE_STR");
+                }
+                if (dc.Contains("PATIENT_ADDRESS_LATITUDE_STR"))
+                {
+                    dc.Remove("PATIENT_ADDRESS_LATITUDE_STR");
+                }
+                if (dc.Contains("AL_LONGITUDE_STR"))
+                {
+                    dc.Remove("AL_LONGITUDE_STR");
+                }
+                if (dc.Contains("AL_LATITUDE_STR"))
+                {
+                    dc.Remove("AL_LATITUDE_STR");
+                }
+                if (dc.Contains("CITY"))
+                {
+                    dc.Remove("CITY");
+                }
+                if (dc.Contains("STATE"))
+                {
+                    dc.Remove("STATE");
+                }
+                if (dc.Contains("ZIP"))
+                {
+                    dc.Remove("ZIP");
+                }
             }
         }
-
         private static void SetAmounts(DataTable dt)
         {
             DataColumnCollection dtcol = dt.Columns;
@@ -4944,7 +5095,7 @@ namespace FOX.BusinessOperations.CommonServices
                 }
                 if (dtcol.Contains("CALL_SCENARIO_NAME"))
                 {
-                    dtcol["CALL_SCENARIO_NAME"].ColumnName = "Scenario";
+                    dtcol["CALL_SCENARIO_NAME"].ColumnName = "Call Handling";
                 }
                 if (dtcol.Contains("CALL_REASON_NAME"))
                 {
@@ -4977,6 +5128,14 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dtcol.Contains("FOLLOW_UP_DATE_STR"))
                 {
                     dtcol["FOLLOW_UP_DATE_STR"].ColumnName = "Follow Up Date";
+                }
+                if (dtcol.Contains("CS_CASE_CATEGORY_NAME"))
+                {
+                    dtcol["CS_CASE_CATEGORY_NAME"].ColumnName = "Case Category";
+                }
+                if (dtcol.Contains("CS_Case_Status"))
+                {
+                    dtcol["CS_Case_Status"].ColumnName = "Case Status";
                 }
             }
             else if (dt.TableName == "Interface_Log_Report")
@@ -6793,6 +6952,10 @@ namespace FOX.BusinessOperations.CommonServices
                 //{
                 //    dtcol["ROW"].ColumnName = "Sr. #";
                 //}
+                if (dtcol.Contains("APPOINTMENT_DATE_STR"))
+                {
+                    dtcol["APPOINTMENT_DATE_STR"].ColumnName = "Appointment Date";
+                }
                 if (dtcol.Contains("NAME"))
                 {
                     dtcol["NAME"].ColumnName = "Patient";
@@ -6828,6 +6991,14 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dtcol.Contains("PROVIDER"))
                 {
                     dtcol["PROVIDER"].ColumnName = "Provider";
+                }
+                if (dtcol.Contains("REGION_NAME"))
+                {
+                    dtcol["REGION_NAME"].ColumnName = "Region";
+                }
+                if (dtcol.Contains("DESCRIPTION"))
+                {
+                    dtcol["DESCRIPTION"].ColumnName = "Discipline";
                 }
             }
             else if (dt.TableName == "Patient_Scheduler_List")

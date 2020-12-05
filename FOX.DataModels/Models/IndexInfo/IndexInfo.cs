@@ -507,6 +507,7 @@ namespace FOX.DataModels.Models.IndexInfo
         public string ERROR_MSG { get; set; }
         public string SENDER_TYPE { get; set; }
         public long? FOX_SOURCE_CATEGORY_ID { get; set; }
+        public bool? IS_OCR { get; set; }
     }
 
     public class Index_infoReq : BaseModel
@@ -540,7 +541,27 @@ namespace FOX.DataModels.Models.IndexInfo
         public DateTime MODIFIED_DATE { get; set; }
         public bool DELETED { get; set; }
     }
-
+    public class PatientListResponse
+    {
+        public long ROW { get; set; }
+        public string FINANCIAL_CLASS_NAME { get; set; }
+        public int? FINANCIAL_CLASS_ID { get; set; }
+        public long? Patient_Account { get; set; }
+        public string MRN { get; set; }
+        public string First_Name { get; set; }
+        public string Last_Name { get; set; }
+        public string Middle_Name { get; set; }
+        public string FIRST_NAME_ALIAS { get; set; }
+        public string LAST_NAME_ALIAS { get; set; }
+        public string MIDDLE_INITIALS_ALIAS { get; set; }
+        public bool? Is_Patient_Alias { get; set; }
+        public string Date_Of_Birth { get; set; }
+        public string Gender { get; set; }
+        public string SSN { get; set; }
+        public long? PRACTICE_ORGANIZATION_ID { get; set; }
+        public double TOTAL_RECORD_PAGES { get; set; }
+        public int? TOTAL_RECORDS { get; set; }
+    }
     public class Documents
     {
         [Key]
@@ -667,7 +688,7 @@ namespace FOX.DataModels.Models.IndexInfo
                 //return $"<p><b>[{ CODE.ToTitleCase() }] {LAST_NAME.ToTitleCase()}, {FIRST_NAME.ToTitleCase()} </b><br /> { ADDRESS.ToTitleCase() }, { CITY.ToTitleCase() }, {STATE.ToTitleCase() }<br />Phone: {PHONE}</p>";
                 return $"<p>[{ CODE.ToTitleCase() }] {LAST_NAME.ToTitleCase()}, {FIRST_NAME.ToTitleCase()}&nbsp;&nbsp;&nbsp;NPI: {NPI}<br /> { ADDRESS.ToTitleCase() }, { CITY.ToTitleCase() }, {STATE.ToTitleCase() }<br />Phone: {PHONE.ApplyPhoneMask()}</p>";
             }
-        }
+        }   
 
         public bool IsRed
         {
@@ -698,6 +719,7 @@ namespace FOX.DataModels.Models.IndexInfo
         public string HHH_CODE { get; set; }
         public string HHH_DESCRIPTION { get; set; }
         public string Email { get; set; }
+        public string REFERRAL_REGION { get; set; }
     }
 
     public class SmartRefRegion

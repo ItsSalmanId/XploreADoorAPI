@@ -23,6 +23,7 @@ namespace FOX.BusinessOperations.FoxPHDService
         List<SscmCaseDetail> GetCaseDetails(UserProfile userProfile);
         List<ExportAdvancedDailyReport> GetExportAdvancedDailyReports(UserProfile profile, string callerUserID);
         string ExportAdvancedDailyReport(ExportAdvancedDailyReport exportAdvancedDailyReport, UserProfile profile);
-
+        List<PhdCallLogHistoryDetail> GetPhdCallLogHistoryDetails(string phdCallDetailID, UserProfile userProfile);
+        List<WebSoftCaseStatusResponse> GetWebSoftCaseStatusResponses(string sscmCaseNumber);
     }
 }

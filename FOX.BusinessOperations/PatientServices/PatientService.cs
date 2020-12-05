@@ -765,7 +765,7 @@ namespace FOX.BusinessOperations.PatientServices
                                         STATE = loc.Patient_POS_Details.State,
                                         CREATED_BY = profile.UserName,
                                         CREATED_DATE = Helper.GetCurrentDate(),
-                                        MODIFIED_BY = profile.UserName, 
+                                        MODIFIED_BY = profile.UserName,
                                         MODIFIED_DATE = Helper.GetCurrentDate(),
                                         DELETED = false,
                                         PATIENT_POS_ID = loc.Patient_POS_ID,
@@ -792,7 +792,7 @@ namespace FOX.BusinessOperations.PatientServices
                                 posT.Modified_By = profile.UserName;
                                 posT.Modified_Date = Helper.GetCurrentDate();
                                 posT.Deleted = false;
-                                
+
                                 _PatientPOSLocationRepository.Update(posT);
                                 _PatientPOSLocationRepository.Save();
 
@@ -2051,6 +2051,9 @@ namespace FOX.BusinessOperations.PatientServices
                                         loc.City = patientPrivateHomeAddress.CITY;
                                         loc.State = patientPrivateHomeAddress.STATE;
                                         loc.Fax = patientPrivateHomeAddress.POS_Fax;
+                                        loc.Latitude = patientPrivateHomeAddress.Latitude;
+                                        loc.Longitude = patientPrivateHomeAddress.Longitude;
+                                        loc.Country = patientPrivateHomeAddress.COUNTRY;
                                     }
                                 }
                                 else
@@ -2354,7 +2357,6 @@ namespace FOX.BusinessOperations.PatientServices
             if (!string.IsNullOrEmpty(address.Trim()))
             {
                 var token = WSGetAccessToken();
-                token = null;
                 if (token != null && token.Result?.AccessTokenInfo != null)
                 {
                     var bb = GetLatiLan(address, token.Result?.AccessTokenInfo);
@@ -2416,7 +2418,6 @@ namespace FOX.BusinessOperations.PatientServices
 
             }
         }
-
         POSCoordinates AddContactCoordinates(string address)
         {
             var token = WSGetAccessToken();
@@ -5972,7 +5973,7 @@ namespace FOX.BusinessOperations.PatientServices
                         {
                             allowSave = false;
                             break;
-                        }   
+                        }
                     }
                 }
                 if (!allowSave)
@@ -5985,7 +5986,7 @@ namespace FOX.BusinessOperations.PatientServices
 
         private bool CheckMCEligiblityEffectiveDate(HtmlNode htmlDoc)
         {
-            
+
             var date_range_node = htmlDoc;
             bool isValidDate = true;
             if (date_range_node != null)
@@ -6006,7 +6007,7 @@ namespace FOX.BusinessOperations.PatientServices
                         dateTimeList.Add(date);
                     }
                 }
-                if(dateTimeList.Count >= 2)
+                if (dateTimeList.Count >= 2)
                 {
                     IEnumerable<DateTime> IdateTimeList = dateTimeList.Take(2);
                     if (IdateTimeList.Count() > 0 && Helper.GetCurrentDate() >= IdateTimeList.ElementAt(0) && Helper.GetCurrentDate() <= IdateTimeList.ElementAt(1))
@@ -6015,7 +6016,7 @@ namespace FOX.BusinessOperations.PatientServices
                     }
 
                 }
-                else if(dateTimeList.Count == 1)
+                else if (dateTimeList.Count == 1)
                 {
                     IEnumerable<DateTime> IdateTimeList = dateTimeList.Take(1);
                     if (IdateTimeList.Count() > 0 && Helper.GetCurrentDate() >= IdateTimeList.ElementAt(0))
@@ -6023,7 +6024,7 @@ namespace FOX.BusinessOperations.PatientServices
                         isValidDate = false;
                     }
                 }
-               
+
             }
             return isValidDate;
         }
@@ -8707,7 +8708,7 @@ namespace FOX.BusinessOperations.PatientServices
             //}
         }
 
-        public List<FinancialClass> GetFinancialClassDDValues(string practiceCode)                                                                    
+        public List<FinancialClass> GetFinancialClassDDValues(string practiceCode)
         {
             var PracticeCode = Convert.ToInt64(practiceCode);
             return _financialClassRepository.GetMany(e => e.PRACTICE_CODE == PracticeCode && !e.DELETED);
@@ -9524,7 +9525,7 @@ namespace FOX.BusinessOperations.PatientServices
                 Patient pat = GetPatientDetail(obj.PATIENT_ACCOUNT);
                 //if ((!string.IsNullOrEmpty(obj.EMAIL_ADDRESS) && SendEmail(obj.EMAIL_ADDRESS, pin.ToString(), link, pat.First_Name, pat.Last_Name, profile))
                 //    || (!string.IsNullOrEmpty(obj.USER_PHONE) && SendInvitationSMS(cellNumber: obj.USER_PHONE, pin: pin.ToString(), link: link, firstName: pat.FirstName, lastName: pat.LastName)))
-                if(!string.IsNullOrEmpty(obj.EMAIL_ADDRESS) && SendEmail(obj.EMAIL_ADDRESS, pin.ToString(), link, pat.First_Name, pat.Last_Name, profile))
+                if (!string.IsNullOrEmpty(obj.EMAIL_ADDRESS) && SendEmail(obj.EMAIL_ADDRESS, pin.ToString(), link, pat.First_Name, pat.Last_Name, profile))
                 {
                     CommonServices.EncryptionDecryption encrypt = new CommonServices.EncryptionDecryption();
                     patientInviteData.USER_PHONE = obj.USER_PHONE;
@@ -9644,7 +9645,7 @@ namespace FOX.BusinessOperations.PatientServices
         //}
 
         public ResponseModel SaveInsuranceEligibilityFromIndexInfo(PatientInsurance insuranceToCreateUpdate, UserProfile profile)
-                 {
+        {
             ResponseModel resp = new ResponseModel();
             resp.Success = false;
             var dbInsurance = _PatientInsuranceRepository.GetFirst(e => e.Patient_Insurance_Id == insuranceToCreateUpdate.Patient_Insurance_Id && (e.Deleted ?? false) == false);
@@ -10504,6 +10505,103 @@ namespace FOX.BusinessOperations.PatientServices
         {
             var insurance = _foxInsurancePayersRepository.GetFirst(p => p.FOX_TBL_INSURANCE_ID == ID && (p.DELETED ?? false) == false);
             return insurance;
+        }
+
+        public POSCoordinates ResetCoordinates(FacilityLocation loc, UserProfile profile)   
+        {
+            POSCoordinates response = new POSCoordinates();
+            if (loc != null)
+            {
+                //try
+                //{
+                    if (loc.UpdatePatientAddress == true)
+                    {
+                        FacilityLocation patientAddress = new FacilityLocation();
+                       
+                        var patientPos = _PatientPOSLocationRepository.GetMany(e =>e.Patient_Account == loc.PATIENT_ACCOUNT && e.Is_Default == true && e.Loc_ID !=0 && e.Deleted == false).OrderByDescending(t => t.Modified_Date).FirstOrDefault();
+                        PatientAddress address = _PatientAddressRepository.GetFirst(e => e.PATIENT_ACCOUNT == patientPos.Patient_Account && e.PATIENT_POS_ID == patientPos.Patient_POS_ID && e.DELETED == false);
+
+                        if (address != null)
+                        {
+                            patientAddress.Zip = address.ZIP;
+                            patientAddress.City = address.CITY;
+                            patientAddress.State = address.STATE;
+                            if (loc.SetCoordinatesManually == false)
+                            {
+                                POSCoordinates coordinates = GetCoordinates(patientAddress);
+                                if (coordinates != null)
+                                {
+                                    address.Latitude = Convert.ToSingle(coordinates.Latitude);
+                                    address.Longitude = Convert.ToSingle(coordinates.Longitude);
+                                    //address.ADDRESS = coordinates.Address;
+                                }
+
+                            }
+                            else
+                            {
+                                address.Latitude = Convert.ToSingle(loc.Latitude);
+                                address.Longitude = Convert.ToSingle(loc.Longitude);
+                                //address.ADDRESS = loc.Address;
+                                //address.CITY = loc.City;
+                                //address.STATE = loc.State;
+                                //address.ZIP = loc.Zip;
+                                //address.COUNTRY = loc.Country;
+
+
+                            }
+                            address.MODIFIED_BY = profile.UserName;
+                            address.MODIFIED_DATE = Helper.GetCurrentDate();
+                            _PatientAddressRepository.Update(address);
+                            _PatientAddressRepository.Save();
+                            response.Latitude = address.Latitude.ToString();
+                            response.Longitude = address.Longitude.ToString();
+                            response.Address = address.ADDRESS;
+
+                        }
+                    }
+                    else
+                    {
+                        FacilityLocation pos = _FacilityLocationRepository.GetFirst(e => e.LOC_ID == loc.LOC_ID && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
+                        if (pos != null)
+                        {
+                            if (loc.SetCoordinatesManually == false)
+                            {
+                                POSCoordinates coordinates = GetCoordinates(pos);
+                                if (coordinates != null)
+                                {
+                                    pos.Longitude = Convert.ToDouble(coordinates.Longitude);
+                                    pos.Latitude = Convert.ToDouble(coordinates.Latitude);
+                                    pos.Address = coordinates.Address;
+                                }
+                            }
+                            else
+                            {
+                                pos.Longitude = Convert.ToDouble(loc.Longitude);
+                                pos.Latitude = Convert.ToDouble(loc.Latitude);
+                                //pos.Address = loc.Address;
+                                //pos.City = loc.City;
+                                //pos.State = loc.State;
+                                //pos.Zip = loc.Zip;
+                                //pos.Country = loc.Country;
+
+
+                            }
+                            pos.MODIFIED_BY = profile.UserName;
+                            pos.MODIFIED_DATE = Helper.GetCurrentDate();
+                            _FacilityLocationRepository.Update(pos);
+                            _FacilityLocationRepository.Save();
+                            response.Latitude = pos.Latitude.ToString();
+                            response.Longitude = pos.Longitude.ToString();
+                        }
+                    }
+                //}
+                //catch (Exception ex)
+                //{
+                //    return response = new POSCoordinates();
+                //}
+
+            }
+            return response;
         }
     }
 }

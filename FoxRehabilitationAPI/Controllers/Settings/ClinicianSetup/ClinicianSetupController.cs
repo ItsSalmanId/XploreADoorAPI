@@ -98,7 +98,14 @@ namespace FoxRehabilitationAPI.Controllers.Settings.ClinicianSetup
             var profile = GetProfile();
             return Request.CreateResponse(HttpStatusCode.OK, _clinicianSetupService.ReadExcel(filePath, profile.PracticeCode, profile.UserName));
         }
-
+        [HttpPost]
+        public HttpResponseMessage DeleteClinician(DeleteClinicianModel obj)
+        {
+            var profile = GetProfile();
+            var result = _clinicianSetupService.DeleteClinician(obj, profile);
+            var response = Request.CreateResponse(HttpStatusCode.OK, result);
+            return response;
+        }
     }
 
 }

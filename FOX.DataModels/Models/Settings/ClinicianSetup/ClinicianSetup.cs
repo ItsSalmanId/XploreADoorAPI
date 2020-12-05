@@ -225,5 +225,9 @@ namespace FOX.DataModels.Models.Settings.ClinicianSetup
         public string CL { get; set; }
 
     }
-
+    public class DeleteClinicianModel
+    {
+        public FoxProviderClass user { get; set; }
+        public string reason { get; set; }
+    }
 }

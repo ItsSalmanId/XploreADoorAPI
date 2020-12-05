@@ -40,6 +40,8 @@ namespace FOX.BusinessOperations.FoxPHDService
         private readonly GenericRepository<PatientAddress> _PatientAddressRepository;
         private readonly GenericRepository<PhdCallScenario> _PhdCallScenarioRepository;
         private readonly GenericRepository<PhdCallReason> _PhdCallReasonRepository;
+        private readonly GenericRepository<CS_Case_Categories> _caseCategoriesRepository;
+        private readonly GenericRepository<PhdCallLogHistory> _phdCallLogHistoryRepository;
         private readonly GenericRepository<PhdCallRequest> _PhdCallRequestRepository;
         private readonly GenericRepository<PhdPatientVerification> _PhdPatientVerificationRepository;
         private readonly GenericRepository<User> _userRepository;
@@ -57,6 +59,8 @@ namespace FOX.BusinessOperations.FoxPHDService
             _PhdCallScenarioRepository = new GenericRepository<PhdCallScenario>(_DBContextFoxPHD);
             _PhdCallReasonRepository = new GenericRepository<PhdCallReason>(_DBContextFoxPHD);
             _PhdCallRequestRepository = new GenericRepository<PhdCallRequest>(_DBContextFoxPHD);
+            _caseCategoriesRepository = new GenericRepository<CS_Case_Categories>(_DBContextFoxPHD);
+            _phdCallLogHistoryRepository = new GenericRepository<PhdCallLogHistory>(_DBContextFoxPHD);
             _PhdPatientVerificationRepository = new GenericRepository<PhdPatientVerification>(_DBContextFoxPHD);
             _userRepository = new GenericRepository<User>(_DBContextFoxPHD);
             _generalNotesRepository = new GenericRepository<FOX_TBL_GENERAL_NOTE>(_PatientContext);
@@ -72,9 +76,10 @@ namespace FOX.BusinessOperations.FoxPHDService
             try
             {
                 DropdownLists ObjDropdownLists = new DropdownLists();
-                ObjDropdownLists.PhdCallScenarios = _PhdCallScenarioRepository.GetMany(s => s.PRACTICE_CODE == profile.PracticeCode && s.DELETED == false).OrderBy(o=> o.NAME).ToList();
+                ObjDropdownLists.PhdCallScenarios = _PhdCallScenarioRepository.GetMany(s => s.PRACTICE_CODE == profile.PracticeCode && s.DELETED == false).OrderBy(o => o.NAME).ToList();
                 ObjDropdownLists.PhdCallReasons = _PhdCallReasonRepository.GetMany(s => s.PRACTICE_CODE == profile.PracticeCode && s.DELETED == false).OrderBy(o => o.NAME).ToList();
                 ObjDropdownLists.PhdCallRequests = _PhdCallRequestRepository.GetMany(s => s.PRACTICE_CODE == profile.PracticeCode && s.DELETED == false).OrderBy(o => o.NAME).ToList();
+                ObjDropdownLists.CSCaseCategories = _caseCategoriesRepository.GetMany(s => s.CS_Deleted == false).OrderBy(o => o.CS_Category_Name).ToList();
                 ObjDropdownLists.foxApplicationUsersViewModel = GetPHDCallerDropDownValue(profile);
                 //ObjDropdownLists.foxApplicationUsersViewModel = _userRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode).Select(t => new FoxApplicationUsersViewModel()
                 //{
@@ -212,6 +217,9 @@ namespace FOX.BusinessOperations.FoxPHDService
                 var CallDateTo = Helper.getDBNullOrValue("@CALL_DATE_TO", ObjCallDetailsSearchRequest.CALL_DATE_TO.ToString());
                 var CallAttendedBy = Helper.getDBNullOrValue("@CALL_ATTENDED_BY", ObjCallDetailsSearchRequest.CALL_ATTENDED_BY.Trim());
                 var CallReason = Helper.getDBNullOrValue("@CALL_REASON", ObjCallDetailsSearchRequest.CALL_REASON.Trim());
+                var CallHandling = Helper.getDBNullOrValue("@CALL_HANDLING", ObjCallDetailsSearchRequest.CALL_HANDLING.Trim());
+                var CsCaseStatus = Helper.getDBNullOrValue("@CS_CASE_STATUS", ObjCallDetailsSearchRequest.CS_CASE_STATUS.Trim());
+                var followUpCalls = Helper.getDBNullOrValue("@FOLLOW_UP_CALLS", ObjCallDetailsSearchRequest.FOLLOW_UP_CALLS.ToString());
                 var MRN = Helper.getDBNullOrValue("@CHART_ID", ObjCallDetailsSearchRequest.MRN);
                 var PracticeCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
                 var SearchText = new SqlParameter { ParameterName = "@SEARCH_TEXT", SqlDbType = SqlDbType.VarChar, Value = string.IsNullOrEmpty(ObjCallDetailsSearchRequest.SEARCH_TEXT) ? "" : ObjCallDetailsSearchRequest.SEARCH_TEXT };
@@ -219,11 +227,11 @@ namespace FOX.BusinessOperations.FoxPHDService
                 var RecordPerPage = new SqlParameter { ParameterName = "@RECORD_PER_PAGE", SqlDbType = SqlDbType.Int, Value = ObjCallDetailsSearchRequest.RECORD_PER_PAGE };
                 var SortBy = Helper.getDBNullOrValue("@SORT_BY", ObjCallDetailsSearchRequest.SORT_BY);
                 var SortOrder = Helper.getDBNullOrValue("@SORT_ORDER", ObjCallDetailsSearchRequest.SORT_ORDER);
-                var PHDDetailsList = SpRepository<PHDCallDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_CALL_DETAILS @CALL_DATE_FROM, @CALL_DATE_TO, @CALL_ATTENDED_BY, @CALL_REASON, @CHART_ID, @PRACTICE_CODE, @SEARCH_TEXT, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER",
-                   CallDateFrom, CallDateTo, CallAttendedBy, CallReason, MRN, PracticeCode, SearchText, CurrentPage, RecordPerPage, SortBy, SortOrder);
-               
+                var PHDDetailsList = SpRepository<PHDCallDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_CALL_DETAILS @CALL_DATE_FROM, @CALL_DATE_TO, @CALL_ATTENDED_BY, @CALL_REASON, @CALL_HANDLING, @CS_CASE_STATUS, @FOLLOW_UP_CALLS, @CHART_ID, @PRACTICE_CODE, @SEARCH_TEXT, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER",
+                   CallDateFrom, CallDateTo, CallAttendedBy, CallReason, CallHandling, CsCaseStatus, followUpCalls, MRN, PracticeCode, SearchText, CurrentPage, RecordPerPage, SortBy, SortOrder);
 
-                foreach(var item in PHDDetailsList)
+
+                foreach (var item in PHDDetailsList)
                 {
                     List<PHDUnmappedCalls> returList = new List<PHDUnmappedCalls>();
                     UnmappedCallsSearchRequest req = new UnmappedCallsSearchRequest();
@@ -233,7 +241,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                         req.CALL_DATE_STR = item.CALL_DATE_STR;
                         req.CALL_NO = item.INCOMING_CALL_NO;
                         returList = GetUnmappedCalls(req, profile);
-                        if(returList != null && returList.Count > 0)
+                        if (returList != null && returList.Count > 0)
                         {
                             item.IsRecordingMapped = true;
                         }
@@ -478,7 +486,7 @@ namespace FOX.BusinessOperations.FoxPHDService
         public ResponseModel AddUpdatePHDCallDetailInformation(PHDCallDetail ObjPHDCallDetailRequest, UserProfile profile)
         {
             try
-            {   
+            {
                 string AddorUpdate = "";
                 if (!ObjPHDCallDetailRequest.Equals(null))
                 {
@@ -588,6 +596,31 @@ namespace FOX.BusinessOperations.FoxPHDService
                                 _PHDDetailRepository.Insert(ObjPHDCallDetailRequest);
                                 _PHDDetailRepository.Save();
                                 AddorUpdate = "Record saved successfully.";
+
+                                if (ObjPHDCallDetailRequest != null)
+                                {
+                                    if (!string.IsNullOrEmpty(ObjPHDCallDetailRequest.CALL_DETAILS))
+                                    {
+                                        var LogDetailCn = ObjPHDCallDetailRequest.CALL_DETAILS;
+                                        if(LogDetailCn != null)
+                                        {
+                                            AddPHDLog(ObjPHDCallDetailRequest, "CALL_NOTES", LogDetailCn, profile);
+                                        }
+                                    }
+                                }
+                                if (ObjPHDCallDetailRequest != null)
+                                {
+                                    if (!string.IsNullOrEmpty(ObjPHDCallDetailRequest.FOLLOW_UP_DATE.ToString()))
+                                    {
+                                        var LogDetailfu = "";
+                                        DateTime datetimeStr = Convert.ToDateTime(ObjPHDCallDetailRequest.FOLLOW_UP_DATE);
+                                        if(datetimeStr != null)
+                                        {
+                                            LogDetailfu = "Follow up started. Follow up on " + datetimeStr.ToString("d") + ".";
+                                            AddPHDLog(ObjPHDCallDetailRequest, "FOLLOW_UP", LogDetailfu, profile);
+                                        }
+                                    }
+                                }                              
                             }
                         }
                         else
@@ -616,6 +649,61 @@ namespace FOX.BusinessOperations.FoxPHDService
                             _PHDDetailRepository.Update(ExistingDetailInfo);
                             _PHDDetailRepository.Save();
                             AddorUpdate = "Record updated successfully.";
+
+
+                            if(ObjPHDCallDetailRequest != null)
+                            {
+                                if (!string.IsNullOrEmpty(ObjPHDCallDetailRequest.CALL_DETAILS))
+                                {
+                                    var existingLog = _phdCallLogHistoryRepository.GetMany(r => r.FOX_PHD_CALL_DETAILS_ID == ObjPHDCallDetailRequest.FOX_PHD_CALL_DETAILS_ID && r.CALL_LOG_OF_TYPE.ToLower() == "call_notes" && !r.DELETED).OrderByDescending(c => c.CREATED_DATE);
+                                    if (existingLog != null && existingLog.Count() > 0)
+                                    {
+                                        if (existingLog.FirstOrDefault().CALL_DETAILS != ObjPHDCallDetailRequest.CALL_DETAILS)
+                                        {
+                                            var LogDetailCn = ObjPHDCallDetailRequest.CALL_DETAILS;
+                                            AddPHDLog(ObjPHDCallDetailRequest, "CALL_NOTES", LogDetailCn, profile);
+                                        }
+                                    }
+                                }
+                            }
+                            var existingLogfu = _phdCallLogHistoryRepository.GetMany(r => r.FOX_PHD_CALL_DETAILS_ID == ObjPHDCallDetailRequest.FOX_PHD_CALL_DETAILS_ID && r.CALL_LOG_OF_TYPE.ToLower() == "follow_up" && !r.DELETED).OrderByDescending(c => c.CREATED_DATE);
+                            if (!string.IsNullOrEmpty(ObjPHDCallDetailRequest.FOLLOW_UP_DATE.ToString()))
+                            {
+                                if (existingLogfu != null && existingLogfu.Count() > 0)
+                                {
+                                    var LogDetailfu = "";
+                                    DateTime datetimeStr = Convert.ToDateTime(ObjPHDCallDetailRequest.FOLLOW_UP_DATE);
+                                    if(datetimeStr != null)
+                                    {
+                                        LogDetailfu = "Follow up started. Follow up on " + datetimeStr.ToString("d") + ".";
+                                        if (existingLogfu.FirstOrDefault().CALL_DETAILS != LogDetailfu)
+                                        {
+                                            AddPHDLog(ObjPHDCallDetailRequest, "FOLLOW_UP", LogDetailfu, profile);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    var LogDetailfu = "";
+                                    DateTime datetimeStr = Convert.ToDateTime(ObjPHDCallDetailRequest.FOLLOW_UP_DATE);
+                                    if(datetimeStr != null)
+                                    {
+                                        LogDetailfu = "Follow up started. Follow up on " + datetimeStr.ToString("d") + ".";
+                                        AddPHDLog(ObjPHDCallDetailRequest, "FOLLOW_UP", LogDetailfu, profile);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (existingLogfu != null && existingLogfu.Count() > 0)
+                                {
+                                    var LogDetailC = "Follow up cleared.";  
+                                    if (existingLogfu.FirstOrDefault().CALL_DETAILS != LogDetailC)
+                                    {
+                                        AddPHDLog(ObjPHDCallDetailRequest, "FOLLOW_UP", LogDetailC, profile);
+                                    }                                    
+                                }
+                            }
 
                             if (ObjPHDCallDetailRequest.GENERAL_NOTE_ID != null)
                             {
@@ -647,7 +735,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                     #endregion End of Registered Patient
 
                     #region For New Patients
-                    else 
+                    else
                     {
                         StringBuilder bldr = new StringBuilder();
                         bldr.AppendFormat(@"<p>{0}</p>", HttpUtility.HtmlEncode(NOTE));
@@ -666,7 +754,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                             _PHDDetailRepository.Insert(ObjPHDCallDetailRequest);
                             _PHDDetailRepository.Save();
                             AddorUpdate = "Record saved successfully.";
-                           
+
                         }
                         else
                         {
@@ -869,13 +957,13 @@ namespace FOX.BusinessOperations.FoxPHDService
                     Directory.CreateDirectory(exportPath);
                 }
                 List<PHDCallDetail> result = new List<PHDCallDetail>();
-                
+
                 var pathtowriteFile = exportPath + "\\" + fileName;
                 result = GetPHDCallDetailsInformation(ObjCallDetailsSearchRequest, profile);
                 //Change by Arqam
                 CultureInfo culture_info = Thread.CurrentThread.CurrentCulture;
                 TextInfo text_info = culture_info.TextInfo;
-                  for (int i = 0; i < result.Count(); i++)
+                for (int i = 0; i < result.Count(); i++)
                 {
 
                     result[i].CALL_ATTENDED_BY_NAME = text_info.ToTitleCase(result[i].CALL_ATTENDED_BY_NAME);
@@ -946,7 +1034,7 @@ namespace FOX.BusinessOperations.FoxPHDService
         }
         public bool AddUpdateRecordingName(PHDCallDetail ObjPHDCallDetailRequest, UserProfile profile)
         {
-            var ExistingDetailInfo = _PHDDetailRepository.GetFirst(r => r.FOX_PHD_CALL_DETAILS_ID == ObjPHDCallDetailRequest.FOX_PHD_CALL_DETAILS_ID 
+            var ExistingDetailInfo = _PHDDetailRepository.GetFirst(r => r.FOX_PHD_CALL_DETAILS_ID == ObjPHDCallDetailRequest.FOX_PHD_CALL_DETAILS_ID
             && r.PRACTICE_CODE == profile.PracticeCode && r.DELETED == false);
 
             ExistingDetailInfo.CALL_RECORDING_PATH = ObjPHDCallDetailRequest.CALL_RECORDING_PATH;
@@ -994,21 +1082,21 @@ namespace FOX.BusinessOperations.FoxPHDService
         public List<PHDUnmappedCalls> GetUnmappedCalls(UnmappedCallsSearchRequest reg, UserProfile profile)
         {
             List<PHDUnmappedCalls> returList = new List<PHDUnmappedCalls>();
-                    if (!string.IsNullOrEmpty(reg.CALL_DATE_STR))
-                        reg.CALL_DATE = Convert.ToDateTime(reg.CALL_DATE_STR);
-                    else
-                        reg.CALL_DATE = null;
-                   
-         
-          
+            if (!string.IsNullOrEmpty(reg.CALL_DATE_STR))
+                reg.CALL_DATE = Convert.ToDateTime(reg.CALL_DATE_STR);
+            else
+                reg.CALL_DATE = null;
+
+
+
             SqlParameter _practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
             SqlParameter _callNo = new SqlParameter { ParameterName = "CALL_NO", Value = reg.CALL_NO };
             SqlParameter _callDate = Helper.getDBNullOrValue("CALL_DATE", reg.CALL_DATE.ToString());
-          
+
             returList = SpRepository<PHDUnmappedCalls>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_UNMAPPED_CALLS
                             @PRACTICE_CODE, @CALL_DATE, @CALL_NO"
                            , _practiceCode, _callDate, _callNo);
-                return returList;
+            return returList;
         }
         /// <summary>
         ///  GetFoxDocumentTypes returing the List of Document Type
@@ -1074,16 +1162,18 @@ namespace FOX.BusinessOperations.FoxPHDService
                     var FullName = users.Select(u => new { u.User_FName, u.User_LName })?.FirstOrDefault();
                     var GetCallReasonList = GetDropdownLists(profile);
                     var CallReasonName = "";
-                    if (GetCallReasonList != null && GetCallReasonList.PhdCallReasons != null )
+                    var csCaseCategory = "";
+                    if (GetCallReasonList != null && GetCallReasonList.PhdCallReasons != null)
                     {
-                         CallReasonName = GetCallReasonList.PhdCallReasons.Find(r => r.PHD_CALL_REASON_ID.ToString() == objPHDCallDetailRequest.CALL_REASON).NAME;
+                        CallReasonName = GetCallReasonList.PhdCallReasons.Find(r => r.PHD_CALL_REASON_ID.ToString() == objPHDCallDetailRequest.CALL_REASON).NAME;
+                        csCaseCategory = GetCallReasonList.CSCaseCategories.Find(r => r.CS_Category_ID.ToString() == objPHDCallDetailRequest.CS_CASE_CATEGORY).CS_Category_ID.ToString();
                     }
                     var Email = users.Select(e => e.EMAIL)?.FirstOrDefault();
                     if (objPHDCallDetailRequest.PRIORITY == null)
                         objPHDCallDetailRequest.PRIORITY = "";
 
                     InsertCase(sscmCaseNum, FullName.User_FName + " " + FullName.User_LName, CallReasonName, objPHDCallDetailRequest.CALL_DETAILS,
-                    "", "5001", 0, "2", objPHDCallDetailRequest.PRIORITY, PracticeCode.ToString(), "",
+                    "", csCaseCategory, 0, "2", objPHDCallDetailRequest.PRIORITY, PracticeCode.ToString(), "",
                     objPHDCallDetailRequest.PATIENT_ACCOUNT_STR, "", "", "", objPHDCallDetailRequest.INCOMING_CALL_NO, 0, Email,
                     "NC", "", false, false, UserId.ToString());
                 }
@@ -1094,15 +1184,17 @@ namespace FOX.BusinessOperations.FoxPHDService
                     var FullName = users.Select(u => new { u.FIRST_NAME, u.LAST_NAME })?.FirstOrDefault();
                     var GetCallReasonList = GetDropdownLists(profile);
                     var CallReasonName = "";
+                    var csCaseCategory = "";
                     if (GetCallReasonList != null && GetCallReasonList.PhdCallReasons != null)
                     {
                         CallReasonName = GetCallReasonList.PhdCallReasons.Find(r => r.PHD_CALL_REASON_ID.ToString() == objPHDCallDetailRequest.CALL_REASON).NAME;
+                        csCaseCategory = GetCallReasonList.CSCaseCategories.Find(r => r.CS_Category_ID.ToString() == objPHDCallDetailRequest.CS_CASE_CATEGORY).CS_Category_ID.ToString();
                     }
                     var Email = users.Select(e => e.EMAIL)?.FirstOrDefault();
                     if (objPHDCallDetailRequest.PRIORITY == null)
                         objPHDCallDetailRequest.PRIORITY = "";
 
-                    InsertCase(sscmCaseNum, FullName.FIRST_NAME + " " + FullName.LAST_NAME, CallReasonName, objPHDCallDetailRequest.CALL_DETAILS,"", "5001", 0, "2",
+                    InsertCase(sscmCaseNum, FullName.FIRST_NAME + " " + FullName.LAST_NAME, CallReasonName, objPHDCallDetailRequest.CALL_DETAILS,"", csCaseCategory, 0, "2",
                     objPHDCallDetailRequest.PRIORITY, PracticeCode.ToString(), "", objPHDCallDetailRequest.PATIENT_ACCOUNT_STR, "", "", "", objPHDCallDetailRequest.INCOMING_CALL_NO, 0, Email,
                     "NC", "", false, false, UserId.ToString());
                 }
@@ -1221,8 +1313,8 @@ namespace FOX.BusinessOperations.FoxPHDService
         /// <param name="ShowOnWeb"></param>
         /// <param name="boolTemplate"></param>
         /// <param name="userid"></param>
-        private void InsertCase(string strCaseNo, string strRepName, string strTitle, string strDetails, string strCaseMail, string strCaseCategory, int intNCalled, string strCaseType, 
-        string strPriority, string strPractice, string strProvider, string strPatientAccount, string strClaimNo, string strInsCode, string strResDate, string strPhone, int intPhoneType, 
+        private void InsertCase(string strCaseNo, string strRepName, string strTitle, string strDetails, string strCaseMail, string strCaseCategory, int intNCalled, string strCaseType,
+        string strPriority, string strPractice, string strProvider, string strPatientAccount, string strClaimNo, string strInsCode, string strResDate, string strPhone, int intPhoneType,
         string strEmail, string CaseStatus, string SendMailTo, bool ShowOnWeb, bool boolTemplate, string userid)
         {
             using(var db = new DBContextFoxPHD())
@@ -1299,7 +1391,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                         db.SaveChanges();
                     }
                 }
-                catch(NullReferenceException nullRef)
+                catch (NullReferenceException nullRef)
                 {
                     throw nullRef;
                 }
@@ -1316,7 +1408,7 @@ namespace FOX.BusinessOperations.FoxPHDService
             {
                 SqlParameter praticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
                 List<SscmCaseDetail> result = SpRepository<SscmCaseDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SSCM_CASE_DETAILS @PRACTICE_CODE", praticeCode);
-                if(result == null)
+                if (result == null)
                 {
                     return result = new List<SscmCaseDetail>();
                 }
@@ -1329,7 +1421,7 @@ namespace FOX.BusinessOperations.FoxPHDService
             }
         }
         /// <summary>
-        /// 
+        /// This Function is used to Get User Details Internal and External
         /// </summary>
         /// <param name="profile"></param>
         /// <returns></returns>
@@ -1339,13 +1431,13 @@ namespace FOX.BusinessOperations.FoxPHDService
             {
                 SqlParameter email = new SqlParameter { ParameterName = "EMAIL", Value = profile.UserEmailAddress };
                 List<FoxUserDetails> users = SpRepository<FoxUserDetails>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_USERS_DETAILS @EMAIL", email);
-                if(users == null)
+                if (users == null)
                 {
                     return users = new List<FoxUserDetails>();
                 }
                 return users;
             }
-            catch(NullReferenceException)
+            catch (NullReferenceException)
             {
                 throw;
             }
@@ -1431,7 +1523,69 @@ namespace FOX.BusinessOperations.FoxPHDService
                 throw;
             }
         }
+        /// <summary>
+        /// This Function is used  to return the PHD Call
+        /// Log History Details.
+        /// </summary>
+        /// <param name="phdCallDetailID"></param>
+        /// <param name="userProfile"></param>
+        /// <returns></returns>
+        public List<PhdCallLogHistoryDetail> GetPhdCallLogHistoryDetails(string phdCallDetailID, UserProfile userProfile)
+        {
+            try
+            {
+                SqlParameter praticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", Value = userProfile.PracticeCode };
+                SqlParameter callDetailID = new SqlParameter { ParameterName = "FOX_PHD_CALL_DETAILS_ID", Value = phdCallDetailID };
+                List<PhdCallLogHistoryDetail> logCallDetails = SpRepository<PhdCallLogHistoryDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_CALL_HISTORY_DETAILS @PRACTICE_CODE, @FOX_PHD_CALL_DETAILS_ID", praticeCode, callDetailID);
+                if (logCallDetails == null)
+                {
+                    return logCallDetails = new List<PhdCallLogHistoryDetail>();
+                }
+                return logCallDetails;
+            }
+            catch (Exception)
+            {
 
+                throw;
+            }
+        }
+        public void AddPHDLog(PHDCallDetail ObjPHDCallDetailRequest, string LogFor, string LogDetail, UserProfile profile)
+        {
+            PhdCallLogHistory phdCallLogHistory = new PhdCallLogHistory();
+            phdCallLogHistory.PHD_CALL_LOG_ID = Helper.getMaximumId("PHD_CALL_LOG_ID");
+            phdCallLogHistory.FOX_PHD_CALL_DETAILS_ID = ObjPHDCallDetailRequest.FOX_PHD_CALL_DETAILS_ID;
+            phdCallLogHistory.PRACTICE_CODE = ObjPHDCallDetailRequest.PRACTICE_CODE;
+            phdCallLogHistory.PATIENT_ACCOUNT = ObjPHDCallDetailRequest.PATIENT_ACCOUNT;
+            phdCallLogHistory.FOLLOW_UP_DATE = LogFor == "CALL_NOTES" ? null : ObjPHDCallDetailRequest.FOLLOW_UP_DATE;
+            phdCallLogHistory.CALL_DETAILS = LogDetail;
+            phdCallLogHistory.CALL_LOG_OF_TYPE = LogFor;
+            phdCallLogHistory.DELETED = false;
+            phdCallLogHistory.CREATED_BY = phdCallLogHistory.MODIFIED_BY = profile.UserName;
+            phdCallLogHistory.CREATED_DATE = phdCallLogHistory.MODIFIED_DATE = Helper.GetCurrentDate();
+            _phdCallLogHistoryRepository.Insert(phdCallLogHistory);
+            _phdCallLogHistoryRepository.Save();
+        }
+        public List<WebSoftCaseStatusResponse> GetWebSoftCaseStatusResponses(string sscmCaseNumber)
+        {
+            try
+            {
+                var result = new List<WebSoftCaseStatusResponse>();
+                if (!string.IsNullOrEmpty(sscmCaseNumber))
+                {
+                    SqlParameter sscmCaseNumberStr = new SqlParameter { ParameterName = "Caseno", SqlDbType = SqlDbType.VarChar, Value = sscmCaseNumber };
+                    result = SpRepository<WebSoftCaseStatusResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_MTBCSOFT_WEB_CASE_STATUS_PREV_COMMENTS @Caseno", sscmCaseNumberStr).ToList();
+                    if (result == null)
+                    {
+                        return new List<WebSoftCaseStatusResponse>();
+                    }
+                }
+                return result;
+            }
+            catch (NullReferenceException)
+            {
+                throw;
+            }
+        }
     }
 }
     

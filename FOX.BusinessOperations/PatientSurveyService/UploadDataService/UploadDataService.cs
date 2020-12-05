@@ -1,4 +1,5 @@
 ﻿using FOX.BusinessOperations.CommonService;
+using FOX.BusinessOperations.CommonServices;
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.CommonModel;
@@ -10,6 +11,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
+using System.IO;
 
 namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
 {
@@ -29,7 +31,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
             return PatientSurveyList;
         }
 
-        public ResponseModel ReadExcel(string fileName, long practiceCode, string userName)
+        public ResponseModel ReadExcel(string fileName, UserProfile profile)
         {
             try
             {
@@ -39,6 +41,16 @@ namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
                 path = HttpContext.Current.Server.MapPath(path);
                 string fileType = path.Substring(path.Length - 3);
                 long totalRecordInFile = 0;
+                string virtualPath = @"/" + profile.PracticeDocumentDirectory + "/" + "PatientSurveyLogFiles/";
+                var exportPath = HttpContext.Current.Server.MapPath("~" + virtualPath);
+                var name = fileName == null ? "Temp" : fileName.Substring(0, fileName.LastIndexOf('.'));
+                var logfileName = DocumentHelper.GenerateSignatureFileName(name) + ".txt";
+                if (!Directory.Exists(exportPath))
+                {
+                    Directory.CreateDirectory(exportPath);
+                }
+                var pathtowriteFile = exportPath + "\\" + logfileName;
+                int rowNumToInsert = 1;
 
                 #region .csv File Reader Region
 
@@ -172,9 +184,13 @@ namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
                         }
                         patientSurvey.FILE_NAME = fileName;
                         patientSurvey.TOTAL_RECORD_IN_FILE = totalRecordInFile;
-                        AddPatientSurvey(patientSurvey, practiceCode, userName);
+                        rowNumToInsert = rowNumToInsert + 1;
+                        patientSurvey.ROW = rowNumToInsert;
+                        AddPatientSurvey(patientSurvey, profile.PracticeCode, profile.UserName);
                     }
+                    responseModel.FilePath = pathtowriteFile;
                     sr.Close();
+                    generate_file(totalRecordInFile, profile, pathtowriteFile);
                 }
 
                 #endregion
@@ -335,8 +351,12 @@ namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
                             patientSurvey.SERVICE_OR_PAYMENT_AMOUNT = amount;
                         patientSurvey.FILE_NAME = fileName;
                         patientSurvey.TOTAL_RECORD_IN_FILE = totalRecordInFile;
-                        AddPatientSurvey(patientSurvey, practiceCode, userName);
+                        rowNumToInsert = rowNumToInsert + 1;
+                        patientSurvey.ROW = rowNumToInsert;
+                        AddPatientSurvey(patientSurvey, profile.PracticeCode, profile.UserName);
                     }
+                    responseModel.FilePath = pathtowriteFile;
+                    generate_file(totalRecordInFile, profile, pathtowriteFile);
                 }
 
                 #endregion
@@ -348,6 +368,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
                 return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
             }
         }
+        List<PatientSurvey> failed_details = new List<PatientSurvey>();
 
         private void AddPatientSurvey(PatientSurvey patientSurvey, long practiceCode, string userName)
         {
@@ -362,6 +383,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
                         patient.LAST_VISIT_DATE == patientSurvey.LAST_VISIT_DATE)
                     {
                         isAlreadyExist = true;
+                        failed_details.Add(patientSurvey);
                     }
                 }
                 if (!isAlreadyExist)
@@ -394,7 +416,25 @@ namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
                 patientSurvey.IS_RESPONSED_BY_HQ = null;
                 _patientSurveyRepository.Insert(patientSurvey);
                 _patientSurveyRepository.Save();
-                //_patientSurveyContext.SaveChanges();
+            }
+        }
+        private void generate_file(long totalRecordInFile, UserProfile profile, string pathtowriteFile)
+        {
+            int i = 0;
+            using (StreamWriter writer = new StreamWriter(pathtowriteFile, true))
+            {
+
+                writer.WriteLine("Patient Survey Upload Data - Log Report: " + Environment.NewLine + "----------------------------------------" + Environment.NewLine + "Total Records in File: " + totalRecordInFile + Environment.NewLine + "Records Successfully Uploaded: " + (totalRecordInFile - failed_details.Count()) + "" + Environment.NewLine +
+                "Records Failed Due to Duplication Check: " + +(failed_details.Count()) + Environment.NewLine);
+                writer.WriteLine("Detail of Failed Records: " + Environment.NewLine + "-------------------------" + Environment.NewLine);
+                writer.WriteLine("Excel Row #" + " \t" + "Patient Account Number" + " \t" + "  Responsible Party Last Name" + " \t" + "  Responsible Party First Name" + " \t" 
+                    + "  Service or Payment Description" + " \t" + "   Provider  " + " \t" + " \t" + " \t" + " \t" + "   Region" + " \t" + " \t"   + " \t" + " \t" +  "Last Visit Date" + Environment.NewLine);
+                foreach (var Data in failed_details)
+                {
+                    writer.WriteLine(String.Format("{0,-15}  {1,-24}  {2,-30} {3,-31} {4,-40} {5, -39} {6,-36} {7,-33}", Data.ROW, Data.PATIENT_ACCOUNT_NUMBER, Data.PATIENT_FIRST_NAME, Data.PATIENT_LAST_NAME,Data.SERVICE_OR_PAYMENT_DESCRIPTION, Data.PROVIDER,Data.REGION,Data.LAST_VISIT_DATE));
+                }
+
+                writer.WriteLine(Environment.NewLine + "Uploaded On: " + Helper.GetCurrentDate() + Environment.NewLine + "Uploaded by: " + profile.UserName);
             }
         }
     }

@@ -14,6 +14,10 @@ namespace FOX.DataModels.Models.FoxPHD
         public string CALL_DATE_TO_STR { get; set; }
         public string CALL_ATTENDED_BY { get; set; }
         public string CALL_REASON { get; set; }
+        public string CALL_HANDLING { get; set; }
+        public string CS_CASE_STATUS { get; set; }
+
+        public Boolean FOLLOW_UP_CALLS { get; set; }
         public string MRN { get; set; }
         public string SEARCH_TEXT { get; set; }
         public int CURRENT_PAGE { get; set; }
@@ -63,7 +67,12 @@ namespace FOX.DataModels.Models.FoxPHD
         public long PRACTICE_CODE { get; set; }
         public string MRN { get; set; }
         public string SSCM_CASE_ID { get; set; }
-
+        [NotMapped]
+        public string CS_Case_Status { get; set; }
+        [NotMapped]
+        public string CS_CASE_CATEGORY { get; set; }
+        [NotMapped]
+        public string CS_CASE_CATEGORY_NAME { get; set; }
         public DateTime DOS { get; set; }
         [NotMapped]
         public string DOS_STR { get; set; }
@@ -134,6 +143,7 @@ namespace FOX.DataModels.Models.FoxPHD
         public string ATTACHMENT_NAME { get; set; }
         [NotMapped]
         public bool _IsSSCM { get; set; }
+        public string FILE_PATH { get; set; }
     }
     [Table("FOX_TBL_PHD_CALL_PATIENT_VERIFICATION")]
     public class PhdPatientVerification
@@ -448,12 +458,76 @@ namespace FOX.DataModels.Models.FoxPHD
         public string CurrencyAmount { get; set; }
         public string CALL_USER_ID { get; set; }
     }
+    [Table("CS_Case_Categories")]
+    public class CS_Case_Categories
+    {
+        [Key]
+        public int CS_Category_ID { set; get; }
+        public string CS_Category_Name { set; get; }
+        public string CS_Pri_Res_Person { set; get; }
+        public bool? CS_Enable_Mail_Primary { set; get; }
+        public bool? CS_Enable_Mail_Users { set; get; }
+        public string CS_Reply_Mail_Id { set; get; }
+        public string CS_Case_Category_For { set; get; }
+        public string CS_Created_By { set; get; }
+        public DateTime? CS_Created_Date { set; get; }
+        public string CS_Modified_By { set; get; }
+        public DateTime? CS_Modified_Date { set; get; }
+        public bool? CS_Deleted { set; get; }
+        public string Cs_Authorize_Person { set; get; }
+        public bool? CS_PRACTEAM_PRIMARY { set; get; }
+        public long? CS_Department { set; get; }
+    }
+    [Table("FOX_TBL_PHD_CALL_MAPPING")]
+    public class PhdCallMapping
+    {
+        [Key]
+        public long PHD_CALL_MAPPING_ID { get; set; }
+        public long PRACTICE_CODE { get; set; }
+        public long PHD_CALL_SCENARIO_ID { get; set; }
+        public long PHD_CALL_REASON_ID { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime? CREATED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public DateTime? MODIFIED_DATE { get; set; }
+        public bool DELETED { get; set; }
+    }
+    [Table("FOX_TBL_PHD_CALL_LOG_HISTORY")]
+    public class PhdCallLogHistory
+    {
+        [Key]
+        public long PHD_CALL_LOG_ID { get; set; }
+        public long FOX_PHD_CALL_DETAILS_ID { get; set; }
+        public long PATIENT_ACCOUNT { get; set; }
+        public long PRACTICE_CODE { get; set; }
+        public string CALL_DETAILS { get; set; }
+        public DateTime? FOLLOW_UP_DATE { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime CREATED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public DateTime MODIFIED_DATE { get; set; }
+        public bool DELETED { get; set; }
+        public string CALL_LOG_OF_TYPE { get; set; }
+
+    }
+    public class PhdCallLogHistoryDetail
+    {
+        public long PHD_CALL_LOG_ID { get; set; }
+        public long FOX_PHD_CALL_DETAILS_ID { get; set; }
+        public long PATIENT_ACCOUNT { get; set; }
+        public long PRACTICE_CODE { get; set; }
+        public string CALL_DETAILS { get; set; }
+        public DateTime? FOLLOW_UP_DATE { get; set; }
+        public DateTime CREATED_DATE { get; set; }
+
+    }
     public class DropdownLists
     {
         public List<PhdCallScenario> PhdCallScenarios { get; set; }
         public List<PhdCallReason> PhdCallReasons { get; set; }
         public List<PhdCallRequest> PhdCallRequests { get; set; }
         public List<FoxApplicationUsersViewModel> foxApplicationUsersViewModel { get; set; }
+        public List<CS_Case_Categories> CSCaseCategories { get; set; }
     }
     [Table("FOX_TBL_PHD_CALL_UNMAPPED")]
     public class PHDUnmappedCalls : BaseModel
@@ -483,5 +557,21 @@ namespace FOX.DataModels.Models.FoxPHD
         public string CALL_NO { get; set; }
         public DateTime? CALL_DATE { get; set; }
         public string CALL_DATE_STR { get; set; }
-}
+    }
+    public class WebSoftCaseStatusResponse
+    {
+        public string user_name { get; set; }
+        public string CS_Created_Date { get; set; }
+        public string CS_Created_By { get; set; }
+        public string CS_User_Response { get; set; }
+        public string CS_User_Client_Response_ID { get; set; }
+        public string cs_authorize { get; set; }
+        public bool CS_Show_On_Web { get; set; }
+        public string Delete { get; set; }
+        public string auto_generated_resp { get; set; }
+        public string CS_Expected_Closing_Date { get; set; }
+        public string User_Type { get; set; }
+        public string Department_Name { get; set; }
+        public long CS_Practice_Code { get; set; }
+    }
 }

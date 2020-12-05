@@ -40,6 +40,7 @@ using SelectPdf;
 using System.Globalization;
 using FOX.DataModels.Models.FoxPHD;
 using FOX.DataModels.Models.SenderType;
+using FOX.DataModels.Models.StatesModel;
 
 namespace FOX.BusinessOperations.IndexInfoServices
 {
@@ -104,6 +105,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private readonly GenericRepository<ReferralSender> _referralSenderTypeRepository;
         private readonly GenericRepository<FOX_TBL_REFERRAL_SOURCE> _referralSourceTableRepository;
         private readonly GenericRepository<GROUP> _UserGroupseRepository;
+        private readonly GenericRepository<FOX_TBL_ZIP_STATE_COUNTY> _zipStateCountyRepository;
 
         public IndexInfoService()
         {
@@ -156,6 +158,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             _referralSenderTypeRepository = new GenericRepository<ReferralSender>(_DbContextCommon);
             _referralSourceTableRepository = new GenericRepository<FOX_TBL_REFERRAL_SOURCE>(_QueueContext);
             _UserGroupseRepository = new GenericRepository<GROUP>(_QueueContext);
+            _zipStateCountyRepository = new GenericRepository<FOX_TBL_ZIP_STATE_COUNTY>(_settings);
         }
         public void InsertUpdateDocuments(FOX_TBL_PATIENT_DOCUMENTS obj, UserProfile profile)
         {
@@ -1148,6 +1151,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             try
             {
                 //Get Data
+                ReferralRegion _accontManagerEmail = new ReferralRegion();
                 var wi = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = wORK_ID };
                 var emailData = SpRepository<IndexInfoEmail>.GetSingleObjectWithStoreProcedure(@"exec [FOX_GET_INDEX_ALL_INFO_EMAIL] @WORK_ID", wi);
                 if (emailData == null) { return; }
@@ -1182,8 +1186,54 @@ namespace FOX.BusinessOperations.IndexInfoServices
                             _bccList.Add(_emailList[i].EMAIL_ADDRESS);
                         }
                     }
+                   
+                   var patientDetails = _QueueRepository.GetFirst(x => x.WORK_ID == emailData.WORK_ID &&  x.DELETED == false && x.PRACTICE_CODE == profile.PracticeCode);
+                    if(patientDetails != null)
+                    {
+                        var patientPOSLocation = _PatientPOSLocationRepository.GetMany(x => x.Patient_Account == patientDetails.PATIENT_ACCOUNT && x.Deleted == false && x.Is_Default == true).OrderByDescending(t => t.Modified_Date).FirstOrDefault();
+                        if(patientPOSLocation != null)
+                        {
+                           var activeLocation = _FacilityLocationRepository.GetFirst(x => x.LOC_ID == patientPOSLocation.Loc_ID && x.DELETED == false && x.PRACTICE_CODE == profile.PracticeCode);
+                            if (activeLocation !=null && activeLocation.NAME.ToLower() == "private home")
+                            {
+                                var privateHomeDetails = _PatientAddressRepository.GetFirst(x => x.PATIENT_ACCOUNT == patientDetails.PATIENT_ACCOUNT && x.PATIENT_POS_ID == patientPOSLocation.Patient_POS_ID && x.DELETED == false);
+                                if(privateHomeDetails != null)
+                                {
+                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.ZIP_CODE.Substring(0, 5) == privateHomeDetails.ZIP.Substring(0,5) && !x.DELETED);
+                                    if(referralRegionDetails != null)
+                                    {
+                                        _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID & !x.DELETED);
+                                    }
+                                   
+                                }
+                                
 
-                    var _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && (x.REFERRAL_REGION_NAME == emailData.REFERRAL_REGION_NAME || x.REFERRAL_REGION_CODE == emailData.REFERRAL_REGION_NAME));
+                            }
+                            else
+                            {
+                                if(activeLocation != null && activeLocation.Zip != null)
+                                {
+                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.ZIP_CODE.Substring(0, 5) == activeLocation.Zip.Substring(0, 5) && x.PRACTICE_CODE == profile.PracticeCode);
+                                    if(referralRegionDetails != null)
+                                    {
+                                        _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID && !x.DELETED);
+                                    }
+                                   
+                                }
+                             
+
+                            }
+                        }
+                       
+                    }
+                   
+                  
+                   
+
+
+
+                    //var _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && (x.REFERRAL_REGION_NAME == emailData.REFERRAL_REGION_NAME || x.REFERRAL_REGION_CODE == emailData.REFERRAL_REGION_NAME));
+                    
                     if (_accontManagerEmail != null)
                     {
                         if (string.IsNullOrEmpty(sendTo))
@@ -1220,8 +1270,45 @@ namespace FOX.BusinessOperations.IndexInfoServices
                             _bccList.Add(_emailList[i].EMAIL_ADDRESS);
                         }
                     }
+                    var patientDetails = _QueueRepository.GetFirst(x =>x.PRACTICE_CODE == profile.PracticeCode && x.WORK_ID == emailData.WORK_ID && x.DELETED == false);
+                    if (patientDetails != null)
+                    {
+                        var patientPOSLocation = _PatientPOSLocationRepository.GetMany(x => x.Patient_Account == patientDetails.PATIENT_ACCOUNT && x.Deleted == false && x.Is_Default == true).OrderByDescending(t => t.Modified_Date).FirstOrDefault();
+                        if (patientPOSLocation != null)
+                        {
+                            var activeLocation = _FacilityLocationRepository.GetFirst(x => x.LOC_ID == patientPOSLocation.Loc_ID && x.DELETED == false && x.PRACTICE_CODE == profile.PracticeCode);
+                            if (activeLocation != null && activeLocation.NAME.ToLower() == "private home")
+                            {
+                                var privateHomeDetails = _PatientAddressRepository.GetFirst(x => x.PATIENT_ACCOUNT == patientDetails.PATIENT_ACCOUNT && x.PATIENT_POS_ID == patientPOSLocation.Patient_POS_ID && x.DELETED == false);
+                                if (privateHomeDetails != null)
+                                {
+                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.PRACTICE_CODE == x.PRACTICE_CODE &&  x.ZIP_CODE.Substring(0, 5) == privateHomeDetails.ZIP.Substring(0,5) && !x.DELETED);
+                                    if (referralRegionDetails != null)
+                                    {
+                                        _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID && !x.DELETED);
+                                    }
 
-                    var _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && (x.REFERRAL_REGION_NAME == emailData.REFERRAL_REGION_NAME || x.REFERRAL_REGION_CODE == emailData.REFERRAL_REGION_NAME));
+                                }
+                            }
+                            else
+                            {
+                                if (activeLocation != null && activeLocation.Zip != null)
+                                {
+                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode &&  x.ZIP_CODE.Substring(0, 5) == activeLocation.Zip.Substring(0, 5) && !x.DELETED);
+                                    if (referralRegionDetails != null)
+                                    {
+                                        _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID && !x.DELETED);
+                                    }
+
+                                }
+
+
+                            }
+                        }
+
+                    }
+
+                    // _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && (x.REFERRAL_REGION_NAME == emailData.REFERRAL_REGION_NAME || x.REFERRAL_REGION_CODE == emailData.REFERRAL_REGION_NAME));
                     if (_accontManagerEmail != null)
                     {
                         if (string.IsNullOrEmpty(sendTo))
@@ -1434,101 +1521,98 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 return obj;
             }
         }
-        public List<IndexPatRes> GetIndexPatInfo(getPatientReq req, UserProfile Profile)
+        public IndexPatRes GetIndexPatInfo(getPatientReq req, UserProfile Profile)
         {
             try
             {
-                if (req.Last_Name == null)
-                    req.Last_Name = "";
-                if (req.First_Name == null)
-                    req.First_Name = "";
-                if (req.Middle_Name == null)
-                    req.Middle_Name = "";
-                if (req.SSN == null)
-                    req.SSN = "";
-                if (req.Gender == null)
-                    req.Gender = "";
-                if (req.Chart_Id == null)
-                    req.Chart_Id = "";
+                //if (req.Last_Name == null)
+                //    req.Last_Name = "";
+                //if (req.First_Name == null)
+                //    req.First_Name = "";
+                //if (req.Middle_Name == null)
+                //    req.Middle_Name = "";
+                //if (req.SSN == null)
+                //    req.SSN = "";
+                //if (req.Gender == null)
+                //    req.Gender = "";
+                //if (req.Chart_Id == null)
+                //    req.Chart_Id = "";
                 req.Practice_Code = Profile.PracticeCode;
-
+                var _patientAccount = new SqlParameter("PATIENT_ACCOUNT", SqlDbType.BigInt) { Value = req.Patient_Account };
                 var dob = string.IsNullOrEmpty(req.Date_Of_Birth_In_String) ? new DateTime() : Convert.ToDateTime(req.Date_Of_Birth_In_String);
                 var dobtemp = dob.ToString("MM/dd/yyyy");
                 var Practice_Code = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = req.Practice_Code };
-                var last_Name = new SqlParameter("Last_Name", SqlDbType.VarChar) { Value = !string.IsNullOrWhiteSpace(req.Last_Name) ? req.Last_Name.Trim() : req.Last_Name };
-                var first_Name = new SqlParameter("First_Name", SqlDbType.VarChar) { Value = !string.IsNullOrWhiteSpace(req.First_Name) ? req.First_Name.Trim() : req.First_Name };
-                var middle_Name = new SqlParameter("Middle_Name", SqlDbType.VarChar) { Value = req.Middle_Name };
-                var sSN = new SqlParameter("SSN", SqlDbType.VarChar) { Value = req.SSN };
-                var gender = new SqlParameter("Gender", SqlDbType.VarChar) { Value = req.Gender };
-                var date_Of_Birth = Helper.getDBNullOrValue("Date_Of_Birth", req.Date_Of_Birth_In_String == null ? null : Convert.ToDateTime(req.Date_Of_Birth_In_String).ToShortDateString());// new SqlParameter("Date_Of_Birth", SqlDbType.VarChar) { Value = req.Date_Of_Birth };
-                var chart_Id = new SqlParameter("@Chart_Id", SqlDbType.VarChar) { Value = req.Chart_Id };
+                //var last_Name = new SqlParameter("Last_Name", SqlDbType.VarChar) { Value = !string.IsNullOrWhiteSpace(req.Last_Name) ? req.Last_Name.Trim() : req.Last_Name };
+                //var first_Name = new SqlParameter("First_Name", SqlDbType.VarChar) { Value = !string.IsNullOrWhiteSpace(req.First_Name) ? req.First_Name.Trim() : req.First_Name };
+                //var middle_Name = new SqlParameter("Middle_Name", SqlDbType.VarChar) { Value = req.Middle_Name };
+                //var sSN = new SqlParameter("SSN", SqlDbType.VarChar) { Value = req.SSN };
+                //var gender = new SqlParameter("Gender", SqlDbType.VarChar) { Value = req.Gender };
+                //var date_Of_Birth = Helper.getDBNullOrValue("Date_Of_Birth", req.Date_Of_Birth_In_String == null ? null : Convert.ToDateTime(req.Date_Of_Birth_In_String).ToShortDateString());// new SqlParameter("Date_Of_Birth", SqlDbType.VarChar) { Value = req.Date_Of_Birth };
+                //var chart_Id = new SqlParameter("@Chart_Id", SqlDbType.VarChar) { Value = req.Chart_Id };
                 var work_id = new SqlParameter("@WORK_ID", SqlDbType.BigInt) { Value = req.WORK_ID };
                 var _PRACTICE_ORGANIZATION_ID = new SqlParameter("@PRACTICE_ORGANIZATION_ID", SqlDbType.BigInt) { Value = Profile.PRACTICE_ORGANIZATION_ID ?? 0 };
                 //var result = SpRepository<IndexPatRes>.GetListWithStoreProcedure(@"exec [Fox_Get_Patient_Info] @Last_Name,@First_Name,@Middle_Name,@SSN,@Gender,@Date_Of_Birth,@Chart_Id,@PRACTICE_CODE",
                 // last_Name, first_Name, middle_Name, sSN, gender, date_Of_Birth, chart_Id, Practice_Code);
-                var Patient_Alias = new SqlParameter { ParameterName = "Patient_Alias", SqlDbType = SqlDbType.Bit, Value = req.INCLUDE_ALIAS };
-                var _currentPage = new SqlParameter { ParameterName = "@CURRENT_PAGE", SqlDbType = SqlDbType.Int, Value = req.CURRENT_PAGE };
-                var _recordPerPage = new SqlParameter { ParameterName = "@RECORD_PER_PAGE", SqlDbType = SqlDbType.Int, Value = req.RECORD_PER_PAGE };
-                var _sortBy = new SqlParameter { ParameterName = "@SORT_BY", Value = req.SORT_BY };
-                var _sortOrder = new SqlParameter { ParameterName = "@SORT_ORDER", Value = req.SORT_ORDER };
-                if (req.SORT_BY == null)
+                //var Patient_Alias = new SqlParameter { ParameterName = "Patient_Alias", SqlDbType = SqlDbType.Bit, Value = req.INCLUDE_ALIAS };
+                //var _currentPage = new SqlParameter { ParameterName = "@CURRENT_PAGE", SqlDbType = SqlDbType.Int, Value = req.CURRENT_PAGE };
+                //var _recordPerPage = new SqlParameter { ParameterName = "@RECORD_PER_PAGE", SqlDbType = SqlDbType.Int, Value = req.RECORD_PER_PAGE };
+                //var _sortBy = new SqlParameter { ParameterName = "@SORT_BY", Value = req.SORT_BY };
+                //var _sortOrder = new SqlParameter { ParameterName = "@SORT_ORDER", Value = req.SORT_ORDER };
+                //if (req.SORT_BY == null)
+                //{
+                //    _sortBy.Value = DBNull.Value;
+                //}
+                //if (req.SORT_ORDER == null)
+                //{
+                //    _sortOrder.Value = DBNull.Value;
+                //}
+                //var result = SpRepository<IndexPatRes>.GetListWithStoreProcedure(@"exec Fox_Get_Patient_Info_Index_Info
+                //             @Last_Name, @First_Name, @Middle_Name, @SSN, @Gender, @Date_Of_Birth, @Chart_Id, @PRACTICE_CODE, @PRACTICE_ORGANIZATION_ID,@WORK_ID, @Patient_Alias, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER",
+                //             last_Name, first_Name, middle_Name, sSN, gender, date_Of_Birth, chart_Id, Practice_Code, _PRACTICE_ORGANIZATION_ID, work_id, Patient_Alias, _currentPage, _recordPerPage, _sortBy, _sortOrder);
+                var result = SpRepository<IndexPatRes>.GetSingleObjectWithStoreProcedure(@"exec Fox_Get_Patient_Info_Index_Info_single_record @PATIENT_ACCOUNT,@PRACTICE_CODE,@PRACTICE_ORGANIZATION_ID,@WORK_ID", _patientAccount, Practice_Code, _PRACTICE_ORGANIZATION_ID, work_id);
+                if (result != null)
                 {
-                    _sortBy.Value = DBNull.Value;
-                }
-                if (req.SORT_ORDER == null)
-                {
-                    _sortOrder.Value = DBNull.Value;
-                }
-                var result = SpRepository<IndexPatRes>.GetListWithStoreProcedure(@"exec Fox_Get_Patient_Info_Index_Info
-                             @Last_Name, @First_Name, @Middle_Name, @SSN, @Gender, @Date_Of_Birth, @Chart_Id, @PRACTICE_CODE, @PRACTICE_ORGANIZATION_ID,@WORK_ID, @Patient_Alias, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER",
-                             last_Name, first_Name, middle_Name, sSN, gender, date_Of_Birth, chart_Id, Practice_Code, _PRACTICE_ORGANIZATION_ID, work_id, Patient_Alias, _currentPage, _recordPerPage, _sortBy, _sortOrder);
-
-                if (result.Any())
-                {
-                    if (Profile.PRACTICE_ORGANIZATION_ID != null && ((!string.IsNullOrEmpty(req.Last_Name) && !string.IsNullOrEmpty(req.SSN)) || (!string.IsNullOrEmpty(req.Last_Name) && !string.IsNullOrEmpty(req.Date_Of_Birth))))
-                    {
-                        var tempSameOrganizationList = result.Where(t => t.PRACTICE_ORGANIZATION_ID == Profile.PRACTICE_ORGANIZATION_ID).AsEnumerable();
-                        var tempExactMatchList = result.Where(t => (t.PRACTICE_ORGANIZATION_ID != Profile.PRACTICE_ORGANIZATION_ID) && ((t.Last_Name.ToLower().Equals(req.Last_Name.ToLower()) && (t.SSN?.Equals(req.SSN) ?? false))
-                                                                    || (t.Last_Name.ToLower().Equals(req.Last_Name.ToLower()) && (t.Date_Of_Birth?.Equals(dobtemp) ?? false)))).AsEnumerable();
-                        result = new List<IndexPatRes>();
-                        if (tempSameOrganizationList.Any())
-                        {
-                            result.AddRange(tempSameOrganizationList);
-                        }
-                        if (tempExactMatchList.Any())
-                        {
-                            result.AddRange(tempExactMatchList);
-                        }
-                        var recPerPgae = 0;
-                        if (req.RECORD_PER_PAGE == 0)
-                        {
-                            recPerPgae = result.Count();
-                        }
-                        else
-                        {
-                            recPerPgae = req.RECORD_PER_PAGE;
-                        }
-                        foreach (var item in result)
-                        {
-                            item.TOTAL_RECORDS = result.Count();
-                            item.TOTAL_RECORD_PAGES = (int)Math.Ceiling((decimal)item.TOTAL_RECORDS / (decimal)recPerPgae);
-                        }
-                    }
+                    //if (Profile.PRACTICE_ORGANIZATION_ID != null && ((!string.IsNullOrEmpty(req.Last_Name) && !string.IsNullOrEmpty(req.SSN)) || (!string.IsNullOrEmpty(req.Last_Name) && !string.IsNullOrEmpty(req.Date_Of_Birth))))
+                    //{
+                    //    var tempSameOrganizationList = result.Where(t => t.PRACTICE_ORGANIZATION_ID == Profile.PRACTICE_ORGANIZATION_ID).AsEnumerable();
+                    //    var tempExactMatchList = result.Where(t => (t.PRACTICE_ORGANIZATION_ID != Profile.PRACTICE_ORGANIZATION_ID) && ((t.Last_Name.ToLower().Equals(req.Last_Name.ToLower()) && (t.SSN?.Equals(req.SSN) ?? false))
+                    //                                                || (t.Last_Name.ToLower().Equals(req.Last_Name.ToLower()) && (t.Date_Of_Birth?.Equals(dobtemp) ?? false)))).AsEnumerable();
+                    //    result = new List<IndexPatRes>();
+                    //    if (tempSameOrganizationList.Any())
+                    //    {
+                    //        result.AddRange(tempSameOrganizationList);
+                    //    }
+                    //    if (tempExactMatchList.Any())
+                    //    {
+                    //        result.AddRange(tempExactMatchList);
+                    //    }
+                    //    var recPerPgae = 0;
+                    //    if (req.RECORD_PER_PAGE == 0)
+                    //    {
+                    //        recPerPgae = result.Count();
+                    //    }
+                    //    else
+                    //    {
+                    //        recPerPgae = req.RECORD_PER_PAGE;
+                    //    }
+                    //    foreach (var item in result)
+                    //    {
+                    //        item.TOTAL_RECORDS = result.Count();
+                    //        item.TOTAL_RECORD_PAGES = (int)Math.Ceiling((decimal)item.TOTAL_RECORDS / (decimal)recPerPgae);
+                    //    }
+                    //}
 
                     return result;
                 }
                 else
                 {
-                    return new List<IndexPatRes>();
+                    return null;
                 }
-
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-
-
         }
 
         public List<FOX_TBL_PATIENT_DIAGNOSIS> GetDiagnosisInfo(Index_infoReq obj, UserProfile Profile)
@@ -4873,6 +4957,76 @@ namespace FOX.BusinessOperations.IndexInfoServices
         public pendingBalanceAmount GetPatientBalance(long? patientAccount)
         {
             return getPendingHighBalance(patientAccount);
+        }
+        public List<PatientListResponse> GetpatientsList(getPatientReq req, UserProfile Profile)
+        {
+            if (req.Last_Name == null)
+                req.Last_Name = "";
+            if (req.First_Name == null)
+                req.First_Name = "";
+            if (req.Middle_Name == null)
+                req.Middle_Name = "";
+            if (req.SSN == null)
+                req.SSN = "";
+            if (req.Gender == null)
+                req.Gender = "";
+            if (req.Chart_Id == null)
+                req.Chart_Id = "";
+            var first_Name = new SqlParameter("First_Name", SqlDbType.VarChar) { Value = !string.IsNullOrWhiteSpace(req.First_Name) ? req.First_Name.Trim() : req.First_Name };
+            var last_Name = new SqlParameter("Last_Name", SqlDbType.VarChar) { Value = !string.IsNullOrWhiteSpace(req.Last_Name) ? req.Last_Name.Trim() : req.Last_Name };
+            var middle_Name = new SqlParameter("Middle_Name", SqlDbType.VarChar) { Value = req.Middle_Name };
+            var chart_Id = new SqlParameter("@Chart_Id", SqlDbType.VarChar) { Value = req.Chart_Id };
+            var SSN = new SqlParameter("SSN", SqlDbType.VarChar) { Value = req.SSN };
+            var gender = new SqlParameter("Gender", SqlDbType.VarChar) { Value = req.Gender };
+            var Practice_Code = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
+            var _currentPage = new SqlParameter { ParameterName = "@CURRENT_PAGE", SqlDbType = SqlDbType.Int, Value = req.CURRENT_PAGE };
+            var _recordPerPage = new SqlParameter { ParameterName = "@RECORD_PER_PAGE", SqlDbType = SqlDbType.Int, Value = req.RECORD_PER_PAGE };
+            var date_Of_Birth = Helper.getDBNullOrValue("Date_Of_Birth", string.IsNullOrEmpty(req.Date_Of_Birth_In_String) ? null : Convert.ToDateTime(req.Date_Of_Birth_In_String).ToShortDateString());
+            var Patient_Alias = new SqlParameter { ParameterName = "Patient_Alias", SqlDbType = SqlDbType.Bit, Value = req.INCLUDE_ALIAS };
+            var _PRACTICE_ORGANIZATION_ID = new SqlParameter("@PRACTICE_ORGANIZATION_ID", SqlDbType.BigInt) { Value = Profile.PRACTICE_ORGANIZATION_ID ?? 0 };
+            var result = SpRepository<PatientListResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_FOR_INDEX_INFO
+                             @First_Name,@Last_Name,@Middle_Name,@Chart_Id,@SSN,@Gender,@PRACTICE_CODE,@CURRENT_PAGE,@RECORD_PER_PAGE,@PRACTICE_ORGANIZATION_ID,@Date_Of_Birth,@Patient_Alias",
+                             first_Name, last_Name, middle_Name, chart_Id, SSN, gender, Practice_Code, _currentPage, _recordPerPage, _PRACTICE_ORGANIZATION_ID, date_Of_Birth, Patient_Alias);
+            if (result.Any())
+            {
+                var dob = string.IsNullOrEmpty(req.Date_Of_Birth_In_String) ? new DateTime() : Convert.ToDateTime(req.Date_Of_Birth_In_String);
+                var dobtemp = dob.ToString("MM/dd/yyyy");
+                if (Profile.PRACTICE_ORGANIZATION_ID != null && ((!string.IsNullOrEmpty(req.Last_Name) && !string.IsNullOrEmpty(req.SSN)) || (!string.IsNullOrEmpty(req.Last_Name) && !string.IsNullOrEmpty(req.Date_Of_Birth))))
+                {
+                    var tempSameOrganizationList = result.Where(t => t.PRACTICE_ORGANIZATION_ID == Profile.PRACTICE_ORGANIZATION_ID).AsEnumerable();
+                    var tempExactMatchList = result.Where(t => (t.PRACTICE_ORGANIZATION_ID != Profile.PRACTICE_ORGANIZATION_ID) && ((t.Last_Name.ToLower().Equals(req.Last_Name.ToLower()) && (t.SSN?.Equals(req.SSN) ?? false))
+                                                                || (t.Last_Name.ToLower().Equals(req.Last_Name.ToLower()) && (t.Date_Of_Birth?.Equals(dobtemp) ?? false)))).AsEnumerable();
+                    result = new List<PatientListResponse>();
+                    if (tempSameOrganizationList.Any())
+                    {
+                        result.AddRange(tempSameOrganizationList);
+                    }
+                    if (tempExactMatchList.Any())
+                    {
+                        result.AddRange(tempExactMatchList);
+                    }
+                    var recPerPgae = 0;
+                    if (req.RECORD_PER_PAGE == 0)
+                    {
+                        recPerPgae = result.Count();
+                    }
+                    else
+                    {
+                        recPerPgae = req.RECORD_PER_PAGE;
+                    }
+                    foreach (var item in result)
+                    {
+                        item.TOTAL_RECORDS = result.Count();
+                        item.TOTAL_RECORD_PAGES = (int)Math.Ceiling((decimal)item.TOTAL_RECORDS / (decimal)recPerPgae);
+                    }
+                }
+
+                return result;
+            }
+            else
+            {
+                return new List<PatientListResponse>();
+            }
         }
     }
 }

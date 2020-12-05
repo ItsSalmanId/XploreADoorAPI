@@ -129,7 +129,12 @@ namespace FOX.DataModels.Models.Settings.FacilityLocation
         public DateTime? Effective_To { get; set; }
         public double? Longitude { get; set; }
         public double? Latitude { get; set; }
-
+        [NotMapped]
+        public bool SetCoordinatesManually { get; set; }
+        [NotMapped]
+        public bool UpdatePatientAddress { get; set; }
+        [NotMapped]
+        public long? PATIENT_ACCOUNT { get; set; }
     }
 
     public class FacilityLocationViewModel

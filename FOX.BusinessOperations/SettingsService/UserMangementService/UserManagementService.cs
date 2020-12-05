@@ -2873,7 +2873,88 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 throw ex;
             }
         }
+        public bool DeleteUser(DeleteUserModel res, UserProfile profile)
+        {
+            if (res != null && res.user != null)
+            {
+                var usr = _UserRepository.GetByID(res.user.USER_ID);
+                if (usr != null)
+                {
+                    usr.DELETED = true;
+                    usr.MODIFIED_BY = profile.UserName;
+                    usr.MODIFIED_DATE = Helper.GetCurrentDate();
+                    try
+                    {
+                        _UserRepository.Update(usr);
+                        _UserRepository.Save();
+                        #region email to Carey on Delete
 
-
+                        string subject = "User profile deleted (" + usr.EMAIL + ")";
+                        var body = "";
+                        body += "<body>";
+                        body += "<p style='margin: 0px;'>A user profile was deleted with the following specifics:</p><br />";
+                        body += "<table width='500'>";
+                        body += "<tr>";
+                        body += "<td>Profile deleted: </td>";
+                        body += "<td>" + res.user.FIRST_NAME + " " + res.user.LAST_NAME + ". " + res.user.EMAIL + "</td>";
+                        body += "</tr>";
+                        body += "<tr>";
+                        body += "<td>By: </td>";
+                        body += "<td>" + profile.FirstName + " " + profile.LastName + ". " + profile.UserEmailAddress + " </td>";
+                        body += "</tr>";
+                        body += "<tr>";
+                        body += "<td>Date/Time: </td>";
+                        body += "<td>" + Helper.GetCurrentDate().ToString("MM / dd / yyyy hh: mm tt") + "</td>";
+                        body += "</tr>";
+                        body += "<tr>";
+                        body += "<td>Reason: </td>";
+                        body += "<td>" + res.reason + "</td>";
+                        body += "</tr></table><br /><br />";
+                        body += "<p style='margin: 0px;'>Regards,</ p><br />";
+                        body += "<p style='margin: 0px;'>MTBC Support team</ p><br />";
+                        body += "</body>";
+                        string sendTo = string.Empty;
+                        List<string> _ccList = new List<string>();
+                        if (profile.PracticeCode == 1012714)
+                        {
+                            //if (res._isADuser)
+                            //{
+                            //    sendTo = "Carey.sambogna@foxrehab.org";
+                            //    _ccList.Add("support@foxrehab.org");
+                            //}
+                            //else
+                            //{
+                            //    sendTo = "Carey.sambogna@foxrehab.org,muhammadali9@mtbc.com";
+                            //    _ccList.Add("foxsupport@mtbc.com");
+                            //}
+                        }
+                        else
+                        {
+                            //sendTo = "muhammadali9@mtbc.com,Javedakhtar@MTBC.COM";
+                            //_ccList.Add("abdulsattar@MTBC.COM");
+                        }
+                        
+                        sendTo = "abdurrafay@mtbc.com,Javedakhtar@MTBC.COM";
+                        _ccList.Add("usmanfarooq@MTBC.COM");
+                        //Helper.SendEmail(sendTo, subject, body, null, _bccList, "noreply@mtbc.com");
+                        Helper.SendEmail(sendTo, subject, body, null, profile, _ccList);
+                        #endregion
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

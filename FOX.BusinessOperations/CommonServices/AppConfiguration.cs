@@ -33,7 +33,13 @@ namespace FOX.BusinessOperations.CommonServices
                 return @"FoxDocumentDirectory\RequestForOrder\UploadImages";
             }
         }
-
+        public static string PHDFilesUploadImages
+        {
+            get
+            {
+                return @"FoxDocumentDirectory\PHDAttachmentFiles\UploadImages";
+            }
+        }
         public static string ReconciliationOriginalFilesDirectory
         {
             get

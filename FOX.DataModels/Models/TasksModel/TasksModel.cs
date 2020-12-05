@@ -504,5 +504,85 @@ namespace FOX.DataModels.Models.TasksModel
         public bool IS_USER { get; set; }
         public string RT_USER_ID { get; set; }
     }
-   
+
+    public class TaskStatus
+    {
+        public string GROUP_NAME { get; set; }
+        public int CLOSE_TASK { get; set; }
+        public int OPEN_TASK { get; set; }
+    }
+    public class TaskDashboardSearchRequest
+    {
+        public long PRACTICE_CODE { get; set; }
+        public string GROUP_IDs { get; set; }
+        public string TASK_TYPE_IDs { get; set; }
+        public DateTime? DATE_FROM { get; set; }
+        public string DATE_FROM_STR { get; set; }
+        public DateTime? DATE_TO { get; set; }
+        public string DATE_TO_STR { get; set; }
+        public string TIME_FRAME { get; set; }
+    }
+    public class TaskDueDateStatus
+    {
+        public string GROUP_NAME { get; set; }
+        public int DUE_DATE_TIME { get; set; }
+    }
+    public class TaskOverAllStatus
+    {
+        public int? NEW_CREATED { get; set; }
+        public int? TOTAL_CLOSE { get; set; }
+        public int? TOTAL_OPEN { get; set; }
+        public string AVERAGE_CLOSURE { get; set; }
+        public int? TOTAL_PAST_DUE { get; set; }
+    }
+    public class TaskaAverageClosureTime
+    {
+        public string GROUP_NAME { get; set; }
+        public int? AVERAGE_CLOSURE { get; set; }
+    }
+    public class NewTaskStatus
+    {
+        public int day { get; set; }
+        public int month { get; set; }
+        public string monthName { get; set; }
+        public int year { get; set; }
+        public int totalRecord { get; set; }
+        public int? average { get; set; }
+    }
+    public class TaskTypeDashboardData
+    {
+        public DateTime dates { get; set; }
+        public int? BLOCK { get; set; }
+        public int? Call_patient { get; set; }
+        public int? PORTA { get; set; }
+        public int? Verbal_order { get; set; }
+        public int? Demographic_corrections { get; set; }
+        public int? Durable_Medical_Equipment_Order { get; set; }
+        public int? Audit_Follow_up { get; set; }
+        public int? Client_POA { get; set; }
+        public int? Contract_Billing_Follow_Up { get; set; }
+        public int? Hold_Pending_Assignment { get; set; }
+        public int? High_Balance_Review { get; set; }
+        public int? Home_Health_Episode { get; set; }
+        public int? Home_Health_Follow_up { get; set; }
+        public int? Insurance_Follow_up { get; set; }
+        public int? Insurance_Verification { get; set; }
+        public int? MSP { get; set; }
+        public int? Non_Admission_Reasons { get; set; }
+        public int? Physician_Follow_up { get; set; }
+        public int? Request_Authorization { get; set; }
+        public int? Strategic_Accounts { get; set; }
+        public int? Verbal_Order { get; set; }
+        public int? Verify_Insurance { get; set; }
+    }
+    public class TaskDashboardResponse : BaseModel
+    {
+        public List<TaskStatus> TaskStatus { get; set; }
+        public List<TaskDueDateStatus> TaskDueDateStatus { get; set; }
+        public TaskOverAllStatus TaskOverAllStatus { get; set; }
+        public List<TaskaAverageClosureTime> TaskaAverageClosureTime { get; set; }
+        public List<NewTaskStatus> NewTaskStatus { get; set; }
+        public List<TaskTypeDashboardData> taskTypeDashboardData { get; set; }
+        public string TaskTypeDashboardDataString { get; set; }
+    }
 }
