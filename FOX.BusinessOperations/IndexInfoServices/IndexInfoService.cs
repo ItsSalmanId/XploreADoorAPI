@@ -3702,10 +3702,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
             try
             {
                 var _patientAccount = new SqlParameter("PATIENT_ACCOUNT", SqlDbType.BigInt) { Value = PATIENT_ACCOUNT };
-                if (PATIENT_ACCOUNT == null)
-                {
-                    _patientAccount.Value = DBNull.Value;
-                }
+                //if (PATIENT_ACCOUNT == null)
+                //{
+                //    _patientAccount.Value = DBNull.Value;
+                //}
                 var result = SpRepository<pendingBalanceAmount>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_PENDING_BALANCE @PATIENT_ACCOUNT", _patientAccount);
                 if(result == null)
                 {
@@ -4972,17 +4972,23 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 req.Gender = "";
             if (req.Chart_Id == null)
                 req.Chart_Id = "";
-            var first_Name = new SqlParameter("First_Name", SqlDbType.VarChar) { Value = !string.IsNullOrWhiteSpace(req.First_Name) ? req.First_Name.Trim() : req.First_Name };
-            var last_Name = new SqlParameter("Last_Name", SqlDbType.VarChar) { Value = !string.IsNullOrWhiteSpace(req.Last_Name) ? req.Last_Name.Trim() : req.Last_Name };
-            var middle_Name = new SqlParameter("Middle_Name", SqlDbType.VarChar) { Value = req.Middle_Name };
+            if (!string.IsNullOrEmpty(req.Date_Of_Birth_In_String))
+                req.Date_Of_Birth = Convert.ToDateTime(req.Date_Of_Birth_In_String);
+            else
+            {
+                req.Date_Of_Birth = null;
+            }
+            var first_Name = new SqlParameter("@First_Name", SqlDbType.VarChar) { Value = !string.IsNullOrWhiteSpace(req.First_Name) ? req.First_Name.Trim() : req.First_Name };
+            var last_Name = new SqlParameter("@Last_Name", SqlDbType.VarChar) { Value = !string.IsNullOrWhiteSpace(req.Last_Name) ? req.Last_Name.Trim() : req.Last_Name };
+            var middle_Name = new SqlParameter("@Middle_Name", SqlDbType.VarChar) { Value = req.Middle_Name };
             var chart_Id = new SqlParameter("@Chart_Id", SqlDbType.VarChar) { Value = req.Chart_Id };
-            var SSN = new SqlParameter("SSN", SqlDbType.VarChar) { Value = req.SSN };
-            var gender = new SqlParameter("Gender", SqlDbType.VarChar) { Value = req.Gender };
-            var Practice_Code = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
+            var SSN = new SqlParameter("@SSN", SqlDbType.VarChar) { Value = req.SSN };
+            var gender = new SqlParameter("@Gender", SqlDbType.VarChar) { Value = req.Gender };
+            var Practice_Code = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
             var _currentPage = new SqlParameter { ParameterName = "@CURRENT_PAGE", SqlDbType = SqlDbType.Int, Value = req.CURRENT_PAGE };
             var _recordPerPage = new SqlParameter { ParameterName = "@RECORD_PER_PAGE", SqlDbType = SqlDbType.Int, Value = req.RECORD_PER_PAGE };
-            var date_Of_Birth = Helper.getDBNullOrValue("Date_Of_Birth", string.IsNullOrEmpty(req.Date_Of_Birth_In_String) ? null : Convert.ToDateTime(req.Date_Of_Birth_In_String).ToShortDateString());
-            var Patient_Alias = new SqlParameter { ParameterName = "Patient_Alias", SqlDbType = SqlDbType.Bit, Value = req.INCLUDE_ALIAS };
+            var date_Of_Birth = new SqlParameter { ParameterName = "@Date_Of_Birth", SqlDbType = SqlDbType.VarChar, Value = req.Date_Of_Birth == null ? "" : req.Date_Of_Birth?.ToString("MM/dd/yyyy") };
+            var Patient_Alias = new SqlParameter { ParameterName = "@Patient_Alias", SqlDbType = SqlDbType.Bit, Value = req.INCLUDE_ALIAS };
             var _PRACTICE_ORGANIZATION_ID = new SqlParameter("@PRACTICE_ORGANIZATION_ID", SqlDbType.BigInt) { Value = Profile.PRACTICE_ORGANIZATION_ID ?? 0 };
             var result = SpRepository<PatientListResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_FOR_INDEX_INFO
                              @First_Name,@Last_Name,@Middle_Name,@Chart_Id,@SSN,@Gender,@PRACTICE_CODE,@CURRENT_PAGE,@RECORD_PER_PAGE,@PRACTICE_ORGANIZATION_ID,@Date_Of_Birth,@Patient_Alias",
@@ -4991,7 +4997,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 var dob = string.IsNullOrEmpty(req.Date_Of_Birth_In_String) ? new DateTime() : Convert.ToDateTime(req.Date_Of_Birth_In_String);
                 var dobtemp = dob.ToString("MM/dd/yyyy");
-                if (Profile.PRACTICE_ORGANIZATION_ID != null && ((!string.IsNullOrEmpty(req.Last_Name) && !string.IsNullOrEmpty(req.SSN)) || (!string.IsNullOrEmpty(req.Last_Name) && !string.IsNullOrEmpty(req.Date_Of_Birth))))
+                if (Profile.PRACTICE_ORGANIZATION_ID != null && ((!string.IsNullOrEmpty(req.Last_Name) && !string.IsNullOrEmpty(req.SSN)) || (!string.IsNullOrEmpty(req.Last_Name) && req.Date_Of_Birth != null)))
                 {
                     var tempSameOrganizationList = result.Where(t => t.PRACTICE_ORGANIZATION_ID == Profile.PRACTICE_ORGANIZATION_ID).AsEnumerable();
                     var tempExactMatchList = result.Where(t => (t.PRACTICE_ORGANIZATION_ID != Profile.PRACTICE_ORGANIZATION_ID) && ((t.Last_Name.ToLower().Equals(req.Last_Name.ToLower()) && (t.SSN?.Equals(req.SSN) ?? false))
@@ -5028,5 +5034,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 return new List<PatientListResponse>();
             }
         }
+    }
     }
 }

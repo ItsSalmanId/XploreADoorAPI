@@ -49,7 +49,7 @@ namespace FOX.DataModels.Models.IndexInfo
         public string SSN { get; set; }
         public string Chart_Id { get; set; }
         public string Gender { get; set; }
-        public string Date_Of_Birth { get; set; }
+        public DateTime? Date_Of_Birth { get; set; }
         public long Practice_Code { get; set; }
         public string Date_Of_Birth_In_String { get; set; }
         public long WORK_ID { get; set; }
