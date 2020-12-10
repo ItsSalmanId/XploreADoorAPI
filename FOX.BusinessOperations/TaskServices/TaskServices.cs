@@ -1679,6 +1679,8 @@ namespace FOX.BusinessOperations.TaskServices
         }
         public TaskDashboardResponse GetTaskDashBoardData(TaskDashboardSearchRequest req, UserProfile profile)
         {
+            List <string> dateList = new List<string>();
+            List<string> TaskTypes = new List<string>();
             TaskDashboardResponse taskDashboardResponse = new TaskDashboardResponse();
             req.DATE_TO = Helper.GetCurrentDate();
             if (!string.IsNullOrEmpty(req.DATE_FROM_STR))
@@ -1763,59 +1765,133 @@ namespace FOX.BusinessOperations.TaskServices
             {
                 taskDashboardResponse.TaskOverAllStatus = new TaskOverAllStatus();    
             }
-            SqlParameter _practiceCode5 = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
-            SqlParameter _groupIds5 = new SqlParameter { ParameterName = "GROUP_IDs", SqlDbType = SqlDbType.VarChar, Value = req.GROUP_IDs ?? (object)DBNull.Value };
-            SqlParameter _taskTypeIds5 = new SqlParameter { ParameterName = "TASK_TYPE_IDs", SqlDbType = SqlDbType.VarChar, Value = req.TASK_TYPE_IDs ?? (object)DBNull.Value };
-            SqlParameter _dateFrom5 = new SqlParameter { ParameterName = "DATE_FROM", SqlDbType = SqlDbType.DateTime, Value = req.DATE_FROM.ToString() ?? ""};
-            SqlParameter _dateTos5 = new SqlParameter { ParameterName = "DATE_TO", SqlDbType = SqlDbType.DateTime, Value = req.DATE_TO.ToString() ?? ""};
-            SqlParameter _timeFrame5 = new SqlParameter { ParameterName = "TIME_FRAME", SqlDbType = SqlDbType.VarChar, Value = req.TIME_FRAME ?? (object)DBNull.Value };
-            var createdTasktypesdata = SpRepository<object>.getSpSqlDataAdapter(@"exec [FOX_PROC_GET_TASKTYPE_DATA_DASHBOARD_DYNAMICALLY] " + _practiceCode5.Value +",'" + _groupIds5.Value + "','" + _taskTypeIds5.Value + "','" + _dateFrom5.Value + "','" + _dateTos5.Value + "','" + _timeFrame5.Value + "'");
-            
-            DataTable dt = new DataTable();
-            createdTasktypesdata.Fill(dt);
-            if (dt.Rows.Count > 0)
-            {
-                var stringdata = DataTableToJSONWithStringBuilder(dt);
-                if (!string.IsNullOrEmpty(stringdata))
-                {
-                    taskDashboardResponse.TaskTypeDashboardDataString = stringdata;
-                }
-            }
-            return taskDashboardResponse;
-        }
+            SqlParameter _practiceCode6 = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+            SqlParameter _groupIds6 = new SqlParameter { ParameterName = "GROUP_IDs", SqlDbType = SqlDbType.VarChar, Value = req.GROUP_IDs ?? (object)DBNull.Value };
+            SqlParameter _taskTypeIds6 = new SqlParameter { ParameterName = "TASK_TYPE_IDs", SqlDbType = SqlDbType.VarChar, Value = req.TASK_TYPE_IDs ?? (object)DBNull.Value };
+            SqlParameter _dateFrom6 = Helper.getDBNullOrValue("@DATE_FROM", req.DATE_FROM.ToString() ?? "");
+            SqlParameter _dateTo6 = Helper.getDBNullOrValue("@DATE_TO", req.DATE_TO.ToString() ?? "");
+            SqlParameter _timeFrame6 = new SqlParameter { ParameterName = "TIME_FRAME", SqlDbType = SqlDbType.VarChar, Value = req.TIME_FRAME ?? (object)DBNull.Value };
+            var taskTypes = SpRepository<TaskTypes>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_TYPE_NAMES_FOR_DASHBOARD]
+                        @PRACTICE_CODE, @GROUP_IDs, @TASK_TYPE_IDs, @DATE_FROM, @DATE_TO, @TIME_FRAME", _practiceCode6, _dateFrom6, _dateTo6, _groupIds6, _taskTypeIds6, _timeFrame6);
 
-        public string DataTableToJSONWithStringBuilder(DataTable table)
-        {
-            var JSONString = new StringBuilder();
-            if (table.Rows.Count > 0)
+            if (req.TIME_FRAME == "LAST_THREE_MONTHS")
             {
-                JSONString.Append("[");
-                for (int i = 0; i < table.Rows.Count; i++)
+                DateTime Today = DateTime.Today;
+                DateTime startDate = (new DateTime(Today.Year, Today.Month, 1)).AddMonths(-3);
+                DateTime endDate = startDate.AddMonths(3).AddSeconds(-1);
+                for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
                 {
-                    JSONString.Append("{");
-                    for (int j = 0; j < table.Columns.Count; j++)
+                    dateList.Add(date.ToString());
+                }
+            }
+
+            if (req.TIME_FRAME == "YESTERDAY")
+            {
+                DateTime startDate = DateTime.Now.AddDays(-1);
+                DateTime endDate = DateTime.Now;
+                for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+                {
+                    dateList.Add(date.ToString());
+                }
+            }
+
+            if (req.TIME_FRAME == "TODAY")
+            {
+                DateTime startDate = DateTime.Now;
+                DateTime endDate = DateTime.Now;
+                for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+                {
+                    dateList.Add(date.ToString());
+                }
+            }
+
+            if(req.TIME_FRAME == "THIS_WEEK")
+            {
+                DateTime startDate = (DateTime.Today.AddDays(
+                (int)CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek -
+                (int)DateTime.Today.DayOfWeek)).AddDays(1);
+
+                DateTime endDate = DateTime.Now;
+                for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+                {
+                    dateList.Add(date.ToString());
+                }
+            }
+
+            if (req.TIME_FRAME == "THIS_MONTH")
+            {
+                DateTime Today = DateTime.Today;
+                DateTime startDate = new DateTime(Today.Year, Today.Month, 1);
+                DateTime endDate = DateTime.Now;
+                for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+                {
+                    dateList.Add(date.ToString());
+                }
+            }
+
+            if (req.TIME_FRAME == "LAST_MONTH")
+            {
+                DateTime Today = DateTime.Today;
+                DateTime startDate = (new DateTime(Today.Year, Today.Month, 1)).AddMonths(-1);
+                DateTime endDate = startDate.AddMonths(1).AddSeconds(-1);
+                for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+                {
+                    dateList.Add(date.ToString());
+                }
+            }
+
+            if (req.TIME_FRAME == "DATE_RANGE")
+            {
+                DateTime startDate = Convert.ToDateTime(req.DATE_FROM_STR);
+                DateTime endDate = Convert.ToDateTime(req.DATE_TO_STR);
+                for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
+                {
+                    dateList.Add(date.ToString());
+                }
+            }
+            var maindictionary = new Dictionary<string, Dictionary<string, string>>();
+            int countlist = 0;
+            foreach (string date in dateList)
+            {                
+                req.CREATED_DATE = date;
+                SqlParameter _practiceCode5 = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                SqlParameter _groupIds5 = new SqlParameter { ParameterName = "GROUP_IDs", SqlDbType = SqlDbType.VarChar, Value = req.GROUP_IDs ?? (object)DBNull.Value };
+                SqlParameter _taskTypeIds5 = new SqlParameter { ParameterName = "TASK_TYPE_IDs", SqlDbType = SqlDbType.VarChar, Value = req.TASK_TYPE_IDs ?? (object)DBNull.Value };
+                SqlParameter _createdDate5 = new SqlParameter { ParameterName = "CREATED_DATE", SqlDbType = SqlDbType.DateTime, Value = req.CREATED_DATE.ToString() ?? "" };
+                SqlParameter _dateTos5 = new SqlParameter { ParameterName = "DATE_TO", SqlDbType = SqlDbType.DateTime, Value = req.CREATED_DATE.ToString() ?? "" };
+                SqlParameter _timeFrame5 = new SqlParameter { ParameterName = "TIME_FRAME", SqlDbType = SqlDbType.VarChar, Value = req.TIME_FRAME ?? (object)DBNull.Value };
+                var createdTasktypesdata = SpRepository<CreatedTaskTypedata>.GetListWithStoreProcedure(@"exec [FOX_PROC_CREATED_TASK_TYPE_DATA_ALTERNATIVE] @PRACTICE_CODE, @GROUP_IDs, @TASK_TYPE_IDs, @CREATED_DATE", _practiceCode5, _groupIds5, _taskTypeIds5, _createdDate5);
+                    var dict = new Dictionary<string, string>();
+                string dateInString = Convert.ToDateTime(date).ToString();
+                dict.Add("Date", dateInString);
+                if (createdTasktypesdata  != null && createdTasktypesdata.Count != 0 && taskTypes != null && taskTypes.Count != 0)
+                {
+                    foreach (TaskTypes taskType in taskTypes)
                     {
-                        if (j < table.Columns.Count - 1)
+                        var havetype = createdTasktypesdata.Find(x => x.TASK_TYPE_NAME == taskType.NAME);
+                        if(havetype != null)
                         {
-                            JSONString.Append("\"" + table.Columns[j].ColumnName.ToString() + "\":" + "\"" + table.Rows[i][j].ToString() + "\",");
+                            dict.Add(havetype.TASK_TYPE_NAME, havetype.TASK_COUNT.ToString());
                         }
-                        else if (j == table.Columns.Count - 1)
+                        else
                         {
-                            JSONString.Append("\"" + table.Columns[j].ColumnName.ToString() + "\":" + "\"" + table.Rows[i][j].ToString() + "\"");
+                            dict.Add(taskType.NAME, "0");
                         }
-                    }
-                    if (i == table.Rows.Count - 1)
-                    {
-                        JSONString.Append("}");
-                    }
-                    else
-                    {
-                        JSONString.Append("},");
                     }
                 }
-                JSONString.Append("]");
+                else
+                {
+                    foreach (TaskTypes taskType in taskTypes)
+                    {
+                        dict.Add(taskType.NAME, "0");
+                    }
+                }
+                maindictionary.Add(countlist.ToString(), dict);
+                countlist = countlist + 1;
             }
-            return JSONString.ToString();
+            var output = Newtonsoft.Json.JsonConvert.SerializeObject(maindictionary);
+            taskDashboardResponse.TaskTypeDashboardDataString = output;
+            return taskDashboardResponse;
         }
     }
 }

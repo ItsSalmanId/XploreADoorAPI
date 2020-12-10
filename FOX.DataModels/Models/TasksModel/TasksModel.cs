@@ -521,6 +521,7 @@ namespace FOX.DataModels.Models.TasksModel
         public DateTime? DATE_TO { get; set; }
         public string DATE_TO_STR { get; set; }
         public string TIME_FRAME { get; set; }
+        public string CREATED_DATE { get; set; }
     }
     public class TaskDueDateStatus
     {
@@ -574,6 +575,19 @@ namespace FOX.DataModels.Models.TasksModel
         public int? Strategic_Accounts { get; set; }
         public int? Verbal_Order { get; set; }
         public int? Verify_Insurance { get; set; }
+    }
+    public class CreatedTaskTypedata
+    {
+        public int TASK_TYPE_ID { get; set; }
+        public String TASK_TYPE_NAME { get; set; }
+        public int TASK_COUNT { get; set; }
+        public string CREATED_DATE { get; set; }
+    }
+
+    public class TaskTypes
+    {
+        public string NAME { get; set; }
+        public int TASK_TYPE_ID { get; set; }
     }
     public class TaskDashboardResponse : BaseModel
     {
