@@ -1202,7 +1202,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                     var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.ZIP_CODE.Substring(0, 5) == privateHomeDetails.ZIP.Substring(0,5) && !x.DELETED);
                                     if(referralRegionDetails != null)
                                     {
-                                        _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID & !x.DELETED);
+                                        _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID && !x.DELETED);
                                     }
                                    
                                 }
@@ -1282,7 +1282,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                 var privateHomeDetails = _PatientAddressRepository.GetFirst(x => x.PATIENT_ACCOUNT == patientDetails.PATIENT_ACCOUNT && x.PATIENT_POS_ID == patientPOSLocation.Patient_POS_ID && x.DELETED == false);
                                 if (privateHomeDetails != null)
                                 {
-                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.PRACTICE_CODE == x.PRACTICE_CODE &&  x.ZIP_CODE.Substring(0, 5) == privateHomeDetails.ZIP.Substring(0,5) && !x.DELETED);
+                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode &&  x.ZIP_CODE.Substring(0, 5) == privateHomeDetails.ZIP.Substring(0,5) && !x.DELETED);
                                     if (referralRegionDetails != null)
                                     {
                                         _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID && !x.DELETED);
