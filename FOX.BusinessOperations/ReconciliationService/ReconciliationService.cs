@@ -116,7 +116,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                     default:
                         break;
                 }
-                return SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_INSURANCE_TEST @PRACTICE_CODE, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO"
+                return SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_INSURANCE @PRACTICE_CODE, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO"
                        , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
                        , new SqlParameter { ParameterName = "IS_DEPOSIT_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_DEPOSIT_DATE_SEARCH }
                        , new SqlParameter { ParameterName = "IS_ASSIGNED_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_ASSIGNED_DATE_SEARCH }
@@ -162,7 +162,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                     default:
                         break;
                 }
-                return SpRepository<CheckNoSelectionModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_CHECK_NOS_TEST @PRACTICE_CODE, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO"
+                return SpRepository<CheckNoSelectionModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_CHECK_NOS @PRACTICE_CODE, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO"
                     , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
                     , new SqlParameter { ParameterName = "IS_DEPOSIT_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_DEPOSIT_DATE_SEARCH }
                     , new SqlParameter { ParameterName = "IS_ASSIGNED_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_ASSIGNED_DATE_SEARCH }
@@ -199,7 +199,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                     default:
                         break;
                 }
-                return SpRepository<AmountSelectionModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_AMOUNTS_TEST @PRACTICE_CODE, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO"
+                return SpRepository<AmountSelectionModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_AMOUNTS @PRACTICE_CODE, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO"
                     , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
                     , new SqlParameter { ParameterName = "IS_DEPOSIT_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_DEPOSIT_DATE_SEARCH }
                     , new SqlParameter { ParameterName = "IS_ASSIGNED_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_ASSIGNED_DATE_SEARCH }
@@ -236,7 +236,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                     default:
                         break;
                 }
-                return SpRepository<AmountPostedSelectionModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_AMOUNT_POSTED_TEST @PRACTICE_CODE, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO"
+                return SpRepository<AmountPostedSelectionModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_AMOUNT_POSTED @PRACTICE_CODE, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO"
                     , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
                     , new SqlParameter { ParameterName = "IS_DEPOSIT_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_DEPOSIT_DATE_SEARCH }
                     , new SqlParameter { ParameterName = "IS_ASSIGNED_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_ASSIGNED_DATE_SEARCH }
@@ -274,7 +274,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                         break;
                 }
 
-                return SpRepository<AmountNotPostedSelectionModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_AMOUNT_NOT_POSTED_TEST @PRACTICE_CODE, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO"
+                return SpRepository<AmountNotPostedSelectionModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_AMOUNT_NOT_POSTED @PRACTICE_CODE, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO"
                     , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
                     , new SqlParameter { ParameterName = "IS_DEPOSIT_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_DEPOSIT_DATE_SEARCH }
                     , new SqlParameter { ParameterName = "IS_ASSIGNED_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_ASSIGNED_DATE_SEARCH }
