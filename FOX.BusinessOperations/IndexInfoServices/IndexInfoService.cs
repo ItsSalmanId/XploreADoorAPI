@@ -4709,7 +4709,15 @@ namespace FOX.BusinessOperations.IndexInfoServices
             }
             if (referralResponse != null)
             {
-                result.DocumentTypeName = _foxdocumenttypeRepository.GetFirst(x => x.DOCUMENT_TYPE_ID == referralResponse.DOCUMENT_TYPE && !(x.DELETED)).NAME;
+                //result.DocumentTypeName = _foxdocumenttypeRepository.GetFirst(x => x.DOCUMENT_TYPE_ID == referralResponse.DOCUMENT_TYPE && !(x.DELETED)).NAME;
+                if (referralResponse.DOCUMENT_TYPE != null)
+                {
+                    var DocumentTypeName = _foxdocumenttypeRepository.GetFirst(x => x.DOCUMENT_TYPE_ID == referralResponse.DOCUMENT_TYPE && !(x.DELETED));
+                    if (DocumentTypeName != null && DocumentTypeName.NAME != null)
+                    {
+                        result.DocumentTypeName = DocumentTypeName.NAME;
+                    }
+                }
                 var User = _User.GetFirst(x => x.USER_NAME == referralResponse.CREATED_BY && !(x.DELETED));
                 if (User != null)
                 {

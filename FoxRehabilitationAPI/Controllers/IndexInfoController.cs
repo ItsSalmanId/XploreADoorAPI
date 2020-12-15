@@ -306,9 +306,16 @@ namespace FoxRehabilitationAPI.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.getAllReferralSourceAndGroups( GetProfile()));
         }
         [HttpGet]
-        public HttpResponseMessage GetPatientBalance(long patientAccount)
+        public HttpResponseMessage GetPatientBalance(long? patientAccount)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetPatientBalance(patientAccount));
+            if (patientAccount != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetPatientBalance(patientAccount));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient Account is Empty");
+            }
         }
         [HttpPost]
         public HttpResponseMessage GetpatientsList(getPatientReq obj)
