@@ -233,6 +233,7 @@ namespace FOX.DataModels.Models.Reconciliation
         public string SORT_BY { get; set; }
         public string SORT_ORDER { get; set; }
         public int CP_Type { get; set; }
+        public int TIME_FRAME { get; set; }
     }
 
     [Table("FOX_TBL_RECONCILIATION_CP_LOGS")]

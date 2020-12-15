@@ -49,34 +49,34 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetReconciliationCategories(GetProfile()));
         }
-        [HttpGet]
-        public HttpResponseMessage GetReconciliationInsurances()
+        [HttpPost]
+        public HttpResponseMessage GetReconciliationInsurances([FromBody] ReconciliationCPSearchReq searchReq)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetReconciliationInsurances(GetProfile()));
+            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetReconciliationInsurances(searchReq, GetProfile()));
         }
 
-        [HttpGet]
-        public HttpResponseMessage GetReconciliationCheckNos()
+        [HttpPost]
+        public HttpResponseMessage GetReconciliationCheckNos([FromBody] ReconciliationCPSearchReq searchReq)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetReconciliationCheckNos(GetProfile()));
+            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetReconciliationCheckNos(searchReq, GetProfile()));
         }
 
-        [HttpGet]
-        public HttpResponseMessage GetReconciliationAmounts()
+        [HttpPost]
+        public HttpResponseMessage GetReconciliationAmounts([FromBody] ReconciliationCPSearchReq searchReq)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetAmounts(GetProfile()));
+            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetAmounts(searchReq, GetProfile()));
         }
 
-        [HttpGet]
-        public HttpResponseMessage GetReconciliationAmountsPosted()
+        [HttpPost]
+        public HttpResponseMessage GetReconciliationAmountsPosted([FromBody] ReconciliationCPSearchReq searchReq)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetPostedAmounts(GetProfile()));
+            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetPostedAmounts(searchReq, GetProfile()));
         }
 
-        [HttpGet]
-        public HttpResponseMessage GetReconciliationAmountsUnPosted()
+        [HttpPost]
+        public HttpResponseMessage GetReconciliationAmountsUnPosted([FromBody] ReconciliationCPSearchReq searchReq)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetNotPostedAmounts(GetProfile()));
+            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetNotPostedAmounts(searchReq, GetProfile()));
         }
 
         [HttpGet]
