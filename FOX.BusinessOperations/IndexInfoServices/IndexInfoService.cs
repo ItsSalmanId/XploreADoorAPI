@@ -1202,7 +1202,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                     var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.ZIP_CODE.Substring(0, 5) == privateHomeDetails.ZIP.Substring(0,5) && !x.DELETED);
                                     if(referralRegionDetails != null)
                                     {
-                                        _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID & !x.DELETED);
+                                        _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID && !x.DELETED);
                                     }
                                    
                                 }
@@ -1282,7 +1282,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                 var privateHomeDetails = _PatientAddressRepository.GetFirst(x => x.PATIENT_ACCOUNT == patientDetails.PATIENT_ACCOUNT && x.PATIENT_POS_ID == patientPOSLocation.Patient_POS_ID && x.DELETED == false);
                                 if (privateHomeDetails != null)
                                 {
-                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.PRACTICE_CODE == x.PRACTICE_CODE &&  x.ZIP_CODE.Substring(0, 5) == privateHomeDetails.ZIP.Substring(0,5) && !x.DELETED);
+                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode &&  x.ZIP_CODE.Substring(0, 5) == privateHomeDetails.ZIP.Substring(0,5) && !x.DELETED);
                                     if (referralRegionDetails != null)
                                     {
                                         _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID && !x.DELETED);
@@ -3913,7 +3913,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             var patient = _PatientRepository.GetFirst(x => x.Patient_Account == work_order.PATIENT_ACCOUNT && x.Practice_Code == work_order.PRACTICE_CODE && x.DELETED == false);
             var sourceDetail = _InsertSourceAddRepository.GetFirst(t => !t.DELETED && t.PRACTICE_CODE == work_order.PRACTICE_CODE && t.WORK_ID == work_order.WORK_ID && work_order.WORK_ID != 0);
             var documentType = _foxdocumenttypeRepository.GetFirst(t => t.DOCUMENT_TYPE_ID == sourceDetail.DOCUMENT_TYPE).NAME ?? "";
-            var ORS = _InsertUpdateOrderingSourceRepository.GetFirst(t => t.SOURCE_ID == sourceDetail.SENDER_ID);
+            //var ORS = _InsertUpdateOrderingSourceRepository.GetFirst(t => t.SOURCE_ID == sourceDetail.SENDER_ID);
             var address = _PatientAddressRepository.GetMany(t => t.PATIENT_ACCOUNT == work_order.PATIENT_ACCOUNT && t.ADDRESS_TYPE == "Home Address" && !(t.DELETED ?? false)).OrderByDescending(t=>t.MODIFIED_DATE).FirstOrDefault();
             var diagnosis_string = "";
             var diagnosis = _InsertDiagnosisRepository.GetMany(t => t.DELETED == false && t.WORK_ID == work_id);
@@ -4078,7 +4078,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     body = body.Replace("[[QRCode]]", qrCode.ENCODED_IMAGE_BYTES ?? "");
                 }
                 body = body.Replace("[[DOCUMENT_TYPE]]", documentType ?? "");
-                body = body.Replace("[[ORS]]", ORS.LAST_NAME + ", " + ORS.FIRST_NAME ?? "");
+                //body = body.Replace("[[ORS]]", ORS.LAST_NAME + ", " + ORS.FIRST_NAME ?? "");
                 body = body.Replace("[[SENDER]]", Sender == null ? "" : Sender.LAST_NAME + ", " + Sender.FIRST_NAME ?? "");
                 body = body.Replace("[[TREATMENT_LOCATION]]", sourceDetail.FACILITY_NAME ?? "");
 
@@ -4709,7 +4709,15 @@ namespace FOX.BusinessOperations.IndexInfoServices
             }
             if (referralResponse != null)
             {
-                result.DocumentTypeName = _foxdocumenttypeRepository.GetFirst(x => x.DOCUMENT_TYPE_ID == referralResponse.DOCUMENT_TYPE && !(x.DELETED)).NAME;
+                //result.DocumentTypeName = _foxdocumenttypeRepository.GetFirst(x => x.DOCUMENT_TYPE_ID == referralResponse.DOCUMENT_TYPE && !(x.DELETED)).NAME;
+                if (referralResponse.DOCUMENT_TYPE != null)
+                {
+                    var DocumentTypeName = _foxdocumenttypeRepository.GetFirst(x => x.DOCUMENT_TYPE_ID == referralResponse.DOCUMENT_TYPE && !(x.DELETED));
+                    if (DocumentTypeName != null && DocumentTypeName.NAME != null)
+                    {
+                        result.DocumentTypeName = DocumentTypeName.NAME;
+                    }
+                }
                 var User = _User.GetFirst(x => x.USER_NAME == referralResponse.CREATED_BY && !(x.DELETED));
                 if (User != null)
                 {
