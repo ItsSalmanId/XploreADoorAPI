@@ -130,7 +130,7 @@ namespace FoxRehabilitationAPI.Controllers
         }
 
         [HttpPost]
-        public HttpResponseMessage DeleteReconciliationCP([FromBody]ReconciliationCPToDelete reconciliationToDelete)
+        public HttpResponseMessage DeleteReconciliationCP([FromBody] ReconciliationCPToDelete reconciliationToDelete)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.DeleteReconciliationCP(reconciliationToDelete, GetProfile()));
         }
@@ -142,13 +142,13 @@ namespace FoxRehabilitationAPI.Controllers
         }
 
         [HttpPost]
-        public HttpResponseMessage ExportReconciliationsToExcel([FromBody]  ReconciliationCPSearchReq searchReq)
+        public HttpResponseMessage ExportReconciliationsToExcel([FromBody] ReconciliationCPSearchReq searchReq)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.ExportReconciliationsToExcel(searchReq, GetProfile()));
         }
 
         [HttpPost]
-        public HttpResponseMessage ExportReconciliationCPLogsToExcel([FromBody]  List<ReconciliationCPLogs> obj)
+        public HttpResponseMessage ExportReconciliationCPLogsToExcel([FromBody] List<ReconciliationCPLogs> obj)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.ExportReconciliationCPLogsToExcel(obj, GetProfile()));
         }
@@ -269,10 +269,26 @@ namespace FoxRehabilitationAPI.Controllers
         }
 
         [HttpGet]
-        public HttpResponseMessage GetLastUploadFileStatusForHrAutoEmailsss()
+        public HttpResponseMessage GetLastUploadFileStatusForHrAutoEmailsss(string dataTypeName)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetLastUploadFileStatusForHrAutoEmails(GetProfile()));
+            if (dataTypeName != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetLastUploadFileStatusForHrAutoEmails(GetProfile(), dataTypeName));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Data Type is Empty");
+            }
         }
-
+        [HttpGet]
+        public HttpResponseMessage GetMTBCDistinctCategoryName()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetMTBCDistinctCategoryName(GetProfile()));
+        }
+        [HttpGet]
+        public HttpResponseMessage GetLastUploadDetails()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetLastFileUploadDetails());
+        }
     }
 }

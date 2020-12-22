@@ -57,7 +57,7 @@ namespace FoxRehabilitationAPI.App_Start
             container.RegisterType<FOX.BusinessOperations.ReconciliationService.IReconciliationService, FOX.BusinessOperations.ReconciliationService.ReconciliationService>();
 
             container.RegisterType<IGroupService, GroupService>();
-           // container.RegisterType<FOX.BusinessOperations.ReconnectCallService.IReconnectCallService, FOX.BusinessOperations.ReconnectCallService.ReconnectCallService>();
+            // container.RegisterType<FOX.BusinessOperations.ReconnectCallService.IReconnectCallService, FOX.BusinessOperations.ReconnectCallService.ReconnectCallService>();
             container.RegisterType<FOX.BusinessOperations.SettingsService.ClinicianSetupService.IClinicianSetupService, FOX.BusinessOperations.SettingsService.ClinicianSetupService.ClinicianSetupService>();
             container.RegisterType<FOX.BusinessOperations.PatientMaintenanceService.PatientInsuranceService.IPatientInsuranceService, FOX.BusinessOperations.PatientMaintenanceService.PatientInsuranceService.PatientInsuranceService>();
             container.RegisterType<FOX.BusinessOperations.PatientMaintenanceService.IPatientMaintenanceService, FOX.BusinessOperations.PatientMaintenanceService.PatientMaintenanceService>();
@@ -66,6 +66,7 @@ namespace FoxRehabilitationAPI.App_Start
             container.RegisterType<FOX.BusinessOperations.QualityAssuranceService.PerformAuditService.IPerformAuditService, FOX.BusinessOperations.QualityAssuranceService.PerformAuditService.PerformAuditService>();
             container.RegisterType<FOX.BusinessOperations.QualityAssuranceService.QAReportService.IQAReportService, FOX.BusinessOperations.QualityAssuranceService.QAReportService.QAReportService>();
             container.RegisterType<FOX.BusinessOperations.Scheduler.ISchedulerService, FOX.BusinessOperations.Scheduler.SchedulerService>();
+            container.RegisterType<FOX.BusinessOperations.HrAutoEmail.IHrAutoEmailService, FOX.BusinessOperations.HrAutoEmail.HrAutoEmailService>();
             return container;
         }
     }

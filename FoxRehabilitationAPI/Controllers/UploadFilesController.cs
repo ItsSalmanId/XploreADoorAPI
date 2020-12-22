@@ -129,6 +129,24 @@ namespace FoxRehabilitationAPI.Controllers
             var uploadFiles = _IUploadFilesServices.UploadFiles(requestUploadFilesAPIModel);
             var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
             return response;
-        } 
+        }
+        [HttpPost]
+        public async Task<HttpResponseMessage> UploadHRAutoEmailFiles()
+        {
+            RequestUploadFilesModel requestUploadFilesAPIModel = new RequestUploadFilesModel()
+            {
+                AllowedFileExtensions = new List<string> { ".pdf", ".jpg", ".jpeg", ".png" },
+                UploadFilesPath = HttpContext.Current.Server.MapPath("~/" + FOX.BusinessOperations.CommonServices.AppConfiguration.HrAutoEmailUploadImages),
+                //UploadFilesPath = @"\\IT-126\FoxDocumentDirectory\HRAutoEmailAttachmentFiles",
+                Files = HttpContext.Current.Request.Files,
+            };
+            foreach (var item in HttpContext.Current.Request.Form.AllKeys)
+            {
+                requestUploadFilesAPIModel.HR_CONFIGURE_ID = int.Parse(HttpContext.Current.Request.Form[item]);
+            }
+            var uploadFiles = _IUploadFilesServices.UploadHAutoEmailFiles(requestUploadFilesAPIModel, GetProfile());
+            var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
+            return response;
+        }
     }
 }

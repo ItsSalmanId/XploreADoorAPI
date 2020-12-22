@@ -40,6 +40,13 @@ namespace FOX.BusinessOperations.CommonServices
                 return @"FoxDocumentDirectory\PHDAttachmentFiles\UploadImages";
             }
         }
+        public static string HrAutoEmailUploadImages
+        {
+            get
+            {
+                return @"FoxDocumentDirectory\HRAutoEmailAttachmentFiles";
+            }
+        }
         public static string ReconciliationOriginalFilesDirectory
         {
             get
@@ -182,7 +189,7 @@ namespace FOX.BusinessOperations.CommonServices
             "muhammadali9@mtbc.com",
             "abdulsattar@mtbc.com"
         };
-       
+
         public static string SendADExceptionTo => "muhammadali9@mtbc.com";
         //Active Directory
         public static class ActiveDirectoryViewModel
@@ -211,15 +218,17 @@ namespace FOX.BusinessOperations.CommonServices
                     PracticeCode = practiceCode;
                 }
             }
-        }      
+        }
 
-        public static string LogADUserStatus => $@"FOXLocalDocuments\ADUsersLogs\{DateTime.Now.Year}\{DateTime.Now.ToString("MMM")}";        
+        public static string LogADUserStatus => $@"FOXLocalDocuments\ADUsersLogs\{DateTime.Now.Year}\{DateTime.Now.ToString("MMM")}";
         public static string QRCodeTempPath => $@"FOXLocalDocuments\TemporaryFiles\QRCode\{DateTime.Now.Year}\{DateTime.Now.ToString("MMM")}\{DateTime.Now.Day}\";
         public static string LogADProperties => $@"FOXLocalDocuments\ADProperties\";
         //Below are the email addresses on which email is send when a new user is created
         //For Live Only
-        public static string SendEmailToAdminOnExternalUserSignUp_To {
-            get {
+        public static string SendEmailToAdminOnExternalUserSignUp_To
+        {
+            get
+            {
                 //Other Environments
                 //return @"muhammadnadeem2@mtbc.com";
                 //Live
@@ -286,8 +295,8 @@ namespace FOX.BusinessOperations.CommonServices
         public static string SendEmailToQAOnExternalUserSignUp_To
         {
             get
-            {                
-                return @"foxtesting@mtbc.com";                
+            {
+                return @"foxtesting@mtbc.com";
             }
         }
     }

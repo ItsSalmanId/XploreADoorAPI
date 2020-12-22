@@ -505,27 +505,38 @@ namespace FOX.DataModels.Models.Reconciliation
 
     }
 
-    [Table("MTBC_CREDENTIALS_FOX_AUTOMATION")]
+    public class MTBC_Category_Description_Count
+    {
+        public int MatchCategoriesCount { get; set; }
+        public int UnmatchCategoriesCount { get; set; }
+
+    }
+
+    [Table("FOX_TBL_MTBC_CREDENTIALS_AUTOMATION")]
     public class MTBC_Credentials_Fox_Automation
     {
-        //[Key]
-        //public long MTBC_CREDENTIALS_AUTOMATION_ID { get; set; }
+        [Key]
+        public long MTBC_CREDENTIALS_AUTOMATION_ID { get; set; }
         public string ASSOCIATION_ID { get; set; }
-        //public long PRACTICE_CODE { get; set; }
+        public long PRACTICE_CODE { get; set; }
         public string FIRST_NAME { get; set; }
         public string LAST_NAME { get; set; }
         public string WORK_EMAIL { get; set; }
-        public string PERSONEL_MOBILE { get; set; }
+        public string PERSONAL_MOBILE { get; set; }
         public string CERTIFICATION_DESCRIPTION { get; set; }
         public string CATEGORY_DESCRIPTION { get; set; }
         public DateTime? EFFECTIVE_DATE { get; set; }
         public DateTime? EXPIRATION_DATE { get; set; }
-        public string FILE_NAME { get; set; }
-        [NotMapped]
+        public string ISSUING_STATE { get; set; }
+        public string EMPLOYEE_NAME_DESCRIPTION { get; set; }
+        public string UNIVERSITY_DESCRIPTION { get; set; }
+        public string MENTOR { get; set; }
+        public string DATA_TYPE { get; set; }
+        public string HR_FILE_NAME { get; set; }
         public string CREATED_BY { get; set; }
         public DateTime CREATED_DATE { get; set; }
-        //public string MODIFIED_BY { get; set; }
-        //public DateTime MODIFIED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public DateTime MODIFIED_DATE { get; set; }
         public bool DELETED { get; set; }
         [NotMapped]
         public DateTime? LAST_UPLOAD_DATE { get; set; }
