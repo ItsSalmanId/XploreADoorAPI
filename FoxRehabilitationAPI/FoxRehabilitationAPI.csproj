@@ -327,6 +327,7 @@
     <Compile Include="Controllers\GeneralNotesController.cs" />
     <Compile Include="Controllers\GroupController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\HrAutoEmailController.cs" />
     <Compile Include="Controllers\IndexedQueueController.cs" />
     <Compile Include="Controllers\IndexInfoController.cs" />
     <Compile Include="Controllers\IndexInformationController.cs" />

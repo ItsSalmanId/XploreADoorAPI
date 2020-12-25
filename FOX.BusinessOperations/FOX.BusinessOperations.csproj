@@ -232,6 +232,8 @@
     <Compile Include="GeneralNotesService\IGeneralNotesServices.cs" />
     <Compile Include="GroupServices\GroupService.cs" />
     <Compile Include="GroupServices\IGroupService.cs" />
+    <Compile Include="HrAutoEmail\HrAutoEmailService.cs" />
+    <Compile Include="HrAutoEmail\IHrAutoEmailService.cs" />
     <Compile Include="IBusinessOperationExtension.cs" />
     <Compile Include="IndexedQueueService\IIndexedQueueServices.cs" />
     <Compile Include="IndexedQueueService\IndexedQueueServices.cs" />

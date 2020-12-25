@@ -75,6 +75,7 @@
     <Compile Include="Context\DbContextDashboard.cs" />
     <Compile Include="Context\DBContextExceptionLog.cs" />
     <Compile Include="Context\DBContextFoxPHD.cs" />
+    <Compile Include="Context\DBContextHrAutoEmail.cs" />
     <Compile Include="Context\DBContextHrAutoEmails.cs" />
     <Compile Include="Context\DbContextIndexinfo.cs" />
     <Compile Include="Context\DbContextIndexinformation.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="Models\GeneralNotesModel\GeneralNoteModels.cs" />
     <Compile Include="Models\GoogleRecaptcha\GoogleRecaptchaResponse.cs" />
     <Compile Include="Models\GroupsModel\UserGroupsModel.cs" />
+    <Compile Include="Models\HrAutoEmail\HrAutoEmailModel.cs" />
     <Compile Include="Models\IndexedQueueModel\IndexedQueue.cs" />
     <Compile Include="Models\IndexInfo\IndexInfo.cs" />
     <Compile Include="Models\OriginalQueueModel\OriginalQueue.cs" />
