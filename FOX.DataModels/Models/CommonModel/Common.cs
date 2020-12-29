@@ -69,6 +69,7 @@ namespace FOX.DataModels.Models.CommonModel
         public bool Success { get; set; }
         public string ID { get; set; }
         public bool AU { get; set; }
+        public string FilePath { get; set; }
     }
     public class SmartSearch
     {
