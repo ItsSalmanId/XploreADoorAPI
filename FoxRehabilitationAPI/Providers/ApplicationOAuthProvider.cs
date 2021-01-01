@@ -134,8 +134,8 @@ namespace FoxRehabilitationAPI.Providers
 
         private async Task<GoogleRecaptchaResponse> ValidateCaptcha(string encodedCode)
         {
-            string code = "03AGdBq27ecw_BPYm99zZCfLD9MwVmjf3D4wN_UMbRBUkqJbtm-RhULsw4TEXps8_EqWTl9Or3UPsAvbaXBAuwoOdEbgULmZOxMlb0ODd7oF112JZPHXxIDbG2QZhPHCc2SoKn5oxO-bpnc9NvjEMlmE1rqF2LN3lUhjsMC8h8r3gJQOdS_NIko3E4xJatTkRkV99zYsxyuPyhGPGORthvYHMPrWeasS-xGLHXp5bgPyQUzOSMSYIjmUpMKlnEsIgQLKyRUh-j1JC2RxIw0FTGN89KPJe51x0XYR6D5HhvVV9MtbblUpbw3WoMPyuRozjoQhyPsvzG7r0JzDlezt66SPWjeWwROyoQuwMFlVTPA3QyZVKMhKqCet0lZe-BJTRWzQO0xKpUFiLbFMmSU-ZWiZ4m37Z1PIA_qSc2lr_1ADa_jXCbE9JZGCcAvf5V_zpEpJZzaDIA6cjlogr3vSfiJ28HRI4xyfaBQg";
-            string url = $"https://www.google.com/recaptcha/api/siteverify?secret={AppConfiguration.SecretKey}&response={code}";
+
+            string url = $"https://www.google.com/recaptcha/api/siteverify?secret={AppConfiguration.SecretKey}&response={encodedCode}";
             using (var client = new HttpClient())
             {
                 try
