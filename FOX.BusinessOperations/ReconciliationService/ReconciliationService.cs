@@ -2878,7 +2878,7 @@ namespace FOX.BusinessOperations.ReconciliationService
 
         private ReconcialtionImport GetReconsiliatinTable(ReconcialtionImport lst)
         {
-            if (lst != null)
+            if(lst != null)
             {
                 //string checkNo = GetCheckNo(recon.CheckNoBatchNo);
                 string checkNo = lst.CheckNoBatchNo;

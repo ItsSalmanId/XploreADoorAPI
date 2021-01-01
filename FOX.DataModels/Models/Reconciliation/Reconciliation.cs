@@ -399,7 +399,7 @@ namespace FOX.DataModels.Models.Reconciliation
         public string DatePosted { get; set; }
         public string DateEntered { get; set; }
         public string TotalPosted { get; set; }
-        public string NotPosted { get; set; }
+        public string NotPosted { get; set; }  
         public string CheckNo { get; set; }
         public string BatchNo { get; set; }
     }
