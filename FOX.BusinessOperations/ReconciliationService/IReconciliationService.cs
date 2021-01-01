@@ -19,6 +19,7 @@ namespace FOX.BusinessOperations.ReconciliationService
         List<ReconciliationCPLogs> GetReconciliationLogs(ReconciliationCPLogSearchReq searchReq, UserProfile profile);
         DDValues GetDDValues(UserProfile profile);
         ResponseModel SaveReconciliationCP(ReconciliationCP reconciliationToSave, UserProfile profile);
+        ResponseModel EditReconciliationCP(ReconciliationCP reconciliationToSave, UserProfile profile);
         List<ReconciliationCP> SaveAutoReconciliationCP(ReconciliationCP autoreconciliationToSave, UserProfile profile);
         List<ReconciliationCP> UpdateAutoReconciliationCP(ReconciliationCP autoReconciliationToUpdate, UserProfile profile);
         ResponseModel DeleteReconciliationCP(ReconciliationCPToDelete reconciliationToDelete, UserProfile profile);

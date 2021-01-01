@@ -1,4 +1,5 @@
-﻿using FOX.BusinessOperations.CommonService;
+﻿using DocumentFormat.OpenXml.Office2013.PowerPoint.Roaming;
+using FOX.BusinessOperations.CommonService;
 using FOX.BusinessOperations.CommonServices;
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
@@ -630,11 +631,13 @@ namespace FOX.BusinessOperations.ReconciliationService
                 {
                     prevObj = (ReconciliationCP)dBData.Clone();
                 }
-                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_UPDATE_AUTO_RECONCILIATION_CP @PRACTICE_CODE,@USER_NAME,@RECONCILIATION_CP_ID,@AMOUNT_POSTED",
+                autoReconciliationToUpdate.REMARKS = "Total Posted amount loaded from Websoft against the listed Check# with +/- balance remaining";
+                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_UPDATE_AUTO_RECONCILIATION_CP @PRACTICE_CODE,@USER_NAME,@RECONCILIATION_CP_ID,@AMOUNT_POSTED, @REMARKS",
                     new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
                     , new SqlParameter { ParameterName = "USER_NAME", SqlDbType = SqlDbType.VarChar, Value = profile.UserName }
                     , new SqlParameter { ParameterName = "RECONCILIATION_CP_ID", SqlDbType = SqlDbType.BigInt, Value = autoReconciliationToUpdate.RECONCILIATION_CP_ID }
-                    , new SqlParameter { ParameterName = "AMOUNT_POSTED", SqlDbType = SqlDbType.BigInt, Value = autoReconciliationToUpdate.AMOUNT_POSTED }
+                    , new SqlParameter { ParameterName = "AMOUNT_POSTED", SqlDbType = SqlDbType.Decimal, Value = autoReconciliationToUpdate.AMOUNT_POSTED }
+                    , new SqlParameter { ParameterName = "REMARKS", SqlDbType = SqlDbType.VarChar, Value = autoReconciliationToUpdate.REMARKS.ToString() }
                     );
                 if (result != null)
                 {
@@ -667,7 +670,8 @@ namespace FOX.BusinessOperations.ReconciliationService
                 {
                     var log = "";
                     if (dbData.REMARKS != null)
-                        log = "REMARKS changed from \"" + dbData.REMARKS + "\" to \"" + dbData.REMARKS + "\".";
+                        log = "REMARKS changed to \"" + autoReconciliationToUpdate.REMARKS + "\".";
+                    //log = "REMARKS changed from \"" + dbData.REMARKS + "\" to \"" + dbData.REMARKS + "\".";
                     else
                         log = "REMARKS \"" + autoReconciliationToUpdate.REMARKS + "\" is added to the reconciliation.";
 
@@ -702,7 +706,6 @@ namespace FOX.BusinessOperations.ReconciliationService
             }
             catch (Exception ex) { throw ex; }
         }
-
         public ResponseModel SaveReconciliationCP(ReconciliationCP reconciliationToSave, UserProfile profile)
         {
             bool dBDataIsNull = false;
@@ -809,6 +812,104 @@ namespace FOX.BusinessOperations.ReconciliationService
                 response.Message = dBDataIsNull ? "Reconciliation couldn't be added." : "Reconciliation couldn't be updated.";
             }
             return response;
+        }
+        public ResponseModel EditReconciliationCP(ReconciliationCP reconciliationToSave, UserProfile profile)
+        {
+            bool dBDataIsNull = false;
+            ReconciliationCP prevObj = null;
+            ResponseModel response = new ResponseModel();
+            try
+            {
+                var reconciliation = new ReconciliationCP();
+                var dBData = _reconciliationCPRepository.GetFirst(e => e.RECONCILIATION_CP_ID == reconciliationToSave.RECONCILIATION_CP_ID && e.PRACTICE_CODE == profile.PracticeCode && !e.DELETED);
+                if (dBData != null)
+                {
+                    prevObj = (ReconciliationCP)dBData.Clone();
+                    reconciliation = dBData;
+                    reconciliation.MODIFIED_BY = profile.UserName;
+                    reconciliation.MODIFIED_DATE = CommonService.Helper.GetCurrentDate();
+                }
+                if (reconciliationToSave.DEPOSIT_TYPE_ID != null && reconciliationToSave.DEPOSIT_TYPE_ID != 0)
+                {
+                    reconciliation.DEPOSIT_TYPE_ID = reconciliationToSave.DEPOSIT_TYPE_ID;
+                }
+                if (reconciliationToSave.CATEGORY_ID != null && reconciliationToSave.CATEGORY_ID != 0)
+                {
+                    reconciliation.CATEGORY_ID = reconciliationToSave.CATEGORY_ID;
+                }
+                if (dBData == null)
+                {
+                    _reconciliationCPRepository.Update(reconciliation);
+                    _reconciliationCPRepository.Save();
+                }
+                SaveBulkEditReconciliationLogs(prevObj, reconciliationToSave, profile);
+
+                response.Success = true;
+                response.ErrorMessage = "";
+                response.Message = dBData == null ? "Reconciliation couldn't be updated." : "Reconciliation updated successfully.";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.ErrorMessage = ex.Message;
+                response.Message = "Reconciliation couldn't be updated.";
+            }
+            return response;
+        }
+
+        public void SaveBulkEditReconciliationLogs(ReconciliationCP dbData, ReconciliationCP reconciliationToSave, UserProfile profile)
+        {
+            try
+            {
+                var logsList = new List<ReconciliationCPLogs>();
+                if (dbData == null)
+                {
+                    logsList.Add(new ReconciliationCPLogs() { LOG_MESSAGE = "Reconciliation is created." });
+                    dbData = new ReconciliationCP();
+                }
+                if (reconciliationToSave.DEPOSIT_TYPE_ID != null && dbData.DEPOSIT_TYPE_ID != reconciliationToSave.DEPOSIT_TYPE_ID)
+                {
+                    var log = "";
+                    if (dbData.DEPOSIT_TYPE_ID != null)
+                        log = "Deposit Type changed to \"" + GetDepositTypeName(reconciliationToSave.DEPOSIT_TYPE_ID, profile) + "\".";
+                    //log = "Deposit Type changed from \"" + GetDepositTypeName(dbData.DEPOSIT_TYPE_ID) + "\" to \"" + GetDepositTypeName(reconciliationToSave.DEPOSIT_TYPE_ID) + "\".";
+                    else
+                        log = "Deposit Type \"" + GetDepositTypeName(reconciliationToSave.DEPOSIT_TYPE_ID, profile) + "\" is added to the reconciliation.";
+
+                    logsList.Add(new ReconciliationCPLogs()
+                    {
+                        LOG_MESSAGE = log,
+                        FIELD_NAME = "DEPOSIT_TYPE_ID",
+                        PREVIOUS_VALUE = dbData.DEPOSIT_TYPE_ID.HasValue ? dbData.DEPOSIT_TYPE_ID.Value.ToString() : null,
+                        NEW_VALUE = reconciliationToSave.DEPOSIT_TYPE_ID.HasValue ? reconciliationToSave.DEPOSIT_TYPE_ID.Value.ToString() : null
+                    });
+                }
+
+                if (reconciliationToSave.CATEGORY_ID != null && dbData.CATEGORY_ID != reconciliationToSave.CATEGORY_ID)
+                {
+                    var log = "";
+                    if (dbData.CATEGORY_ID != null)
+                        log = "Category changed to \"" + GetCategoryName(reconciliationToSave.CATEGORY_ID, profile) + "\".";
+
+                    //log = "Category changed from \"" + GetCategoryName(dbData.CATEGORY_ID) + "\" to \"" + GetCategoryName(reconciliationToSave.CATEGORY_ID) + "\".";
+                    else
+                        log = "Category \"" + GetCategoryName(reconciliationToSave.CATEGORY_ID, profile) + "\" is added to the reconciliation.";
+
+                    logsList.Add(new ReconciliationCPLogs()
+                    {
+                        LOG_MESSAGE = log,
+                        FIELD_NAME = "CATEGORY_ID",
+                        PREVIOUS_VALUE = dbData.CATEGORY_ID.HasValue ? dbData.CATEGORY_ID.Value.ToString() : null,
+                        NEW_VALUE = reconciliationToSave.CATEGORY_ID.HasValue ? reconciliationToSave.CATEGORY_ID.Value.ToString() : null
+                    });
+                }
+
+                LogReconciliationDetails(logsList, reconciliationToSave.RECONCILIATION_CP_ID, profile);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public int? GetUnassignedStatusId(UserProfile profile)
@@ -2528,83 +2629,116 @@ namespace FOX.BusinessOperations.ReconciliationService
 
                     }
                 }
-                List<ReconcialtionImport> test = new List<ReconcialtionImport>();
                 totalRecordInFile = tbl.Rows.Count;
-                foreach (System.Data.DataRow row in tbl.Rows)
-                {
-                    ReconcialtionImport temp = new ReconcialtionImport();
-
-                    //if (!string.IsNullOrEmpty(row[""].ToString()) )
-                    //    temp.Day = row[0].ToString();
-                    if (row.Table.Columns.Contains("Deposit Date") && !string.IsNullOrEmpty(row["Deposit Date"].ToString()))
-                        temp.DepositDate = row["Deposit Date"].ToString();
-                    if (row.Table.Columns.Contains("Deposit Type") && !string.IsNullOrEmpty(row["Deposit Type"].ToString()))
-                        temp.DepositType = row["Deposit Type"].ToString();
-                    if (row.Table.Columns.Contains("Category / Account") && !string.IsNullOrEmpty(row["Category / Account"].ToString()))
-                        temp.CategoryAccount = row["Category / Account"].ToString();
-                    if (row.Table.Columns.Contains("Category/Acct") && !string.IsNullOrEmpty(row["Category/Acct"].ToString()))
-                        temp.CategoryAccount = row["Category/Acct"].ToString();
-                    if (row.Table.Columns.Contains("Payer Name") && !string.IsNullOrEmpty(row["Payer Name"].ToString()))
-                    {
-                        temp.PayerName = row["Payer Name"].ToString();
-                        temp.PayerName = temp.PayerName.Trim();
-                    }
-                    if (row.Table.Columns.Contains("Check # / Batch #") && !string.IsNullOrEmpty(row["Check # / Batch #"].ToString()))
-                        temp.CheckNoBatchNo = row["Check # / Batch #"].ToString();
-                    if (row.Table.Columns.Contains("$$ Amount") && !string.IsNullOrEmpty(row["$$ Amount"].ToString()))
-                        temp.Amount = row["$$ Amount"].ToString();
-                    if (row.Table.Columns.Contains("Date Assigned") && !string.IsNullOrEmpty(row["Date Assigned"].ToString()))
-                        temp.DateAssigned = row["Date Assigned"].ToString();
-                    if (row.Table.Columns.Contains("Assigned To") && !string.IsNullOrEmpty(row["Assigned To"].ToString()))
-                        temp.AssignedTo = row["Assigned To"].ToString();
-                    if (row.Table.Columns.Contains("WS Date Posted") && !string.IsNullOrEmpty(row["WS Date Posted"].ToString()))
-                    {
-                        temp.DatePosted = row["WS Date Posted"].ToString();
-                    }
-                    else
-                    {
-                        //temp.DatePosted = DateTime.Now.ToString("MM/dd/yyyy");
-                    }
-                    if (row.Table.Columns.Contains("WS Posted") && !string.IsNullOrEmpty(row["WS Posted"].ToString()))
-                    {
-                        temp.TotalPosted = row["WS Posted"].ToString();
-                    }
-                    else
-                    {
-                        temp.TotalPosted = "0.00";
-                    }
-                    if (row.Table.Columns.Contains("Not Posted") && !string.IsNullOrEmpty(row["Not Posted"].ToString()))
-                        temp.NotPosted = row["Not Posted"].ToString();
-                    test.Add(temp);
-                }
-                if (test.Count > 20000)
+                if (totalRecordInFile > 20000)
                 {
                     responseData = new ReconciliationUploadResponse();
                     responseData.IsSuccess = false;
                     responseData.ERROR_MESSAGE = "File has more than 20000 records.";
+                    return responseData;
                 }
-                else if (test.Count > 0 && test.Count < 20000)
+
+                else if (totalRecordInFile > 0 && totalRecordInFile < 20000)
                 {
-                    responseData = InsertExcelValuesToDB(test, profile);
-                    if (responseData != null)
+
+                    List<ReconcialtionImport> test = new List<ReconcialtionImport>();
+                    int successfullyInserted = 0;
+                    foreach (System.Data.DataRow row in tbl.Rows)
                     {
-                        responseData.IsSuccess = true;
-                        responseData.TOTAL_RECORDS = test.Count;
+                        ReconcialtionImport temp = new ReconcialtionImport();
+                        
+                        //if (!string.IsNullOrEmpty(row[""].ToString()) )
+                        //    temp.Day = row[0].ToString();
+                        if (row.Table.Columns.Contains("Deposit Date") && !string.IsNullOrEmpty(row["Deposit Date"].ToString()))
+                            temp.DepositDate = row["Deposit Date"].ToString();
+                        if (row.Table.Columns.Contains("Deposit Type") && !string.IsNullOrEmpty(row["Deposit Type"].ToString()))
+                            temp.DepositType = row["Deposit Type"].ToString();
+                        if (row.Table.Columns.Contains("Category / Account") && !string.IsNullOrEmpty(row["Category / Account"].ToString()))
+                            temp.CategoryAccount = row["Category / Account"].ToString();
+                        if (row.Table.Columns.Contains("Category/Acct") && !string.IsNullOrEmpty(row["Category/Acct"].ToString()))
+                            temp.CategoryAccount = row["Category/Acct"].ToString();
+                        if (row.Table.Columns.Contains("Payer Name") && !string.IsNullOrEmpty(row["Payer Name"].ToString()))
+                        {
+                            temp.PayerName = row["Payer Name"].ToString();
+                            temp.PayerName = temp.PayerName.Trim();
+                        }
+                        if (row.Table.Columns.Contains("Check # / Batch #") && !string.IsNullOrEmpty(row["Check # / Batch #"].ToString()))
+                            temp.CheckNoBatchNo = row["Check # / Batch #"].ToString();
+                        if (row.Table.Columns.Contains("$$ Amount") && !string.IsNullOrEmpty(row["$$ Amount"].ToString()))
+                            temp.Amount = row["$$ Amount"].ToString();
+                        if (row.Table.Columns.Contains("Date Assigned") && !string.IsNullOrEmpty(row["Date Assigned"].ToString()))
+                            temp.DateAssigned = row["Date Assigned"].ToString();
+                        if (row.Table.Columns.Contains("Assigned To") && !string.IsNullOrEmpty(row["Assigned To"].ToString()))
+                            temp.AssignedTo = row["Assigned To"].ToString();
+                        if (row.Table.Columns.Contains("WS Date Posted") && !string.IsNullOrEmpty(row["WS Date Posted"].ToString()))
+                        {
+                            temp.DatePosted = row["WS Date Posted"].ToString();
+                        }
+                        else
+                        {
+                            //temp.DatePosted = DateTime.Now.ToString("MM/dd/yyyy");
+                        }
+                        if (row.Table.Columns.Contains("WS Posted") && !string.IsNullOrEmpty(row["WS Posted"].ToString()))
+                        {
+                            temp.TotalPosted = row["WS Posted"].ToString();
+                        }
+                        else
+                        {
+                            temp.TotalPosted = "0.00";
+                        }
+                        if (row.Table.Columns.Contains("Not Posted") && !string.IsNullOrEmpty(row["Not Posted"].ToString()))
+                            temp.NotPosted = row["Not Posted"].ToString();
+                        try
+                        { 
+                            var res = InsertExcelValuesToDB(temp, profile);
+                            if (res != null && res != "" && res != "ERROR")
+                            {
+                                successfullyInserted++;
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                                throw exception;
+                        }
                     }
 
-                    FOX_TBL_RECONCILIATION_UPLOAD_LOG last_upload_status = GetLastUploadFileStatus(profile);
-                    if (last_upload_status != null)
+                    if (successfullyInserted > 0)
                     {
-                        responseData.IsSuccess = true;
-                        responseData.RECORD_INSERTED = last_upload_status.SUCCESSFULLY_ADDED;
-                        responseData.TOTAL_RECORDS = last_upload_status.TOTAL_RECORDS;
-                        responseData.Last_UPLAOD_DATE = last_upload_status.LAST_UPDATED_DATE;
+                        InsertLatestUpload(totalRecordInFile, successfullyInserted, profile);
+                        FOX_TBL_RECONCILIATION_UPLOAD_LOG last_upload_status = GetLastUploadFileStatus(profile);
+                        if (last_upload_status != null)
+                        {
+                            responseData.IsSuccess = true;
+                            responseData.RECORD_INSERTED = last_upload_status.SUCCESSFULLY_ADDED;
+                            responseData.TOTAL_RECORDS = last_upload_status.TOTAL_RECORDS;
+                            responseData.Last_UPLAOD_DATE = last_upload_status.LAST_UPDATED_DATE;
+                        }
+                        else
+                        {
+                            responseData = new ReconciliationUploadResponse() { ERROR_MESSAGE = "Something went wrong", IsSuccess = false, RECORD_EXISTED = 0, RECORD_INSERTED = 0, TOTAL_RECORDS = 0 };
+
+                        }
                     }
                     else
                     {
-                        responseData.Last_UPLAOD_DATE = CommonService.Helper.GetCurrentDate();
-                    }
+                        FOX_TBL_RECONCILIATION_UPLOAD_LOG last_upload_status = GetLastUploadFileStatus(profile);
+                        if (last_upload_status != null)
+                        {
+                            responseData.IsSuccess = true;
+                            responseData.RECORD_INSERTED = last_upload_status.SUCCESSFULLY_ADDED;
+                            responseData.TOTAL_RECORDS = last_upload_status.TOTAL_RECORDS;
+                            responseData.Last_UPLAOD_DATE = last_upload_status.LAST_UPDATED_DATE;
+                        }
+                        else
+                        {
+                            responseData = new ReconciliationUploadResponse() { ERROR_MESSAGE = "Something went wrong", IsSuccess = false, RECORD_EXISTED = 0, RECORD_INSERTED = 0, TOTAL_RECORDS = 0 };
 
+                        }
+                    }
+                }
+                else
+                {
+                    responseData = new ReconciliationUploadResponse() { ERROR_MESSAGE = "Something went wrong", IsSuccess = false, RECORD_EXISTED = 0, RECORD_INSERTED = 0, TOTAL_RECORDS = 0 };
                 }
 
                 return responseData;
@@ -2626,28 +2760,56 @@ namespace FOX.BusinessOperations.ReconciliationService
             }
         }
 
-        private ReconciliationUploadResponse InsertExcelValuesToDB(List<ReconcialtionImport> lst, UserProfile profile)
+        private string InsertExcelValuesToDB(ReconcialtionImport lst, UserProfile profile)
         {
+            ReconcialtionImport obj = GetReconsiliatinTable(lst);
+            if (obj != null)
+            {
 
-            DataTable dt = GetReconsiliatinTable(lst);
+                long uniqueId = Helper.getMaximumId("FOX_RECONCILIATION_CP_ID");
+                SqlParameter reconciliationId = new SqlParameter("RECONCILIATION_CP_ID", uniqueId);
+                SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
+                SqlParameter depsoitDate = new SqlParameter("DEPOSIT_DATE", obj.DepositDate ?? "");
+                SqlParameter insuranceName = new SqlParameter("FOX_TBL_INSURANCE_NAME", obj.PayerName ?? "");
+                SqlParameter checkNo = new SqlParameter("CHECK_NO", obj.CheckNo ?? "");
+                SqlParameter amount = new SqlParameter("AMOUNT", obj.Amount ?? "");
+                SqlParameter amountPosted = new SqlParameter("AMOUNT_POSTED", obj.TotalPosted ?? "");
+                SqlParameter amountNotPosted = new SqlParameter("AMOUNT_NOT_POSTED", obj.NotPosted ?? "");
+                SqlParameter assignedTo = new SqlParameter("ASSIGNED_TO", obj.AssignedTo ?? "");
+                SqlParameter assignedDate = new SqlParameter("ASSIGNED_DATE", obj.DateAssigned ?? "");
+                SqlParameter datePosted = new SqlParameter("DATE_POSTED ", obj.DatePosted ?? "");
+                SqlParameter batchNo = new SqlParameter("BATCH_NO", obj.BatchNo ?? "");
+                SqlParameter userName = new SqlParameter("USER_NAME", profile.UserName ?? "");
+                SqlParameter deposutType = new SqlParameter("DEPOSIT_TYPE", obj.DepositType ?? "");
+                SqlParameter categoryAccount = new SqlParameter("CATEGORY_ACCOUNT", obj.CategoryAccount ?? "");
 
-            SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
-            SqlParameter userName = new SqlParameter("USER_NAME", profile.UserName);
-            SqlParameter tempdata = new SqlParameter("RECONCILIATION_DATA", SqlDbType.Structured);
-            tempdata.TypeName = "RECONCILIATION_CP_IMPORT";
-            tempdata.Value = dt;
 
-            return SpRepository<ReconciliationUploadResponse>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_INSERT_RECONCILIATION_EXCEL_DATA @PRACTICE_CODE, @USER_NAME, @RECONCILIATION_DATA", practiceCode, userName, tempdata);
-
+                return SpRepository<string>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_INSERT_RECONCILIATION_EXCEL_DATA_NEW 
+            @RECONCILIATION_CP_ID, @PRACTICE_CODE, @DEPOSIT_DATE, @FOX_TBL_INSURANCE_NAME, @CHECK_NO, @AMOUNT, @AMOUNT_POSTED, @AMOUNT_NOT_POSTED,
+            @ASSIGNED_TO, @ASSIGNED_DATE, @DATE_POSTED, @BATCH_NO, @USER_NAME, @DEPOSIT_TYPE, @CATEGORY_ACCOUNT"
+                , reconciliationId, practiceCode, depsoitDate, insuranceName, checkNo, amount, amountPosted, amountNotPosted, assignedTo, assignedDate
+                , datePosted, batchNo, userName, deposutType, categoryAccount);
+            }
+            else
+            {
+                return "ERROR";
+            }
         }
-
         public FOX_TBL_RECONCILIATION_UPLOAD_LOG GetLastUploadFileStatus(UserProfile profile)
         {
             SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
             return SpRepository<FOX_TBL_RECONCILIATION_UPLOAD_LOG>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_GET_RECONCILIATION_UPLOAD_LOG @PRACTICE_CODE", practiceCode);
         }
 
-
+        public FOX_TBL_RECONCILIATION_UPLOAD_LOG InsertLatestUpload(long totalRecords, long totalInserttedRecords, UserProfile profile)
+        {
+            SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
+            SqlParameter total = new SqlParameter("TOTAL_RECORDS", totalRecords);
+            SqlParameter user = new SqlParameter("USER_NAME", profile.UserName);
+            SqlParameter inserted = new SqlParameter("RECORD_INSERTED", totalInserttedRecords);
+            return SpRepository<FOX_TBL_RECONCILIATION_UPLOAD_LOG>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_INSERT_RECONCILIATION_UPLOAD_LOG
+            @PRACTICE_CODE, @TOTAL_RECORDS, @USER_NAME, @RECORD_INSERTED", practiceCode, total, user, inserted);
+        }
 
         public List<SOFT_RECONCILIATION_PAYMENT> GetSoftReconsilitionPayment(SOFT_RECONCILIATION_SERACH_REQUEST obj, UserProfile profile)
         {
@@ -2714,57 +2876,89 @@ namespace FOX.BusinessOperations.ReconciliationService
                 obj.Row_No = i++;
             }
         }
-        private DataTable GetReconsiliatinTable(List<ReconcialtionImport> lst)
-        {
-            DataTable dt = new DataTable();
-            dt.Columns.Add("DEPOSIT_DATE");
-            dt.Columns.Add("DEPOSIT_TYPE");
-            dt.Columns.Add("CATEGORY_ACCOUNT");
-            dt.Columns.Add("INSURANCE_NAME");
-            dt.Columns.Add("CHECK_NO");
-            dt.Columns.Add("AMOUNT");
-            dt.Columns.Add("AMOUNT_POSTED");
-            dt.Columns.Add("AMOUNT_NOT_POSTED");
-            dt.Columns.Add("DATE_ASSIGNED");
-            dt.Columns.Add("ASSIGNED_TO");
-            dt.Columns.Add("DATE_ENTERED");
-            dt.Columns.Add("BATCH_NO");
-            dt.Columns.Add("DATE_POSTED");
-            //dt.Columns.Add("ASSIGNED_GROUP");
-            //dt.Columns.Add("ASSIGNED_GROUP_DATE");
 
-            foreach (ReconcialtionImport recon in lst)
+        private ReconcialtionImport GetReconsiliatinTable(ReconcialtionImport lst)
+        {
+            if(lst != null)
             {
                 //string checkNo = GetCheckNo(recon.CheckNoBatchNo);
-                string checkNo = recon.CheckNoBatchNo;
-                if (!string.IsNullOrEmpty(checkNo) && checkNo.Length > 2)
+                string checkNo = lst.CheckNoBatchNo;
+                if (!string.IsNullOrEmpty(checkNo) && checkNo.Length > 1)
                 {
-                    DataRow dr = dt.Rows.Add();
-                    dr["DEPOSIT_DATE"] = string.IsNullOrEmpty(recon.DepositDate) ? string.Empty : recon.DepositDate;
-                    dr["DEPOSIT_TYPE"] = string.IsNullOrEmpty(recon.DepositType) ? string.Empty : recon.DepositType;
-                    dr["CATEGORY_ACCOUNT"] = string.IsNullOrEmpty(recon.CategoryAccount) ? string.Empty : recon.CategoryAccount;
-                    dr["INSURANCE_NAME"] = string.IsNullOrEmpty(recon.PayerName) ? string.Empty : recon.PayerName;
-                    dr["CHECK_NO"] = checkNo.Length > 50 ? checkNo.Substring(0, 50) : checkNo;// recon.CheckNoBatchNo.Substring(0,45);
-                    dr["BATCH_NO"] = string.IsNullOrEmpty(recon.CheckNoBatchNo) ? string.Empty : recon.CheckNoBatchNo.Length > 500 ? recon.CheckNoBatchNo.Substring(0, 499) : recon.CheckNoBatchNo;
-                    dr["AMOUNT"] = string.IsNullOrEmpty(recon.Amount) ? "0.00" : recon.Amount.Replace("$", string.Empty);
-                    dr["AMOUNT_POSTED"] = string.IsNullOrEmpty(recon.TotalPosted) ? "0.00" : recon.TotalPosted.Replace("$", string.Empty);
-                    dr["AMOUNT_NOT_POSTED"] = string.IsNullOrEmpty(recon.NotPosted) ? "0.00" : recon.NotPosted.Replace("$", string.Empty);
+                    lst.DepositDate = string.IsNullOrEmpty(lst.DepositDate) ? string.Empty : lst.DepositDate;
+                    lst.DepositType = string.IsNullOrEmpty(lst.DepositType) ? string.Empty : lst.DepositType;
+                    lst.CategoryAccount = string.IsNullOrEmpty(lst.CategoryAccount) ? string.Empty : lst.CategoryAccount;
+                    lst.PayerName = string.IsNullOrEmpty(lst.PayerName) ? string.Empty : lst.PayerName;
+                    lst.CheckNo = checkNo.Length > 50 ? checkNo.Substring(0, 50) : checkNo;// recon.CheckNoBatchNo.Substring(0,45);
+                    lst.BatchNo = string.IsNullOrEmpty(lst.CheckNoBatchNo) ? string.Empty : lst.CheckNoBatchNo.Length > 500 ? lst.CheckNoBatchNo.Substring(0, 499) : lst.CheckNoBatchNo;
+                    lst.Amount = string.IsNullOrEmpty(lst.Amount) ? "0.00" : lst.Amount.Replace("$", string.Empty);
+                    lst.TotalPosted = string.IsNullOrEmpty(lst.TotalPosted) ? "0.00" : lst.TotalPosted.Replace("$", string.Empty);
+                    lst.NotPosted = string.IsNullOrEmpty(lst.NotPosted) ? "0.00" : lst.NotPosted.Replace("$", string.Empty);
                     //dr["DATE_ASSIGNED"] = recon.DateAssigned;
                     //dr["ASSIGNED_TO"] = recon.AssignedTo;
-                    dr["DATE_POSTED"] = string.IsNullOrEmpty(recon.DatePosted) ? string.Empty : recon.DatePosted;
-                    dr["ASSIGNED_TO"] = string.IsNullOrEmpty(recon.AssignedTo) ? string.Empty : (recon.AssignedTo.Length > 70 ? recon.AssignedTo.Substring(0, 70) : recon.AssignedTo);
-                    dr["DATE_ASSIGNED"] = string.IsNullOrEmpty(recon.DateAssigned) ? string.Empty : recon.DateAssigned;
-                    dr["DATE_ENTERED"] = string.IsNullOrEmpty(recon.DateEntered) ? string.Empty : recon.DateEntered;
-                    //if (!string.IsNullOrEmpty(recon.DateEntered))
-                    //{
-                    //    dr["DATE_ENTERED"] = recon.DateEntered;
-                    //}
+                    lst.DatePosted = string.IsNullOrEmpty(lst.DatePosted) ? string.Empty : lst.DatePosted;
+                    lst.AssignedTo = string.IsNullOrEmpty(lst.AssignedTo) ? string.Empty : (lst.AssignedTo.Length > 70 ? lst.AssignedTo.Substring(0, 70) : lst.AssignedTo);
+                    lst.DateAssigned = string.IsNullOrEmpty(lst.DateAssigned) ? string.Empty : lst.DateAssigned;
+                    lst.DateEntered = string.IsNullOrEmpty(lst.DateEntered) ? string.Empty : lst.DateEntered;
                 }
-                //dt.Rows.Add(dr);
-
+                else
+                {
+                    lst = null;
+                }
             }
-            return dt;
+            return lst;
         }
+        //private DataTable GetReconsiliatinTable(List<ReconcialtionImport> lst)
+        //{
+        //    DataTable dt = new DataTable();
+        //    dt.Columns.Add("DEPOSIT_DATE");
+        //    dt.Columns.Add("DEPOSIT_TYPE");
+        //    dt.Columns.Add("CATEGORY_ACCOUNT");
+        //    dt.Columns.Add("INSURANCE_NAME");
+        //    dt.Columns.Add("CHECK_NO");
+        //    dt.Columns.Add("AMOUNT");
+        //    dt.Columns.Add("AMOUNT_POSTED");
+        //    dt.Columns.Add("AMOUNT_NOT_POSTED");
+        //    dt.Columns.Add("DATE_ASSIGNED");
+        //    dt.Columns.Add("ASSIGNED_TO");
+        //    dt.Columns.Add("DATE_ENTERED");
+        //    dt.Columns.Add("BATCH_NO");
+        //    dt.Columns.Add("DATE_POSTED");
+        //    //dt.Columns.Add("ASSIGNED_GROUP");
+        //    //dt.Columns.Add("ASSIGNED_GROUP_DATE");
+
+        //    foreach (ReconcialtionImport recon in lst)
+        //    {
+        //        //string checkNo = GetCheckNo(recon.CheckNoBatchNo);
+        //        string checkNo = recon.CheckNoBatchNo;
+        //        if (!string.IsNullOrEmpty(checkNo) && checkNo.Length > 2)
+        //        {
+        //            DataRow dr = dt.Rows.Add();
+        //            dr["DEPOSIT_DATE"] = string.IsNullOrEmpty(recon.DepositDate) ? string.Empty : recon.DepositDate;
+        //            dr["DEPOSIT_TYPE"] = string.IsNullOrEmpty(recon.DepositType) ? string.Empty : recon.DepositType;
+        //            dr["CATEGORY_ACCOUNT"] = string.IsNullOrEmpty(recon.CategoryAccount) ? string.Empty : recon.CategoryAccount;
+        //            dr["INSURANCE_NAME"] = string.IsNullOrEmpty(recon.PayerName) ? string.Empty : recon.PayerName;
+        //            dr["CHECK_NO"] = checkNo.Length > 50 ? checkNo.Substring(0, 50) : checkNo;// recon.CheckNoBatchNo.Substring(0,45);
+        //            dr["BATCH_NO"] = string.IsNullOrEmpty(recon.CheckNoBatchNo) ? string.Empty : recon.CheckNoBatchNo.Length > 500 ? recon.CheckNoBatchNo.Substring(0, 499) : recon.CheckNoBatchNo;
+        //            dr["AMOUNT"] = string.IsNullOrEmpty(recon.Amount) ? "0.00" : recon.Amount.Replace("$", string.Empty);
+        //            dr["AMOUNT_POSTED"] = string.IsNullOrEmpty(recon.TotalPosted) ? "0.00" : recon.TotalPosted.Replace("$", string.Empty);
+        //            dr["AMOUNT_NOT_POSTED"] = string.IsNullOrEmpty(recon.NotPosted) ? "0.00" : recon.NotPosted.Replace("$", string.Empty);
+        //            //dr["DATE_ASSIGNED"] = recon.DateAssigned;
+        //            //dr["ASSIGNED_TO"] = recon.AssignedTo;
+        //            dr["DATE_POSTED"] = string.IsNullOrEmpty(recon.DatePosted) ? string.Empty : recon.DatePosted;
+        //            dr["ASSIGNED_TO"] = string.IsNullOrEmpty(recon.AssignedTo) ? string.Empty : (recon.AssignedTo.Length > 70 ? recon.AssignedTo.Substring(0, 70) : recon.AssignedTo);
+        //            dr["DATE_ASSIGNED"] = string.IsNullOrEmpty(recon.DateAssigned) ? string.Empty : recon.DateAssigned;
+        //            dr["DATE_ENTERED"] = string.IsNullOrEmpty(recon.DateEntered) ? string.Empty : recon.DateEntered;
+        //            //if (!string.IsNullOrEmpty(recon.DateEntered))
+        //            //{
+        //            //    dr["DATE_ENTERED"] = recon.DateEntered;
+        //            //}
+        //        }
+        //        //dt.Rows.Add(dr);
+
+        //    }
+        //    return dt;
+        //}
 
         private string GetCheckNo(string checkNo)
         {

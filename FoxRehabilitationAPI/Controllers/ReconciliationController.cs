@@ -96,7 +96,11 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.SaveReconciliationCP(reconciliationToSave, GetProfile()));
         }
-
+        [HttpPost]
+        public HttpResponseMessage EditReconciliationCP([FromBody] ReconciliationCP reconciliationToSave)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.EditReconciliationCP(reconciliationToSave, GetProfile()));
+        }
         [HttpPost]
         public HttpResponseMessage SaveAutoReconciliationCP([FromBody] ReconciliationCP autoreconciliationToSave)
         {
