@@ -49,9 +49,7 @@ namespace FoxRehabilitationAPI.App_Start
             container.RegisterType<FOX.BusinessOperations.RequestForOrder.IndexInformationServices.IIndexInformationService, FOX.BusinessOperations.RequestForOrder.IndexInformationServices.IndexInformationService>();
             container.RegisterType<IAccountServices, AccountServices>();
             container.RegisterType<IGeneralNotesServices, GeneralNotesServices>();
-            container.RegisterType<FOX.BusinessOperations.CorrectedClaimService.ICorrectedClaimService, FOX.BusinessOperations.CorrectedClaimService.CorrectedClaimService>();
             container.RegisterType<FOX.BusinessOperations.SettingsService.ReferralRegionServices.IReferralRegionService, FOX.BusinessOperations.SettingsService.ReferralRegionServices.ReferralRegionService>();
-            container.RegisterType<FOX.BusinessOperations.AdjustmentApprovalService.IAdjusmentApprovalServices, FOX.BusinessOperations.AdjustmentApprovalService.AdjustmentApprovalServices>();
             container.RegisterType<FOX.BusinessOperations.FoxPHDService.IFoxPHDService, FOX.BusinessOperations.FoxPHDService.FoxPHDService>();
             container.RegisterType<FOX.BusinessOperations.PatientDocumentsService.IPatientDocumentsService, FOX.BusinessOperations.PatientDocumentsService.PatientDocumentsService>();
             container.RegisterType<FOX.BusinessOperations.ReconciliationService.IReconciliationService, FOX.BusinessOperations.ReconciliationService.ReconciliationService>();

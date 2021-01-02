@@ -196,8 +196,6 @@
   <ItemGroup>
     <Compile Include="AccountService\AccountServices.cs" />
     <Compile Include="AccountService\IAccountServices.cs" />
-    <Compile Include="AdjustmentApprovalService\AdjustmentApprovalServices.cs" />
-    <Compile Include="AdjustmentApprovalService\IAdjusmentApprovalServices.cs" />
     <Compile Include="AssignedQueueService\AssignedQueueServices.cs" />
     <Compile Include="AssignedQueueService\IAssignedQueueServices.cs" />
     <Compile Include="CaseServices\CaseServices.cs" />
@@ -220,8 +218,6 @@
     <Compile Include="CommonServices\USStreetApiClass.cs" />
     <Compile Include="CompleteQueueService\CompleteQueueService.cs" />
     <Compile Include="CompleteQueueService\ICompleteQueueService.cs" />
-    <Compile Include="CorrectedClaimService\CorrectedClaimService.cs" />
-    <Compile Include="CorrectedClaimService\ICorrectedClaimService.cs" />
     <Compile Include="DashboardServices\DashboardService.cs" />
     <Compile Include="DashboardServices\IDashboardService.cs" />
     <Compile Include="FaxServices\FaxService.cs" />
