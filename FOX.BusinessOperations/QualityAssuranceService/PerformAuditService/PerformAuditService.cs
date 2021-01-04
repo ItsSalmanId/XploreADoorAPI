@@ -1,6 +1,7 @@
 ﻿using FOX.BusinessOperations.CommonService;
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
+using FOX.DataModels.Models.FoxPHD;
 using FOX.DataModels.Models.PatientSurvey;
 using FOX.DataModels.Models.QualityAsuranceModel;
 using FOX.DataModels.Models.Security;
@@ -15,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
 {
-   public class PerformAuditService : IPerformAuditService
+    public class PerformAuditService : IPerformAuditService
     {
         private readonly DBContextQueue _QueueContext = new DBContextQueue();
         private readonly DBContextQualityAssurance _qualityAssuranceContext = new DBContextQualityAssurance();
@@ -28,6 +29,8 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
         private readonly GenericRepository<RoleToAdd> _roleRepository;
         private readonly GenericRepository<User> _userTableRepository;
         private readonly GenericRepository<GradingSetup> _gradingSetupRepository;
+        private readonly GenericRepository<PhdCallScenario> _PhdCallScenarioRepository;
+        private readonly DBContextFoxPHD _DBContextFoxPHD = new DBContextFoxPHD();
         public List<GradingSetup> GradingCriteria = new List<GradingSetup>();
 
         public PerformAuditService()
@@ -40,16 +43,18 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             _roleRepository = new GenericRepository<RoleToAdd>(_QueueContext);
             _userTableRepository = new GenericRepository<User>(_qualityAssuranceContext);
             _gradingSetupRepository = new GenericRepository<GradingSetup>(_qualityAssuranceContext);
+            _PhdCallScenarioRepository = new GenericRepository<PhdCallScenario>(_DBContextFoxPHD);
             GradingCriteria = new List<GradingSetup>();
         }
-        public TotalNumbers GetTotalNumbersOfCriteria(long practiceCode, RequestModelForCallType obj) {
+        public TotalNumbers GetTotalNumbersOfCriteria(long practiceCode, RequestModelForCallType obj)
+        {
 
             TotalNumbers response = new TotalNumbers();
-
             _patientSurveyContext.PatientSurvey.Where(t => t.PRACTICE_CODE == practiceCode && !t.DELETED);
             response.EvaluationCriteriaCategories = _evaluationCriteriaCategoriesRepository.GetMany(t => t.PRACTICE_CODE == practiceCode && !t.DELETED && t.CALL_TYPE == obj.Call_Type).ToList();
             response.WowFactor = _wowFactorRepository.GetMany(t => t.PRACTICE_CODE == practiceCode && !t.DELETED && t.CALL_TYPE == obj.Call_Type).ToList();
-           
+            response.PhdCallScenarios = _PhdCallScenarioRepository.GetMany(s => s.PRACTICE_CODE == practiceCode && s.DELETED == false).OrderBy(o => o.NAME).ToList();
+
             return response;
         }
         public List<FeedBackCaller> GetListOfReps(long practiceCode)
@@ -67,7 +72,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                     List = SpRepository<FeedBackCaller>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_FEEDBACK_CALLER_LIST
                          @PRACTICE_CODE, @ROLE_ID", PracticeCode, _roleId);
                 }
-              
+
 
                 List<FeedBackCaller> response = new List<FeedBackCaller>();
                 response = List;
@@ -114,23 +119,28 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             }
 
             var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
-          //  var _surveyBy = new SqlParameter { ParameterName = "SURVEY_BY", SqlDbType = SqlDbType.VarChar, Value = request.SURVEY_BY };
+            //  var _surveyBy = new SqlParameter { ParameterName = "SURVEY_BY", SqlDbType = SqlDbType.VarChar, Value = request.SURVEY_BY };
             var _callBy = new SqlParameter { ParameterName = "CALL_BY", SqlDbType = SqlDbType.VarChar, Value = request.SURVEY_BY };
-            var _callType= new SqlParameter { ParameterName = "CALL_TYPE", SqlDbType = SqlDbType.VarChar, Value = request.CALL_TYPE };
+            var _callType = new SqlParameter { ParameterName = "CALL_TYPE", SqlDbType = SqlDbType.VarChar, Value = request.CALL_TYPE };
             var dateFrom = Helper.getDBNullOrValue("DATE_FROM", request.DATE_FROM.ToString());
             var dateTo = Helper.getDBNullOrValue("@DATE_TO", request.DATE_TO.ToString());
+            var callScanario = new SqlParameter { ParameterName = "PHD_CALL_SCENARIO_ID", SqlDbType = SqlDbType.VarChar, Value = request.PHD_CALL_SCENARIO_ID};
             //var result = SpRepository<CallLogModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SURVEY_CALL_LIST
             //             @PRACTICE_CODE, @SURVEY_BY, @DATE_FROM, @DATE_TO", PracticeCode, _surveyBy, dateFrom, dateTo);
 
             var result = SpRepository<CallLogModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_CALL_LIST_FOR_AUDIT
-                         @PRACTICE_CODE, @CALL_BY, @CALL_TYPE, @DATE_FROM, @DATE_TO", PracticeCode, _callBy, _callType, dateFrom, dateTo);
+                         @PRACTICE_CODE, @CALL_BY, @CALL_TYPE, @DATE_FROM, @DATE_TO, @PHD_CALL_SCENARIO_ID", PracticeCode, _callBy, _callType, dateFrom, dateTo, callScanario);
             lst = result;
 
-           // var List = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.AUDITOR_NAME == profile.UserName).Select(x => x.SURVEY_CALL_ID).ToList();
+            // var List = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.AUDITOR_NAME == profile.UserName).Select(x => x.SURVEY_CALL_ID).ToList();
 
+
+            var noAssociatedList = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode &&
+                x.AUDITOR_NAME == profile.UserName && x.PHD_CALL_ID.ToString().EndsWith("0000") &&
+                (request.PHD_CALL_SCENARIO_ID != 0 ? (x.PHD_CALL_SCENARIO_ID == request.PHD_CALL_SCENARIO_ID) : true));
             var List = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.AUDITOR_NAME == profile.UserName).Select(x => new SurveyAuditScores() { SURVEY_CALL_ID = x.SURVEY_CALL_ID, PHD_CALL_ID = x.PHD_CALL_ID }).ToList();
 
-            if(lst.Count > 0)
+            if (lst.Count > 0 )
             {
                 for (int i = 0; i < lst.Count; i++)
                 {
@@ -142,26 +152,70 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                         }
                     }
                 }
+                if(request.IS_READ_ONLY_MODE && noAssociatedList.Count >0)
+                {
+                    foreach (SurveyAuditScores list in noAssociatedList)
+                    {
+                        if(list.AGENT_NAME == request.SURVEY_BY)
+                        {
+                            CallLogModel notAssociatedCall = new CallLogModel();
+                            //notAssociatedCall.ID = list.PHD_CALL_ID.GetValueOrDefault() + list.SURVEY_AUDIT_SCORES_ID;
+                            notAssociatedCall.ID = list.PHD_CALL_ID.GetValueOrDefault();
+                            notAssociatedCall.CREATED_BY = list.AGENT_NAME;
+                            notAssociatedCall.CREATED_DATE = list.CREATED_DATE;
+                            notAssociatedCall.LOGS = "Not Associated Call | Patient Helpdesk";
+                            notAssociatedCall.IS_AUDITED = true;
+                            lst.Add(notAssociatedCall);
+
+                        }
+                    }
+                   
+                }
                 return lst;
+            }
+            if(noAssociatedList.Count > 0 && lst.Count == 0 && request.IS_READ_ONLY_MODE)
+            {
+                foreach (SurveyAuditScores list in noAssociatedList)
+                {
+                    if (list.AGENT_NAME == request.SURVEY_BY )
+                    {
+                        CallLogModel notAssociatedCall = new CallLogModel();
+                        //notAssociatedCall.ID = list.PHD_CALL_ID.GetValueOrDefault();
+                        notAssociatedCall.ID = list.SURVEY_AUDIT_SCORES_ID;
+                        notAssociatedCall.CREATED_BY = list.AGENT_NAME;
+                        notAssociatedCall.CREATED_DATE = list.CREATED_DATE;
+                        notAssociatedCall.LOGS = "Not Associated Call | Patient Helpdesk";
+                        lst.Add(notAssociatedCall);
+                    }
+                }
+               return lst;
             }
             else
             {
                 return new List<CallLogModel>();
             }
-}
-        public bool InsertAuditScores(SurveyAuditScores req, UserProfile profile )
+        }
+        public bool InsertAuditScores(SurveyAuditScores req, UserProfile profile)
         {
-            GradingCriteria = GetListOfGradingCriteria(profile.PracticeCode ,req);
+            string _body = string.Empty;
+           _body  = "<style>  body, table, td {font-family:arial!important;} table  { border-collapse:separate; }@media screen and(max-width:740px) { table { width: 100 % !important; text-align:center!important;} } body {font-size:14px!important;}  table th { background: #8fabbf;color: #fff;font-weight: normal; border-right: 1px solid #fff;text-align: center;font-weight: bold;line-height: normal;}table td, th{ padding: 3px 7px; color: #555555;font-size: 12px; height: 24px; font-weight: normal;}table tr:nth-of-type(odd) {background-color: #f2f2f2;}a{ text-decoration: none; }   </style> ";
+            string _subject = string.Empty;
+            string sendTo = string.Empty;
+            DateTime? callDate;
+            callDate = req.CREATED_DATE;
+            GradingCriteria = GetListOfGradingCriteria(profile.PracticeCode, req);
             var Obj = new List<SurveyAuditScores>();
             if ((req.SURVEY_CALL_ID != 0 && req.SURVEY_CALL_ID != null)) // in case of patient survey
             {
-                 Obj = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.SURVEY_CALL_ID == req.SURVEY_CALL_ID && x.AUDITOR_NAME == profile.UserName);
+                Obj = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.SURVEY_CALL_ID == req.SURVEY_CALL_ID && x.AUDITOR_NAME == profile.UserName);
+                req.CALL_TYPE = "survey";
                 req.PHD_CALL_ID = null;
             }
             if ((req.PHD_CALL_ID != 0 && req.PHD_CALL_ID != null)) // in case of patient helpdesk
             {
                 Obj = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.PHD_CALL_ID == req.PHD_CALL_ID && x.AUDITOR_NAME == profile.UserName);
                 req.SURVEY_CALL_ID = null;
+                req.CALL_TYPE = "phd";
             }
 
             if (Obj.Count == 0)
@@ -175,15 +229,50 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                 req.MODIFIED_BY = profile.UserName;
                 req.MODIFIED_DATE = Helper.GetCurrentDate();
                 req.DELETED = false;
+                if (req.PHD_CALL_ID == 0)
+                {
+                    var date = DateTime.Now.ToString("yyyyMMddHHmmss");
+                    date =   date + "0000";
+                    req.PHD_CALL_ID = long.Parse(date);
+                }
                 _auditScoresRepository.Insert(req);
                 _auditScoresRepository.Save();
+
+                //Sending Email to Auditor in PHD CASE
+                if(req.CALL_TYPE == "phd")
+                {
+                    
+                    req.AUDITOR_NAME = profile.FirstName + ' ' + profile.LastName;
+                    req.AGENT_EMAIL = req.AGENT_EMAIL;
+
+                    _body += " <h3 style=margin:0;><b>Body:</b></h3>";
+                    _body += "<h4 style=font-weight:normal;margin-top:0>A helpdesk record has been audited with following specifics:</h4 > ";
+                    _body += "<h3 style=font-weight:normal;margin:0;><b>Auditor: </b>" + req.AUDITOR_NAME + "</h3>" ;
+                    if (req.MRN !=null)
+                    {
+
+                    _body += " <h3 style=font-weight: normal; margin: 0; ><b>Audited on: MRN:</b>" + req.MRN + " " + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt") + "</h3>";
+                    }
+                    if(req.CALL_SCANARIO != null)
+                    {
+                    _body += "<h3 style=font - weight: normal; margin: 0; ><b>Call handling: </b> " + req.CALL_SCANARIO + "</h3>";
+                    }
+                    _body += "<h3 style=font-weight:normal;><b>Evaluation details:</b> </h3>";
+                    _body += req.HTML_TEMPLETE;
+                    _subject = "PHD audit summary-" +(string.IsNullOrEmpty(req.AUDITOR_NAME) ? "" : req.AUDITOR_NAME + ".")  + (string.IsNullOrEmpty(req.CALL_SCANARIO) ? "" : req.CALL_SCANARIO + ",")  +Convert.ToDateTime(callDate).ToShortDateString();
+
+                    //req.AGENT_EMAIL = "usamabinahmed@mtbc.com";
+                    Helper.Email(req.AGENT_EMAIL, _subject, _body, profile, null, null, null, null);
+                    //Helper.SendEmail(req.AUDITOR_EMAIL, _subject, _body, null,profile, null, null);
+
+                }
                 return true;
             }
             else
             {
                 return false;
             }
-            
+
         }
         public List<SurveyAuditScores> ListAuditedCalls(RequestCallFromQA req, UserProfile profile)
         {
@@ -213,7 +302,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             }
 
             SqlParameter _practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
-            SqlParameter _agentName = new SqlParameter { ParameterName = "AGENT_NAME", Value = req.AGENT_NAME };    
+            SqlParameter _agentName = new SqlParameter { ParameterName = "AGENT_NAME", Value = req.AGENT_NAME };
             SqlParameter _auditorName = new SqlParameter { ParameterName = "AUDITOR_NAME", Value = req.AUDITOR_NAME };
             SqlParameter _dateFrom = Helper.getDBNullOrValue("DATE_FROM", req.DATE_FROM.ToString());
             SqlParameter _dateTos = Helper.getDBNullOrValue("DATE_TO", req.DATE_TO.ToString());

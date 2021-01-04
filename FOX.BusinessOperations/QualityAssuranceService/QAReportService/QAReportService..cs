@@ -21,11 +21,13 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QAReportService
         private readonly DBContextQualityAssurance _qualityAssuranceContext = new DBContextQualityAssurance();
         private readonly GenericRepository<SurveyAuditScores> _auditScoresRepository;
         private readonly GenericRepository<GradingSetup> _gradingSetupRepository;
+        public List<GradingSetup> Criteria = new List<GradingSetup>();
         public List<GradingSetup> GradingCriteria = new List<GradingSetup>();
         public QAReportService()
         {
             _auditScoresRepository = new GenericRepository<SurveyAuditScores>(_qualityAssuranceContext);
             _gradingSetupRepository = new GenericRepository<GradingSetup>(_qualityAssuranceContext);
+            Criteria = new List<GradingSetup>();
             GradingCriteria = new List<GradingSetup>();
         }
         public List<FeedBackCaller> GetListOfAgents(long practiceCode)
@@ -45,7 +47,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QAReportService
                         var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
                         var _userName = new SqlParameter { ParameterName = "USER_NAME", SqlDbType = SqlDbType.VarChar, Value = List[i] };
 
-                        var  lst = SpRepository<FeedBackCaller>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_AUDITOR_NAME_LIST
+                        var  lst = SpRepository<FeedBackCaller>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_AUDITOR_NAME_LIST_usama
                          @PRACTICE_CODE, @USER_NAME", PracticeCode, _userName);
                         result.Add(lst);
                     }
@@ -101,14 +103,25 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QAReportService
             SqlParameter _sortBy = new SqlParameter { ParameterName = "SORT_BY", Value = reg.SORT_BY };
             SqlParameter _sortOrder = new SqlParameter { ParameterName = "SORT_ORDER", Value = reg.SORT_ORDER };
             SqlParameter _calltype = new SqlParameter { ParameterName = "CALL_TYPE", Value = reg.CALL_TYPE };
+            SqlParameter _callSacnario = new SqlParameter { ParameterName = "PHD_CALL_SCENARIO_ID", Value = reg.PHD_CALL_SCENARIO_ID };
 
 
 
             tempList = SpRepository<AuditScoresListTemp>.GetListWithStoreProcedure(@"exec FOX_PROC_AUDTIT_SCORES_LIST
-                            @PRACTICE_CODE, @SEARCH_TEXT, @AGENT_NAME, @AUDITOR_NAME, @DATE_FROM, @DATE_TO, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER, @CALL_TYPE"
-                            , _practiceCode, _searchText, _agentName, _auditorName, _dateFrom, _dateTos, _currentPage, _recordPerPage, _sortBy, _sortOrder, _calltype);
-            GradingCriteria = GetListOfGradingCriteria(profile.PracticeCode);
+                            @PRACTICE_CODE, @SEARCH_TEXT, @AGENT_NAME, @AUDITOR_NAME, @DATE_FROM, @DATE_TO, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER, @CALL_TYPE ,@PHD_CALL_SCENARIO_ID"
+                            , _practiceCode, _searchText, _agentName, _auditorName, _dateFrom, _dateTos, _currentPage, _recordPerPage, _sortBy, _sortOrder, _calltype, _callSacnario);
+            Criteria = GetListOfGradingCriteria(profile.PracticeCode);
+            if(Criteria.Count >0)
+            {
+                foreach (var criteria in Criteria)
+                {
+                    if (criteria.CALL_TYPE.ToLower() == reg.CALL_TYPE.ToLower())
+                    {
+                        GradingCriteria.Add(criteria);
+                    }
+                }
 
+            }
             if (reg.AUDITOR_NAME != "")
             {
                 for (int i = 0; i < tempList.Count; i++)
