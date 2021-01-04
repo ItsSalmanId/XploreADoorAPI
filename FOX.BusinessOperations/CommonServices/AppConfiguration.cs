@@ -288,7 +288,7 @@ namespace FOX.BusinessOperations.CommonServices
         {
             get
             {
-                return 8;
+                return 6;
             }
         }
 

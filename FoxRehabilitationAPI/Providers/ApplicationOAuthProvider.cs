@@ -77,16 +77,16 @@ namespace FoxRehabilitationAPI.Providers
             var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
             userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
 
-            if (!userManager.CheckUserExistingLoginAttempts(context.UserName))
-            {
-                context.SetError("invalid_grant", "Your account has been temporarily suspended. Please contact system administrator.");
-                return;
-            }
 
             tuple = await userManager.FindProfileAsync(context.UserName, context.Password);
 
             if (tuple.Item1 == null || tuple.Item2 == null)
             {
+            if (!userManager.CheckUserExistingLoginAttempts(context.UserName))
+            {
+                context.SetError("invalid_grant", "Your account has been temporarily suspended. Please contact system administrator.");
+                return;
+            }
                 userManager.AddInvalidLoginAttempt(context.UserName);
                 if (context.UserName.Contains("@"))
                 {
