@@ -423,6 +423,20 @@ namespace FoxRehabilitationAPI
             }
         }
 
+        public bool IsCheckedUserBlocked(string userName)
+        {
+            UserManagementService user = new UserManagementService();
+            try
+            {
+                return user.IsUserBlocked(userName: userName);
+            }
+            catch (Exception ex)
+            {
+                Helper.CustomExceptionLog(ex);
+                return user.IsUserBlocked(userName: userName);
+            }
+        }
+
         public bool AddInvalidLoginAttempt(string userName)
         {
             UserManagementService user = new UserManagementService();

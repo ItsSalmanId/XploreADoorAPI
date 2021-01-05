@@ -51,10 +51,10 @@ namespace FoxRehabilitationAPI.Providers
         {
             try
             {
-            //string hostname = FOX.BusinessOperations.CommonService.Helper.GetHostName();
-            //string h = context.OwinContext.Request.Host.Value;
-            context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
-            var form = await context.Request.ReadFormAsync();
+                //string hostname = FOX.BusinessOperations.CommonService.Helper.GetHostName();
+                //string h = context.OwinContext.Request.Host.Value;
+                context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
+                var form = await context.Request.ReadFormAsync();
 
                 //var cookie = context.Request.Cookies["count"].FirstOrDefault();
                 //if (cookie != null)
@@ -62,75 +62,84 @@ namespace FoxRehabilitationAPI.Providers
                 //    return cookie[]
                 //}
                 //System.Net.Http.Headers.CookieHeaderValue cookie = System.Net.Http.
-
+                Tuple<ApplicationUser, UserProfile> tuple = null;
+                var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
+                userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
                 if (invalidAttempts >= 5)
                 {
-                    var response = await ValidateCaptcha(form["encryptedCode"]);
-                    if (!response.Success)
+                    if (!userManager.IsCheckedUserBlocked(context.UserName))
                     {
-                        context.SetError("Bad request", "Captcha verification is required.");
+                        var response = await ValidateCaptcha(form["encryptedCode"]);
+                        if (!response.Success)
+                        {
+                            context.SetError("Bad request", "Captcha verification is required.");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        context.SetError("invalid_grant", "Your account has been temporarily suspended. Please contact system administrator.");
                         return;
                     }
                 }
-
-                Tuple<ApplicationUser, UserProfile> tuple = null;
-            var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
-            userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
-
-
-            tuple = await userManager.FindProfileAsync(context.UserName, context.Password);
-
-            if (tuple.Item1 == null || tuple.Item2 == null)
-            {
-            if (!userManager.CheckUserExistingLoginAttempts(context.UserName))
-            {
-                context.SetError("invalid_grant", "Your account has been temporarily suspended. Please contact system administrator.");
-                return;
-            }
-                userManager.AddInvalidLoginAttempt(context.UserName);
-                if (context.UserName.Contains("@"))
+                tuple = await userManager.FindProfileAsync(context.UserName, context.Password);
+                if (tuple.Item1 == null || tuple.Item2 == null)
                 {
-                    ADDetail _ADDetail = null;
-                    _ADDetail = ADDetailList.FirstOrDefault(t => t.DomainForSearch.Equals(context.UserName.Split('@')[1].ToLower()));
-                    if (_ADDetail  != null)
+                    if (!userManager.CheckUserExistingLoginAttempts(context.UserName))
                     {
-                        context.SetError("invalid_grant", "We are unable to sign into your account, please contact your network administrator at FOX Rehab at  ");
-                        invalidAttempts++;
+                        context.SetError("invalid_grant", "Your account has been temporarily suspended. Please contact system administrator.");
+                        userManager.AddInvalidLoginAttempt(context.UserName);
                         return;
                     }
+                    userManager.AddInvalidLoginAttempt(context.UserName);
+                    if (context.UserName.Contains("@"))
+                    {
+                        ADDetail _ADDetail = null;
+                        _ADDetail = ADDetailList.FirstOrDefault(t => t.DomainForSearch.Equals(context.UserName.Split('@')[1].ToLower()));
+                        if (_ADDetail  != null)
+                        {
+                            context.SetError("invalid_grant", "We are unable to sign into your account, please contact your network administrator at FOX Rehab at  ");
+                            invalidAttempts++;
+                            return;
+                        }
+                    }
+                    context.SetError("invalid_grant", "The user name or password is incorrect.");
+                    invalidAttempts++;
+                    return;
                 }
-                context.SetError("invalid_grant", "The user name or password is incorrect.");
-                invalidAttempts++;
-                return;
-            }
-            else
-            {
-                userManager.AddValidLoginAttempt(context.UserName);
-                invalidAttempts = 0;
-            }
-            tuple.Item1.UserName = tuple.Item1.USER_NAME = tuple.Item2.UserName;
-            ClaimsIdentity oAuthIdentity;
-            try
-            {
-                oAuthIdentity = await tuple.Item1.GenerateUserIdentityAsync(userManager, OAuthDefaults.AuthenticationType, tuple.Item2);
+                else
+                {
+                    if (userManager.IsCheckedUserBlocked(context.UserName))
+                    {
+                        context.SetError("invalid_grant", "Your account has been temporarily suspended. Please contact system administrator.");
+                        return;
+                    }
+                    userManager.AddValidLoginAttempt(context.UserName);
+                    invalidAttempts = 0;
+                }
+                tuple.Item1.UserName = tuple.Item1.USER_NAME = tuple.Item2.UserName;
+                ClaimsIdentity oAuthIdentity;
+                try
+                {
+                    oAuthIdentity = await tuple.Item1.GenerateUserIdentityAsync(userManager, OAuthDefaults.AuthenticationType, tuple.Item2);
 
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+
+                ClaimsIdentity cookiesIdentity = await tuple.Item1.GenerateUserIdentityAsync(userManager, CookieAuthenticationDefaults.AuthenticationType);
+                AuthenticationProperties properties = CreateProperties(tuple.Item2);
+                AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
+                context.Validated(ticket);
+                context.Request.Context.Authentication.SignIn(cookiesIdentity);
             }
             catch (Exception ex)
             {
-                throw;
-            }
-
-            ClaimsIdentity cookiesIdentity = await tuple.Item1.GenerateUserIdentityAsync(userManager, CookieAuthenticationDefaults.AuthenticationType);
-            AuthenticationProperties properties = CreateProperties(tuple.Item2);
-            AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
-            context.Validated(ticket);
-            context.Request.Context.Authentication.SignIn(cookiesIdentity);
-        }
-        catch (Exception ex)
-        {
                 Helper.CustomExceptionLog(ex);
+            }
         }
-    }
 
         private async Task<GoogleRecaptchaResponse> ValidateCaptcha(string encodedCode)
         {
@@ -197,7 +206,7 @@ namespace FoxRehabilitationAPI.Providers
             try
             {
                 // Resource owner password credentials does not provide a client ID.
-                
+
                 if (context.ClientId == null)
                 {
                     context.Validated();
