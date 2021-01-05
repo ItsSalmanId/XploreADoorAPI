@@ -47,7 +47,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QAReportService
                         var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
                         var _userName = new SqlParameter { ParameterName = "USER_NAME", SqlDbType = SqlDbType.VarChar, Value = List[i] };
 
-                        var  lst = SpRepository<FeedBackCaller>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_AUDITOR_NAME_LIST_usama
+                        var  lst = SpRepository<FeedBackCaller>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_AUDITOR_NAME_LIST
                          @PRACTICE_CODE, @USER_NAME", PracticeCode, _userName);
                         result.Add(lst);
                     }
