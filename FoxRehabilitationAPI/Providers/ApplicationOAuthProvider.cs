@@ -65,6 +65,7 @@ namespace FoxRehabilitationAPI.Providers
                 Tuple<ApplicationUser, UserProfile> tuple = null;
                 var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
                 userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
+                invalidAttempts = userManager.GetInvalidAttempts(context.UserName);
                 if (invalidAttempts >= 5)
                 {
                     if (!userManager.IsCheckedUserBlocked(context.UserName))
@@ -72,13 +73,13 @@ namespace FoxRehabilitationAPI.Providers
                         var response = await ValidateCaptcha(form["encryptedCode"]);
                         if (!response.Success)
                         {
-                            context.SetError("Bad request", "Captcha verification is required.");
+                            context.SetError("Bad request", invalidAttempts + 1 + "Captcha verification is required.");
                             return;
                         }
                     }
                     else
                     {
-                        context.SetError("invalid_grant", "Your account has been temporarily suspended. Please contact system administrator.");
+                        context.SetError("invalid_grant", invalidAttempts + 1 + "Your account has been temporarily suspended. Please contact system administrator.");
                         return;
                     }
                 }
@@ -87,7 +88,7 @@ namespace FoxRehabilitationAPI.Providers
                 {
                     if (!userManager.CheckUserExistingLoginAttempts(context.UserName))
                     {
-                        context.SetError("invalid_grant", "Your account has been temporarily suspended. Please contact system administrator.");
+                        context.SetError("invalid_grant", invalidAttempts + 1 + "Your account has been temporarily suspended. Please contact system administrator.");
                         userManager.AddInvalidLoginAttempt(context.UserName);
                         return;
                     }
@@ -98,12 +99,12 @@ namespace FoxRehabilitationAPI.Providers
                         _ADDetail = ADDetailList.FirstOrDefault(t => t.DomainForSearch.Equals(context.UserName.Split('@')[1].ToLower()));
                         if (_ADDetail  != null)
                         {
-                            context.SetError("invalid_grant", "We are unable to sign into your account, please contact your network administrator at FOX Rehab at  ");
+                            context.SetError("invalid_grant", invalidAttempts + 1 + "We are unable to sign into your account, please contact your network administrator at FOX Rehab at  ");
                             invalidAttempts++;
                             return;
                         }
                     }
-                    context.SetError("invalid_grant", "The user name or password is incorrect.");
+                    context.SetError("invalid_grant", invalidAttempts + 1 + "The user name or password is incorrect.");
                     invalidAttempts++;
                     return;
                 }
@@ -111,7 +112,7 @@ namespace FoxRehabilitationAPI.Providers
                 {
                     if (userManager.IsCheckedUserBlocked(context.UserName))
                     {
-                        context.SetError("invalid_grant", "Your account has been temporarily suspended. Please contact system administrator.");
+                        context.SetError("invalid_grant", invalidAttempts + 1 + "Your account has been temporarily suspended. Please contact system administrator.");
                         return;
                     }
                     userManager.AddValidLoginAttempt(context.UserName);

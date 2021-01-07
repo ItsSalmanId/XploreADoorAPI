@@ -2607,6 +2607,19 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             return false;
         }
 
+        public int GetInvalidAttempts(string userName)
+        {
+            Valid_Login_Attempts invalidAttempts = _validLoginAtttempts.GetFirst(x => x.USER_NAME == userName);
+            if(invalidAttempts != null)
+            {
+                return Convert.ToInt32(invalidAttempts.FAIL_ATTEMPT_COUNT);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
         public bool AddUserValidLoginAttempt(string userName)
         {
             Valid_Login_Attempts validAttempts = _validLoginAtttempts.GetFirst(x => x.USER_NAME == userName);

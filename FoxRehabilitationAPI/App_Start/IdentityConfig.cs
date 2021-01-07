@@ -437,6 +437,20 @@ namespace FoxRehabilitationAPI
             }
         }
 
+        public int GetInvalidAttempts(string userName)
+        {
+            UserManagementService user = new UserManagementService();
+            try
+            {
+                return user.GetInvalidAttempts(userName: userName);
+            }
+            catch (Exception ex)
+            {
+                Helper.CustomExceptionLog(ex);
+            }
+            return 0;
+        }
+
         public bool AddInvalidLoginAttempt(string userName)
         {
             UserManagementService user = new UserManagementService();
