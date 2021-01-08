@@ -84,7 +84,7 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetDDValues(GetProfile()));
         }
-       
+
         [HttpPost]
         public HttpResponseMessage GetReconciliationsCP([FromBody] ReconciliationCPSearchReq searchReq)
         {
@@ -106,7 +106,11 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.SaveAutoReconciliationCP(autoreconciliationToSave, GetProfile()));
         }
-
+        [HttpPost]
+        public HttpResponseMessage SaveManualReconciliationCP([FromBody] ReconciliationCP manualreconciliationToSave)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.SaveManualReconciliationCP(manualreconciliationToSave, GetProfile()));
+        }
         [HttpPost]
         public HttpResponseMessage UpdateAutoReconciliationCP([FromBody] ReconciliationCP autoReconciliationToUpdate)
         {
@@ -117,9 +121,9 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetReconciliationLogs([FromBody] ReconciliationCPLogSearchReq searchReq)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetReconciliationLogs(searchReq, GetProfile()));
-        }      
+        }
 
-        [HttpPost]  
+        [HttpPost]
         public HttpResponseMessage DeleteReconsiliationLedger(ReconciliationCPToDelete _reconsiliation)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.DeleteReconsiliationLedger(_reconsiliation.RECONCILIATION_CP_ID, GetProfile()));
@@ -142,14 +146,14 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.ExportReconciliationsToExcel(searchReq, GetProfile()));
         }
-        
+
         [HttpPost]
         public HttpResponseMessage ExportReconciliationCPLogsToExcel([FromBody]  List<ReconciliationCPLogs> obj)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.ExportReconciliationCPLogsToExcel(obj, GetProfile()));
         }
 
-       
+
         [HttpPost]
         public HttpResponseMessage GetReconciliationFiles([FromBody] ReconciliationFilesSearchReq reconciliationDetails)
         {
@@ -162,7 +166,7 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.DownloadLedger(reconciliationDetails, GetProfile()));
         }
-        
+
         [HttpPost]
         public HttpResponseMessage AddNewDDValue([FromBody] ReconciliationDDValue reconciliationDDValue)
         {
@@ -199,7 +203,7 @@ namespace FoxRehabilitationAPI.Controllers
             if (uploadFiles.Success)
             {
                 //uploadFiles.FilePath = reconsiliationLedgerPath + @"\" 
-                
+
                 //uploadFiles.FilePath = $@"{reconsiliationLedgerPath}\{uploadFiles.FilePath}";
 
                 LedgerModel ledgerDetails = new LedgerModel()
@@ -210,7 +214,7 @@ namespace FoxRehabilitationAPI.Controllers
                 };
 
                 var response = Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.AttachLedger(ledgerDetails, GetProfile()));
-                
+
             }
             return uploadFiles;
             //var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
@@ -244,7 +248,7 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpGet]
         public HttpResponseMessage GetLastUploadFileStatus()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetLastUploadFileStatus( GetProfile()));
+            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetLastUploadFileStatus(GetProfile()));
         }
 
         [HttpPost]

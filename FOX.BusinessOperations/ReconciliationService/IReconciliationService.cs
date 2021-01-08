@@ -21,16 +21,17 @@ namespace FOX.BusinessOperations.ReconciliationService
         ResponseModel SaveReconciliationCP(ReconciliationCP reconciliationToSave, UserProfile profile);
         ResponseModel EditReconciliationCP(ReconciliationCP reconciliationToSave, UserProfile profile);
         List<ReconciliationCP> SaveAutoReconciliationCP(ReconciliationCP autoreconciliationToSave, UserProfile profile);
+        List<ReconciliationCP> SaveManualReconciliationCP(ReconciliationCP manualreconciliationToSave, UserProfile profile);
         List<ReconciliationCP> UpdateAutoReconciliationCP(ReconciliationCP autoReconciliationToUpdate, UserProfile profile);
         ResponseModel DeleteReconciliationCP(ReconciliationCPToDelete reconciliationToDelete, UserProfile profile);
 
         ResponseModel DeleteReconsiliationLedger(long reconsiliationId, UserProfile profile);
-        
+
         ResponseModel AssignUserCP(UserAssignmentModel userAssignmentDetails, UserProfile profile);
         ResponseModel ExportReconciliationsToExcel(ReconciliationCPSearchReq searchReq, UserProfile profile);
         ResponseModel ExportReconciliationCPLogsToExcel(List<ReconciliationCPLogs> obj, UserProfile profile);
         ResponseModel AttachLedger(LedgerModel ledgerDetails, UserProfile profile);
-       // List<FilePath> GetReconciliationFiles(ReconciliationFilesSearchReq reconciliationDetails, UserProfile profile);
+        // List<FilePath> GetReconciliationFiles(ReconciliationFilesSearchReq reconciliationDetails, UserProfile profile);
         string DownloadLedger(ReconciliationFilesSearchReq reconciliationDetails, UserProfile profile);
         ReconciliationDDValueResponse AddNewDDValue(ReconciliationDDValue reconciliationDDValue, UserProfile profile);
         ReconsiliationCategoryDepositType GetReconsiliationCategoryDepositTypes(UserProfile profile);
