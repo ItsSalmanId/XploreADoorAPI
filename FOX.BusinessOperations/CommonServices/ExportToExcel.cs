@@ -6443,6 +6443,10 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["ROW"].ColumnName = "Sr. #";
                 }
+                if (dtcol.Contains("IS_EXCEPTIONAL"))
+                {
+                    dtcol["IS_EXCEPTIONAL"].ColumnName = "Exceptional Feedback";
+                }
                 if (dtcol.Contains("PATIENT_ACCOUNT_NUMBER"))
                 {
                     dtcol["PATIENT_ACCOUNT_NUMBER"].ColumnName = "Patient Acc. No";
@@ -6521,6 +6525,10 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dtcol.Contains("ROW"))
                 {
                     dtcol["ROW"].ColumnName = "Sr. #";
+                }
+                if (dtcol.Contains("IS_EXCEPTIONAL"))
+                {
+                    dtcol["IS_EXCEPTIONAL"].ColumnName = "Exceptional Feedback";
                 }
                 if (dtcol.Contains("PATIENT_ACCOUNT_NUMBER"))
                 {

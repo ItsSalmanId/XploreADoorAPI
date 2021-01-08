@@ -122,7 +122,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
 
             patientSurveySearchRequest.RECORD_PER_PAGE = 0;
 
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Recommended,Not Recommended,Deceased";
+            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Recommended,Not Recommended,Deceased,Not Enough Services Provided";
             list = new List<PatientSurvey>();
             list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.COMPLETED = list.Count;
@@ -141,6 +141,11 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
             list = new List<PatientSurvey>();
             list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.DECEASED = list.Count;
+
+            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Enough Services Provided";
+            list = new List<PatientSurvey>();
+            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
+            obj.NOT_ENOUGH_SERVICES_PROVIDE = list.Count;
 
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Callback,Not Answered";
             list = new List<PatientSurvey>();

@@ -12,6 +12,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
+using System.Web;
 
 namespace FOX.BusinessOperations.PatientSurveyService
 {
@@ -53,10 +54,22 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 return false;
             }
         }
+        public PatientSurvey GetSurveyDetailedFromEmail(string surveyId, long practiceCode)
+        {
+            long suryid = Convert.ToInt64(surveyId);
+            var patientSurvey = _patientSurveyRepository.GetByID(suryid);
+            return patientSurvey;
 
+        }
         public void UpdatePatientSurvey(PatientSurvey patientSurvey, UserProfile profile)
         {
-            var dbSurvey = _patientSurveyRepository.GetByID(patientSurvey.SURVEY_ID);
+            string _body = string.Empty;
+            string _subject = string.Empty;
+            string sendTo = string.Empty;
+            string link = string.Empty;
+            List<right> rightList = new List<right>() ;
+            string MRN = "";
+           var dbSurvey = _patientSurveyRepository.GetByID(patientSurvey.SURVEY_ID);
             if (dbSurvey != null) //update
             {
                 if (patientSurvey.IS_SURVEYED == true)
@@ -108,6 +121,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 dbSurvey.SURVEY_STATUS_CHILD = patientSurvey.SURVEY_STATUS_CHILD;
                 dbSurvey.MODIFIED_BY = profile.UserName; 
                 dbSurvey.MODIFIED_DATE = Helper.GetCurrentDate();
+                dbSurvey.IS_EXCEPTIONAL = patientSurvey.IS_EXCEPTIONAL;
 
                 var surveyId = new SqlParameter { ParameterName = "@SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = dbSurvey.SURVEY_ID };
                 var practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = dbSurvey.PRACTICE_CODE ?? null };
@@ -171,6 +185,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 var modifiedBy = new SqlParameter { ParameterName = "@MODIFIED_BY", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.MODIFIED_BY };
                 var modifiedDate = new SqlParameter { ParameterName = "@MODIFIED_DATE", SqlDbType = SqlDbType.DateTime, Value = dbSurvey.MODIFIED_DATE };
                 var delete = new SqlParameter { ParameterName = "@DELETED", SqlDbType = SqlDbType.Bit, Value = dbSurvey.DELETED };
+                var isExceptional = new SqlParameter { ParameterName = "@IS_EXCEPTIONAL", SqlDbType = SqlDbType.Bit, Value = dbSurvey.IS_EXCEPTIONAL };
 
                 if (dbSurvey.PRACTICE_CODE == null)
                 {
@@ -396,6 +411,10 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 {
                     totalRecordInFile.Value = DBNull.Value;
                 }
+                if (dbSurvey.IS_EXCEPTIONAL == null)
+                {
+                    isExceptional.Value = DBNull.Value;
+                }
 
                 var PatientSurveyList = SpRepository<PatientSurvey>.GetListWithStoreProcedure(@"exec FOX_PROC_UPDTAE_PATIENT_SURVEY 
                  @SURVEY_ID, @PRACTICE_CODE, @FACILITY_OR_CLIENT_ID, @PATIENT_ACCOUNT_NUMBER, @RESPONSIBLE_PARTY_LAST_NAME, @RESPONSIBLE_PARTY_FIRST_NAME, @RESPONSIBLE_PARTY_MIDDLE_INITIAL, @RESPONSIBLE_PARTY_ADDRESS,
@@ -404,14 +423,72 @@ namespace FOX.BusinessOperations.PatientSurveyService
                  @ALTERNATE_CONTACT_LAST_NAME, @ALTERNATE_CONTACT_FIRST_NAME, @ALTERNATE_CONTACT_MIDDLE_INITIAL, @ALTERNATE_CONTACT_TELEPHONE, @EMR_LOCATION_CODE, @EMR_LOCATION_DESCRIPTION, @SERVICE_OR_PAYMENT_DESCRIPTION, @PROVIDER, 
                  @REGION, @LAST_VISIT_DATE, @DISCHARGE_DATE, @ATTENDING_DOCTOR_NAME, @PT_OT_SLP, @REFERRAL_DATE, @PROCEDURE_OR_TRAN_CODE, @SERVICE_OR_PAYMENT_AMOUNT, @IS_CONTACT_HQ, @IS_RESPONSED_BY_HQ, @IS_QUESTION_ANSWERED,
                  @IS_REFERABLE, @IS_IMPROVED_SETISFACTION, @FEEDBACK, @SURVEY_FLAG, @SURVEY_STATUS_BASE, @SURVEY_STATUS_CHILD, @SURVEY_FORMAT_TYPE, @IS_SURVEYED, @IN_PROGRESS, @FILE_NAME, @SHEET_NAME, @TOTAL_RECORD_IN_FILE, 
-                 @CREATED_BY, @CREATED_DATE, @MODIFIED_BY, @MODIFIED_DATE, @DELETED"
+                 @CREATED_BY, @CREATED_DATE, @MODIFIED_BY, @MODIFIED_DATE, @DELETED,@IS_EXCEPTIONAL"
                  , surveyId, practiceCode, clientId, patientAccount, resLastName, resFirstName, resMidName, resPartyAdd, resPartyCity, tesPartyStat, restPartyZip, resPartyPhone, restPartySSN, restPartSex, restPartDOB
                  , patLastName, patFirstName, patMidName, patAddress, patCity, patState, patZIP, patPhone, patSSN, patGender, patDOB, altLastName, altFirstName, altMidName, altPhone, emrLocCode, emrLocDes
                  , servicePaymentDesc, provider, region, lastVisitDate, dischargeDate, attendingDocName, ptOtSlp, referralDate, procTranCode, servicePaymentAmnt, isContactHQ, isResponsedByHq, isQuestionAnswered
                  , isReferrable, isImprovedSetisfaction, feedback, surveyFlag, surveyStatusBase, surveyStatusChild, surveyFormat, isSurveyed, inProgress, fileName, sheetName, totalRecordInFile, createdBy
-                 , createdDate, modifiedBy, modifiedDate, delete);
+                 , createdDate, modifiedBy, modifiedDate, delete, isExceptional);
+                
+                if (patientSurvey.IS_EXCEPTIONAL == true)
+                {
+                    sendTo = "usamabinahmed@mtbc.com";
+                    //sendTo = "bradley.pennypacker@foxrehab.org";
+                    
+                     _subject = "Exceptional feedback ";
+                        if(!string.IsNullOrEmpty(patientSurvey.SURVEY_STATUS_CHILD))
+                    {
+                        if (patientSurvey.SURVEY_STATUS_CHILD.ToLower() == "not recommended")
+                        {
+                            _subject += "(NR). ";
+                        }
+                        else if (patientSurvey.SURVEY_STATUS_CHILD.ToLower() == "recommended")
+                        {
+                            _subject += "(R). ";
+                        }
+                    }
+                    _body = "<b>Body:</b> <br> <p>An exceptional feedback was received with following specifics:</p>";
+                        if (!string.IsNullOrEmpty(patientSurvey.PATIENT_FULL_NAME))
+                    {
+                        _body += "<p> Patient: " + patientSurvey.PATIENT_FULL_NAME + "</p>";
+                    }
+                    if (patientSurvey.PATIENT_ACCOUNT_NUMBER != null)
+                    {
+                        if (patientSurvey.PATIENT_ACCOUNT_NUMBER.ToString().Length == 7)
+                        {
+                            MRN = "0" + patientSurvey.PATIENT_ACCOUNT_NUMBER.ToString();
+                        }
+                        if (patientSurvey.PATIENT_ACCOUNT_NUMBER.ToString().Length == 6)
+                        {
+                            MRN = "00" + patientSurvey.PATIENT_ACCOUNT_NUMBER.ToString();
+                        }
+                        if (patientSurvey.PATIENT_ACCOUNT_NUMBER.ToString().Length == 5)
+                        {
+                            MRN = "000" + patientSurvey.PATIENT_ACCOUNT_NUMBER.ToString();
+                        }
+                        if (patientSurvey.PATIENT_ACCOUNT_NUMBER.ToString().Length == 4)
+                        {
+                            MRN = "0000" + patientSurvey.PATIENT_ACCOUNT_NUMBER.ToString();
+                        }
+                        if (patientSurvey.PATIENT_ACCOUNT_NUMBER.ToString().Length == 3)
+                        {
+                            MRN = "00000" + patientSurvey.PATIENT_ACCOUNT_NUMBER.ToString();
+                        }
 
+                        _body += "<p>MRN: " + MRN + "</p>";
+                        _subject += MRN;
+                        _subject += "_" + profile.UserName;
+                    }
 
+                    _body += "<p>Surveyed by: " + profile.UserName + "</p>" + "<p>Survey date & time: " +DateTime.Now.ToString("MM/dd/yyyy hh:mm tt") + "</p> <br>";
+ 
+                    link = AppConfiguration.ClientURL + @"#/Reporting/PatientSurveyDetail?value=" + HttpUtility.UrlEncode(dbSurvey.SURVEY_ID.ToString());
+                    link += "&name=" + profile.UserEmailAddress;
+                    _body += "<p>Please   <a href = " +  link + "> " + " click here to login</a>" + " and see the survey details.</p>";
+                      //_body += "<h3 style=font-weight:normal;margin:0;><b>Auditor: </b><a href=" +link + " > " + " click here to login </a></h3>";
+                    Helper.Email(sendTo, _subject, _body, profile, null, null, null, null);
+                }
+              
                 //_patientSurveyRepository.Update(dbSurvey);
                 //_patientSurveyRepository.Save();
             }
@@ -439,6 +516,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
             surveyHistory.CREATED_BY = profile.UserName;
             surveyHistory.CREATED_DATE = Helper.GetCurrentDate();
             surveyHistory.DELETED = false;
+            surveyHistory.IS_EXCEPTIONAL = patientSurvey.IS_EXCEPTIONAL;
             //_patientSurveyHistoryRepository.Insert(surveyHistory);
             //_patientSurveyHistoryRepository.Save();
 
@@ -460,6 +538,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
             var createdBy = new SqlParameter { ParameterName = "@CREATED_BY", SqlDbType = SqlDbType.VarChar, Value = surveyHistory.CREATED_BY };
             var createdDate = new SqlParameter { ParameterName = "@CREATED_DATE", SqlDbType = SqlDbType.DateTime, Value = surveyHistory.CREATED_DATE };
             var delete = new SqlParameter { ParameterName = "@DELETED", SqlDbType = SqlDbType.Bit, Value = surveyHistory.DELETED };
+            var isExceptional = new SqlParameter { ParameterName = "@IS_EXCEPTIONAL", SqlDbType = SqlDbType.Bit, Value = surveyHistory.IS_EXCEPTIONAL };
 
             if (surveyHistory.PRACTICE_CODE == null)
             {
@@ -521,10 +600,14 @@ namespace FOX.BusinessOperations.PatientSurveyService
             {
                 createdDate.Value = DBNull.Value;
             }
+            if (surveyHistory.IS_EXCEPTIONAL == null)
+            {
+                isExceptional.Value = DBNull.Value;
+            }
 
-            var PatientSurveyList = SpRepository<PatientSurvey>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_PATIENT_SURVEY_HISTORY 
-                                    @FOX_SURVEY_HISTORY_ID, @PRACTICE_CODE, @SURVEY_ID, @PATIENT_ACCOUNT, @IS_CONTACT_HQ, @IS_RESPONSED_BY_HQ, @IS_REFERABLE, @IS_IMPROVED_SETISFACTION, @FEEDBACK, @SURVEY_FLAG, @SURVEY_STATUS_BASE, @SURVEY_STATUS_CHILD, @SURVEY_BY, @SURVEY_DATE, @CREATED_BY, @CREATED_DATE, @DELETED, @IS_QUESTION_ANSWERED"
-                                    , surveyHistoryId, practiceCode, surveyId, patientAccount, isContactHG, isResponsedByHQ, isReferrable, isImprovedSetisfaction, feedback, surveyFlag, surveyStatusBase, surveyStatusChild, surveyBy, surveyDate, createdBy, createdDate, delete, isQuestionAnswered);
+            var PatientSurveyList = SpRepository<PatientSurvey>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_PATIENT_SURVEY_HISTORY
+                                    @FOX_SURVEY_HISTORY_ID, @PRACTICE_CODE, @SURVEY_ID, @PATIENT_ACCOUNT, @IS_CONTACT_HQ, @IS_RESPONSED_BY_HQ, @IS_REFERABLE, @IS_IMPROVED_SETISFACTION, @FEEDBACK, @SURVEY_FLAG, @SURVEY_STATUS_BASE, @SURVEY_STATUS_CHILD, @SURVEY_BY, @SURVEY_DATE, @CREATED_BY, @CREATED_DATE, @DELETED, @IS_QUESTION_ANSWERED,@IS_EXCEPTIONAL"
+                                    , surveyHistoryId, practiceCode, surveyId, patientAccount, isContactHG, isResponsedByHQ, isReferrable, isImprovedSetisfaction, feedback, surveyFlag, surveyStatusBase, surveyStatusChild, surveyBy, surveyDate, createdBy, createdDate, delete, isQuestionAnswered, isExceptional);
 
         }
 

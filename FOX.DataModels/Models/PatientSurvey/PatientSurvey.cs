@@ -119,6 +119,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string Surveyed_BY_FNAME { get; set; }
         [NotMapped]
         public string ACTIVE_FORMAT { get; set; }
+        public bool? IS_EXCEPTIONAL { get; set; }
     }
 
     [Table("FOX_TBL_PATIENT_SURVEY_HISTORY")]
@@ -155,6 +156,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string CREATED_BY { get; set; }
         public DateTime? CREATED_DATE { get; set; }
         public bool DELETED { get; set; }
+        public bool? IS_EXCEPTIONAL { get; set; }
     }
 
     [Table("FOX_TBL_PATIENT_SURVEY_CALL_LOG")]
@@ -440,6 +442,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public int NOT_INTERESTED { get; set; }
         public int PENDING_30 { get; set; }
         public int PENDING_ALL { get; set; }
+        public int NOT_ENOUGH_SERVICES_PROVIDE { get; set; }
     }
    
 }
