@@ -55,7 +55,7 @@ namespace FOX.BusinessOperations.ReconciliationService
         {
             try
             {
-                return SpRepository<ReconciliationStatus>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_STATUSES_TEST @PRACTICE_CODE"
+                return SpRepository<ReconciliationStatus>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_STATUSES @PRACTICE_CODE"
                     , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode });
             }
             catch (Exception ex) { throw ex; }
@@ -65,7 +65,7 @@ namespace FOX.BusinessOperations.ReconciliationService
         {
             try
             {
-                return SpRepository<ReconciliationDepositType>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_DEPOSIT_TYPES_TEST @PRACTICE_CODE"
+                return SpRepository<ReconciliationDepositType>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_DEPOSIT_TYPES @PRACTICE_CODE"
                     , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode });
             }
             catch (Exception ex) { throw ex; }
@@ -75,7 +75,7 @@ namespace FOX.BusinessOperations.ReconciliationService
         {
             try
             {
-                return SpRepository<FOX_TBL_RECONCILIATION_REASON>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_REASONS_test @PRACTICE_CODE"
+                return SpRepository<FOX_TBL_RECONCILIATION_REASON>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_REASONS @PRACTICE_CODE"
                     , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode });
             }
             catch (Exception ex) { throw ex; }
@@ -85,7 +85,7 @@ namespace FOX.BusinessOperations.ReconciliationService
         {
             try
             {
-                return SpRepository<ReconciliationCategory>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_CATEGORIES_TEST @PRACTICE_CODE"
+                return SpRepository<ReconciliationCategory>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_CATEGORIES @PRACTICE_CODE"
                      , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode });
             }
             catch (Exception ex) { throw ex; }
@@ -363,7 +363,7 @@ namespace FOX.BusinessOperations.ReconciliationService
 
                 //@PRACTICE_CODE, @IS_FOR_REPORT, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO, @FOX_TBL_INSURANCE_ID, @CATEGORY_IDS, 
                 //    @STATUS_ID, @DEPOSIT_TYPE_IDS, @CHECK_NOS, @AMOUNT, @AMOUNT_POSTED, @AMOUNT_NOT_POSTED, @CURRENT_USER, @SEARCH_TEXT, @CURRENT_PAGE, @RECORD_PER_PAGE"
-                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATIONS_CP_TEST 
+                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATIONS_CP 
                     @PRACTICE_CODE, @IS_FOR_REPORT, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO, @FOX_TBL_INSURANCE_NAME, 
                     @STATUS_ID, @CURRENT_USER, @SEARCH_TEXT, @CURRENT_PAGE, @RECORD_PER_PAGE,@SORT_BY ,@SORT_ORDER, @CP_TYPE"
                     , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
@@ -548,7 +548,7 @@ namespace FOX.BusinessOperations.ReconciliationService
         {
             try
             {
-                var result = SpRepository<ReconciliationCPLogs>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_CP_LOGS_TEST @PRACTICE_CODE, @RECONCILIATION_CP_ID, @SEARCH_STRING, @CURRENT_PAGE, @RECORD_PER_PAGE,@LOG_DETAIL,@REMARK_DETAIL",
+                var result = SpRepository<ReconciliationCPLogs>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_CP_LOGS @PRACTICE_CODE, @RECONCILIATION_CP_ID, @SEARCH_STRING, @CURRENT_PAGE, @RECORD_PER_PAGE,@LOG_DETAIL,@REMARK_DETAIL",
                     new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
                     , new SqlParameter { ParameterName = "RECONCILIATION_CP_ID", SqlDbType = SqlDbType.BigInt, Value = searchReq.RECONCILIATION_CP_ID }
                     , new SqlParameter("SEARCH_STRING", SqlDbType.VarChar) { Value = string.IsNullOrWhiteSpace(searchReq.SearchString) ? "" : searchReq.SearchString }
@@ -719,7 +719,10 @@ namespace FOX.BusinessOperations.ReconciliationService
                 {
                     reconciliationToSave.DEPOSIT_DATE = Convert.ToDateTime(reconciliationToSave.DEPOSIT_DATE_STR);
                 }
-
+                if (!string.IsNullOrEmpty(reconciliationToSave.POSTED_DATE_STR))
+                {
+                    reconciliationToSave.DATE_POSTED = Convert.ToDateTime(reconciliationToSave.POSTED_DATE_STR);
+                }
                 var dBData = _reconciliationCPRepository.GetFirst(e => e.RECONCILIATION_CP_ID == reconciliationToSave.RECONCILIATION_CP_ID && e.PRACTICE_CODE == profile.PracticeCode && !e.DELETED);
 
                 if (dBData == null)
@@ -745,17 +748,19 @@ namespace FOX.BusinessOperations.ReconciliationService
                 reconciliation.DEPOSIT_TYPE_ID = reconciliationToSave.DEPOSIT_TYPE_ID;
                 reconciliation.CATEGORY_ID = reconciliationToSave.CATEGORY_ID;
                 reconciliation.CHECK_NO = reconciliationToSave.CHECK_NO;
-
+                reconciliation.DATE_POSTED = reconciliationToSave.DATE_POSTED;
                 reconciliation.AMOUNT = reconciliationToSave.AMOUNT;
                 reconciliation.AMOUNT_POSTED = reconciliationToSave.AMOUNT_POSTED;
                 reconciliation.AMOUNT_NOT_POSTED = reconciliationToSave.AMOUNT_NOT_POSTED;
-                reconciliation.IS_RECONCILIED = !string.IsNullOrEmpty(reconciliationToSave.REMARKS) && reconciliationToSave.REMARKS.Trim().Length > 0 ? true : false; //reconciliationToSave.AMOUNT_NOT_POSTED.HasValue ? reconciliationToSave.AMOUNT_NOT_POSTED.Value == 0 ? true : false : false;
+                reconciliation.IS_RECONCILIED = reconciliationToSave.AMOUNT_NOT_POSTED.HasValue ? reconciliationToSave.AMOUNT_NOT_POSTED.Value == 0 ? true : false : false; //!string.IsNullOrEmpty(reconciliationToSave.REMARKS) && reconciliationToSave.REMARKS.Trim().Length > 0 ? true : false; 
                 reconciliation.REASON = reconciliationToSave.REASON;
                 reconciliation.REMARKS = reconciliationToSave.REMARKS;
 
 
                 //if (prevObj != null && prevObj.RECONCILIATION_STATUS_ID == GetAssignedStatusId(profile))
                 //{
+                if (reconciliation.IS_RECONCILIED == true)
+                {
                     reconciliation.RECONCILIATION_STATUS_ID = GetClosedStatusId(profile);
                 }
                 else
@@ -912,7 +917,7 @@ namespace FOX.BusinessOperations.ReconciliationService
 
         public int? GetUnassignedStatusId(UserProfile profile)
         {
-            var unAssignedStatus = _reconciliationStatusRepository.GetFirst(e => e.STATUS_NAME == "Unassigned" && !e.DELETED);
+            var unAssignedStatus = _reconciliationStatusRepository.GetFirst(e => e.STATUS_NAME == "Unassigned" && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
             if (unAssignedStatus != null)
             {
                 return unAssignedStatus.RECONCILIATION_STATUS_ID;
@@ -922,7 +927,7 @@ namespace FOX.BusinessOperations.ReconciliationService
 
         public int? GetCompletedStatusId(UserProfile profile)
         {
-            var completedStatus = _reconciliationStatusRepository.GetFirst(e => e.STATUS_NAME == "Completed" && !e.DELETED);
+            var completedStatus = _reconciliationStatusRepository.GetFirst(e => e.STATUS_NAME == "Completed" && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
             if (completedStatus != null)
             {
                 return completedStatus.RECONCILIATION_STATUS_ID;
@@ -940,9 +945,19 @@ namespace FOX.BusinessOperations.ReconciliationService
             return null;
         }
 
+        public int? GetUnAssignedStatusId(UserProfile profile)
+        {
+            var assStatus = _reconciliationStatusRepository.GetFirst(e => e.STATUS_NAME == "Unassigned" && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
+            if (assStatus != null)
+            {
+                return assStatus.RECONCILIATION_STATUS_ID;
+            }
+            return null;
+        }
+
         public int? GetClosedStatusId(UserProfile profile)
         {
-            var assStatus = _reconciliationStatusRepository.GetFirst(e => e.STATUS_NAME == "Closed" && !e.DELETED);
+            var assStatus = _reconciliationStatusRepository.GetFirst(e => e.STATUS_NAME == "Closed" && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
             if (assStatus != null)
             {
                 return assStatus.RECONCILIATION_STATUS_ID;
@@ -952,7 +967,7 @@ namespace FOX.BusinessOperations.ReconciliationService
 
         public int? GetPendingStatusId(UserProfile profile)
         {
-            var penStatus = _reconciliationStatusRepository.GetFirst(e => e.STATUS_NAME == "Pending" && !e.DELETED);
+            var penStatus = _reconciliationStatusRepository.GetFirst(e => e.STATUS_NAME == "Pending" && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
             if (penStatus != null)
             {
                 return penStatus.RECONCILIATION_STATUS_ID;
@@ -1034,7 +1049,7 @@ namespace FOX.BusinessOperations.ReconciliationService
         {
             try
             {
-                manualreconciliationToSave.REMARKS = "Manual Reconciliation";
+                //manualreconciliationToSave.REMARKS = "Manual Reconciliation";
                 var logsList = new List<ReconciliationCPLogs>();
                 if (dbData == null)
                 {
@@ -1081,7 +1096,8 @@ namespace FOX.BusinessOperations.ReconciliationService
                 {
                     var log = "";
                     if (dbData.REMARKS != null)
-                        log = "REMARKS changed from \"" + dbData.REMARKS + "\" to \"" + dbData.REMARKS + "\".";
+                        //log = "REMARKS changed from \"" + dbData.REMARKS + "\" to \"" + dbData.REMARKS + "\".";
+                        log = "REMARKS changed to \"" + dbData.REMARKS + "\".";
                     else
                         log = "REMARKS \"" + autoreconciliationToSave.REMARKS + "\" is added to the reconciliation.";
 
@@ -1192,7 +1208,9 @@ namespace FOX.BusinessOperations.ReconciliationService
                 {
                     var log = "";
                     if (!string.IsNullOrWhiteSpace(dbData.CHECK_NO))
-                        log = "Check # changed from\"" + dbData.CHECK_NO + "\" to \"" + reconciliationToSave.CHECK_NO + "\".";
+                        log = "Check # changed to \"" + reconciliationToSave.CHECK_NO + "\".";
+
+                    //log = "Check # changed from\"" + dbData.CHECK_NO + "\" to \"" + reconciliationToSave.CHECK_NO + "\".";
                     else
                         log = "Check # \"" + reconciliationToSave.CHECK_NO + "\" is added to the reconciliation.";
 
@@ -1209,7 +1227,9 @@ namespace FOX.BusinessOperations.ReconciliationService
                 {
                     var log = "";
                     if (dbData.AMOUNT != null)
-                        log = "Amount changed from \"" + dbData.AMOUNT.Value.ToString("C2") + "\" to \"" + reconciliationToSave.AMOUNT.Value.ToString("C2") + "\".";
+                        log = "Amount changed to \"" + reconciliationToSave.AMOUNT.Value.ToString("C2") + "\".";
+
+                    //log = "Amount changed from \"" + dbData.AMOUNT.Value.ToString("C2") + "\" to \"" + reconciliationToSave.AMOUNT.Value.ToString("C2") + "\".";
                     else
                         log = "Amount \"" + reconciliationToSave.AMOUNT.Value.ToString("C2") + "\" is added to the reconciliation.";
 
@@ -1226,7 +1246,9 @@ namespace FOX.BusinessOperations.ReconciliationService
                 {
                     var log = "";
                     if (dbData.AMOUNT_POSTED != null)
-                        log = "Amount Posted changed from \"" + dbData.AMOUNT_POSTED.Value.ToString("C2") + "\" to \"" + reconciliationToSave.AMOUNT_POSTED.Value.ToString("C2") + "\".";
+                        log = "Amount Posted changed to \"" + reconciliationToSave.AMOUNT_POSTED.Value.ToString("C2") + "\".";
+
+                    //log = "Amount Posted changed from \"" + dbData.AMOUNT_POSTED.Value.ToString("C2") + "\" to \"" + reconciliationToSave.AMOUNT_POSTED.Value.ToString("C2") + "\".";
                     else
                         log = "Amount Posted \"" + reconciliationToSave.AMOUNT_POSTED.Value.ToString("C2") + "\" is added to the reconciliation.";
 
@@ -1239,23 +1261,23 @@ namespace FOX.BusinessOperations.ReconciliationService
                     });
                 }
 
-                if (dbData.AMOUNT_NOT_POSTED != reconciliationToSave.AMOUNT_NOT_POSTED)
-                {
-                    var log = "";
-                    if (dbData.AMOUNT_NOT_POSTED != null)
-                        log = "Amount Not Posted changed from \"" + dbData.AMOUNT_NOT_POSTED.Value.ToString("C2") + "\" to \"" + reconciliationToSave.AMOUNT_NOT_POSTED.Value.ToString("C2") + "\".";
-                    else
-                        log = "Amount Not Posted \"" + reconciliationToSave.AMOUNT_NOT_POSTED.Value.ToString("C2") + "\" is added to the reconciliation.";
+                //if (dbData.AMOUNT_NOT_POSTED != reconciliationToSave.AMOUNT_NOT_POSTED)
+                //{
+                //    var log = "";
+                //    if (dbData.AMOUNT_NOT_POSTED != null)
+                //        log = "Amount Not Posted changed from \"" + dbData.AMOUNT_NOT_POSTED.Value.ToString("C2") + "\" to \"" + reconciliationToSave.AMOUNT_NOT_POSTED.Value.ToString("C2") + "\".";
+                //    else
+                //        log = "Amount Not Posted \"" + reconciliationToSave.AMOUNT_NOT_POSTED.Value.ToString("C2") + "\" is added to the reconciliation.";
 
-                    logsList.Add(new ReconciliationCPLogs()
-                    {
-                        LOG_MESSAGE = log,
-                        FIELD_NAME = "AMOUNT_NOT_POSTED",
-                        PREVIOUS_VALUE = dbData.AMOUNT_NOT_POSTED.HasValue ? dbData.AMOUNT_NOT_POSTED.Value.ToString() : null,
-                        NEW_VALUE = reconciliationToSave.AMOUNT_NOT_POSTED.HasValue ? reconciliationToSave.AMOUNT_NOT_POSTED.Value.ToString() : null
-                    });
-                }
-                if (dbData.REMARKS != reconciliationToSave.REMARKS)
+                //    logsList.Add(new ReconciliationCPLogs()
+                //    {
+                //        LOG_MESSAGE = log,
+                //        FIELD_NAME = "AMOUNT_NOT_POSTED",
+                //        PREVIOUS_VALUE = dbData.AMOUNT_NOT_POSTED.HasValue ? dbData.AMOUNT_NOT_POSTED.Value.ToString() : null,
+                //        NEW_VALUE = reconciliationToSave.AMOUNT_NOT_POSTED.HasValue ? reconciliationToSave.AMOUNT_NOT_POSTED.Value.ToString() : null
+                //    });
+                //}
+                if (!string.IsNullOrEmpty(reconciliationToSave.REMARKS) && dbData.REMARKS != reconciliationToSave.REMARKS)
                 {
                     var log = "";
                     if (dbData.REMARKS != null)
@@ -1277,7 +1299,9 @@ namespace FOX.BusinessOperations.ReconciliationService
                 {
                     var log = "";
                     if (dbData.REASON != null)
-                        log = "Reason changed from \"" + GetReasonName(dbData.REASON) + "\" to \"" + GetReasonName(reconciliationToSave.REASON) + "\".";
+                        log = "Reason changed to \"" + GetReasonName(reconciliationToSave.REASON) + "\".";
+
+                    //log = "Reason changed from \"" + GetReasonName(dbData.REASON) + "\" to \"" + GetReasonName(reconciliationToSave.REASON) + "\".";
                     else
                         log = "Reason \"" + GetReasonName(reconciliationToSave.REASON) + "\" is added to the reconciliation.";
 
@@ -1474,7 +1498,8 @@ namespace FOX.BusinessOperations.ReconciliationService
                 {
                     var log = "";
                     if (!string.IsNullOrWhiteSpace(previousUserName))
-                        log = "Adjustment re-assigned from \"" + GetUserName(previousUserName) + "\" to \"" + GetUserName(newUserName) + "\".";
+                        log = "Adjustment re-assigned to \"" + GetUserName(newUserName) + "\".";
+                    //log = "Adjustment re-assigned from \"" + GetUserName(previousUserName) + "\" to \"" + GetUserName(newUserName) + "\".";
                     else
                         log = "Adjustment assigned to \"" + GetUserName(newUserName) + "\".";
 
@@ -1555,7 +1580,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                         break;
                 }
 
-                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATIONS_CP_TEST 
+                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATIONS_CP 
                     @PRACTICE_CODE, @IS_FOR_REPORT, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO, @FOX_TBL_INSURANCE_NAME, 
                     @STATUS_ID, @CURRENT_USER, @SEARCH_TEXT, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER, @CP_TYPE"
                     , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
@@ -2637,7 +2662,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                     foreach (System.Data.DataRow row in tbl.Rows)
                     {
                         ReconcialtionImport temp = new ReconcialtionImport();
-                        
+
                         //if (!string.IsNullOrEmpty(row[""].ToString()) )
                         //    temp.Day = row[0].ToString();
                         if (row.Table.Columns.Contains("Deposit Date") && !string.IsNullOrEmpty(row["Deposit Date"].ToString()))
@@ -2680,7 +2705,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                         if (row.Table.Columns.Contains("Not Posted") && !string.IsNullOrEmpty(row["Not Posted"].ToString()))
                             temp.NotPosted = row["Not Posted"].ToString();
                         try
-                        { 
+                        {
                             var res = InsertExcelValuesToDB(temp, profile);
                             if (res != null && res != "" && res != "ERROR")
                             {
@@ -2689,7 +2714,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                         }
                         catch (Exception exception)
                         {
-                                throw exception;
+                            throw exception;
                         }
                     }
 
@@ -2870,7 +2895,7 @@ namespace FOX.BusinessOperations.ReconciliationService
 
         private ReconcialtionImport GetReconsiliatinTable(ReconcialtionImport lst)
         {
-            if(lst != null)
+            if (lst != null)
             {
                 //string checkNo = GetCheckNo(recon.CheckNoBatchNo);
                 string checkNo = lst.CheckNoBatchNo;
