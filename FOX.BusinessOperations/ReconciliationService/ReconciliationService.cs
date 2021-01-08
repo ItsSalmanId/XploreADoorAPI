@@ -1,4 +1,5 @@
-﻿using FOX.BusinessOperations.CommonService;
+﻿using DocumentFormat.OpenXml.Office2013.PowerPoint.Roaming;
+using FOX.BusinessOperations.CommonService;
 using FOX.BusinessOperations.CommonServices;
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
@@ -18,6 +19,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Web;
+using Helper = FOX.BusinessOperations.CommonService.Helper;
 
 namespace FOX.BusinessOperations.ReconciliationService
 {
@@ -48,7 +50,7 @@ namespace FOX.BusinessOperations.ReconciliationService
             _foxInsuranceRepository = new GenericRepository<FoxInsurancePayers>(_PatientContext);
             _foxhrautoemailsRepository = new GenericRepository<MTBC_Credentials_Fox_Automation>(_hrAutoEmailsContext);
         }
-       
+
         public List<ReconciliationStatus> GetReconciliationStatuses(UserProfile profile)
         {
             try
@@ -88,12 +90,39 @@ namespace FOX.BusinessOperations.ReconciliationService
             }
             catch (Exception ex) { throw ex; }
         }
-        public List<ReconciliationCP> GetReconciliationInsurances(UserProfile profile)
+        public List<ReconciliationCP> GetReconciliationInsurances(ReconciliationCPSearchReq searchReq, UserProfile profile)
         {
             try
             {
-                return SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_INSURANCE @PRACTICE_CODE"
-                       , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode });
+                searchReq.DATE_TO = Helper.GetCurrentDate();
+                switch (searchReq.TIME_FRAME)
+                {
+                    case 1:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-7);
+                        break;
+                    case 2:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-15);
+                        break;
+                    case 3:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-30);
+                        break;
+                    case 4:
+                        if (!string.IsNullOrEmpty(searchReq.DATE_FROM_Str))
+                            searchReq.DATE_FROM = Convert.ToDateTime(searchReq.DATE_FROM_Str);
+                        else
+                            searchReq.DATE_FROM = Helper.GetCurrentDate().AddYears(-100);
+                        if (!string.IsNullOrEmpty(searchReq.DATE_TO_Str))
+                            searchReq.DATE_TO = Convert.ToDateTime(searchReq.DATE_TO_Str);
+                        break;
+                    default:
+                        break;
+                }
+                return SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_INSURANCE @PRACTICE_CODE, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO"
+                       , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
+                       , new SqlParameter { ParameterName = "IS_DEPOSIT_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_DEPOSIT_DATE_SEARCH }
+                       , new SqlParameter { ParameterName = "IS_ASSIGNED_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_ASSIGNED_DATE_SEARCH }
+                       , Helper.getDBNullOrValue("DATE_FROM", searchReq.DATE_FROM.Value.ToString("MM/dd/yyyy") ?? "")
+                       , Helper.getDBNullOrValue("DATE_TO", searchReq.DATE_TO.Value.ToString("MM/dd/yyyy") ?? ""));
 
             }
             catch (Exception ex) { throw ex; }
@@ -107,42 +136,151 @@ namespace FOX.BusinessOperations.ReconciliationService
             return _reconsiliationCategoryDepositType;
         }
 
-        public List<CheckNoSelectionModel> GetReconciliationCheckNos(UserProfile profile)
+        public List<CheckNoSelectionModel> GetReconciliationCheckNos(ReconciliationCPSearchReq searchReq, UserProfile profile)
         {
             try
             {
-                return SpRepository<CheckNoSelectionModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_CHECK_NOS @PRACTICE_CODE"
-                    , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode });
+                searchReq.DATE_TO = Helper.GetCurrentDate();
+                switch (searchReq.TIME_FRAME)
+                {
+                    case 1:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-7);
+                        break;
+                    case 2:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-15);
+                        break;
+                    case 3:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-30);
+                        break;
+                    case 4:
+                        if (!string.IsNullOrEmpty(searchReq.DATE_FROM_Str))
+                            searchReq.DATE_FROM = Convert.ToDateTime(searchReq.DATE_FROM_Str);
+                        else
+                            searchReq.DATE_FROM = Helper.GetCurrentDate().AddYears(-100);
+                        if (!string.IsNullOrEmpty(searchReq.DATE_TO_Str))
+                            searchReq.DATE_TO = Convert.ToDateTime(searchReq.DATE_TO_Str);
+                        break;
+                    default:
+                        break;
+                }
+                return SpRepository<CheckNoSelectionModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_CHECK_NOS @PRACTICE_CODE, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO"
+                    , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
+                    , new SqlParameter { ParameterName = "IS_DEPOSIT_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_DEPOSIT_DATE_SEARCH }
+                    , new SqlParameter { ParameterName = "IS_ASSIGNED_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_ASSIGNED_DATE_SEARCH }
+                    , Helper.getDBNullOrValue("DATE_FROM", searchReq.DATE_FROM.Value.ToString("MM/dd/yyyy") ?? "")
+                    , Helper.getDBNullOrValue("DATE_TO", searchReq.DATE_TO.Value.ToString("MM/dd/yyyy") ?? ""));
             }
             catch (Exception ex) { throw ex; }
         }
 
-        public List<AmountSelectionModel> GetAmounts(UserProfile profile)
+        public List<AmountSelectionModel> GetAmounts(ReconciliationCPSearchReq searchReq, UserProfile profile)
         {
             try
             {
-                return SpRepository<AmountSelectionModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_AMOUNTS @PRACTICE_CODE"
-                    , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode });
+                searchReq.DATE_TO = Helper.GetCurrentDate();
+                switch (searchReq.TIME_FRAME)
+                {
+                    case 1:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-7);
+                        break;
+                    case 2:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-15);
+                        break;
+                    case 3:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-30);
+                        break;
+                    case 4:
+                        if (!string.IsNullOrEmpty(searchReq.DATE_FROM_Str))
+                            searchReq.DATE_FROM = Convert.ToDateTime(searchReq.DATE_FROM_Str);
+                        else
+                            searchReq.DATE_FROM = Helper.GetCurrentDate().AddYears(-100);
+                        if (!string.IsNullOrEmpty(searchReq.DATE_TO_Str))
+                            searchReq.DATE_TO = Convert.ToDateTime(searchReq.DATE_TO_Str);
+                        break;
+                    default:
+                        break;
+                }
+                return SpRepository<AmountSelectionModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_AMOUNTS @PRACTICE_CODE, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO"
+                    , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
+                    , new SqlParameter { ParameterName = "IS_DEPOSIT_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_DEPOSIT_DATE_SEARCH }
+                    , new SqlParameter { ParameterName = "IS_ASSIGNED_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_ASSIGNED_DATE_SEARCH }
+                    , Helper.getDBNullOrValue("DATE_FROM", searchReq.DATE_FROM.Value.ToString("MM/dd/yyyy") ?? "")
+                    , Helper.getDBNullOrValue("DATE_TO", searchReq.DATE_TO.Value.ToString("MM/dd/yyyy") ?? ""));
             }
             catch (Exception ex) { throw ex; }
         }
 
-        public List<AmountPostedSelectionModel> GetPostedAmounts(UserProfile profile)
+        public List<AmountPostedSelectionModel> GetPostedAmounts(ReconciliationCPSearchReq searchReq, UserProfile profile)
         {
             try
             {
-                return SpRepository<AmountPostedSelectionModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_AMOUNT_POSTED @PRACTICE_CODE"
-                    , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode });
+                searchReq.DATE_TO = Helper.GetCurrentDate();
+                switch (searchReq.TIME_FRAME)
+                {
+                    case 1:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-7);
+                        break;
+                    case 2:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-15);
+                        break;
+                    case 3:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-30);
+                        break;
+                    case 4:
+                        if (!string.IsNullOrEmpty(searchReq.DATE_FROM_Str))
+                            searchReq.DATE_FROM = Convert.ToDateTime(searchReq.DATE_FROM_Str);
+                        else
+                            searchReq.DATE_FROM = Helper.GetCurrentDate().AddYears(-100);
+                        if (!string.IsNullOrEmpty(searchReq.DATE_TO_Str))
+                            searchReq.DATE_TO = Convert.ToDateTime(searchReq.DATE_TO_Str);
+                        break;
+                    default:
+                        break;
+                }
+                return SpRepository<AmountPostedSelectionModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_AMOUNT_POSTED @PRACTICE_CODE, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO"
+                    , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
+                    , new SqlParameter { ParameterName = "IS_DEPOSIT_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_DEPOSIT_DATE_SEARCH }
+                    , new SqlParameter { ParameterName = "IS_ASSIGNED_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_ASSIGNED_DATE_SEARCH }
+                    , Helper.getDBNullOrValue("DATE_FROM", searchReq.DATE_FROM.Value.ToString("MM/dd/yyyy") ?? "")
+                    , Helper.getDBNullOrValue("DATE_TO", searchReq.DATE_TO.Value.ToString("MM/dd/yyyy") ?? ""));
             }
             catch (Exception ex) { throw ex; }
         }
 
-        public List<AmountNotPostedSelectionModel> GetNotPostedAmounts(UserProfile profile)
+        public List<AmountNotPostedSelectionModel> GetNotPostedAmounts(ReconciliationCPSearchReq searchReq, UserProfile profile)
         {
             try
             {
-                return SpRepository<AmountNotPostedSelectionModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_AMOUNT_NOT_POSTED @PRACTICE_CODE"
-                    , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode });
+                searchReq.DATE_TO = Helper.GetCurrentDate();
+                switch (searchReq.TIME_FRAME)
+                {
+                    case 1:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-7);
+                        break;
+                    case 2:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-15);
+                        break;
+                    case 3:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-30);
+                        break;
+                    case 4:
+                        if (!string.IsNullOrEmpty(searchReq.DATE_FROM_Str))
+                            searchReq.DATE_FROM = Convert.ToDateTime(searchReq.DATE_FROM_Str);
+                        else
+                            searchReq.DATE_FROM = Helper.GetCurrentDate().AddYears(-100);
+                        if (!string.IsNullOrEmpty(searchReq.DATE_TO_Str))
+                            searchReq.DATE_TO = Convert.ToDateTime(searchReq.DATE_TO_Str);
+                        break;
+                    default:
+                        break;
+                }
+
+                return SpRepository<AmountNotPostedSelectionModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_AMOUNT_NOT_POSTED @PRACTICE_CODE, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO"
+                    , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
+                    , new SqlParameter { ParameterName = "IS_DEPOSIT_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_DEPOSIT_DATE_SEARCH }
+                    , new SqlParameter { ParameterName = "IS_ASSIGNED_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_ASSIGNED_DATE_SEARCH }
+                    , Helper.getDBNullOrValue("DATE_FROM", searchReq.DATE_FROM.Value.ToString("MM/dd/yyyy") ?? "")
+                    , Helper.getDBNullOrValue("DATE_TO", searchReq.DATE_TO.Value.ToString("MM/dd/yyyy") ?? ""));
             }
             catch (Exception ex) { throw ex; }
         }
@@ -165,8 +303,8 @@ namespace FOX.BusinessOperations.ReconciliationService
         {
             try
             {
-                bool hasDOSFromDate = false;
-                bool hasDOSToDate = false;
+                //bool hasDOSFromDate = false;
+                //bool hasDOSToDate = false;
                 //if (!string.IsNullOrEmpty(searchReq.DATE_FROM_Str))
                 //{
                 //    hasDOSFromDate = true;
@@ -178,18 +316,44 @@ namespace FOX.BusinessOperations.ReconciliationService
                 //    hasDOSToDate = true;
                 //    searchReq.DATE_TO = Convert.ToDateTime(searchReq.DATE_TO_Str);
                 //}
-                DateTime dateTimeTo;
-                DateTime dateTimeFrom;
-                if (DateTime.TryParse(searchReq.DATE_FROM_Str, out dateTimeFrom))
+                //DateTime dateTimeTo;
+                //DateTime dateTimeFrom;
+                //if (DateTime.TryParse(searchReq.DATE_FROM_Str, out dateTimeFrom))
+                //{
+                //    hasDOSFromDate = true;
+                //    searchReq.DATE_FROM = dateTimeFrom;
+                //}
+                //if (DateTime.TryParse(searchReq.DATE_TO_Str, out dateTimeTo))
+                //{
+                //    hasDOSToDate = true;
+                //    searchReq.DATE_TO = dateTimeTo;
+                //}
+
+
+                searchReq.DATE_TO = Helper.GetCurrentDate();
+                switch (searchReq.TIME_FRAME)
                 {
-                    hasDOSFromDate = true;
-                    searchReq.DATE_FROM = dateTimeFrom;
+                    case 1:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-7);
+                        break;
+                    case 2:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-15);
+                        break;
+                    case 3:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-30);
+                        break;
+                    case 4:
+                        if (!string.IsNullOrEmpty(searchReq.DATE_FROM_Str))
+                            searchReq.DATE_FROM = Convert.ToDateTime(searchReq.DATE_FROM_Str);
+                        else
+                            searchReq.DATE_FROM = Helper.GetCurrentDate().AddYears(-100);
+                        if (!string.IsNullOrEmpty(searchReq.DATE_TO_Str))
+                            searchReq.DATE_TO = Convert.ToDateTime(searchReq.DATE_TO_Str);
+                        break;
+                    default:
+                        break;
                 }
-                if (DateTime.TryParse(searchReq.DATE_TO_Str, out dateTimeTo))
-                {
-                    hasDOSToDate = true;
-                    searchReq.DATE_TO = dateTimeTo;
-                }
+
                 //string cat_Ids = "";
                 //string deposit_Type_Ids = "";
                 //string check_Nos = "";
@@ -206,8 +370,8 @@ namespace FOX.BusinessOperations.ReconciliationService
                     , new SqlParameter { ParameterName = "IS_FOR_REPORT", SqlDbType = SqlDbType.Bit, Value = searchReq.IsForReport }
                     , new SqlParameter { ParameterName = "IS_DEPOSIT_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_DEPOSIT_DATE_SEARCH }
                     , new SqlParameter { ParameterName = "IS_ASSIGNED_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_ASSIGNED_DATE_SEARCH }
-                    , CommonService.Helper.getDBNullOrValue("DATE_FROM", hasDOSFromDate ? (searchReq.DATE_FROM.HasValue ? searchReq.DATE_FROM.Value.ToString("MM/dd/yyyy") : "") : "")
-                    , CommonService.Helper.getDBNullOrValue("DATE_TO", hasDOSToDate ? (searchReq.DATE_TO.HasValue ? searchReq.DATE_TO.Value.ToString("MM/dd/yyyy") : "") : "")
+                    , CommonService.Helper.getDBNullOrValue("DATE_FROM", searchReq.DATE_FROM.Value.ToString("MM/dd/yyyy") ?? "")
+                    , CommonService.Helper.getDBNullOrValue("DATE_TO", searchReq.DATE_TO.Value.ToString("MM/dd/yyyy") ?? "")
                     // , CommonService.Helper.getDBNullOrValue("FOX_TBL_INSURANCE_ID", searchReq.FOX_TBL_INSURANCE_ID.HasValue ? searchReq.FOX_TBL_INSURANCE_ID.ToString() : "")
                     , new SqlParameter("FOX_TBL_INSURANCE_NAME", SqlDbType.VarChar) { Value = string.IsNullOrWhiteSpace(searchReq.INSURANCE_NAME) ? "" : searchReq.INSURANCE_NAME }
                     //, CommonService.Helper.getDBNullOrValue("CATEGORY_IDS", cat_Ids)
@@ -242,7 +406,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                     //    .OrderByDescending(o => o.ye);
                     if (searchReq.CATEGORIES?.Count > 0)
                     {
-                        var cats = searchReq.CATEGORIES.Where(e => e.Selected).Select(e=>e.CATEGORY_ID).ToList();
+                        var cats = searchReq.CATEGORIES.Where(e => e.Selected).Select(e => e.CATEGORY_ID).ToList();
                         if (cats.Count > 0)
                             result = result.FindAll(e => e.CATEGORY_ID.HasValue && cats.Contains(e.CATEGORY_ID.Value));
 
@@ -262,16 +426,16 @@ namespace FOX.BusinessOperations.ReconciliationService
                     }
                     if (searchReq.FOX_TBL_INSURANCE_NAME?.Count > 0)
                     {
-                        var cats = searchReq.FOX_TBL_INSURANCE_NAME.Where(e => e.Selected).Select(e => e.FOX_TBL_INSURANCE_NAME).ToList();
+                        var cats = searchReq.FOX_TBL_INSURANCE_NAME.Where(e => e.Selected).Select(e => e.FOX_TBL_INSURANCE_NAME.Trim().ToLower()).ToList();
                         if (cats.Count > 0)
                         {
-                            result = result.FindAll(e => cats.Contains(e.INSURANCE_NAME));
+                            result = result.FindAll(e => cats.Contains(e.INSURANCE_NAME.Trim().ToLower()));
                         }
                     }
                     if (searchReq.DEPOSIT_TYPES?.Count > 0)
                     {
                         var dts = searchReq.DEPOSIT_TYPES.Where(e => e.Selected).Select(e => e.DEPOSIT_TYPE_ID).ToList();
-                        if(dts.Count > 0)
+                        if (dts.Count > 0)
                             result = result.FindAll(e => e.DEPOSIT_TYPE_ID.HasValue && dts.Contains(e.DEPOSIT_TYPE_ID.Value));
 
                         //deposit_Type_Ids = string.Join(",", searchReq.DEPOSIT_TYPE_IDS.Select(n => n.ToString()).ToArray());
@@ -282,7 +446,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                         var rs = searchReq.Statuses.Where(e => e.Selected).Select(e => e.STATUS_NAME).ToList();
                         if (rs?.Count > 0)
                         {
-                            result = result.FindAll(e =>  rs.Contains( e.STATUS_NAME));
+                            result = result.FindAll(e => rs.Contains(e.STATUS_NAME));
                         }
                     }
 
@@ -332,8 +496,8 @@ namespace FOX.BusinessOperations.ReconciliationService
 
                     if (result?.Count > 0)
                     {
-                        int  CURRENT_PAGE = searchReq.CurrentPage - 1;
-                        int START_FROM  = CURRENT_PAGE * searchReq.RecordPerPage;
+                        int CURRENT_PAGE = searchReq.CurrentPage - 1;
+                        int START_FROM = CURRENT_PAGE * searchReq.RecordPerPage;
                         result[0].TOTAL_RECORDS = result.Count;
                         result.Select(c => { c.TOTAL_RECORDS = result.Count; return c; }).ToList();
 
@@ -374,9 +538,9 @@ namespace FOX.BusinessOperations.ReconciliationService
         private void SetListSerialNumber(List<ReconciliationCP> lst)
         {
             int i = 1;
-            foreach(ReconciliationCP obj in lst)
+            foreach (ReconciliationCP obj in lst)
             {
-                obj.Row_No = i++ ;
+                obj.Row_No = i++;
             }
         }
 
@@ -402,16 +566,23 @@ namespace FOX.BusinessOperations.ReconciliationService
         {
             try
             {
+                if (!string.IsNullOrEmpty(autoreconciliationToSave.POSTED_DATE_STR))
+                {
+                    autoreconciliationToSave.DATE_POSTED = Convert.ToDateTime(autoreconciliationToSave.POSTED_DATE_STR);
+                }
+                autoreconciliationToSave.REMARKS = "Automatically Reconciled";
                 var dBData = _reconciliationCPRepository.GetFirst(e => e.RECONCILIATION_CP_ID == autoreconciliationToSave.RECONCILIATION_CP_ID && e.PRACTICE_CODE == profile.PracticeCode && !e.DELETED);
                 ReconciliationCP prevObj = null;
                 prevObj = (ReconciliationCP)dBData.Clone();
-                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_AUTO_RECONCILIATION_CP @PRACTICE_CODE,@USER_NAME,@RECONCILIATION_CP_ID,@AMOUNT_POSTED",
+                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_AUTO_RECONCILIATION_CP @PRACTICE_CODE,@USER_NAME,@RECONCILIATION_CP_ID,@AMOUNT_POSTED, @DATE_POSTED, @REMARKS",
                     new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
                     , new SqlParameter { ParameterName = "USER_NAME", SqlDbType = SqlDbType.VarChar, Value = profile.UserName }
                     , new SqlParameter { ParameterName = "RECONCILIATION_CP_ID", SqlDbType = SqlDbType.BigInt, Value = autoreconciliationToSave.RECONCILIATION_CP_ID }
-                    , new SqlParameter { ParameterName = "AMOUNT_POSTED", SqlDbType = SqlDbType.BigInt, Value = autoreconciliationToSave.AMOUNT_POSTED }
+                    , new SqlParameter { ParameterName = "AMOUNT_POSTED", SqlDbType = SqlDbType.Decimal, Value = autoreconciliationToSave.AMOUNT_POSTED }
+                     , new SqlParameter { ParameterName = "DATE_POSTED", SqlDbType = SqlDbType.VarChar, Value = autoreconciliationToSave.DATE_POSTED.ToString() }
+                      , new SqlParameter { ParameterName = "REMARKS", SqlDbType = SqlDbType.VarChar, Value = autoreconciliationToSave.REMARKS.ToString() }
                     );
-                if(result != null)
+                if (result != null)
                 {
                     SaveAutoReconciliationLogs(prevObj, autoreconciliationToSave, profile);
                 }
@@ -419,7 +590,34 @@ namespace FOX.BusinessOperations.ReconciliationService
             }
             catch (Exception ex) { throw ex; }
         }
+        public List<ReconciliationCP> SaveManualReconciliationCP(ReconciliationCP manualreconciliationToSave, UserProfile profile)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(manualreconciliationToSave.POSTED_DATE_STR))
+                {
+                    manualreconciliationToSave.DATE_POSTED = Convert.ToDateTime(manualreconciliationToSave.POSTED_DATE_STR);
+                }
+                var dBData = _reconciliationCPRepository.GetFirst(e => e.RECONCILIATION_CP_ID == manualreconciliationToSave.RECONCILIATION_CP_ID && e.PRACTICE_CODE == profile.PracticeCode && !e.DELETED);
+                ReconciliationCP prevObj = null;
+                prevObj = (ReconciliationCP)dBData.Clone();
+                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_AUTO_RECONCILIATION_CP @PRACTICE_CODE,@USER_NAME,@RECONCILIATION_CP_ID,@AMOUNT_POSTED, @DATE_POSTED, @REMARKS",
+                    new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
+                    , new SqlParameter { ParameterName = "USER_NAME", SqlDbType = SqlDbType.VarChar, Value = profile.UserName }
+                    , new SqlParameter { ParameterName = "RECONCILIATION_CP_ID", SqlDbType = SqlDbType.BigInt, Value = manualreconciliationToSave.RECONCILIATION_CP_ID }
+                    , new SqlParameter { ParameterName = "AMOUNT_POSTED", SqlDbType = SqlDbType.Decimal, Value = manualreconciliationToSave.AMOUNT_POSTED }
+                     , new SqlParameter { ParameterName = "DATE_POSTED", SqlDbType = SqlDbType.VarChar, Value = manualreconciliationToSave.DATE_POSTED.ToString() }
+                     , new SqlParameter { ParameterName = "REMARKS", SqlDbType = SqlDbType.VarChar, Value = manualreconciliationToSave.REMARKS.ToString() }
+                    );
+                if (result != null)
+                {
 
+                    SaveManualReconciliationLogs(prevObj, manualreconciliationToSave, profile);
+                }
+                return result;
+            }
+            catch (Exception ex) { throw ex; }
+        }
         /// <summary>Update reconciliation record on Auto Reconcilied Button </summary>
         /// <author>Muhammad Arqam </author> 
         /// <param>ReconciliationCP(list of check# which is reconcilied), user(Get Current user info), </param>
@@ -429,14 +627,17 @@ namespace FOX.BusinessOperations.ReconciliationService
             {
                 var dBData = _reconciliationCPRepository.GetFirst(e => e.RECONCILIATION_CP_ID == autoReconciliationToUpdate.RECONCILIATION_CP_ID && e.PRACTICE_CODE == profile.PracticeCode && !e.DELETED);
                 ReconciliationCP prevObj = null;
-                if(dBData!= null) {
+                if (dBData != null)
+                {
                     prevObj = (ReconciliationCP)dBData.Clone();
                 }
-                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_UPDATE_AUTO_RECONCILIATION_CP @PRACTICE_CODE,@USER_NAME,@RECONCILIATION_CP_ID,@AMOUNT_POSTED",
+                autoReconciliationToUpdate.REMARKS = "Total Posted amount loaded from Websoft against the listed Check# with +/- balance remaining";
+                var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_UPDATE_AUTO_RECONCILIATION_CP @PRACTICE_CODE,@USER_NAME,@RECONCILIATION_CP_ID,@AMOUNT_POSTED, @REMARKS",
                     new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
                     , new SqlParameter { ParameterName = "USER_NAME", SqlDbType = SqlDbType.VarChar, Value = profile.UserName }
                     , new SqlParameter { ParameterName = "RECONCILIATION_CP_ID", SqlDbType = SqlDbType.BigInt, Value = autoReconciliationToUpdate.RECONCILIATION_CP_ID }
-                    , new SqlParameter { ParameterName = "AMOUNT_POSTED", SqlDbType = SqlDbType.BigInt, Value = autoReconciliationToUpdate.AMOUNT_POSTED }
+                    , new SqlParameter { ParameterName = "AMOUNT_POSTED", SqlDbType = SqlDbType.Decimal, Value = autoReconciliationToUpdate.AMOUNT_POSTED }
+                    , new SqlParameter { ParameterName = "REMARKS", SqlDbType = SqlDbType.VarChar, Value = autoReconciliationToUpdate.REMARKS.ToString() }
                     );
                 if (result != null)
                 {
@@ -444,7 +645,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                 }
                 else
                 {
-                   result = new List<ReconciliationCP>();
+                    result = new List<ReconciliationCP>();
                 }
                 return result;
             }
@@ -469,7 +670,8 @@ namespace FOX.BusinessOperations.ReconciliationService
                 {
                     var log = "";
                     if (dbData.REMARKS != null)
-                        log = "REMARKS changed from \"" + dbData.REMARKS + "\" to \"" + dbData.REMARKS + "\".";
+                        log = "REMARKS changed to \"" + autoReconciliationToUpdate.REMARKS + "\".";
+                    //log = "REMARKS changed from \"" + dbData.REMARKS + "\" to \"" + dbData.REMARKS + "\".";
                     else
                         log = "REMARKS \"" + autoReconciliationToUpdate.REMARKS + "\" is added to the reconciliation.";
 
@@ -504,7 +706,6 @@ namespace FOX.BusinessOperations.ReconciliationService
             }
             catch (Exception ex) { throw ex; }
         }
-
         public ResponseModel SaveReconciliationCP(ReconciliationCP reconciliationToSave, UserProfile profile)
         {
             bool dBDataIsNull = false;
@@ -553,10 +754,21 @@ namespace FOX.BusinessOperations.ReconciliationService
                 reconciliation.REMARKS = reconciliationToSave.REMARKS;
 
 
-                if (prevObj != null && prevObj.RECONCILIATION_STATUS_ID == GetAssignedStatusId(profile))
+                //if (prevObj != null && prevObj.RECONCILIATION_STATUS_ID == GetAssignedStatusId(profile))
+                //{
+                if (reconciliation.IS_RECONCILIED == true)
                 {
                     reconciliation.RECONCILIATION_STATUS_ID = GetClosedStatusId(profile);
                 }
+                else
+                {
+                    reconciliation.RECONCILIATION_STATUS_ID = GetUnAssignedStatusId(profile);
+                    reconciliation.ASSIGNED_TO = "";
+                    reconciliation.ASSIGNED_DATE = null;
+                    reconciliation.ASSIGNED_DATE_STR = "";
+
+                }
+                //}
 
                 //if (prevObj != null && prevObj.AMOUNT_NOT_POSTED != 0 && reconciliationToSave.AMOUNT_NOT_POSTED == 0)
                 //{
@@ -601,6 +813,104 @@ namespace FOX.BusinessOperations.ReconciliationService
             }
             return response;
         }
+        public ResponseModel EditReconciliationCP(ReconciliationCP reconciliationToSave, UserProfile profile)
+        {
+            bool dBDataIsNull = false;
+            ReconciliationCP prevObj = null;
+            ResponseModel response = new ResponseModel();
+            try
+            {
+                var reconciliation = new ReconciliationCP();
+                var dBData = _reconciliationCPRepository.GetFirst(e => e.RECONCILIATION_CP_ID == reconciliationToSave.RECONCILIATION_CP_ID && e.PRACTICE_CODE == profile.PracticeCode && !e.DELETED);
+                if (dBData != null)
+                {
+                    prevObj = (ReconciliationCP)dBData.Clone();
+                    reconciliation = dBData;
+                    reconciliation.MODIFIED_BY = profile.UserName;
+                    reconciliation.MODIFIED_DATE = CommonService.Helper.GetCurrentDate();
+                }
+                if (reconciliationToSave.DEPOSIT_TYPE_ID != null && reconciliationToSave.DEPOSIT_TYPE_ID != 0)
+                {
+                    reconciliation.DEPOSIT_TYPE_ID = reconciliationToSave.DEPOSIT_TYPE_ID;
+                }
+                if (reconciliationToSave.CATEGORY_ID != null && reconciliationToSave.CATEGORY_ID != 0)
+                {
+                    reconciliation.CATEGORY_ID = reconciliationToSave.CATEGORY_ID;
+                }
+                if (dBData == null)
+                {
+                    _reconciliationCPRepository.Update(reconciliation);
+                    _reconciliationCPRepository.Save();
+                }
+                SaveBulkEditReconciliationLogs(prevObj, reconciliationToSave, profile);
+
+                response.Success = true;
+                response.ErrorMessage = "";
+                response.Message = dBData == null ? "Reconciliation couldn't be updated." : "Reconciliation updated successfully.";
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.ErrorMessage = ex.Message;
+                response.Message = "Reconciliation couldn't be updated.";
+            }
+            return response;
+        }
+
+        public void SaveBulkEditReconciliationLogs(ReconciliationCP dbData, ReconciliationCP reconciliationToSave, UserProfile profile)
+        {
+            try
+            {
+                var logsList = new List<ReconciliationCPLogs>();
+                if (dbData == null)
+                {
+                    logsList.Add(new ReconciliationCPLogs() { LOG_MESSAGE = "Reconciliation is created." });
+                    dbData = new ReconciliationCP();
+                }
+                if (reconciliationToSave.DEPOSIT_TYPE_ID != null && dbData.DEPOSIT_TYPE_ID != reconciliationToSave.DEPOSIT_TYPE_ID)
+                {
+                    var log = "";
+                    if (dbData.DEPOSIT_TYPE_ID != null)
+                        log = "Deposit Type changed to \"" + GetDepositTypeName(reconciliationToSave.DEPOSIT_TYPE_ID, profile) + "\".";
+                    //log = "Deposit Type changed from \"" + GetDepositTypeName(dbData.DEPOSIT_TYPE_ID) + "\" to \"" + GetDepositTypeName(reconciliationToSave.DEPOSIT_TYPE_ID) + "\".";
+                    else
+                        log = "Deposit Type \"" + GetDepositTypeName(reconciliationToSave.DEPOSIT_TYPE_ID, profile) + "\" is added to the reconciliation.";
+
+                    logsList.Add(new ReconciliationCPLogs()
+                    {
+                        LOG_MESSAGE = log,
+                        FIELD_NAME = "DEPOSIT_TYPE_ID",
+                        PREVIOUS_VALUE = dbData.DEPOSIT_TYPE_ID.HasValue ? dbData.DEPOSIT_TYPE_ID.Value.ToString() : null,
+                        NEW_VALUE = reconciliationToSave.DEPOSIT_TYPE_ID.HasValue ? reconciliationToSave.DEPOSIT_TYPE_ID.Value.ToString() : null
+                    });
+                }
+
+                if (reconciliationToSave.CATEGORY_ID != null && dbData.CATEGORY_ID != reconciliationToSave.CATEGORY_ID)
+                {
+                    var log = "";
+                    if (dbData.CATEGORY_ID != null)
+                        log = "Category changed to \"" + GetCategoryName(reconciliationToSave.CATEGORY_ID, profile) + "\".";
+
+                    //log = "Category changed from \"" + GetCategoryName(dbData.CATEGORY_ID) + "\" to \"" + GetCategoryName(reconciliationToSave.CATEGORY_ID) + "\".";
+                    else
+                        log = "Category \"" + GetCategoryName(reconciliationToSave.CATEGORY_ID, profile) + "\" is added to the reconciliation.";
+
+                    logsList.Add(new ReconciliationCPLogs()
+                    {
+                        LOG_MESSAGE = log,
+                        FIELD_NAME = "CATEGORY_ID",
+                        PREVIOUS_VALUE = dbData.CATEGORY_ID.HasValue ? dbData.CATEGORY_ID.Value.ToString() : null,
+                        NEW_VALUE = reconciliationToSave.CATEGORY_ID.HasValue ? reconciliationToSave.CATEGORY_ID.Value.ToString() : null
+                    });
+                }
+
+                LogReconciliationDetails(logsList, reconciliationToSave.RECONCILIATION_CP_ID, profile);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
         public int? GetUnassignedStatusId(UserProfile profile)
         {
@@ -624,7 +934,17 @@ namespace FOX.BusinessOperations.ReconciliationService
 
         public int? GetAssignedStatusId(UserProfile profile)
         {
-            var assStatus = _reconciliationStatusRepository.GetFirst(e => e.STATUS_NAME == "Assigned" && !e.DELETED);
+            var assStatus = _reconciliationStatusRepository.GetFirst(e => e.STATUS_NAME == "Assigned" && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
+            if (assStatus != null)
+            {
+                return assStatus.RECONCILIATION_STATUS_ID;
+            }
+            return null;
+        }
+
+        public int? GetUnAssignedStatusId(UserProfile profile)
+        {
+            var assStatus = _reconciliationStatusRepository.GetFirst(e => e.STATUS_NAME == "Unassigned" && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
             if (assStatus != null)
             {
                 return assStatus.RECONCILIATION_STATUS_ID;
@@ -722,6 +1042,42 @@ namespace FOX.BusinessOperations.ReconciliationService
             catch (Exception ex) { throw ex; }
         }
 
+        public void SaveManualReconciliationLogs(ReconciliationCP dbData, ReconciliationCP manualreconciliationToSave, UserProfile profile)
+        {
+            try
+            {
+                //manualreconciliationToSave.REMARKS = "Manual Reconciliation";
+                var logsList = new List<ReconciliationCPLogs>();
+                if (dbData == null)
+                {
+                    logsList.Add(new ReconciliationCPLogs() { LOG_MESSAGE = "Reconciliation is created." });
+                    dbData = new ReconciliationCP();
+                }
+                if (dbData.REMARKS != manualreconciliationToSave.REMARKS)
+                {
+                    var log = "";
+                    if (dbData.REMARKS != null)
+                        //log = "REMARKS changed from \"" + dbData.REMARKS + "\" to \"" + dbData.REMARKS + "\".";
+                        log = "REMARKS changed to \"" + dbData.REMARKS + "\".";
+                    else
+                        log = "REMARKS \"" + manualreconciliationToSave.REMARKS + "\" is added to the reconciliation.";
+
+                    logsList.Add(new ReconciliationCPLogs()
+                    {
+                        LOG_MESSAGE = log,
+                        FIELD_NAME = "REMARKS",
+                        PREVIOUS_VALUE = !string.IsNullOrEmpty(dbData.REMARKS) ? dbData.CATEGORY_ID.Value.ToString() : null,
+                        NEW_VALUE = !string.IsNullOrEmpty(manualreconciliationToSave.REMARKS) ? manualreconciliationToSave.REMARKS : null
+                    });
+                }
+
+                LogReconciliationDetails(logsList, manualreconciliationToSave.RECONCILIATION_CP_ID, profile);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public void SaveAutoReconciliationLogs(ReconciliationCP dbData, ReconciliationCP autoreconciliationToSave, UserProfile profile)
         {
             try
@@ -774,7 +1130,9 @@ namespace FOX.BusinessOperations.ReconciliationService
                 {
                     var log = "";
                     if (dbData.FOX_TBL_INSURANCE_NAME != null)
-                        log = "Insurance changed from \"" + GetInsuranceName(long.Parse(dbData.FOX_TBL_INSURANCE_NAME)) + "\" to \"" + GetInsuranceName(long.Parse(reconciliationToSave.FOX_TBL_INSURANCE_NAME)) + "\".";
+                        log = "Insurance changed to \"" + GetInsuranceName(long.Parse(reconciliationToSave.FOX_TBL_INSURANCE_NAME)) + "\".";
+
+                    //log = "Insurance changed from \"" + GetInsuranceName(long.Parse(dbData.FOX_TBL_INSURANCE_NAME)) + "\" to \"" + GetInsuranceName(long.Parse(reconciliationToSave.FOX_TBL_INSURANCE_NAME)) + "\".";
                     else
                         log = "Insurance \"" + GetInsuranceName(long.Parse(reconciliationToSave.FOX_TBL_INSURANCE_NAME)) + "\" is added to the reconciliation.";
 
@@ -791,7 +1149,8 @@ namespace FOX.BusinessOperations.ReconciliationService
                 {
                     var log = "";
                     if (dbData.DEPOSIT_DATE != null)
-                        log = "Deposit Date changed from \"" + dbData.DEPOSIT_DATE.Value.ToString("MM/dd/yyyy") + "\" to \"" + reconciliationToSave.DEPOSIT_DATE.Value.ToString("MM/dd/yyyy") + "\".";
+                        log = "Deposit Date changed to \"" + reconciliationToSave.DEPOSIT_DATE.Value.ToString("MM/dd/yyyy") + "\".";
+                    //log = "Deposit Date changed from \"" + dbData.DEPOSIT_DATE.Value.ToString("MM/dd/yyyy") + "\" to \"" + reconciliationToSave.DEPOSIT_DATE.Value.ToString("MM/dd/yyyy") + "\".";
                     else
                         log = "Deposit Date \"" + reconciliationToSave.DEPOSIT_DATE.Value.ToString("MM/dd/yyyy") + "\" is added to the reconciliation.";
 
@@ -909,7 +1268,8 @@ namespace FOX.BusinessOperations.ReconciliationService
                 {
                     var log = "";
                     if (dbData.REMARKS != null)
-                        log = "REMARKS changed from \"" + dbData.REMARKS + "\" to \"" + dbData.REMARKS + "\".";
+                        log = "REMARKS changed to \"" + reconciliationToSave.REMARKS + "\".";
+                    //log = "REMARKS changed from \"" + dbData.REMARKS + "\" to \"" + dbData.REMARKS + "\".";
                     else
                         log = "REMARKS \"" + reconciliationToSave.REMARKS + "\" is added to the reconciliation.";
 
@@ -918,7 +1278,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                         LOG_MESSAGE = log,
                         FIELD_NAME = "REMARKS",
                         PREVIOUS_VALUE = !string.IsNullOrEmpty(dbData.REMARKS) ? dbData.CATEGORY_ID.Value.ToString() : null,
-                        NEW_VALUE = !string.IsNullOrEmpty( reconciliationToSave.REMARKS) ? reconciliationToSave.REMARKS : null
+                        NEW_VALUE = !string.IsNullOrEmpty(reconciliationToSave.REMARKS) ? reconciliationToSave.REMARKS : null
                     });
                 }
 
@@ -1007,7 +1367,7 @@ namespace FOX.BusinessOperations.ReconciliationService
             var response = new ResponseModel();
             try
             {
-                var reconciliation = _reconciliationCPRepository.GetFirst(e => e.RECONCILIATION_CP_ID == reconsiliationId && e.PRACTICE_CODE == profile.PracticeCode );
+                var reconciliation = _reconciliationCPRepository.GetFirst(e => e.RECONCILIATION_CP_ID == reconsiliationId && e.PRACTICE_CODE == profile.PracticeCode);
                 if (reconciliation != null)
                 {
                     // reconciliation.DELETED = true;
@@ -1018,7 +1378,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                     reconciliation.LEDGER_PATH = null;
                     // reconciliation.LEDGER_BASE64 = null;
                     reconciliation.RECONCILIATION_STATUS_ID = GetAssignedStatusId(profile);
-                    reconciliation.MODIFIED_BY =  profile.UserName;
+                    reconciliation.MODIFIED_BY = profile.UserName;
                     reconciliation.MODIFIED_DATE = DateTime.Now;
                     _reconciliationCPRepository.Update(reconciliation);
                     _reconciliationCPRepository.Save();
@@ -1151,8 +1511,8 @@ namespace FOX.BusinessOperations.ReconciliationService
                     if (user != null)
                     {
                         string last_Name = user.LAST_NAME?.ToTitleCase();
-                        string first_Name = user.LAST_NAME?.ToTitleCase();
-                        return last_Name + "," + first_Name;
+                        string first_Name = user.FIRST_NAME?.ToTitleCase();
+                        return first_Name + " " + last_Name;
                     }
                 }
                 return "";
@@ -1164,20 +1524,44 @@ namespace FOX.BusinessOperations.ReconciliationService
         {
             try
             {
-                bool hasDOSFromDate = false;
-                bool hasDOSToDate = false;
+                //bool hasDOSFromDate = false;
+                //bool hasDOSToDate = false;
 
-                DateTime dateTimeTo;
-                DateTime dateTimeFrom;
-                if (DateTime.TryParse(searchReq.DATE_FROM_Str, out dateTimeFrom))
+                //DateTime dateTimeTo;
+                //DateTime dateTimeFrom;
+                //if (DateTime.TryParse(searchReq.DATE_FROM_Str, out dateTimeFrom))
+                //{
+                //    hasDOSFromDate = true;
+                //    searchReq.DATE_FROM = dateTimeFrom;
+                //}
+                //if (DateTime.TryParse(searchReq.DATE_TO_Str, out dateTimeTo))
+                //{
+                //    hasDOSToDate = true;
+                //    searchReq.DATE_TO = dateTimeTo;
+                //}
+
+                searchReq.DATE_TO = Helper.GetCurrentDate();
+                switch (searchReq.TIME_FRAME)
                 {
-                    hasDOSFromDate = true;
-                    searchReq.DATE_FROM = dateTimeFrom;
-                }
-                if (DateTime.TryParse(searchReq.DATE_TO_Str, out dateTimeTo))
-                {
-                    hasDOSToDate = true;
-                    searchReq.DATE_TO = dateTimeTo;
+                    case 1:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-7);
+                        break;
+                    case 2:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-15);
+                        break;
+                    case 3:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-30);
+                        break;
+                    case 4:
+                        if (!string.IsNullOrEmpty(searchReq.DATE_FROM_Str))
+                            searchReq.DATE_FROM = Convert.ToDateTime(searchReq.DATE_FROM_Str);
+                        else
+                            searchReq.DATE_FROM = Helper.GetCurrentDate().AddYears(-100);
+                        if (!string.IsNullOrEmpty(searchReq.DATE_TO_Str))
+                            searchReq.DATE_TO = Convert.ToDateTime(searchReq.DATE_TO_Str);
+                        break;
+                    default:
+                        break;
                 }
 
                 var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATIONS_CP 
@@ -1187,8 +1571,8 @@ namespace FOX.BusinessOperations.ReconciliationService
                     , new SqlParameter { ParameterName = "IS_FOR_REPORT", SqlDbType = SqlDbType.Bit, Value = searchReq.IsForReport }
                     , new SqlParameter { ParameterName = "IS_DEPOSIT_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_DEPOSIT_DATE_SEARCH }
                     , new SqlParameter { ParameterName = "IS_ASSIGNED_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_ASSIGNED_DATE_SEARCH }
-                    , CommonService.Helper.getDBNullOrValue("DATE_FROM", hasDOSFromDate ? (searchReq.DATE_FROM.HasValue ? searchReq.DATE_FROM.Value.ToString("MM/dd/yyyy") : "") : "")
-                    , CommonService.Helper.getDBNullOrValue("DATE_TO", hasDOSToDate ? (searchReq.DATE_TO.HasValue ? searchReq.DATE_TO.Value.ToString("MM/dd/yyyy") : "") : "")
+                    , CommonService.Helper.getDBNullOrValue("DATE_FROM", searchReq.DATE_FROM.Value.ToString("MM/dd/yyyy") ?? "")
+                    , CommonService.Helper.getDBNullOrValue("DATE_TO", searchReq.DATE_TO.Value.ToString("MM/dd/yyyy") ?? "")
                     // , CommonService.Helper.getDBNullOrValue("FOX_TBL_INSURANCE_ID", searchReq.FOX_TBL_INSURANCE_ID.HasValue ? searchReq.FOX_TBL_INSURANCE_ID.ToString() : "")
                     , new SqlParameter("FOX_TBL_INSURANCE_NAME", SqlDbType.VarChar) { Value = string.IsNullOrWhiteSpace(searchReq.INSURANCE_NAME) ? "" : searchReq.INSURANCE_NAME }
                     , CommonService.Helper.getDBNullOrValue("STATUS_ID", "")
@@ -1198,7 +1582,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                     , new SqlParameter("RECORD_PER_PAGE", SqlDbType.Int) { Value = 0 }
                        , new SqlParameter("SORT_BY", SqlDbType.VarChar) { Value = searchReq.SORT_BY }
                     , new SqlParameter("SORT_ORDER", SqlDbType.VarChar) { Value = searchReq.SORT_ORDER }
-                    ,new SqlParameter("CP_TYPE", SqlDbType.Int) { Value = searchReq.CP_Type }
+                    , new SqlParameter("CP_TYPE", SqlDbType.Int) { Value = searchReq.CP_Type }
                     );
 
                 if (result != null && result.Count > 0)
@@ -1212,9 +1596,9 @@ namespace FOX.BusinessOperations.ReconciliationService
                     }
                     if (searchReq.FOX_TBL_INSURANCE_NAME?.Count > 0)
                     {
-                        var cats = searchReq.FOX_TBL_INSURANCE_NAME.Where(e => e.Selected).Select(e => e.INSURANCE_NAME).ToList();
+                        var cats = searchReq.FOX_TBL_INSURANCE_NAME.Where(e => e.Selected).Select(e => e.FOX_TBL_INSURANCE_NAME.Trim().ToLower()).ToList();
                         if (cats.Count > 0)
-                            result = result.FindAll(e => e.CATEGORY_ID.HasValue && cats.Contains(e.INSURANCE_NAME));
+                            result = result.FindAll(e => cats.Contains(e.FOX_TBL_INSURANCE_NAME.Trim().ToLower()));
                     }
                     if (searchReq.DEPOSIT_TYPES?.Count > 0)
                     {
@@ -1356,7 +1740,7 @@ namespace FOX.BusinessOperations.ReconciliationService
             foreach (var item in obj)
             {
                 var exportModel = new ReconciliationCPExportModel();
-                if(item.ROW == null)
+                if (item.ROW == null)
                 {
                     item.ROW = 0;
                 }
@@ -1585,7 +1969,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                 if (!string.IsNullOrWhiteSpace(ledgerDetails.BASE_64_DOCUMENT))
                 {
 
-                    string directoryPathForOriginalFiles = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.ReconciliationOriginalFilesDirectory );
+                    string directoryPathForOriginalFiles = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.ReconciliationOriginalFilesDirectory);
                     string fileName = string.Empty;
                     var fileExtension = Path.GetExtension(ledgerDetails.FILE_NAME);
                     if (fileExtension == ".jpeg" || fileExtension == ".jpg" || fileExtension == ".png" || fileExtension == ".tiff" || fileExtension == ".tif")
@@ -1630,7 +2014,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                 var originalFileDirectory = AppConfiguration.ReconciliationOriginalFilesDirectory;
                 var imgDirPath = AppConfiguration.ReconciliationConvertedImagesDirectory;
                 var originalFilePathServer = HttpContext.Current.Server.MapPath("~/" + originalFileDirectory);
-                var imgPathServer = HttpContext.Current.Server.MapPath("~/" + imgDirPath );
+                var imgPathServer = HttpContext.Current.Server.MapPath("~/" + imgDirPath);
                 //var ORIGINAL_FILES_PATH_DB =  HttpContext.Current.Server.MapPath("~/" + AppConfiguration.ReconciliationOriginallyUploadedFiles + "\"")
                 //var config = CommonService.Helper.GetServiceConfiguration(profile.PracticeCode);
                 //if (config.PRACTICE_CODE != null
@@ -1929,7 +2313,7 @@ namespace FOX.BusinessOperations.ReconciliationService
 
                     }
                 }
-                totalRecordInFile = tbl.Rows.Count;                            
+                totalRecordInFile = tbl.Rows.Count;
                 foreach (System.Data.DataRow row in tbl.Rows)
                 {
                     MTBC_Credentials_Fox_Automation temp = new MTBC_Credentials_Fox_Automation();
@@ -1990,17 +2374,17 @@ namespace FOX.BusinessOperations.ReconciliationService
                 }
                 else if (test.Count > 0 && test.Count < 20000)
                 {
-                MTBC_Credentials_Fox_Automation last_upload_status = GetLastUploadFileStatusForHrAutoEmails(profile);
-                string virtualPath = @"/" + profile.PracticeDocumentDirectory + "/" + "HRAutoEmailsLogFiles/";
-                var exportPath = HttpContext.Current.Server.MapPath("~" + virtualPath);
-                var name = fileName.Substring(0, fileName.LastIndexOf('.'));
-                var logfileName = DocumentHelper.GenerateSignatureFileName(name) + ".txt";
-                if (!Directory.Exists(exportPath))
-                {
-                    Directory.CreateDirectory(exportPath);
-                }
-                var pathtowriteFile = exportPath + "\\" + logfileName;
-                if (last_upload_status != null)
+                    MTBC_Credentials_Fox_Automation last_upload_status = GetLastUploadFileStatusForHrAutoEmails(profile);
+                    string virtualPath = @"/" + profile.PracticeDocumentDirectory + "/" + "HRAutoEmailsLogFiles/";
+                    var exportPath = HttpContext.Current.Server.MapPath("~" + virtualPath);
+                    var name = fileName.Substring(0, fileName.LastIndexOf('.'));
+                    var logfileName = DocumentHelper.GenerateSignatureFileName(name) + ".txt";
+                    if (!Directory.Exists(exportPath))
+                    {
+                        Directory.CreateDirectory(exportPath);
+                    }
+                    var pathtowriteFile = exportPath + "\\" + logfileName;
+                    if (last_upload_status != null)
                     {
 
                         responseData.IsSuccess = true;
@@ -2019,10 +2403,10 @@ namespace FOX.BusinessOperations.ReconciliationService
                     }
 
                 }
-                 
+
                 generate_file(responseData, profile);
                 return responseData;
-                
+
                 #endregion
 
             }
@@ -2045,36 +2429,36 @@ namespace FOX.BusinessOperations.ReconciliationService
                     }
 
                     string virtualPath = @"/" + profile.PracticeDocumentDirectory + "/" + "HRAutoEmailsLogFiles/";
-                        var exportPath = HttpContext.Current.Server.MapPath("~" + virtualPath);
-                        var name = fileName.Substring(0, fileName.LastIndexOf('.'));
-                        var logfileName = DocumentHelper.GenerateSignatureFileName(name) + ".txt";
-                        if (!Directory.Exists(exportPath))
-                        {
-                            Directory.CreateDirectory(exportPath);
-                        }
-                        var pathtowriteFile = exportPath + "\\" + logfileName;
-                        if (last_upload_status != null)
-                        {
+                    var exportPath = HttpContext.Current.Server.MapPath("~" + virtualPath);
+                    var name = fileName.Substring(0, fileName.LastIndexOf('.'));
+                    var logfileName = DocumentHelper.GenerateSignatureFileName(name) + ".txt";
+                    if (!Directory.Exists(exportPath))
+                    {
+                        Directory.CreateDirectory(exportPath);
+                    }
+                    var pathtowriteFile = exportPath + "\\" + logfileName;
+                    if (last_upload_status != null)
+                    {
 
-                            responseData.IsSuccess = true;
-                            responseData.HR_FILE_NAME = last_upload_status.FILE_NAME;
-                            responseData.RECORD_INSERTED = last_upload_status.RECORDS_ADDED_SUCCESSFULLY;
-                            responseData.TOTAL_RECORDS = test.Count;
-                            responseData.Failled_Record = test.Count - last_upload_status.RECORDS_ADDED_SUCCESSFULLY;
-                            responseData.Message = "Record Added";
-                            responseData.Last_UPLAOD_DATE = last_upload_status.CREATED_DATE;
-                            responseData.Upload_by = profile.UserName;
-                            responseData.File_Path = pathtowriteFile;
-                        }
-                        else
-                        {
-                            responseData.Last_UPLAOD_DATE = CommonService.Helper.GetCurrentDate();
-                        }
+                        responseData.IsSuccess = true;
+                        responseData.HR_FILE_NAME = last_upload_status.FILE_NAME;
+                        responseData.RECORD_INSERTED = last_upload_status.RECORDS_ADDED_SUCCESSFULLY;
+                        responseData.TOTAL_RECORDS = test.Count;
+                        responseData.Failled_Record = test.Count - last_upload_status.RECORDS_ADDED_SUCCESSFULLY;
+                        responseData.Message = "Record Added";
+                        responseData.Last_UPLAOD_DATE = last_upload_status.CREATED_DATE;
+                        responseData.Upload_by = profile.UserName;
+                        responseData.File_Path = pathtowriteFile;
+                    }
+                    else
+                    {
+                        responseData.Last_UPLAOD_DATE = CommonService.Helper.GetCurrentDate();
+                    }
 
-                    
+
 
                     generate_file(responseData, profile);
-                }                             
+                }
                 if (last_upload_status != null)
                 {
                     return new HRAutoEmailsUploadResponse() { ERROR_MESSAGE = exception.Message, IsSuccess = false, RECORD_EXISTED = 0, RECORD_INSERTED = last_upload_status.RECORDS_ADDED_SUCCESSFULLY, TOTAL_RECORDS = last_upload_status.RECORDS_ADDED_SUCCESSFULLY, Last_UPLAOD_DATE = last_upload_status.LAST_UPLOAD_DATE };
@@ -2090,19 +2474,19 @@ namespace FOX.BusinessOperations.ReconciliationService
 
         private void generate_file(HRAutoEmailsUploadResponse log, UserProfile profile)
         {
-           
+
             string exportPath = "";
             string path = string.Empty;
             var filepath = log.File_Path;
             //string fileName = log.HR_FILE_NAME;
-            string fileName = Path.GetFileName(filepath);                     
+            string fileName = Path.GetFileName(filepath);
             using (StreamWriter writer = new StreamWriter(filepath, true))
             {
                 //writer.WriteLine("User_Name: " + HttpContext.Current.Request.Headers["UserName"] + Environment.NewLine + "Practice_Code: " + HttpContext.Current.Request.Headers["PracticeCode"] + Environment.NewLine + "URI: " + request.RequestUri.AbsoluteUri + Environment.NewLine +
                 //    "Date :" + DateTime.Now.ToString() + Environment.NewLine + "request_status:" + cts.CanBeCanceled + "" + Environment.NewLine + "------------------------------------------------------------------------------------------------------------------------------------" + Environment.NewLine);
                 writer.WriteLine("File Upload Status: " + Environment.NewLine + "---------------------" + Environment.NewLine + "Total Records in File: " + log.TOTAL_RECORDS + Environment.NewLine + "Records Successfully Uploaded: " + log.RECORD_INSERTED + Environment.NewLine +
                    "Records Failed: " + log.Failled_Record + Environment.NewLine + Environment.NewLine + "Uploaded On: " + log.Last_UPLAOD_DATE + Environment.NewLine + "Uploaded By: " + log.Upload_by);
-            }           
+            }
         }
 
         private void InsertExcelValuesOfHrAutoEmailsToDB(MTBC_Credentials_Fox_Automation lst, UserProfile profile)
@@ -2110,7 +2494,7 @@ namespace FOX.BusinessOperations.ReconciliationService
             try
             {
                 MTBC_Credentials_Fox_Automation record = new MTBC_Credentials_Fox_Automation();
-                if (lst.WORK_EMAIL !=null)
+                if (lst.WORK_EMAIL != null)
                 {
 
                     var key = lst.ASSOCIATION_ID;
@@ -2160,7 +2544,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                         connection.Close();
                     }
                 }
-                }
+            }
             catch (Exception ex)
             {
 
@@ -2168,24 +2552,24 @@ namespace FOX.BusinessOperations.ReconciliationService
             }
 
         }
-            public MTBC_Credentials_Fox_Automation GetLastUploadFileStatusForHrAutoEmails(UserProfile profile)
+        public MTBC_Credentials_Fox_Automation GetLastUploadFileStatusForHrAutoEmails(UserProfile profile)
         {
             MTBC_Credentials_Fox_Automation result = new MTBC_Credentials_Fox_Automation();
 
             var records = _foxhrautoemailsRepository.GetMany(t => !t.DELETED).OrderByDescending(t => t.CREATED_DATE).ToList();
-            if (records != null && records.Any()  )
-            { 
+            if (records != null && records.Any())
+            {
                 var logdetails = _foxhrautoemailsRepository.GetMany(t => !t.DELETED).OrderByDescending(t => t.CREATED_DATE).First();
                 result = logdetails;
                 result.RECORDS_ADDED_SUCCESSFULLY = records.Count();
                 result.LAST_UPLOAD_DATE = logdetails.CREATED_DATE;
                 result.CREATED_BY = logdetails.FILE_NAME?.Split('(', ')')[1];
                 result.FILE_NAME = logdetails.FILE_NAME?.Substring(0, result.FILE_NAME.IndexOf('('));
-               
+
             }
             return result;
         }
-        
+
         public ReconciliationUploadResponse ReadExcel(string fileName, UserProfile profile)
         {
             try
@@ -2199,58 +2583,70 @@ namespace FOX.BusinessOperations.ReconciliationService
                 long total_record_updated = 0;
                 List<string> Failed_Records = new List<string>();
                 ReconciliationUploadResponse responseData = new ReconciliationUploadResponse();
-                
+
 
                 #region .xlsx File Reader Region
 
-                
-                    bool hasHeader = true;
-                    using (var pck = new OfficeOpenXml.ExcelPackage())
+
+                bool hasHeader = true;
+                using (var pck = new OfficeOpenXml.ExcelPackage())
+                {
+                    using (var stream = System.IO.File.OpenRead(path))
                     {
-                        using (var stream = System.IO.File.OpenRead(path))
-                        {
-                            pck.Load(stream);
-                        }
-                        // Pick Headers from 1st Excel Sheet
-                        var wsmain = pck.Workbook.Worksheets[1];
-                        for (var i = 1; i < 19; i++)
-                        {
-
-                            var  temp = wsmain.Cells[1, i, 1, i];
-                            tbl.Columns.Add(hasHeader ? temp.Text.Trim() : string.Format("Column {0}", temp.Start.Column));
-                        }
-                        // Pick Values from All Sheets
-                        for (int wb = 1; wb <= pck.Workbook.Worksheets.Count; wb++)
-                        {
-
-                            var ws = pck.Workbook.Worksheets[wb];
-                            var startRow = hasHeader ? 2 : 1;
-                            bool valueExist = false;
-                            if (ws.Dimension != null)
-                            {
-                                for (int rowNum = startRow; rowNum <= ws.Dimension.End.Row; rowNum++)
-                                {
-                                    valueExist = false;
-                                    var wsRow = ws.Cells[rowNum, 1, rowNum, 40];
-                                    DataRow row = tbl.Rows.Add();
-                                    foreach (var cell in wsRow)
-                                    {
-                                        if (!string.IsNullOrEmpty(cell.Text)) valueExist = true;
-                                        row[cell.Start.Column - 1] = cell.Text;
-                                    }
-                                    if (!valueExist)
-                                        tbl.Rows.Remove(row);
-                                }
-                            }
-
-                        }
+                        pck.Load(stream);
                     }
+                    // Pick Headers from 1st Excel Sheet
+                    var wsmain = pck.Workbook.Worksheets[1];
+                    for (var i = 1; i < 19; i++)
+                    {
+
+                        var temp = wsmain.Cells[1, i, 1, i];
+                        tbl.Columns.Add(hasHeader ? temp.Text.Trim() : string.Format("Column {0}", temp.Start.Column));
+                    }
+                    // Pick Values from All Sheets
+                    for (int wb = 1; wb <= pck.Workbook.Worksheets.Count; wb++)
+                    {
+
+                        var ws = pck.Workbook.Worksheets[wb];
+                        var startRow = hasHeader ? 2 : 1;
+                        bool valueExist = false;
+                        if (ws.Dimension != null)
+                        {
+                            for (int rowNum = startRow; rowNum <= ws.Dimension.End.Row; rowNum++)
+                            {
+                                valueExist = false;
+                                var wsRow = ws.Cells[rowNum, 1, rowNum, 40];
+                                DataRow row = tbl.Rows.Add();
+                                foreach (var cell in wsRow)
+                                {
+                                    if (!string.IsNullOrEmpty(cell.Text)) valueExist = true;
+                                    row[cell.Start.Column - 1] = cell.Text;
+                                }
+                                if (!valueExist)
+                                    tbl.Rows.Remove(row);
+                            }
+                        }
+
+                    }
+                }
+                totalRecordInFile = tbl.Rows.Count;
+                if (totalRecordInFile > 20000)
+                {
+                    responseData = new ReconciliationUploadResponse();
+                    responseData.IsSuccess = false;
+                    responseData.ERROR_MESSAGE = "File has more than 20000 records.";
+                    return responseData;
+                }
+
+                else if (totalRecordInFile > 0 && totalRecordInFile < 20000)
+                {
+
                     List<ReconcialtionImport> test = new List<ReconcialtionImport>();
-                     totalRecordInFile = tbl.Rows.Count;
+                    int successfullyInserted = 0;
                     foreach (System.Data.DataRow row in tbl.Rows)
                     {
                         ReconcialtionImport temp = new ReconcialtionImport();
-
+                        
                         //if (!string.IsNullOrEmpty(row[""].ToString()) )
                         //    temp.Day = row[0].ToString();
                         if (row.Table.Columns.Contains("Deposit Date") && !string.IsNullOrEmpty(row["Deposit Date"].ToString()))
@@ -2262,13 +2658,16 @@ namespace FOX.BusinessOperations.ReconciliationService
                         if (row.Table.Columns.Contains("Category/Acct") && !string.IsNullOrEmpty(row["Category/Acct"].ToString()))
                             temp.CategoryAccount = row["Category/Acct"].ToString();
                         if (row.Table.Columns.Contains("Payer Name") && !string.IsNullOrEmpty(row["Payer Name"].ToString()))
+                        {
                             temp.PayerName = row["Payer Name"].ToString();
+                            temp.PayerName = temp.PayerName.Trim();
+                        }
                         if (row.Table.Columns.Contains("Check # / Batch #") && !string.IsNullOrEmpty(row["Check # / Batch #"].ToString()))
                             temp.CheckNoBatchNo = row["Check # / Batch #"].ToString();
                         if (row.Table.Columns.Contains("$$ Amount") && !string.IsNullOrEmpty(row["$$ Amount"].ToString()))
                             temp.Amount = row["$$ Amount"].ToString();
                         if (row.Table.Columns.Contains("Date Assigned") && !string.IsNullOrEmpty(row["Date Assigned"].ToString()))
-                            temp.DateAssigned  = row["Date Assigned"].ToString(); 
+                            temp.DateAssigned = row["Date Assigned"].ToString();
                         if (row.Table.Columns.Contains("Assigned To") && !string.IsNullOrEmpty(row["Assigned To"].ToString()))
                             temp.AssignedTo = row["Assigned To"].ToString();
                         if (row.Table.Columns.Contains("WS Date Posted") && !string.IsNullOrEmpty(row["WS Date Posted"].ToString()))
@@ -2277,8 +2676,8 @@ namespace FOX.BusinessOperations.ReconciliationService
                         }
                         else
                         {
-                            temp.DatePosted = DateTime.Now.ToString("MM/dd/yyyy");
-                        }                       
+                            //temp.DatePosted = DateTime.Now.ToString("MM/dd/yyyy");
+                        }
                         if (row.Table.Columns.Contains("WS Posted") && !string.IsNullOrEmpty(row["WS Posted"].ToString()))
                         {
                             temp.TotalPosted = row["WS Posted"].ToString();
@@ -2289,42 +2688,63 @@ namespace FOX.BusinessOperations.ReconciliationService
                         }
                         if (row.Table.Columns.Contains("Not Posted") && !string.IsNullOrEmpty(row["Not Posted"].ToString()))
                             temp.NotPosted = row["Not Posted"].ToString();
-                        test.Add(temp);                       
-                    }
-                    if (test.Count > 20000 )
-                    {
-                        responseData = new ReconciliationUploadResponse();
-                        responseData.IsSuccess = false;
-                        responseData.ERROR_MESSAGE = "File has more than 20000 records.";
-                    }
-                    else if (test.Count > 0 && test.Count < 20000)
-                    {
-                        responseData = InsertExcelValuesToDB(test, profile);
-                        if (responseData != null)
-                        {
-                            responseData.IsSuccess = true;
-                            responseData.TOTAL_RECORDS = test.Count;
+                        try
+                        { 
+                            var res = InsertExcelValuesToDB(temp, profile);
+                            if (res != null && res != "" && res != "ERROR")
+                            {
+                                successfullyInserted++;
+                            }
                         }
+                        catch (Exception exception)
+                        {
+                                throw exception;
+                        }
+                    }
 
+                    if (successfullyInserted > 0)
+                    {
+                        InsertLatestUpload(totalRecordInFile, successfullyInserted, profile);
                         FOX_TBL_RECONCILIATION_UPLOAD_LOG last_upload_status = GetLastUploadFileStatus(profile);
                         if (last_upload_status != null)
                         {
                             responseData.IsSuccess = true;
                             responseData.RECORD_INSERTED = last_upload_status.SUCCESSFULLY_ADDED;
                             responseData.TOTAL_RECORDS = last_upload_status.TOTAL_RECORDS;
-                            responseData.Last_UPLAOD_DATE = last_upload_status.LAST_UPDATED_DATE; 
+                            responseData.Last_UPLAOD_DATE = last_upload_status.LAST_UPDATED_DATE;
                         }
                         else
                         {
-                            responseData.Last_UPLAOD_DATE = CommonService.Helper.GetCurrentDate();
-                        }                      
+                            responseData = new ReconciliationUploadResponse() { ERROR_MESSAGE = "Something went wrong", IsSuccess = false, RECORD_EXISTED = 0, RECORD_INSERTED = 0, TOTAL_RECORDS = 0 };
 
+                        }
                     }
-                
+                    else
+                    {
+                        FOX_TBL_RECONCILIATION_UPLOAD_LOG last_upload_status = GetLastUploadFileStatus(profile);
+                        if (last_upload_status != null)
+                        {
+                            responseData.IsSuccess = true;
+                            responseData.RECORD_INSERTED = last_upload_status.SUCCESSFULLY_ADDED;
+                            responseData.TOTAL_RECORDS = last_upload_status.TOTAL_RECORDS;
+                            responseData.Last_UPLAOD_DATE = last_upload_status.LAST_UPDATED_DATE;
+                        }
+                        else
+                        {
+                            responseData = new ReconciliationUploadResponse() { ERROR_MESSAGE = "Something went wrong", IsSuccess = false, RECORD_EXISTED = 0, RECORD_INSERTED = 0, TOTAL_RECORDS = 0 };
+
+                        }
+                    }
+                }
+                else
+                {
+                    responseData = new ReconciliationUploadResponse() { ERROR_MESSAGE = "Something went wrong", IsSuccess = false, RECORD_EXISTED = 0, RECORD_INSERTED = 0, TOTAL_RECORDS = 0 };
+                }
+
                 return responseData;
-                
+
                 #endregion
-               
+
             }
             catch (Exception exception)
             {
@@ -2340,28 +2760,56 @@ namespace FOX.BusinessOperations.ReconciliationService
             }
         }
 
-        private ReconciliationUploadResponse InsertExcelValuesToDB(List<ReconcialtionImport> lst, UserProfile profile)
-        {          
-           
-                DataTable dt = GetReconsiliatinTable(lst);
+        private string InsertExcelValuesToDB(ReconcialtionImport lst, UserProfile profile)
+        {
+            ReconcialtionImport obj = GetReconsiliatinTable(lst);
+            if (obj != null)
+            {
 
+                long uniqueId = Helper.getMaximumId("FOX_RECONCILIATION_CP_ID");
+                SqlParameter reconciliationId = new SqlParameter("RECONCILIATION_CP_ID", uniqueId);
                 SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
-                SqlParameter userName = new SqlParameter("USER_NAME", profile.UserName);
-                SqlParameter tempdata = new SqlParameter("RECONCILIATION_DATA", SqlDbType.Structured);
-                tempdata.TypeName = "RECONCILIATION_CP_IMPORT";
-                tempdata.Value = dt;
+                SqlParameter depsoitDate = new SqlParameter("DEPOSIT_DATE", obj.DepositDate ?? "");
+                SqlParameter insuranceName = new SqlParameter("FOX_TBL_INSURANCE_NAME", obj.PayerName ?? "");
+                SqlParameter checkNo = new SqlParameter("CHECK_NO", obj.CheckNo ?? "");
+                SqlParameter amount = new SqlParameter("AMOUNT", obj.Amount ?? "");
+                SqlParameter amountPosted = new SqlParameter("AMOUNT_POSTED", obj.TotalPosted ?? "");
+                SqlParameter amountNotPosted = new SqlParameter("AMOUNT_NOT_POSTED", obj.NotPosted ?? "");
+                SqlParameter assignedTo = new SqlParameter("ASSIGNED_TO", obj.AssignedTo ?? "");
+                SqlParameter assignedDate = new SqlParameter("ASSIGNED_DATE", obj.DateAssigned ?? "");
+                SqlParameter datePosted = new SqlParameter("DATE_POSTED ", obj.DatePosted ?? "");
+                SqlParameter batchNo = new SqlParameter("BATCH_NO", obj.BatchNo ?? "");
+                SqlParameter userName = new SqlParameter("USER_NAME", profile.UserName ?? "");
+                SqlParameter deposutType = new SqlParameter("DEPOSIT_TYPE", obj.DepositType ?? "");
+                SqlParameter categoryAccount = new SqlParameter("CATEGORY_ACCOUNT", obj.CategoryAccount ?? "");
 
-            return  SpRepository<ReconciliationUploadResponse>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_INSERT_RECONCILIATION_EXCEL_DATA @PRACTICE_CODE, @USER_NAME, @RECONCILIATION_DATA", practiceCode, userName, tempdata);
-            
+
+                return SpRepository<string>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_INSERT_RECONCILIATION_EXCEL_DATA_NEW 
+            @RECONCILIATION_CP_ID, @PRACTICE_CODE, @DEPOSIT_DATE, @FOX_TBL_INSURANCE_NAME, @CHECK_NO, @AMOUNT, @AMOUNT_POSTED, @AMOUNT_NOT_POSTED,
+            @ASSIGNED_TO, @ASSIGNED_DATE, @DATE_POSTED, @BATCH_NO, @USER_NAME, @DEPOSIT_TYPE, @CATEGORY_ACCOUNT"
+                , reconciliationId, practiceCode, depsoitDate, insuranceName, checkNo, amount, amountPosted, amountNotPosted, assignedTo, assignedDate
+                , datePosted, batchNo, userName, deposutType, categoryAccount);
+            }
+            else
+            {
+                return "ERROR";
+            }
         }
-
         public FOX_TBL_RECONCILIATION_UPLOAD_LOG GetLastUploadFileStatus(UserProfile profile)
         {
             SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
             return SpRepository<FOX_TBL_RECONCILIATION_UPLOAD_LOG>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_GET_RECONCILIATION_UPLOAD_LOG @PRACTICE_CODE", practiceCode);
         }
 
-
+        public FOX_TBL_RECONCILIATION_UPLOAD_LOG InsertLatestUpload(long totalRecords, long totalInserttedRecords, UserProfile profile)
+        {
+            SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
+            SqlParameter total = new SqlParameter("TOTAL_RECORDS", totalRecords);
+            SqlParameter user = new SqlParameter("USER_NAME", profile.UserName);
+            SqlParameter inserted = new SqlParameter("RECORD_INSERTED", totalInserttedRecords);
+            return SpRepository<FOX_TBL_RECONCILIATION_UPLOAD_LOG>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_INSERT_RECONCILIATION_UPLOAD_LOG
+            @PRACTICE_CODE, @TOTAL_RECORDS, @USER_NAME, @RECORD_INSERTED", practiceCode, total, user, inserted);
+        }
 
         public List<SOFT_RECONCILIATION_PAYMENT> GetSoftReconsilitionPayment(SOFT_RECONCILIATION_SERACH_REQUEST obj, UserProfile profile)
         {
@@ -2370,7 +2818,7 @@ namespace FOX.BusinessOperations.ReconciliationService
             SqlParameter checkNo = new SqlParameter("CHECK_NO", obj.CHECK_NO);
             SqlParameter currentpage = new SqlParameter("CURRENT_PAGE", obj.CurrentPage);
             SqlParameter recordsperpage = new SqlParameter("RECORD_PER_PAGE", SqlDbType.Int) { Value = 0 };
-            var result = SpRepository<SOFT_RECONCILIATION_PAYMENT>.GetListWithStoreProcedure(@"FOX_PROC_GET_DEPOSITSLIP_CLAIMS @STRPRACTICECODE,@STRDEPOSITID,@CHECK_NO,@CURRENT_PAGE,@RECORD_PER_PAGE", practiceCode, depositslipid,checkNo,currentpage,recordsperpage);
+            var result = SpRepository<SOFT_RECONCILIATION_PAYMENT>.GetListWithStoreProcedure(@"FOX_PROC_GET_DEPOSITSLIP_CLAIMS @STRPRACTICECODE,@STRDEPOSITID,@CHECK_NO,@CURRENT_PAGE,@RECORD_PER_PAGE", practiceCode, depositslipid, checkNo, currentpage, recordsperpage);
             if (result?.Count > 0)
             {
                 int CURRENT_PAGE = obj.CurrentPage - 1;
@@ -2394,7 +2842,7 @@ namespace FOX.BusinessOperations.ReconciliationService
             {
                 return result;
             }
-            }
+        }
 
 
         /// <summary>Get Payment record from Websoft </summary>
@@ -2406,16 +2854,16 @@ namespace FOX.BusinessOperations.ReconciliationService
             SqlParameter practiceCode = new SqlParameter("STRPRACTICECODE", profile.PracticeCode);
             SqlParameter checkNo = new SqlParameter("CHECK_NO", softRequest.CHECK_NO);
             var result = SpRepository<SOFT_RECONCILIATION_PAYMENT>.GetListWithStoreProcedure(@" FOX_PROC_GET_DEPOSITSLIP_CLAIMS_AMOUNT @STRPRACTICECODE,@CHECK_NO", practiceCode, checkNo);
-            if(result!= null)
+            if (result != null)
             {
                 return result;
             }
             else
             {
-                 return new List<SOFT_RECONCILIATION_PAYMENT>();
-             }
-           
-         }
+                return new List<SOFT_RECONCILIATION_PAYMENT>();
+            }
+
+        }
 
         /// <summary>Get Serail Numbers </summary>
         /// <author>Muhammad Arqam </author> 
@@ -2428,57 +2876,89 @@ namespace FOX.BusinessOperations.ReconciliationService
                 obj.Row_No = i++;
             }
         }
-        private DataTable GetReconsiliatinTable(List<ReconcialtionImport> lst)
-        {
-            DataTable dt = new DataTable();
-            dt.Columns.Add("DEPOSIT_DATE");
-            dt.Columns.Add("DEPOSIT_TYPE");
-            dt.Columns.Add("CATEGORY_ACCOUNT");
-            dt.Columns.Add("INSURANCE_NAME");
-            dt.Columns.Add("CHECK_NO");
-            dt.Columns.Add("AMOUNT");
-            dt.Columns.Add("AMOUNT_POSTED");
-            dt.Columns.Add("AMOUNT_NOT_POSTED");
-            dt.Columns.Add("DATE_ASSIGNED");
-            dt.Columns.Add("ASSIGNED_TO");
-            dt.Columns.Add("DATE_ENTERED");
-            dt.Columns.Add("BATCH_NO");
-            dt.Columns.Add("DATE_POSTED");
-            //dt.Columns.Add("ASSIGNED_GROUP");
-            //dt.Columns.Add("ASSIGNED_GROUP_DATE");
 
-            foreach (ReconcialtionImport recon in lst)
+        private ReconcialtionImport GetReconsiliatinTable(ReconcialtionImport lst)
+        {
+            if(lst != null)
             {
                 //string checkNo = GetCheckNo(recon.CheckNoBatchNo);
-                string checkNo = recon.CheckNoBatchNo;
-                if (!string.IsNullOrEmpty(checkNo) && checkNo.Length > 2)
+                string checkNo = lst.CheckNoBatchNo;
+                if (!string.IsNullOrEmpty(checkNo) && checkNo.Length > 1)
                 {
-                    DataRow dr = dt.Rows.Add();
-                    dr["DEPOSIT_DATE"] = string.IsNullOrEmpty( recon.DepositDate) ? string.Empty : recon.DepositDate;
-                    dr["DEPOSIT_TYPE"] = string.IsNullOrEmpty( recon.DepositType) ? string.Empty : recon.DepositType;
-                    dr["CATEGORY_ACCOUNT"] = string.IsNullOrEmpty( recon.CategoryAccount) ? string.Empty : recon.CategoryAccount;
-                    dr["INSURANCE_NAME"] = string.IsNullOrEmpty( recon.PayerName) ? string.Empty : recon.PayerName;
-                    dr["CHECK_NO"] = checkNo.Length > 50 ? checkNo.Substring(0,50): checkNo;// recon.CheckNoBatchNo.Substring(0,45);
-                    dr["BATCH_NO"] = string.IsNullOrEmpty(recon.CheckNoBatchNo) ? string.Empty : recon.CheckNoBatchNo.Length > 500 ? recon.CheckNoBatchNo.Substring(0,499): recon.CheckNoBatchNo;
-                    dr["AMOUNT"] = string.IsNullOrEmpty(recon.Amount) ? "0.00" : recon.Amount.Replace("$", string.Empty);
-                    dr["AMOUNT_POSTED"] = string.IsNullOrEmpty(recon.TotalPosted) ? "0.00" : recon.TotalPosted.Replace("$", string.Empty);
-                    dr["AMOUNT_NOT_POSTED"] = string.IsNullOrEmpty(recon.NotPosted) ? "0.00" : recon.NotPosted.Replace("$", string.Empty);
+                    lst.DepositDate = string.IsNullOrEmpty(lst.DepositDate) ? string.Empty : lst.DepositDate;
+                    lst.DepositType = string.IsNullOrEmpty(lst.DepositType) ? string.Empty : lst.DepositType;
+                    lst.CategoryAccount = string.IsNullOrEmpty(lst.CategoryAccount) ? string.Empty : lst.CategoryAccount;
+                    lst.PayerName = string.IsNullOrEmpty(lst.PayerName) ? string.Empty : lst.PayerName;
+                    lst.CheckNo = checkNo.Length > 50 ? checkNo.Substring(0, 50) : checkNo;// recon.CheckNoBatchNo.Substring(0,45);
+                    lst.BatchNo = string.IsNullOrEmpty(lst.CheckNoBatchNo) ? string.Empty : lst.CheckNoBatchNo.Length > 500 ? lst.CheckNoBatchNo.Substring(0, 499) : lst.CheckNoBatchNo;
+                    lst.Amount = string.IsNullOrEmpty(lst.Amount) ? "0.00" : lst.Amount.Replace("$", string.Empty);
+                    lst.TotalPosted = string.IsNullOrEmpty(lst.TotalPosted) ? "0.00" : lst.TotalPosted.Replace("$", string.Empty);
+                    lst.NotPosted = string.IsNullOrEmpty(lst.NotPosted) ? "0.00" : lst.NotPosted.Replace("$", string.Empty);
                     //dr["DATE_ASSIGNED"] = recon.DateAssigned;
                     //dr["ASSIGNED_TO"] = recon.AssignedTo;
-                    dr["DATE_POSTED"] = string.IsNullOrEmpty(recon.DatePosted) ? string.Empty : recon.DatePosted;
-                    dr["ASSIGNED_TO"] = string.IsNullOrEmpty(recon.AssignedTo) ? string.Empty : (recon.AssignedTo.Length > 70 ? recon.AssignedTo.Substring(0, 70) : recon.AssignedTo);
-                    dr["DATE_ASSIGNED"] = string.IsNullOrEmpty(recon.DateAssigned) ? string.Empty : recon.DateAssigned;
-                    dr["DATE_ENTERED"] = string.IsNullOrEmpty(recon.DateEntered) ? string.Empty : recon.DateEntered;
-                    //if (!string.IsNullOrEmpty(recon.DateEntered))
-                    //{
-                    //    dr["DATE_ENTERED"] = recon.DateEntered;
-                    //}
+                    lst.DatePosted = string.IsNullOrEmpty(lst.DatePosted) ? string.Empty : lst.DatePosted;
+                    lst.AssignedTo = string.IsNullOrEmpty(lst.AssignedTo) ? string.Empty : (lst.AssignedTo.Length > 70 ? lst.AssignedTo.Substring(0, 70) : lst.AssignedTo);
+                    lst.DateAssigned = string.IsNullOrEmpty(lst.DateAssigned) ? string.Empty : lst.DateAssigned;
+                    lst.DateEntered = string.IsNullOrEmpty(lst.DateEntered) ? string.Empty : lst.DateEntered;
                 }
-                //dt.Rows.Add(dr);
-                
+                else
+                {
+                    lst = null;
+                }
             }
-            return dt;
+            return lst;
         }
+        //private DataTable GetReconsiliatinTable(List<ReconcialtionImport> lst)
+        //{
+        //    DataTable dt = new DataTable();
+        //    dt.Columns.Add("DEPOSIT_DATE");
+        //    dt.Columns.Add("DEPOSIT_TYPE");
+        //    dt.Columns.Add("CATEGORY_ACCOUNT");
+        //    dt.Columns.Add("INSURANCE_NAME");
+        //    dt.Columns.Add("CHECK_NO");
+        //    dt.Columns.Add("AMOUNT");
+        //    dt.Columns.Add("AMOUNT_POSTED");
+        //    dt.Columns.Add("AMOUNT_NOT_POSTED");
+        //    dt.Columns.Add("DATE_ASSIGNED");
+        //    dt.Columns.Add("ASSIGNED_TO");
+        //    dt.Columns.Add("DATE_ENTERED");
+        //    dt.Columns.Add("BATCH_NO");
+        //    dt.Columns.Add("DATE_POSTED");
+        //    //dt.Columns.Add("ASSIGNED_GROUP");
+        //    //dt.Columns.Add("ASSIGNED_GROUP_DATE");
+
+        //    foreach (ReconcialtionImport recon in lst)
+        //    {
+        //        //string checkNo = GetCheckNo(recon.CheckNoBatchNo);
+        //        string checkNo = recon.CheckNoBatchNo;
+        //        if (!string.IsNullOrEmpty(checkNo) && checkNo.Length > 2)
+        //        {
+        //            DataRow dr = dt.Rows.Add();
+        //            dr["DEPOSIT_DATE"] = string.IsNullOrEmpty(recon.DepositDate) ? string.Empty : recon.DepositDate;
+        //            dr["DEPOSIT_TYPE"] = string.IsNullOrEmpty(recon.DepositType) ? string.Empty : recon.DepositType;
+        //            dr["CATEGORY_ACCOUNT"] = string.IsNullOrEmpty(recon.CategoryAccount) ? string.Empty : recon.CategoryAccount;
+        //            dr["INSURANCE_NAME"] = string.IsNullOrEmpty(recon.PayerName) ? string.Empty : recon.PayerName;
+        //            dr["CHECK_NO"] = checkNo.Length > 50 ? checkNo.Substring(0, 50) : checkNo;// recon.CheckNoBatchNo.Substring(0,45);
+        //            dr["BATCH_NO"] = string.IsNullOrEmpty(recon.CheckNoBatchNo) ? string.Empty : recon.CheckNoBatchNo.Length > 500 ? recon.CheckNoBatchNo.Substring(0, 499) : recon.CheckNoBatchNo;
+        //            dr["AMOUNT"] = string.IsNullOrEmpty(recon.Amount) ? "0.00" : recon.Amount.Replace("$", string.Empty);
+        //            dr["AMOUNT_POSTED"] = string.IsNullOrEmpty(recon.TotalPosted) ? "0.00" : recon.TotalPosted.Replace("$", string.Empty);
+        //            dr["AMOUNT_NOT_POSTED"] = string.IsNullOrEmpty(recon.NotPosted) ? "0.00" : recon.NotPosted.Replace("$", string.Empty);
+        //            //dr["DATE_ASSIGNED"] = recon.DateAssigned;
+        //            //dr["ASSIGNED_TO"] = recon.AssignedTo;
+        //            dr["DATE_POSTED"] = string.IsNullOrEmpty(recon.DatePosted) ? string.Empty : recon.DatePosted;
+        //            dr["ASSIGNED_TO"] = string.IsNullOrEmpty(recon.AssignedTo) ? string.Empty : (recon.AssignedTo.Length > 70 ? recon.AssignedTo.Substring(0, 70) : recon.AssignedTo);
+        //            dr["DATE_ASSIGNED"] = string.IsNullOrEmpty(recon.DateAssigned) ? string.Empty : recon.DateAssigned;
+        //            dr["DATE_ENTERED"] = string.IsNullOrEmpty(recon.DateEntered) ? string.Empty : recon.DateEntered;
+        //            //if (!string.IsNullOrEmpty(recon.DateEntered))
+        //            //{
+        //            //    dr["DATE_ENTERED"] = recon.DateEntered;
+        //            //}
+        //        }
+        //        //dt.Rows.Add(dr);
+
+        //    }
+        //    return dt;
+        //}
 
         private string GetCheckNo(string checkNo)
         {
@@ -2498,8 +2978,8 @@ namespace FOX.BusinessOperations.ReconciliationService
             else
             {
                 temp = GetCheckNoBetweenFirstSecondAsterik(checkNo);
-            }          
-           
+            }
+
             return temp;
         }
 
