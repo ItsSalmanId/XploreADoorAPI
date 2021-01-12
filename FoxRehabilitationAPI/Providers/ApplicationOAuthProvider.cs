@@ -138,7 +138,7 @@ namespace FoxRehabilitationAPI.Providers
             }
             catch (Exception ex)
             {
-                Helper.CustomExceptionLog(ex);
+
             }
         }
 
@@ -181,7 +181,6 @@ namespace FoxRehabilitationAPI.Providers
             }
             catch (Exception ex)
             {
-                Helper.CustomExceptionLog(ex);
                 return Task.FromResult<object>(null);
             }
         }
@@ -197,7 +196,6 @@ namespace FoxRehabilitationAPI.Providers
             }
             catch (Exception ex)
             {
-                Helper.CustomExceptionLog(ex);
                 return base.TokenEndpointResponse(context);
             }
         }
@@ -217,7 +215,6 @@ namespace FoxRehabilitationAPI.Providers
             }
             catch (Exception ex)
             {
-                Helper.CustomExceptionLog(ex);
                 return Task.FromResult<object>(null);
             }
         }

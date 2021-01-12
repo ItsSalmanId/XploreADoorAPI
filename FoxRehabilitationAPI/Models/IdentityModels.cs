@@ -144,7 +144,6 @@ namespace FoxRehabilitationAPI.Models
             }
             catch (Exception ex)
             {
-                Helper.CustomExceptionLog(ex);
                 return userIdentity;
             }
         }

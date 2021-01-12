@@ -205,49 +205,35 @@ namespace FoxRehabilitationAPI.App_Start
         async Task<GetADUserResViewModel> GetADUserWS(GetADUserReqViewModel getADUserReqViewModel)
         {
 
-            Helper.TokenTaskCancellationExceptionLog("Just Entered in the function");
             string url;
             //string url = "https://mhealth.mtbc.com/fox_test/api/ADLogin/GetADUser";
             //string url = "https://mhealth.mtbc.com/fox/api/ADLogin/GetADUserV1";
             if (getADUserReqViewModel.Domain == "40.143.53.71")
             {
                 url = "https://mhealth.mtbc.com/fox_test/api/ADLogin/GetADUserV2";
-                Helper.TokenTaskCancellationExceptionLog("Now in If. Domain is " + getADUserReqViewModel.Domain + " and url is " + url);
             }
             else
             {
                 url = "https://mhealth.mtbc.com/fox_test/api/ADLogin/GetADUserWithCustomDomain";
-                Helper.TokenTaskCancellationExceptionLog("Now in else. Domain is not 72.82.236.130 and url is " + url);
             }
 
             System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
 
-            Helper.TokenTaskCancellationExceptionLog("Before using security protocol is " + System.Net.ServicePointManager.SecurityProtocol);
-
             using (var client = new HttpClient())
             {
-                Helper.TokenTaskCancellationExceptionLog("Now in first using");
                 client.BaseAddress = new Uri(url);
-                Helper.TokenTaskCancellationExceptionLog("After Client 1");
                 client.DefaultRequestHeaders.Accept.Clear();
-                Helper.TokenTaskCancellationExceptionLog("After Client 2");
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                Helper.TokenTaskCancellationExceptionLog("After Client 3");
                 //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(accessTokenInfo.token_type, accessTokenInfo.access_token);
 
                 var json = JsonConvert.SerializeObject(getADUserReqViewModel);
-                Helper.TokenTaskCancellationExceptionLog("After Jason Convert json is " + json);
 
                 var contentType = new StringContent(json, Encoding.UTF8, "application/json");
-                Helper.TokenTaskCancellationExceptionLog("After String Content: " + contentType);
                 var responseMessage = Task.Run(async () => { return await client.PostAsync("", contentType); }).Result;
-                Helper.TokenTaskCancellationExceptionLog("After Task.Run: " + responseMessage);
                 
                 using (HttpContent content = responseMessage.Content)
                 {
-                    Helper.TokenTaskCancellationExceptionLog("Now in second using and content is: " + content);
                     string result = await content.ReadAsStringAsync();
-                    Helper.TokenTaskCancellationExceptionLog("After ReadAsStringAsync and result is: " + result);
                     return JsonConvert.DeserializeObject<GetADUserResViewModel>(result);
                 }
             }

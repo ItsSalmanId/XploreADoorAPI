@@ -418,7 +418,6 @@ namespace FoxRehabilitationAPI
             }
             catch (Exception ex)
             {
-                Helper.CustomExceptionLog(ex);
                 return user.CheckValidUserLoginAttempt(userName: userName);
             }
         }
@@ -432,7 +431,6 @@ namespace FoxRehabilitationAPI
             }
             catch (Exception ex)
             {
-                Helper.CustomExceptionLog(ex);
                 return user.IsUserBlocked(userName: userName);
             }
         }
@@ -446,7 +444,6 @@ namespace FoxRehabilitationAPI
             }
             catch (Exception ex)
             {
-                Helper.CustomExceptionLog(ex);
             }
             return 0;
         }
@@ -460,7 +457,6 @@ namespace FoxRehabilitationAPI
             }
             catch (Exception ex)
             {
-                Helper.CustomExceptionLog(ex);
                 return user.AddUserInvalidLoginAttempt(userName: userName);
             }
         }
@@ -474,7 +470,6 @@ namespace FoxRehabilitationAPI
             }
             catch (Exception ex)
             {
-                Helper.CustomExceptionLog(ex);
                 return user.AddUserValidLoginAttempt(userName: userName);
             }
         }

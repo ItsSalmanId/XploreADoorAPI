@@ -2595,12 +2595,12 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             {
                 if (user.IS_AD_USER.HasValue && user.IS_AD_USER.Value)
                 {
-                    return true;
+                    return false;
                 }
             }
 
             Valid_Login_Attempts invalidAttempts = _validLoginAtttempts.GetFirst(x => x.USER_NAME == userName);
-            if (invalidAttempts != null && invalidAttempts.FAIL_ATTEMPT_COUNT == AppConfiguration.InvalidAttemptsCountToBlockUser + 1)
+            if (invalidAttempts != null && invalidAttempts.FAIL_ATTEMPT_COUNT >= AppConfiguration.InvalidAttemptsCountToBlockUser + 1)
             {
                 return true;
             }
