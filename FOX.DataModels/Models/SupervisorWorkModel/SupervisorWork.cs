@@ -97,6 +97,7 @@ namespace FOX.DataModels.Models.SupervisorWorkModel
         public string IndexBy { get; set; }
         public string Status { get; set; }
         public string CalledFrom { get; set; }
+        public bool Is_Trash { get; set; }
     }
 
     [Table("FOX_TBL_WORK_TRANSFER")]
