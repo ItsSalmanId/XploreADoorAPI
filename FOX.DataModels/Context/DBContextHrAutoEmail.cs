@@ -16,6 +16,7 @@ namespace FOX.DataModels.Context
         }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            Database.SetInitializer<DBContextHrAutoEmail>(null);
             modelBuilder.Entity<HrAutoEmailConfigure>().Property(t => t.HR_CONFIGURE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<HrEmailDocumentFileAll>().Property(t => t.HR_MTBC_EMAIL_DOCUMENT_FILE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
         }
