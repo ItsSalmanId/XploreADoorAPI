@@ -180,8 +180,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                     if (list.AGENT_NAME == request.SURVEY_BY )
                     {
                         CallLogModel notAssociatedCall = new CallLogModel();
-                        //notAssociatedCall.ID = list.PHD_CALL_ID.GetValueOrDefault();
-                        notAssociatedCall.ID = list.SURVEY_AUDIT_SCORES_ID;
+                        notAssociatedCall.ID = list.PHD_CALL_ID.GetValueOrDefault();
                         notAssociatedCall.CREATED_BY = list.AGENT_NAME;
                         notAssociatedCall.CREATED_DATE = list.CREATED_DATE;
                         notAssociatedCall.LOGS = "Not Associated Call | Patient Helpdesk";
