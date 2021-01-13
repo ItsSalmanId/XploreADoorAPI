@@ -96,6 +96,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                         dbSurvey.IS_IMPROVED_SETISFACTION = patientSurvey.IS_IMPROVED_SETISFACTION;
                         dbSurvey.FEEDBACK = patientSurvey.FEEDBACK;
                         dbSurvey.SURVEY_FLAG = patientSurvey.SURVEY_FLAG;
+                        dbSurvey.IS_PROTECTIVE_EQUIPMENT = patientSurvey.IS_PROTECTIVE_EQUIPMENT;
                     }
                     else
                     {
@@ -106,6 +107,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                         dbSurvey.IS_IMPROVED_SETISFACTION = null;
                         //dbSurvey.FEEDBACK = null;
                         dbSurvey.SURVEY_FLAG = null;
+                        dbSurvey.IS_PROTECTIVE_EQUIPMENT = null;
                     }
                 }
                 if(patientSurvey.ACTIVE_FORMAT == "New Format")
@@ -186,6 +188,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 var modifiedDate = new SqlParameter { ParameterName = "@MODIFIED_DATE", SqlDbType = SqlDbType.DateTime, Value = dbSurvey.MODIFIED_DATE };
                 var delete = new SqlParameter { ParameterName = "@DELETED", SqlDbType = SqlDbType.Bit, Value = dbSurvey.DELETED };
                 var isExceptional = new SqlParameter { ParameterName = "@IS_EXCEPTIONAL", SqlDbType = SqlDbType.Bit, Value = dbSurvey.IS_EXCEPTIONAL };
+                var isprotectiveEquipment = new SqlParameter { ParameterName = "@IS_PROTECTIVE_EQUIPMENT", SqlDbType = SqlDbType.Bit, Value = dbSurvey.IS_PROTECTIVE_EQUIPMENT };
 
                 if (dbSurvey.PRACTICE_CODE == null)
                 {
@@ -415,6 +418,10 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 {
                     isExceptional.Value = DBNull.Value;
                 }
+                if (dbSurvey.IS_PROTECTIVE_EQUIPMENT == null)
+                {
+                    isprotectiveEquipment.Value = DBNull.Value;
+                }
 
                 var PatientSurveyList = SpRepository<PatientSurvey>.GetListWithStoreProcedure(@"exec FOX_PROC_UPDTAE_PATIENT_SURVEY 
                  @SURVEY_ID, @PRACTICE_CODE, @FACILITY_OR_CLIENT_ID, @PATIENT_ACCOUNT_NUMBER, @RESPONSIBLE_PARTY_LAST_NAME, @RESPONSIBLE_PARTY_FIRST_NAME, @RESPONSIBLE_PARTY_MIDDLE_INITIAL, @RESPONSIBLE_PARTY_ADDRESS,
@@ -423,12 +430,12 @@ namespace FOX.BusinessOperations.PatientSurveyService
                  @ALTERNATE_CONTACT_LAST_NAME, @ALTERNATE_CONTACT_FIRST_NAME, @ALTERNATE_CONTACT_MIDDLE_INITIAL, @ALTERNATE_CONTACT_TELEPHONE, @EMR_LOCATION_CODE, @EMR_LOCATION_DESCRIPTION, @SERVICE_OR_PAYMENT_DESCRIPTION, @PROVIDER, 
                  @REGION, @LAST_VISIT_DATE, @DISCHARGE_DATE, @ATTENDING_DOCTOR_NAME, @PT_OT_SLP, @REFERRAL_DATE, @PROCEDURE_OR_TRAN_CODE, @SERVICE_OR_PAYMENT_AMOUNT, @IS_CONTACT_HQ, @IS_RESPONSED_BY_HQ, @IS_QUESTION_ANSWERED,
                  @IS_REFERABLE, @IS_IMPROVED_SETISFACTION, @FEEDBACK, @SURVEY_FLAG, @SURVEY_STATUS_BASE, @SURVEY_STATUS_CHILD, @SURVEY_FORMAT_TYPE, @IS_SURVEYED, @IN_PROGRESS, @FILE_NAME, @SHEET_NAME, @TOTAL_RECORD_IN_FILE, 
-                 @CREATED_BY, @CREATED_DATE, @MODIFIED_BY, @MODIFIED_DATE, @DELETED,@IS_EXCEPTIONAL"
+                 @CREATED_BY, @CREATED_DATE, @MODIFIED_BY, @MODIFIED_DATE, @DELETED,@IS_EXCEPTIONAL, @IS_PROTECTIVE_EQUIPMENT "
                  , surveyId, practiceCode, clientId, patientAccount, resLastName, resFirstName, resMidName, resPartyAdd, resPartyCity, tesPartyStat, restPartyZip, resPartyPhone, restPartySSN, restPartSex, restPartDOB
                  , patLastName, patFirstName, patMidName, patAddress, patCity, patState, patZIP, patPhone, patSSN, patGender, patDOB, altLastName, altFirstName, altMidName, altPhone, emrLocCode, emrLocDes
                  , servicePaymentDesc, provider, region, lastVisitDate, dischargeDate, attendingDocName, ptOtSlp, referralDate, procTranCode, servicePaymentAmnt, isContactHQ, isResponsedByHq, isQuestionAnswered
                  , isReferrable, isImprovedSetisfaction, feedback, surveyFlag, surveyStatusBase, surveyStatusChild, surveyFormat, isSurveyed, inProgress, fileName, sheetName, totalRecordInFile, createdBy
-                 , createdDate, modifiedBy, modifiedDate, delete, isExceptional);
+                 , createdDate, modifiedBy, modifiedDate, delete, isExceptional, isprotectiveEquipment);
                 
                 if (patientSurvey.IS_EXCEPTIONAL == true)
                 {
@@ -481,7 +488,19 @@ namespace FOX.BusinessOperations.PatientSurveyService
                     }
 
                     _body += "<p>Surveyed by: " + profile.UserName + "</p>" + "<p>Survey date & time: " +DateTime.Now.ToString("MM/dd/yyyy hh:mm tt") + "</p> <br>";
- 
+                    if (!string.IsNullOrEmpty(patientSurvey.PROVIDER))
+                    {
+                        _body += "<p>Provider: " + patientSurvey.PROVIDER + "</p> ";
+                    }
+                    if (!string.IsNullOrEmpty(patientSurvey.ATTENDING_DOCTOR_NAME))
+                    {
+                        _body += "<p>Attending Doctor: " + patientSurvey.ATTENDING_DOCTOR_NAME + "</p> ";
+                    }
+                    if (!string.IsNullOrEmpty(patientSurvey.REGION))
+                    {
+                        _body += "<p>Region: " + patientSurvey.REGION + "</p> ";
+                    }
+
                     link = AppConfiguration.ClientURL + @"#/Reporting/PatientSurveyDetail?value=" + HttpUtility.UrlEncode(dbSurvey.SURVEY_ID.ToString());
                     link += "&name=" + profile.UserEmailAddress;
                     _body += "<p>Please   <a href = " +  link + "> " + " click here to login</a>" + " and see the survey details.</p>";
@@ -539,6 +558,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
             var createdDate = new SqlParameter { ParameterName = "@CREATED_DATE", SqlDbType = SqlDbType.DateTime, Value = surveyHistory.CREATED_DATE };
             var delete = new SqlParameter { ParameterName = "@DELETED", SqlDbType = SqlDbType.Bit, Value = surveyHistory.DELETED };
             var isExceptional = new SqlParameter { ParameterName = "@IS_EXCEPTIONAL", SqlDbType = SqlDbType.Bit, Value = surveyHistory.IS_EXCEPTIONAL };
+            var isprotectiveEquipment = new SqlParameter { ParameterName = "@IS_PROTECTIVE_EQUIPMENT", SqlDbType = SqlDbType.Bit, Value = surveyHistory.IS_PROTECTIVE_EQUIPMENT };
 
             if (surveyHistory.PRACTICE_CODE == null)
             {
@@ -604,10 +624,13 @@ namespace FOX.BusinessOperations.PatientSurveyService
             {
                 isExceptional.Value = DBNull.Value;
             }
-
+            if (surveyHistory.IS_PROTECTIVE_EQUIPMENT == null)
+            {
+                isprotectiveEquipment.Value = DBNull.Value;
+            }
             var PatientSurveyList = SpRepository<PatientSurvey>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_PATIENT_SURVEY_HISTORY
-                                    @FOX_SURVEY_HISTORY_ID, @PRACTICE_CODE, @SURVEY_ID, @PATIENT_ACCOUNT, @IS_CONTACT_HQ, @IS_RESPONSED_BY_HQ, @IS_REFERABLE, @IS_IMPROVED_SETISFACTION, @FEEDBACK, @SURVEY_FLAG, @SURVEY_STATUS_BASE, @SURVEY_STATUS_CHILD, @SURVEY_BY, @SURVEY_DATE, @CREATED_BY, @CREATED_DATE, @DELETED, @IS_QUESTION_ANSWERED,@IS_EXCEPTIONAL"
-                                    , surveyHistoryId, practiceCode, surveyId, patientAccount, isContactHG, isResponsedByHQ, isReferrable, isImprovedSetisfaction, feedback, surveyFlag, surveyStatusBase, surveyStatusChild, surveyBy, surveyDate, createdBy, createdDate, delete, isQuestionAnswered, isExceptional);
+                                    @FOX_SURVEY_HISTORY_ID, @PRACTICE_CODE, @SURVEY_ID, @PATIENT_ACCOUNT, @IS_CONTACT_HQ, @IS_RESPONSED_BY_HQ, @IS_REFERABLE, @IS_IMPROVED_SETISFACTION, @FEEDBACK, @SURVEY_FLAG, @SURVEY_STATUS_BASE, @SURVEY_STATUS_CHILD, @SURVEY_BY, @SURVEY_DATE, @CREATED_BY, @CREATED_DATE, @DELETED, @IS_QUESTION_ANSWERED,@IS_EXCEPTIONAL,@IS_PROTECTIVE_EQUIPMENT"
+                                    , surveyHistoryId, practiceCode, surveyId, patientAccount, isContactHG, isResponsedByHQ, isReferrable, isImprovedSetisfaction, feedback, surveyFlag, surveyStatusBase, surveyStatusChild, surveyBy, surveyDate, createdBy, createdDate, delete, isQuestionAnswered, isExceptional, isprotectiveEquipment);
 
         }
 

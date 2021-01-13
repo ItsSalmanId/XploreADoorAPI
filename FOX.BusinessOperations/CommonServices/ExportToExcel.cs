@@ -3719,6 +3719,14 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("IS_IMPROVED_SETISFACTION_NO_AVG");
                 }
+                if (dc.Contains("IS_PROTECTIVE_EQUIPMENT_YES_AVG"))
+                {
+                    dc.Remove("IS_PROTECTIVE_EQUIPMENT_YES_AVG");
+                }
+                if (dc.Contains("IS_PROTECTIVE_EQUIPMENT_NO_AVG"))
+                {
+                    dc.Remove("IS_PROTECTIVE_EQUIPMENT_NO_AVG");
+                }
             }
             if (CalledFrom.Equals("Insurance_Setup"))
             {
@@ -6519,6 +6527,10 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["Is_Questioned_Answered_Str"].ColumnName = "Complaint Resolved";
                 }
+                if (dtcol.Contains("IS_PROTECTIVE_EQUIPMENT"))
+                {
+                    dtcol["IS_PROTECTIVE_EQUIPMENT"].ColumnName = "Protective Equipment";
+                }
             }
             else if (dt.TableName == "Detailed_Survey_old")
             {
@@ -6593,6 +6605,10 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dtcol.Contains("Is_Responsed_By_HQ_Str"))
                 {
                     dtcol["Is_Responsed_By_HQ_Str"].ColumnName = "Response from HQ";
+                }
+                if (dtcol.Contains("IS_PROTECTIVE_EQUIPMENT"))
+                {
+                    dtcol["IS_PROTECTIVE_EQUIPMENT"].ColumnName = "Protective Equipment";
                 }
             }
             else if (dt.TableName == "Interface_Logs")
@@ -6744,6 +6760,14 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dtcol.Contains("IS_QUESTION_ANSWERED_NO"))
                 {
                     dtcol["IS_QUESTION_ANSWERED_NO"].ColumnName = "Concern Resolved(No)";
+                }
+                if (dtcol.Contains("IS_PROTECTIVE_EQUIPMENT_YES"))
+                {
+                    dtcol["IS_PROTECTIVE_EQUIPMENT_YES"].ColumnName = "Protective Equipment(Yes)";
+                }
+                if (dtcol.Contains("IS_PROTECTIVE_EQUIPMENT_NO"))
+                {
+                    dtcol["IS_PROTECTIVE_EQUIPMENT_NO"].ColumnName = "Protective Equipment(No)";
                 }
 
             }

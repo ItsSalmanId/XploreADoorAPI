@@ -120,6 +120,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         [NotMapped]
         public string ACTIVE_FORMAT { get; set; }
         public bool? IS_EXCEPTIONAL { get; set; }
+        public bool? IS_PROTECTIVE_EQUIPMENT { get; set; }
     }
 
     [Table("FOX_TBL_PATIENT_SURVEY_HISTORY")]
@@ -157,6 +158,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public DateTime? CREATED_DATE { get; set; }
         public bool DELETED { get; set; }
         public bool? IS_EXCEPTIONAL { get; set; }
+        public bool? IS_PROTECTIVE_EQUIPMENT { get; set; }
     }
 
     [Table("FOX_TBL_PATIENT_SURVEY_CALL_LOG")]
@@ -280,6 +282,10 @@ namespace FOX.DataModels.Models.PatientSurvey
         public int? IS_REFERABLE_NO_AVG { get; set; }
         public int? IS_IMPROVED_SETISFACTION_YES_AVG { get; set; }
         public int? IS_IMPROVED_SETISFACTION_NO_AVG { get; set; }
+        public int? IS_PROTECTIVE_EQUIPMENT_YES { get; set; }
+        public int? IS_PROTECTIVE_EQUIPMENT_NO { get; set; }
+        public int? IS_PROTECTIVE_EQUIPMENT_YES_AVG { get; set; }
+        public int? IS_PROTECTIVE_EQUIPMENT_NO_AVG { get; set; }
     }
 
     public class PSRProviderAndQuestionWise
@@ -305,6 +311,8 @@ namespace FOX.DataModels.Models.PatientSurvey
         public int? IS_IMPROVED_SETISFACTION_NO { get; set; }
         public int? IS_IMPROVED_SETISFACTION_YES_AVG { get; set; }
         public int? IS_IMPROVED_SETISFACTION_NO_AVG { get; set; }
+        public int? IS_PROTECTIVE_EQUIPMENT_YES { get; set; }
+        public int? IS_PROTECTIVE_EQUIPMENT_NO { get; set; }
     }
 
     public class PSRRegionAndRecommendationWise
@@ -360,6 +368,9 @@ namespace FOX.DataModels.Models.PatientSurvey
         public int IS_RESPONSED_BY_HQ_NO { get; set; }
         public int IS_QUESTION_ANSWERED_YES { get; set; }
         public int IS_QUESTION_ANSWERED_NO { get; set; }
+        public int IS_PROTECTIVE_EQUIPMENT_YES { get; set; }
+        public int IS_PROTECTIVE_EQUIPMENT_NO { get; set; }
+
         public List<PSDStateAndRegionRecommendationWise> recommendationData { get; set; }
     }
     
@@ -433,6 +444,7 @@ namespace FOX.DataModels.Models.PatientSurvey
     public class PSDRChartData
     {
         public int COMPLETED { get; set; }
+        public int COMPLETED_SURVEY { get; set; }
         public int RECOMMENDED { get; set; }
         public int NOT_RECOMMENDED { get; set; }
         public int DECEASED { get; set; }
