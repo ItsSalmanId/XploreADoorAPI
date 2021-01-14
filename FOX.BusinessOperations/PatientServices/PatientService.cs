@@ -10541,7 +10541,8 @@ namespace FOX.BusinessOperations.PatientServices
                             patientAddress.Zip = address.ZIP;
                             patientAddress.City = address.CITY;
                             patientAddress.State = address.STATE;
-                            if (loc.SetCoordinatesManually == false)
+                            patientAddress.Address = address.ADDRESS;
+                        if (loc.SetCoordinatesManually == false)
                             {
                                 POSCoordinates coordinates = GetCoordinates(patientAddress);
                                 if (coordinates != null)
