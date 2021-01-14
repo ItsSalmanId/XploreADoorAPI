@@ -1029,4 +1029,20 @@ namespace FOX.DataModels.Models.IndexInfo
         public List <FOX_TBL_REFERRAL_SOURCE> ReferralSource { get; set; }
         public List <GROUP> Groups { get; set; }
     }
+    public class DuplicateReferralInfo
+    {
+        public long WORK_ID { get; set; }
+        public string UNIQUE_ID { get; set; }
+        public string DOCUMENT_TYPE { get; set; }
+        public string WORK_STATUS { get; set; }
+        public string ORS { get; set; }
+        public string SENDER_SOURCE { get; set; }
+        public string RECEIVE_DATE { get; set; }
+        public string DEPARTMENT_ID { get; set; }
+    }
+    public class checkDuplicateReferralRequest
+    {
+        public string splitedIDs { get; set; }
+        public long workID { get; set; }
+    }
 }

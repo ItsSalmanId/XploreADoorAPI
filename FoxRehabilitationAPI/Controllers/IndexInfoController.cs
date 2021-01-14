@@ -322,5 +322,42 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetpatientsList(obj, GetProfile()));
         }
+        [HttpPost]
+        public HttpResponseMessage GetDuplicateReferralDetail(checkDuplicateReferralRequest checkDuplicateReferral)
+        {
+            if (checkDuplicateReferral != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetDuplicateReferralInformation(checkDuplicateReferral, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Model is Empty");
+            }
+        }
+        [HttpGet]
+        public HttpResponseMessage GetWorkOrderDocs(string patientAccountStr)
+        {
+            if (!string.IsNullOrEmpty(patientAccountStr.ToString()))
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetWorkOrderDocs(patientAccountStr, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Model is Empty");
+            }
+        }
+        [HttpPost]
+        public HttpResponseMessage SaveLogMessage(Index_infoReq work_Id)
+        {
+            if (!string.IsNullOrEmpty(work_Id.ToString()))
+            {
+                 _IndexInfoService.SaveLogMessage(work_Id, GetProfile());
+                return Request.CreateResponse(HttpStatusCode.OK, "Log Saved");
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Work ID is Empty");
+            }
+        }
     }
 }
