@@ -88,7 +88,7 @@ namespace FOX.DataModels.Models.Reconciliation
         [NotMapped]
         public string DEPOSIT_TYPE_NAME { get; set; }
         [NotMapped]
-        public string CATEGORY_NAME { get; set; }        
+        public string CATEGORY_NAME { get; set; }
         [NotMapped]
         public string INSURANCE_NAME { get; set; }
         public string CHECK_NO { get; set; }
@@ -108,7 +108,7 @@ namespace FOX.DataModels.Models.Reconciliation
         //public long? FOX_TBL_INSURANCE_ID { get; set; }
         public string FOX_TBL_INSURANCE_NAME { get; set; }
         public int? RECONCILIATION_STATUS_ID { get; set; }
-        public string ASSIGNED_TO { get; set; }       
+        public string ASSIGNED_TO { get; set; }
         public string COMPLETED_BY { get; set; }
         public string LEDGER_PATH { get; set; }
         public string CREATED_BY { get; set; }
@@ -117,7 +117,7 @@ namespace FOX.DataModels.Models.Reconciliation
         public DateTime MODIFIED_DATE { get; set; }
         public bool DELETED { get; set; }
         //public string LEDGER_BASE64 { get; set; }
-       
+
         public int? TOTAL_LEDGER_PAGES { get; set; }
         //---------------------------------------
         ////////****NOT MAPPED FIELDS****////////
@@ -130,7 +130,7 @@ namespace FOX.DataModels.Models.Reconciliation
         public string COMPLETED_DATE_STR { get; set; }
         [NotMapped]
         public string COMPLETED_BY_NAME { get; set; }
-        
+
         //---------***SUMMARY***----------
         [NotMapped]
         public decimal? TOTAL_AMOUNT { get; set; }
@@ -150,9 +150,9 @@ namespace FOX.DataModels.Models.Reconciliation
         [NotMapped]
         public string POSTED_DATE_STR { get; set; }
         public string REMARKS { get; set; }
-        
+
         public long? REASON { get; set; }
-        
+
         [NotMapped]
         public string REASON_NAME { get; set; }
         [NotMapped]
@@ -180,7 +180,7 @@ namespace FOX.DataModels.Models.Reconciliation
         public string DEPOSIT_TYPE_NAME { get; set; }
         [DisplayName("Category/Account")]
         public string CATEGORY_NAME { get; set; }
-        [DisplayName("Insurance")]        
+        [DisplayName("Insurance")]
         public string INSURANCE_NAME { get; set; }
         [DisplayName("Check #/Batch #")]
         public string CHECK_NO { get; set; }
@@ -260,10 +260,10 @@ namespace FOX.DataModels.Models.Reconciliation
         [NotMapped]
         public int TOTAL_RECORDS { get; set; }
         [NotMapped]
-        public string CREATED_BY_NAME { get; set; }       
+        public string CREATED_BY_NAME { get; set; }
         [NotMapped]
         public string ROLE_NAME { get; set; }
-        
+
     }
 
     public class ReconciliationCPLogExportModel
@@ -369,7 +369,8 @@ namespace FOX.DataModels.Models.Reconciliation
 
     public class AmountNotPostedSelectionModel
     {
-        public AmountNotPostedSelectionModel() {
+        public AmountNotPostedSelectionModel()
+        {
             Selected = false;
         }
         public decimal Value { get; set; }
@@ -384,7 +385,7 @@ namespace FOX.DataModels.Models.Reconciliation
 
     }
 
-    public class ReconcialtionImport 
+    public class ReconcialtionImport
     {
         public string Day { get; set; }
         public string DepositDate { get; set; }
@@ -398,7 +399,7 @@ namespace FOX.DataModels.Models.Reconciliation
         public string DatePosted { get; set; }
         public string DateEntered { get; set; }
         public string TotalPosted { get; set; }
-        public string NotPosted { get; set; }  
+        public string NotPosted { get; set; }
         public string CheckNo { get; set; }
         public string BatchNo { get; set; }
     }
@@ -467,10 +468,12 @@ namespace FOX.DataModels.Models.Reconciliation
         public string CHECK_NO { get; set; }
         public string CHECK_DATE { get; set; }
         public decimal? AMOUNT_POSTED { get; set; }
+        public double? TOTAL_AMOUNT_POSTED { get; set; }
         public long? PRACTICE_CODE { get; set; }
-        public int TOTAL_RECORDS { get; set; }       
+        public int TOTAL_RECORDS { get; set; }
         public double TOTAL_RECORD_PAGES { get; set; }
         public int Row_No { get; set; }
+        public string POSTED_DATE { get; set; }
     }
 
     public class SOFT_RECONCILIATION_SERACH_REQUEST
@@ -480,8 +483,8 @@ namespace FOX.DataModels.Models.Reconciliation
         public long? CLAIM_NO { get; set; }
         public string CHECK_NO { get; set; }
         public string SearchText { get; set; }
-        public int RecordPerPage { get; set; }   
-       
+        public int RecordPerPage { get; set; }
+
         public int CurrentPage { get; set; }
         public string SortBy { get; set; }
         public string SortOrder { get; set; }
