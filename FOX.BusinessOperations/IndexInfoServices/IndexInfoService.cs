@@ -5055,52 +5055,52 @@ namespace FOX.BusinessOperations.IndexInfoServices
         {
             try
             {
-                var wORK_ID = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = checkDuplicateReferral.workID };
-                var getWorkID = SpRepository<GETtAll_IndexifoRes>.GetSingleObjectWithStoreProcedure(@"exec [FOX_GET_INDEX_ALL_INFO] @WORK_ID", wORK_ID);
-
-                if (getWorkID != null)
+                if (checkDuplicateReferral != null)
                 {
-                    var Patient_Account = new SqlParameter("PATIENT_ACCOUNT", SqlDbType.BigInt) { Value = getWorkID.PATIENT_ACCOUNT };
-                    var Practice_Code = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = userProfile.PracticeCode };
-                    var order_Id = new SqlParameter("ORDER_ID", SqlDbType.BigInt) { Value = getWorkID.WORK_ID };
-                    //var splitedIDs = new SqlParameter("SPLITED_IDS", SqlDbType.VarChar) { Value = checkDuplicateReferral.splitedIDs };
-                    var result = SpRepository<DuplicateReferralInfo>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_Duplicate_Referral] @PATIENT_ACCOUNT, @PRACTICE_CODE, @ORDER_ID", Patient_Account, Practice_Code, order_Id);
-                    if (result != null && result.Count() > 0)
+                    var wORK_ID = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = checkDuplicateReferral.workID };
+                    var getWorkID = SpRepository<GETtAll_IndexifoRes>.GetSingleObjectWithStoreProcedure(@"exec [FOX_GET_INDEX_ALL_INFO] @WORK_ID", wORK_ID);
+
+                    if (getWorkID != null && getWorkID.PATIENT_ACCOUNT != null)
                     {
-                        List<DuplicateReferralInfo> MainList = new List<DuplicateReferralInfo>();
-                        if (!string.IsNullOrEmpty(checkDuplicateReferral.splitedIDs))
+                        var Patient_Account = new SqlParameter("PATIENT_ACCOUNT", SqlDbType.BigInt) { Value = getWorkID.PATIENT_ACCOUNT };
+                        var Practice_Code = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = userProfile.PracticeCode };
+                        var order_Id = new SqlParameter("ORDER_ID", SqlDbType.BigInt) { Value = getWorkID.WORK_ID };
+                        var result = SpRepository<DuplicateReferralInfo>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_Duplicate_Referral] @PATIENT_ACCOUNT, @PRACTICE_CODE, @ORDER_ID", Patient_Account, Practice_Code, order_Id);
+                        if (result != null && result.Count() > 0)
                         {
-                            var splitedIDs = checkDuplicateReferral.splitedIDs.Split(',');
-                            if (splitedIDs != null && splitedIDs.Length > 0)
+                            List<DuplicateReferralInfo> MainList = new List<DuplicateReferralInfo>();
+                            if (!string.IsNullOrEmpty(checkDuplicateReferral.splitedIDs))
                             {
-                                foreach (var item in splitedIDs)
+                                var splitedIDs = checkDuplicateReferral.splitedIDs.Split(',');
+                                if (splitedIDs != null && splitedIDs.Length > 0)
                                 {
-                                    foreach (var ite in result)
+                                    foreach (var item in splitedIDs)
                                     {
-                                        if(item != null)
+                                        foreach (var ite in result)
                                         {
-                                            //var DepartIDs = ite.DEPARTMENT_ID.Split(',');
-                                            if (ite.DEPARTMENT_ID.Contains(item.ToString()))
+                                            if (item != null)
                                             {
-                                                if (MainList != null)
+                                                //var DepartIDs = ite.DEPARTMENT_ID.Split(',');
+                                                if (ite.DEPARTMENT_ID.Contains(item.ToString()))
                                                 {
-                                                    if (MainList.Find(e => e.WORK_ID == ite.WORK_ID) == null)
+                                                    if (MainList != null)
                                                     {
-                                                        MainList.Add(ite);
+                                                        if (MainList.Find(e => e.WORK_ID == ite.WORK_ID) == null)
+                                                        {
+                                                            MainList.Add(ite);
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
                                     }
                                 }
+                                return MainList;
                             }
-
-                            return MainList;
+                            else
+                                return new List<DuplicateReferralInfo>();
                         }
-                        else
-                            return new List<DuplicateReferralInfo>();
                     }
-                    return new List<DuplicateReferralInfo>();
                 }
                 return new List<DuplicateReferralInfo>();
             }
