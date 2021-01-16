@@ -439,8 +439,8 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 
                 if (patientSurvey.IS_EXCEPTIONAL == true)
                 {
-                    sendTo = "usamabinahmed@mtbc.com";
-                    //sendTo = "bradley.pennypacker@foxrehab.org";
+                    //sendTo = "usamabinahmed@mtbc.com";
+                    sendTo = "bradley.pennypacker@foxrehab.org";
                     
                      _subject = "Exceptional feedback ";
                         if(!string.IsNullOrEmpty(patientSurvey.SURVEY_STATUS_CHILD))
