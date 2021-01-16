@@ -39,9 +39,10 @@ namespace FOX.DataModels.Models.CommonModel
         public IList<string> AllowedFileExtensions { get; set; }
         public string UploadFilesPath { get; set; }
         public HttpFileCollection Files { get; set; }
+        public int HR_CONFIGURE_ID { get; set; }
     }
 
-       public class ResponseUploadFilesModel
+    public class ResponseUploadFilesModel
     {
         public string FilePath { get; set; }
         public string FileName { get; set; }
@@ -140,7 +141,7 @@ namespace FOX.DataModels.Models.CommonModel
     {
         public string NAME { get; set; }
     }
-    
+
     [Table("FOX_TBL_PROVIDER")]
     public class Provider
     {
@@ -232,4 +233,4 @@ namespace FOX.DataModels.Models.CommonModel
         public string WORK_STATUS { get; set; }
     }
 
-    }
+}

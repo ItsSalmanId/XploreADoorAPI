@@ -418,9 +418,34 @@ namespace FoxRehabilitationAPI
             }
             catch (Exception ex)
             {
-                Helper.CustomExceptionLog(ex);
                 return user.CheckValidUserLoginAttempt(userName: userName);
             }
+        }
+
+        public bool IsCheckedUserBlocked(string userName)
+        {
+            UserManagementService user = new UserManagementService();
+            try
+            {
+                return user.IsUserBlocked(userName: userName);
+            }
+            catch (Exception ex)
+            {
+                return user.IsUserBlocked(userName: userName);
+            }
+        }
+
+        public int GetInvalidAttempts(string userName)
+        {
+            UserManagementService user = new UserManagementService();
+            try
+            {
+                return user.GetInvalidAttempts(userName: userName);
+            }
+            catch (Exception ex)
+            {
+            }
+            return 0;
         }
 
         public bool AddInvalidLoginAttempt(string userName)
@@ -432,7 +457,6 @@ namespace FoxRehabilitationAPI
             }
             catch (Exception ex)
             {
-                Helper.CustomExceptionLog(ex);
                 return user.AddUserInvalidLoginAttempt(userName: userName);
             }
         }
@@ -446,7 +470,6 @@ namespace FoxRehabilitationAPI
             }
             catch (Exception ex)
             {
-                Helper.CustomExceptionLog(ex);
                 return user.AddUserValidLoginAttempt(userName: userName);
             }
         }

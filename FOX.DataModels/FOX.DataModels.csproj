@@ -67,14 +67,13 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Context\DBContextAdjusmentApproval.cs" />
     <Compile Include="Context\DbContextCases.cs" />
     <Compile Include="Context\DbContextClaim.cs" />
     <Compile Include="Context\DbContextCommon.cs" />
-    <Compile Include="Context\DbContextCorrectedClaims.cs" />
     <Compile Include="Context\DbContextDashboard.cs" />
     <Compile Include="Context\DBContextExceptionLog.cs" />
     <Compile Include="Context\DBContextFoxPHD.cs" />
+    <Compile Include="Context\DBContextHrAutoEmail.cs" />
     <Compile Include="Context\DBContextHrAutoEmails.cs" />
     <Compile Include="Context\DbContextIndexinfo.cs" />
     <Compile Include="Context\DbContextIndexinformation.cs" />
@@ -99,7 +98,6 @@
     <Compile Include="GenericRepository\SpRepository.cs" />
     <Compile Include="HelperClasses\CSVHelper.cs" />
     <Compile Include="HelperClasses\HelperClasses.cs" />
-    <Compile Include="Models\AdjustmentApproval\AdjustmentApproval.cs" />
     <Compile Include="Models\ADUser\LDAPUser.cs" />
     <Compile Include="Models\AssignedQueueModel\AssignedQueue.cs" />
     <Compile Include="Models\Authorization\Authorization.cs" />
@@ -107,7 +105,6 @@
     <Compile Include="Models\CasesModel\CasesModel.cs" />
     <Compile Include="Models\CommonModel\Common.cs" />
     <Compile Include="Models\CompleteQueueModel\CompleteQueue.cs" />
-    <Compile Include="Models\CorrectedClaims\CorrectedClaims.cs" />
     <Compile Include="Models\DashboardModel\Dashboard.cs" />
     <Compile Include="Models\Exceptions\BusinessException.cs" />
     <Compile Include="Models\Exceptions\ExceptionModel.cs" />
@@ -129,6 +126,7 @@
     <Compile Include="Models\GeneralNotesModel\GeneralNoteModels.cs" />
     <Compile Include="Models\GoogleRecaptcha\GoogleRecaptchaResponse.cs" />
     <Compile Include="Models\GroupsModel\UserGroupsModel.cs" />
+    <Compile Include="Models\HrAutoEmail\HrAutoEmailModel.cs" />
     <Compile Include="Models\IndexedQueueModel\IndexedQueue.cs" />
     <Compile Include="Models\IndexInfo\IndexInfo.cs" />
     <Compile Include="Models\OriginalQueueModel\OriginalQueue.cs" />

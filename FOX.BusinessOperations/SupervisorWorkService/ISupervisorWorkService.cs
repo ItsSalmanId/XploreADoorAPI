@@ -5,6 +5,8 @@ using System.Web;
 using FOX.DataModels.Models.SupervisorWorkModel;
 using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.Settings.User;
+using FOX.DataModels.Models.CommonModel;
+using FOX.DataModels.Models.AssignedQueueModel;
 
 namespace FOX.BusinessOperations.SupervisorWorkService
 {
@@ -16,5 +18,6 @@ namespace FOX.BusinessOperations.SupervisorWorkService
         List<UsersForDropdown> GetIndxersAndSupervisorsForDropdown(long practiceCode, string userName);
         List<WorkTransfer> GetWorkTransferComments(long workid);
         string SupervisorExport(SupervisorWorkRequest obj, UserProfile profile);
+        ResponseModel MakeReferralAsValidOrTrashed(MarkReferralValidOrTrashedModel req, UserProfile profile);
     }
 }

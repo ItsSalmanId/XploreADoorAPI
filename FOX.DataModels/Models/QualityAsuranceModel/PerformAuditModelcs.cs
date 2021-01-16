@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FOX.DataModels.Models.FoxPHD;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -64,6 +65,17 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public double TOTAL_RECORD_PAGES { get; set; }
         [NotMapped]
         public int TOTAL_RECORDS { get; set; }
+        [NotMapped]
+        public string HTML_TEMPLETE { get; set; }
+        [NotMapped]
+        public string CALL_SCANARIO { get; set; }
+        [NotMapped]
+        public DateTime EVALUATION_CALL_DATE { get; set; }
+        [NotMapped]
+        public string MRN { get; set; }
+        [NotMapped]
+        public string AGENT_EMAIL { get; set; }
+        public int? PHD_CALL_SCENARIO_ID { get; set; }
     }
 
     //public class CallLogModel : BaseModel
@@ -82,7 +94,7 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
     //    public string MODIFIED_BY { get; set; }
     //    public DateTime? MODIFIED_DATE { get; set; }
     //    public bool DELETED { get; set; }
-      
+
     //    [NotMapped]
     //    public bool IS_AUDITED { get; set; }
     //    [NotMapped]
@@ -93,6 +105,7 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
     {
         public List<EvaluationCriteriaCategories> EvaluationCriteriaCategories { get; set; }
         public List<WowFactor> WowFactor { get; set; }
+        public List<PhdCallScenario> PhdCallScenarios { get; set; }
     }
     public class RequestCallList : BaseModel
     {
@@ -103,6 +116,9 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public DateTime? DATE_TO { get; set; }
         public string DATE_TO_STR { get; set; }
         public string CALL_TYPE { get; set; }
+        public int PHD_CALL_SCENARIO_ID { get; set; }
+        public bool IS_READ_ONLY_MODE { get; set; }
+
     }
 
     public class FOX_TBL_SURVEY_AUDIT_SCORES : BaseModel
@@ -146,16 +162,34 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
     {
         public string USER_NAME { get; set; }
         public string NAME { get; set; }
+        public string EMAIL { get; set; }
+
+    }
+    public class FeedBackCallerAndPhdCallReasons : BaseModel
+    {
+        public List<PhdCallReason> PhdCallReasons { get; set; }
+        public List<FeedBackCaller> FeedBackCaller { get; set; }
+
+
+
     }
 
     public class CallLogModel : BaseModel
     {
         public long ID { get; set; }
+        public long? PATIENT_ACCOUNT { get; set; }
         public string FILE_NAME { get; set; }
         public string CREATED_BY { get; set; }
         public DateTime? CREATED_DATE { get; set; }
         public string LOGS { get; set; }
         public bool IS_AUDITED { get; set; }
         public string NAME { get; set; }
+        public string FIRST_NAME { get; set; }
+        public string LAST_NAME { get; set; }
+        public string MRN { get; set; }
+        public int? PHD_CALL_SCENARIO_ID { get; set; }
+        public string CALL_SCANARIO { get; set; }
+
+
     }
 }

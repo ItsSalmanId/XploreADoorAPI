@@ -23,6 +23,7 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public string SORT_ORDER { get; set; }
         public int TIME_FRAME { get; set; }
         public string CALL_TYPE { get; set; }
+        public int PHD_CALL_SCENARIO_ID { get; set; }
     }
     public class AuditScoresList : BaseModel
     {

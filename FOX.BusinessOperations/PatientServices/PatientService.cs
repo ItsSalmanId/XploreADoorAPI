@@ -1078,7 +1078,7 @@ namespace FOX.BusinessOperations.PatientServices
             //var _patientAddressRepository = new GenericRepository<PatientAddress>(_patientContext);
             for (int i = 0; i < patientAddress.Count; i++)
             {
-                var dbPatientAddress = _PatientAddressRepository.GetByID(patientAddress[i].PATIENT_ADDRESS_HISTORY_ID);
+                 var dbPatientAddress = _PatientAddressRepository.GetByID(patientAddress[i].PATIENT_ADDRESS_HISTORY_ID);
                 if (dbPatientAddress == null) //add
                 {
                     patientAddress[i].PATIENT_ADDRESS_HISTORY_ID = Helper.getMaximumId("PATIENT_ADDRESS_HISTORY_ID");
@@ -1091,7 +1091,7 @@ namespace FOX.BusinessOperations.PatientServices
                     patientAddress[i] = SaveAddressInWebEHRTable(true, patientAddress[i]);
                     _PatientAddressRepository.Insert(patientAddress[i]);
                     _PatientAddressRepository.Save();
-                    if (patientAddress[i].ADDRESS_TYPE.ToLower() == "home address")
+                    if (patientAddress[i].ADDRESS_TYPE != null && patientAddress[i].ADDRESS_TYPE.ToLower() == "home address")
                     {
                         CheckAndUpdatePRSubscriber(patientAccount.ToString(), profile);
                         UpdateSubscriberForAllOtherInsurancesIfRelationSelfExceptPR(patientAccount.ToString(), profile);
@@ -1107,7 +1107,7 @@ namespace FOX.BusinessOperations.PatientServices
                         _PatientAddressRepository.Update(dbPatientAddress);
                         _PatientAddressRepository.Save();
                         SaveAddressInWebEHRTable(false, dbPatientAddress);
-                        if (patientAddress[i].ADDRESS_TYPE.ToLower() == "home address")
+                        if (patientAddress[i].ADDRESS_TYPE != null && patientAddress[i].ADDRESS_TYPE.ToLower() == "home address")
                         {
                             UpdateResidualInsuranceSubscriberOnRemoveHomeAddress(patientAccount.ToString(), profile);
                             UpdateHomeAddressInPatient(patientAccount, profile);
@@ -1134,7 +1134,7 @@ namespace FOX.BusinessOperations.PatientServices
                         _PatientAddressRepository.Update(dbPatientAddress);
                         _PatientAddressRepository.Save();
                         SaveAddressInWebEHRTable(false, dbPatientAddress);
-                        if (patientAddress[i].ADDRESS_TYPE.ToLower() == "home address")
+                        if (patientAddress[i].ADDRESS_TYPE != null && patientAddress[i].ADDRESS_TYPE.ToLower() == "home address")
                         {
                             CheckAndUpdatePRSubscriber(patientAccount.ToString(), profile);
                             UpdateSubscriberForAllOtherInsurancesIfRelationSelfExceptPR(patientAccount.ToString(), profile);
@@ -5674,13 +5674,21 @@ namespace FOX.BusinessOperations.PatientServices
 
         public ReconcileDemographics GetLatestEligibilityRecords(PatientEligibilitySearchModel patientEligibilitySearchModel, UserProfile profile)
         {
+            ReconcileDemographics reconcileDemographics;
             long patientAccount = long.Parse(patientEligibilitySearchModel.Patient_Account_Str);
             //long insType = eligibilitySearchReq.INS_TYPE;
             var _patientAccount = new SqlParameter { ParameterName = "PATIENTACCOUNT", Value = patientAccount };
             var _result = SpRepository<PatientInsuranceInformation>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_INSURANCES_INFO @PATIENTACCOUNT", _patientAccount);
-            //var patientInsuranceInformation = _result.Where(x => x.INS_TYPE == insType).FirstOrDefault();
-            var patientInsuranceInformation = _result.Where(x => x.INS_TYPE == 1).FirstOrDefault();
-            return GetEligibilityInformation(GetElgibilityDetails(patientAccount, patientInsuranceInformation, profile), patientAccount, profile);
+            if(_result.Count() > 0 && _result != null)
+            {
+                //var patientInsuranceInformation = _result.Where(x => x.INS_TYPE == insType).FirstOrDefault();
+                var patientInsuranceInformation = _result.Where(x => x.INS_TYPE == 1).FirstOrDefault();
+                if (patientInsuranceInformation != null)
+                {
+                    return GetEligibilityInformation(GetElgibilityDetails(patientAccount, patientInsuranceInformation, profile), patientAccount, profile);
+                }
+            }
+            return reconcileDemographics = new ReconcileDemographics();
         }
 
         public ReconcileDemographics GetEligibilityInformation(string ElgString, long patientAccount, UserProfile profile)
@@ -5740,7 +5748,14 @@ namespace FOX.BusinessOperations.PatientServices
             {
                 reconcileObj.ZIP = reconcileObj.ZIP.Replace("-","");
             }
-            reconcileObj.DOB = Convert.ToDateTime(obj.PayorDOB);
+            if (obj.PayorDOB == string.Empty)
+            {
+                reconcileObj.DOB = null;
+            }
+            else
+            {
+                reconcileObj.DOB = Convert.ToDateTime(obj.PayorDOB);
+            }
             reconcileObj.FIRST_NAME = obj.PayorFirstName;
             reconcileObj.GENDER = obj.PayorGender;
             reconcileObj.LAST_NAME = obj.PayorLastName;
@@ -10526,7 +10541,8 @@ namespace FOX.BusinessOperations.PatientServices
                             patientAddress.Zip = address.ZIP;
                             patientAddress.City = address.CITY;
                             patientAddress.State = address.STATE;
-                            if (loc.SetCoordinatesManually == false)
+                            patientAddress.Address = address.ADDRESS;
+                        if (loc.SetCoordinatesManually == false)
                             {
                                 POSCoordinates coordinates = GetCoordinates(patientAddress);
                                 if (coordinates != null)

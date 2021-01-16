@@ -167,5 +167,10 @@ namespace FoxRehabilitationAPI.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.UpdatePSFormat(format, GetProfile()));
         }
 
+        [HttpGet]
+        public HttpResponseMessage GetPSDetailsFromEmail(string surveyId)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetSurveyDetailedFromEmail(surveyId, GetProfile().PracticeCode));
+        }
     }
 }

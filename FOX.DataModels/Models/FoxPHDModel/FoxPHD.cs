@@ -143,7 +143,6 @@ namespace FOX.DataModels.Models.FoxPHD
         public string ATTACHMENT_NAME { get; set; }
         [NotMapped]
         public bool _IsSSCM { get; set; }
-        [NotMapped]
         public string FILE_PATH { get; set; }
     }
     [Table("FOX_TBL_PHD_CALL_PATIENT_VERIFICATION")]

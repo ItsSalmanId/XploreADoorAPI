@@ -11,11 +11,22 @@ using FOX.BusinessOperations.CommonService;
 using FOX.DataModels.Models.Settings.User;
 using FOX.BusinessOperations.CommonServices;
 using System.IO;
+using FOX.DataModels.Models.CommonModel;
+using FOX.DataModels.Models.AssignedQueueModel;
+using FOX.DataModels.Models.OriginalQueueModel;
+using FOX.DataModels.Context;
 
 namespace FOX.BusinessOperations.SupervisorWorkService
 {
     public class SupervisorWorkService : ISupervisorWorkService
     {
+        private readonly DBContextQueue _queueContext = new DBContextQueue();
+        private readonly GenericRepository<OriginalQueue> _queueRepository;
+
+        public SupervisorWorkService()
+        {
+            _queueRepository = new GenericRepository<OriginalQueue>(_queueContext);
+        }
         public List<SupervisorWork> GetSupervisorList(SupervisorWorkRequest request, UserProfile Profile)
         {
             if (request.TransferReason == "")
@@ -62,9 +73,10 @@ namespace FOX.BusinessOperations.SupervisorWorkService
             var parmTransferReason =  Helper.getDBNullOrValue("TRANSFER_REASON", request.TransferReason);
             var parmTransferComments =  Helper.getDBNullOrValue("TRANSFER_COMMENTS", request.TransferComments);
             var parmStatus =  Helper.getDBNullOrValue("STATUS", request.Status);
-            
-            var queue = SpRepository<SupervisorWork>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SUPERVISOR_WORK @PRACTICE_CODE ,@UNIQUE_ID ,@CURRENT_PAGE,@RECORD_PER_PAGE,@SOURCE_TYPE,@SOURCE_NAME,@SEARCH_TEXT ,@SORT_BY,@SORT_ORDER ,@INDEXED_BY,@SUPERVISORNAME ,@TRANSFER_REASON,@TRANSFER_COMMENTS,@STATUS",
-                        parmPracticeCode, uniqueid, parmCurrentPage, parmRecordsPerPage, parmSourceType, parmSourceName, parmSearchText,parmsortby,parmsortorder, parmIndexBy, parmSupervisorName, parmTransferReason, parmTransferComments,parmStatus);
+            var parmIsTrash = new SqlParameter("Is_Trash", SqlDbType.Bit) { Value = request.Is_Trash };
+
+            var queue = SpRepository<SupervisorWork>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SUPERVISOR_WORK @PRACTICE_CODE ,@UNIQUE_ID ,@CURRENT_PAGE,@RECORD_PER_PAGE,@SOURCE_TYPE,@SOURCE_NAME,@SEARCH_TEXT ,@SORT_BY,@SORT_ORDER ,@INDEXED_BY,@SUPERVISORNAME ,@TRANSFER_REASON,@TRANSFER_COMMENTS,@STATUS, @IS_TRASH",
+                        parmPracticeCode, uniqueid, parmCurrentPage, parmRecordsPerPage, parmSourceType, parmSourceName, parmSearchText,parmsortby,parmsortorder, parmIndexBy, parmSupervisorName, parmTransferReason, parmTransferComments,parmStatus, parmIsTrash);
             return queue;
         }
         public string ExportToExcelSupervisorQueu(SupervisorWorkRequest req, UserProfile profile)
@@ -168,6 +180,61 @@ namespace FOX.BusinessOperations.SupervisorWorkService
             var workId = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = Work_Id };
             var queue = SpRepository<WorkTransfer>.GetListWithStoreProcedure(@"exec [FOX_GET_TRANSFERCOMMENTS]  @WORK_ID", workId);
             return queue;
+        }
+
+        public ResponseModel MakeReferralAsValidOrTrashed(MarkReferralValidOrTrashedModel req, UserProfile profile)
+        {
+            var response = new ResponseModel();
+            response.Success = false;
+            if (req != null)
+            {
+                MarkReferralAsTrashedOrValid(req.Work_Id, req.Is_Trash, profile);
+                response.Success = true;
+                var workQueue = GetQueueById(req.Work_Id);
+                string logMsg = "";
+                if (req.Is_Trash == true)
+                {
+                    logMsg = string.Format("ID: {0} has been trashed.", req.Work_Id);
+                }
+                else
+                {
+                    logMsg = string.Format("ID: {0} has been restored.", req.Work_Id);
+                }
+
+                string user = !string.IsNullOrEmpty(profile.FirstName) ? profile.FirstName + " " + profile.LastName : profile.UserName;
+                Helper.LogSingleWorkOrderChange(req.Work_Id, workQueue.UNIQUE_ID, logMsg, user);
+            }
+
+            return response;
+        }
+        public ResponseModel MarkReferralAsTrashedOrValid(long work_id, bool markAsTrashed, UserProfile profile)
+        {
+            var response = new ResponseModel();
+            response.Success = false;
+            var dbData = _queueRepository.GetFirst(e => e.WORK_ID == work_id && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
+
+            if (dbData != null)
+            {
+                dbData.IS_TRASH_REFERRAL = markAsTrashed;
+                dbData.MODIFIED_BY = profile.UserName;
+                dbData.MODIFIED_DATE = Helper.GetCurrentDate();
+            }
+            if (dbData == null)
+            {
+                _queueRepository.Insert(dbData);
+            }
+            else
+            {
+                _queueRepository.Update(dbData);
+            }
+            _queueRepository.Save();
+            response.Success = true;
+            return response;
+        }
+        private OriginalQueue GetQueueById(long workId)
+        {
+            SqlParameter work_Id = new SqlParameter("WORK_ID", workId);
+            return SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_GET_WORKQUEUE_BY_ID @WORK_ID", work_Id);
         }
     }
 }

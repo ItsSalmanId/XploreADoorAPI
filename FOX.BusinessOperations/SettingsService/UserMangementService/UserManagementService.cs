@@ -2588,6 +2588,38 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             return true;
         }
 
+        public bool IsUserBlocked(string userName)
+        {
+            User user = _UserRepository.GetFirst(x => (x.USER_NAME == userName || x.EMAIL == userName) && !x.DELETED && x.IS_ACTIVE);
+            if (user != null)
+            {
+                if (user.IS_AD_USER.HasValue && user.IS_AD_USER.Value)
+                {
+                    return false;
+                }
+            }
+
+            Valid_Login_Attempts invalidAttempts = _validLoginAtttempts.GetFirst(x => x.USER_NAME == userName);
+            if (invalidAttempts != null && invalidAttempts.FAIL_ATTEMPT_COUNT >= AppConfiguration.InvalidAttemptsCountToBlockUser + 1)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public int GetInvalidAttempts(string userName)
+        {
+            Valid_Login_Attempts invalidAttempts = _validLoginAtttempts.GetFirst(x => x.USER_NAME == userName);
+            if(invalidAttempts != null)
+            {
+                return Convert.ToInt32(invalidAttempts.FAIL_ATTEMPT_COUNT);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
         public bool AddUserValidLoginAttempt(string userName)
         {
             Valid_Login_Attempts validAttempts = _validLoginAtttempts.GetFirst(x => x.USER_NAME == userName);

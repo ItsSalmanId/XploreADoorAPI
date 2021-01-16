@@ -1,5 +1,6 @@
 ﻿using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.OriginalQueueModel;
+using FOX.DataModels.Models.Patient;
 using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.Settings.FacilityLocation;
 using FOX.DataModels.Models.Settings.ReferralSource;
@@ -65,5 +66,8 @@ namespace FOX.BusinessOperations.IndexInfoServices
         ReferralSourceAndGroups getAllReferralSourceAndGroups(UserProfile profile);
         pendingBalanceAmount GetPatientBalance(long? PATIENT_ACCOUNT);
         List<PatientListResponse> GetpatientsList(getPatientReq req, UserProfile Profile);
+        List<DuplicateReferralInfo> GetDuplicateReferralInformation(checkDuplicateReferralRequest checkDuplicateReferral, UserProfile userProfile);
+        List<WorkOrderDocs> GetWorkOrderDocs(string patientAccountStr, UserProfile userProfile);
+        void SaveLogMessage(Index_infoReq workId, UserProfile userProfile);
     }
 }

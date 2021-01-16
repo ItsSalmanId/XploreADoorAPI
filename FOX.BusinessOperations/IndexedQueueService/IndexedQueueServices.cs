@@ -186,6 +186,7 @@ namespace FOX.BusinessOperations.IndexedQueueService
                 SqlParameter updateWorkStatus = new SqlParameter("UPDATE_WORK_STATUS", false);
                 SqlParameter updateIndexDate = new SqlParameter("UPDATE_INDEX_DATE", false);
                 SqlParameter updateAgentDate = new SqlParameter("UPDATE_AGENT_DATE", false);
+                SqlParameter supervisor_status = new SqlParameter("SUPERVISOR_STATUS", false);
                 if (workQueue != null)
                 {
                     var prevAssignedTo = workQueue.ASSIGNED_TO;
@@ -194,20 +195,25 @@ namespace FOX.BusinessOperations.IndexedQueueService
                     //workQueue.ASSIGNED_TO = item.RE_ASSIGNED_TO;
                     //workQueue.ASSIGNED_BY = Profile.UserName;
                     //workQueue.ASSIGNED_DATE = Helper.GetCurrentDate();
-                    if (!string.IsNullOrEmpty(workQueue.ASSIGNED_TO))
+                    if (!(string.IsNullOrEmpty(workQueue.ASSIGNED_TO) && string.IsNullOrEmpty(item.RE_ASSIGNED_TO)))
                     {
-                        RoleID = GetUserRole(Profile, workQueue.ASSIGNED_TO)?.ROLE_ID ?? 0;// _userRepository.GetFirst(x => x.USER_NAME == workQueue.ASSIGNED_TO).ROLE_ID;
+                        RoleID = GetUserRole(Profile, item.RE_ASSIGNED_TO)?.ROLE_ID ?? 0;// _userRepository.GetFirst(x => x.USER_NAME == workQueue.ASSIGNED_TO).ROLE_ID;
                         AssignToDesign = RoleID.HasValue ? GetRoleById(RoleID.Value)?.ROLE_NAME : string.Empty ?? string.Empty; //_roleRepository.GetFirst(x => x.ROLE_ID == RoleID).ROLE_NAME;
                         AssignByDesignation = GetRoleById( Profile.RoleId)?.ROLE_NAME ?? string.Empty;
                         if (AssignToDesign.ToLower().Equals("INDEXER".ToLower()))
                         {
                             updateIndexDate.Value = true;
                             workQueue.INDEXER_ASSIGN_DATE = Helper.GetCurrentDate();
+                            workQueue.supervisor_status = false;
                         }
                         if (AssignToDesign.ToLower().Equals("AGENT".ToLower()))
                         {
                             updateAgentDate.Value = true;
                             workQueue.AGENT_ASSIGN_DATE = Helper.GetCurrentDate();
+                        }
+                        if (AssignToDesign.ToLower().Equals("Supervisor".ToLower()))
+                        {
+                            supervisor_status.Value = true;
                         }
                     }
                     if (string.IsNullOrEmpty(prevAssignedTo))
@@ -219,12 +225,12 @@ namespace FOX.BusinessOperations.IndexedQueueService
                     }
                    
                     InsertAssignmentData(workQueue.ASSIGNED_BY, workQueue.ASSIGNED_TO, AssignToDesign, AssignByDesignation,item.WORK_ID, Profile);
-                    SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_UPDATE_WORK_QUEUE @WORK_ID, @USER_NAME, @ASSIGNED_TO, @WORK_STATUS, @UPDATE_WORK_STATUS, @UPDATE_INDEX_DATE, @UPDATE_AGENT_DATE ", workId, userName, assignedTo, workStatus, updateWorkStatus, updateIndexDate, updateAgentDate);
+                    SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_UPDATE_WORK_QUEUE @WORK_ID, @USER_NAME, @ASSIGNED_TO, @WORK_STATUS, @UPDATE_WORK_STATUS, @UPDATE_INDEX_DATE, @UPDATE_AGENT_DATE, @SUPERVISOR_STATUS", workId, userName, assignedTo, workStatus, updateWorkStatus, updateIndexDate, updateAgentDate, supervisor_status);
                     //_QueueRepository.Update(workQueue);
                     //_QueueRepository.Save();
 
                     //Log Changes
-                    string logMsg = "";
+                     string logMsg = "";
                     if (string.IsNullOrEmpty(prevAssignedTo))
                         logMsg = string.Format("ID: {0} has been assigned to {1}.", workQueue.UNIQUE_ID, Helper.GetFullName(item.RE_ASSIGNED_TO));
                     else

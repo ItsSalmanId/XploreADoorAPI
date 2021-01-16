@@ -446,7 +446,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         }
         public OriginalQueue UpdateSource_AdditionalInfo(DataModels.Models.OriginalQueueModel.OriginalQueue obj, UserProfile profile)
         {
-            if (obj.PATIENT_ACCOUNT!=0 && obj.WORK_ID!=0)
+            if (obj.PATIENT_ACCOUNT != 0 && obj.WORK_ID != 0)
             {
                 //OriginalQueue sourceAddDetail = null;
                 // sourceAddDetail.MODIFIED_DATE = Helper.GetCurrentDate();
@@ -455,7 +455,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
                 SqlParameter pat_account = new SqlParameter("PATIENT_ACCOUNT", obj.PATIENT_ACCOUNT);
                 SqlParameter userName = new SqlParameter("USER_NAME", profile.UserName);
-                var result= SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_UPDATE_MARKCOMPLETE_MODIFIEDDATE @WORK_ID, @PRACTICE_CODE, @PATIENT_ACCOUNT,@USER_NAME",
+                var result = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_UPDATE_MARKCOMPLETE_MODIFIEDDATE @WORK_ID, @PRACTICE_CODE, @PATIENT_ACCOUNT,@USER_NAME",
                                                                                                                                  workID, practiceCode, pat_account, userName);
                 return result;
             }
@@ -478,7 +478,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 pat_account = long.Parse(obj.Patient_Account_Str);
 
             }
-            if(obj.ISNoAssociate == true && pat_account != null)
+            if (obj.ISNoAssociate == true && pat_account != null)
             {
                 var phdDetailId = long.Parse(obj.FOX_TBL_PHD_CALL_DETAIL_ID);
                 var phdPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = profile.PracticeCode };
@@ -499,19 +499,19 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 work_id = Helper.getMaximumId("WORK_ID");
             }
-                SqlParameter ID = new SqlParameter("ID", work_id);
-                SqlParameter workID = new SqlParameter("WORK_ID", obj.WORK_ID);
-                SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
-                SqlParameter createdBy = new SqlParameter("CREATED_BY", profile.UserName);
-                SqlParameter isEmergencyOrder = new SqlParameter("IS_EMERGENGENCY_ORDER", false);
-                SqlParameter supervisorStatus = new SqlParameter("SUPERVISOR_STATUS", false);
-                SqlParameter sourceName = new SqlParameter("SORCE_NAME", profile.UserEmailAddress);
-                SqlParameter sourceType = new SqlParameter("SORCE_TYPE", "Email");
-                SqlParameter workStatus = new SqlParameter("WORK_STATUS", "Created");
-                SqlParameter isVerifiedByRecepient = new SqlParameter("IS_VERIFIED_BY_RECEPIENT", false);
-                SqlParameter selectedSource = new SqlParameter("FOX_SOURCE_CATEGORY_ID", obj?.FOX_SOURCE_CATEGORY_ID ?? 0);
-                sourceAddDetail = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_INSERT_ORIGNAL_QUEUE @ID, @WORK_ID, @PRACTICE_CODE, @CREATED_BY,@IS_EMERGENGENCY_ORDER,@SUPERVISOR_STATUS,@SORCE_NAME,@SORCE_TYPE, @WORK_STATUS,@IS_VERIFIED_BY_RECEPIENT,@FOX_SOURCE_CATEGORY_ID",
-                                                                                                                                    ID, workID, practiceCode, createdBy, isEmergencyOrder, supervisorStatus, sourceName, sourceType, workStatus, isVerifiedByRecepient, selectedSource);
+            SqlParameter ID = new SqlParameter("ID", work_id);
+            SqlParameter workID = new SqlParameter("WORK_ID", obj.WORK_ID);
+            SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
+            SqlParameter createdBy = new SqlParameter("CREATED_BY", profile.UserName);
+            SqlParameter isEmergencyOrder = new SqlParameter("IS_EMERGENGENCY_ORDER", false);
+            SqlParameter supervisorStatus = new SqlParameter("SUPERVISOR_STATUS", false);
+            SqlParameter sourceName = new SqlParameter("SORCE_NAME", profile.UserEmailAddress);
+            SqlParameter sourceType = new SqlParameter("SORCE_TYPE", "Email");
+            SqlParameter workStatus = new SqlParameter("WORK_STATUS", "Created");
+            SqlParameter isVerifiedByRecepient = new SqlParameter("IS_VERIFIED_BY_RECEPIENT", false);
+            SqlParameter selectedSource = new SqlParameter("FOX_SOURCE_CATEGORY_ID", obj?.FOX_SOURCE_CATEGORY_ID ?? 0);
+            sourceAddDetail = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_INSERT_ORIGNAL_QUEUE @ID, @WORK_ID, @PRACTICE_CODE, @CREATED_BY,@IS_EMERGENGENCY_ORDER,@SUPERVISOR_STATUS,@SORCE_NAME,@SORCE_TYPE, @WORK_STATUS,@IS_VERIFIED_BY_RECEPIENT,@FOX_SOURCE_CATEGORY_ID",
+                                                                                                                                ID, workID, practiceCode, createdBy, isEmergencyOrder, supervisorStatus, sourceName, sourceType, workStatus, isVerifiedByRecepient, selectedSource);
 
             //if (sourceAddDetail == null)
             //{
@@ -755,12 +755,12 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     }
 
 
-                    if(obj.Is_Manual_ORS)
+                    if (obj.Is_Manual_ORS)
                     {
                         FOX_TBL_NOTES_HISTORY notes = new FOX_TBL_NOTES_HISTORY();
                         notes.NOTE_DESC = "Custom ordering referral source is added by the user. See the attached referral for details";
                         notes.WORK_ID = sourceAddDetail.WORK_ID;
-                        InsertNotesHistory(notes,profile);
+                        InsertNotesHistory(notes, profile);
                     }
                 }
 
@@ -913,7 +913,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                 SqlParameter practice_Code = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
                                 SqlParameter userName = new SqlParameter("USER_NAME", profile.UserName);
                                 SqlParameter workId = new SqlParameter("Work_ID", obj.WORK_ID);
-                                SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_CHANGE_STATUS @PRACTICE_CODE,@USER_NAME,@Work_ID",practice_Code, userName, workId);
+                                SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_CHANGE_STATUS @PRACTICE_CODE,@USER_NAME,@Work_ID", practice_Code, userName, workId);
                             }
                             else
                             {
@@ -1002,7 +1002,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     if (MSP_SUB_TYPE_EXIST != null && MSP_SUB_TYPE_EXIST.TASK_ID != null)
                     {
                         var MSP_TASK = MSP_TASK_EXIST.Where(t => t.TASK_ID == MSP_SUB_TYPE_EXIST.TASK_ID).FirstOrDefault();
-                        if(MSP_TASK != null)
+                        if (MSP_TASK != null)
                         {
                             var IS_MSP_NOT_INTERFACED = GetNotInterfaceTaskList(profile.PracticeCode, pat_account, MSP_TASK.TASK_ID);
                             //var IS_MSP_NOT_INTERFACED = __InterfaceSynchModelRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode
@@ -1013,10 +1013,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                 interfaceSynch.TASK_ID = MSP_SUB_TYPE_EXIST.TASK_ID;
                                 InsertInterfaceTeamData(interfaceSynch, profile);
                             }
-                            else if(IS_MSP_NOT_INTERFACED.Count > 0)
+                            else if (IS_MSP_NOT_INTERFACED.Count > 0)
                             {
                                 var interfaced = IS_MSP_NOT_INTERFACED.Where(t => t.IS_SYNCED == false && t.TASK_ID == MSP_SUB_TYPE_EXIST.TASK_ID).FirstOrDefault();
-                                if(interfaced != null)
+                                if (interfaced != null)
                                 {
                                     interfaceSynch.TASK_ID = interfaced.TASK_ID;
                                     InsertInterfaceTeamData(interfaceSynch, profile);
@@ -1186,54 +1186,54 @@ namespace FOX.BusinessOperations.IndexInfoServices
                             _bccList.Add(_emailList[i].EMAIL_ADDRESS);
                         }
                     }
-                   
-                   var patientDetails = _QueueRepository.GetFirst(x => x.WORK_ID == emailData.WORK_ID &&  x.DELETED == false && x.PRACTICE_CODE == profile.PracticeCode);
-                    if(patientDetails != null)
+
+                    var patientDetails = _QueueRepository.GetFirst(x => x.WORK_ID == emailData.WORK_ID && x.DELETED == false && x.PRACTICE_CODE == profile.PracticeCode);
+                    if (patientDetails != null)
                     {
                         var patientPOSLocation = _PatientPOSLocationRepository.GetMany(x => x.Patient_Account == patientDetails.PATIENT_ACCOUNT && x.Deleted == false && x.Is_Default == true).OrderByDescending(t => t.Modified_Date).FirstOrDefault();
-                        if(patientPOSLocation != null)
+                        if (patientPOSLocation != null)
                         {
-                           var activeLocation = _FacilityLocationRepository.GetFirst(x => x.LOC_ID == patientPOSLocation.Loc_ID && x.DELETED == false && x.PRACTICE_CODE == profile.PracticeCode);
-                            if (activeLocation !=null && activeLocation.NAME.ToLower() == "private home")
+                            var activeLocation = _FacilityLocationRepository.GetFirst(x => x.LOC_ID == patientPOSLocation.Loc_ID && x.DELETED == false && x.PRACTICE_CODE == profile.PracticeCode);
+                            if (activeLocation != null && activeLocation.NAME.ToLower() == "private home")
                             {
                                 var privateHomeDetails = _PatientAddressRepository.GetFirst(x => x.PATIENT_ACCOUNT == patientDetails.PATIENT_ACCOUNT && x.PATIENT_POS_ID == patientPOSLocation.Patient_POS_ID && x.DELETED == false);
-                                if(privateHomeDetails != null)
+                                if (privateHomeDetails != null)
                                 {
-                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.ZIP_CODE.Substring(0, 5) == privateHomeDetails.ZIP.Substring(0,5) && !x.DELETED);
-                                    if(referralRegionDetails != null)
+                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.ZIP_CODE.Substring(0, 5) == privateHomeDetails.ZIP.Substring(0, 5) && !x.DELETED);
+                                    if (referralRegionDetails != null)
                                     {
                                         _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID && !x.DELETED);
                                     }
-                                   
+
                                 }
-                                
+
 
                             }
                             else
                             {
-                                if(activeLocation != null && activeLocation.Zip != null)
+                                if (activeLocation != null && activeLocation.Zip != null)
                                 {
                                     var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.ZIP_CODE.Substring(0, 5) == activeLocation.Zip.Substring(0, 5) && x.PRACTICE_CODE == profile.PracticeCode);
-                                    if(referralRegionDetails != null)
+                                    if (referralRegionDetails != null)
                                     {
                                         _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID && !x.DELETED);
                                     }
-                                   
+
                                 }
-                             
+
 
                             }
                         }
-                       
+
                     }
-                   
-                  
-                   
+
+
+
 
 
 
                     //var _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && (x.REFERRAL_REGION_NAME == emailData.REFERRAL_REGION_NAME || x.REFERRAL_REGION_CODE == emailData.REFERRAL_REGION_NAME));
-                    
+
                     if (_accontManagerEmail != null)
                     {
                         if (string.IsNullOrEmpty(sendTo))
@@ -1270,7 +1270,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                             _bccList.Add(_emailList[i].EMAIL_ADDRESS);
                         }
                     }
-                    var patientDetails = _QueueRepository.GetFirst(x =>x.PRACTICE_CODE == profile.PracticeCode && x.WORK_ID == emailData.WORK_ID && x.DELETED == false);
+                    var patientDetails = _QueueRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.WORK_ID == emailData.WORK_ID && x.DELETED == false);
                     if (patientDetails != null)
                     {
                         var patientPOSLocation = _PatientPOSLocationRepository.GetMany(x => x.Patient_Account == patientDetails.PATIENT_ACCOUNT && x.Deleted == false && x.Is_Default == true).OrderByDescending(t => t.Modified_Date).FirstOrDefault();
@@ -1282,7 +1282,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                 var privateHomeDetails = _PatientAddressRepository.GetFirst(x => x.PATIENT_ACCOUNT == patientDetails.PATIENT_ACCOUNT && x.PATIENT_POS_ID == patientPOSLocation.Patient_POS_ID && x.DELETED == false);
                                 if (privateHomeDetails != null)
                                 {
-                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode &&  x.ZIP_CODE.Substring(0, 5) == privateHomeDetails.ZIP.Substring(0,5) && !x.DELETED);
+                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.ZIP_CODE.Substring(0, 5) == privateHomeDetails.ZIP.Substring(0, 5) && !x.DELETED);
                                     if (referralRegionDetails != null)
                                     {
                                         _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID && !x.DELETED);
@@ -1294,7 +1294,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                             {
                                 if (activeLocation != null && activeLocation.Zip != null)
                                 {
-                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode &&  x.ZIP_CODE.Substring(0, 5) == activeLocation.Zip.Substring(0, 5) && !x.DELETED);
+                                    var referralRegionDetails = _zipStateCountyRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.ZIP_CODE.Substring(0, 5) == activeLocation.Zip.Substring(0, 5) && !x.DELETED);
                                     if (referralRegionDetails != null)
                                     {
                                         _accontManagerEmail = _ReferralRegionRepository.GetFirst(x => x.PRACTICE_CODE == profile.PracticeCode && x.IS_ACTIVE == true && x.ACCOUNT_MANAGER_EMAIL != null && x.REFERRAL_REGION_ID == referralRegionDetails.REFERRAL_REGION_ID && !x.DELETED);
@@ -1430,7 +1430,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     _body += "<p><strong>Procedure Information:<br /></strong>";
                     for (int i = 0; i < _CPT.Count; i++)
                     {
-                        if(!string.IsNullOrWhiteSpace(_CPT[i].PROC_CODE) && !string.IsNullOrWhiteSpace(_CPT[i].CPT_DESC))
+                        if (!string.IsNullOrWhiteSpace(_CPT[i].PROC_CODE) && !string.IsNullOrWhiteSpace(_CPT[i].CPT_DESC))
                             _body += "&nbsp;&nbsp;&nbsp;" + (i + 1).ToString() + "- [" + _CPT[i].PROC_CODE + "] " + Helper.ChangeStringToTitleCase(_CPT[i].CPT_DESC) + "<br />";
                     }
                     _body += "</p>";
@@ -1770,7 +1770,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             try
 
             {
-                var work_id = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = obj.WORK_ID};
+                var work_id = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = obj.WORK_ID };
                 if (obj.WORK_ID == null)
                 {
                     work_id.Value = DBNull.Value;
@@ -1889,7 +1889,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 var parmPracticeCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
                 var smartvalue = new SqlParameter("@SEARCHVALUE", SqlDbType.VarChar) { Value = obj.SEARCHVALUE };
-                var result= new List<SmartOrderSource>();
+                var result = new List<SmartOrderSource>();
                 if (!obj.Is_From_RFO)
                 {
                     result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
@@ -2323,7 +2323,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 bitmap.Dispose();
                 cimage.Dispose();
                 base64Image = Convert.ToBase64String(File.ReadAllBytes(curtime)); //Get Base64
-            }          
+            }
             string src = "data:image/png;base64," + base64Image;
             string encodedString = HttpUtility.UrlEncode(src);
             obj.ENCODED_IMAGE_BYTES = encodedString;
@@ -2442,7 +2442,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     string sendTo = data.EMAIL;
                     //bool sent = Helper.Email("noreply@mtbc.com", sendTo, subject, body, null, null, new List<string> { Path.Combine(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME) });
                     bool sent = Helper.Email(sendTo, subject, body, profile, data.work_id, null, null, new List<string> { Path.Combine(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME) });
-                    if(sent)
+                    if (sent)
                     {
                         ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, body, "tempcoversletter");
                         string coverfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
@@ -2592,7 +2592,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     originalQueue.TOTAL_PAGES = noOfPages;
                     //originalQueue.FILE_PATH = filePath;
                     originalQueue.FAX_ID = "";
-                    
+
                     originalQueue.SignedBy = userId;
                     originalQueue.MODIFIED_BY = userName;
                     originalQueue.MODIFIED_DATE = DateTime.Now;
@@ -2638,12 +2638,12 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     string[] result = fax.Split(',');
                     if ((result[1].Equals("True") || result[1].Equals("true")) && (!result[2].Equals("false") || !result[2].Equals("False")))
                     {
-                        Helper.LogFaxData(to: data.FAX, status: "Success", profile: profile, ex: null  ,work_id: data.work_id,  attachments: new List<string> { Path.Combine(string.IsNullOrEmpty(attachmentPath.FILE_PATH) ? string.Empty : attachmentPath.FILE_PATH, string.IsNullOrEmpty(attachmentPath.FILE_NAME) ? string.Empty : attachmentPath.FILE_NAME) });
+                        Helper.LogFaxData(to: data.FAX, status: "Success", profile: profile, ex: null, work_id: data.work_id, attachments: new List<string> { Path.Combine(string.IsNullOrEmpty(attachmentPath.FILE_PATH) ? string.Empty : attachmentPath.FILE_PATH, string.IsNullOrEmpty(attachmentPath.FILE_NAME) ? string.Empty : attachmentPath.FILE_NAME) });
                         return true;
                     }
                     else
                     {
-                        Helper.LogFaxData(to: data.FAX, status: "Failed",  profile: profile, ex: "FAX could not be sent.", work_id: data.work_id, attachments: new List<string> { Path.Combine(string.IsNullOrEmpty(attachmentPath.FILE_PATH) ? string.Empty : attachmentPath.FILE_PATH, string.IsNullOrEmpty(attachmentPath.FILE_NAME) ? string.Empty : attachmentPath.FILE_NAME) });
+                        Helper.LogFaxData(to: data.FAX, status: "Failed", profile: profile, ex: "FAX could not be sent.", work_id: data.work_id, attachments: new List<string> { Path.Combine(string.IsNullOrEmpty(attachmentPath.FILE_PATH) ? string.Empty : attachmentPath.FILE_PATH, string.IsNullOrEmpty(attachmentPath.FILE_NAME) ? string.Empty : attachmentPath.FILE_NAME) });
                         throw new Exception(fax);
                         //return false;
                     }
@@ -2657,7 +2657,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             }
             catch (Exception ex)
             {
-                Helper.LogFaxData(to: data.FAX, status: "Failed", profile: profile,   ex: ex.Message,work_id: data.work_id, attachments: new List<string> { Path.Combine(string.IsNullOrEmpty(attachmentPath.FILE_PATH) ? string.Empty : attachmentPath.FILE_PATH, string.IsNullOrEmpty( attachmentPath.FILE_NAME) ? string.Empty : attachmentPath.FILE_NAME) });
+                Helper.LogFaxData(to: data.FAX, status: "Failed", profile: profile, ex: ex.Message, work_id: data.work_id, attachments: new List<string> { Path.Combine(string.IsNullOrEmpty(attachmentPath.FILE_PATH) ? string.Empty : attachmentPath.FILE_PATH, string.IsNullOrEmpty(attachmentPath.FILE_NAME) ? string.Empty : attachmentPath.FILE_NAME) });
                 throw;
             }
         }
@@ -2694,7 +2694,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 {
                     receivedDate = Helper.GetCurrentDate().ToString("MM/dd/yyyy");
                     receivedTime = Helper.GetCurrentDate().ToString("hh:mm tt");
-                    if(data.IS_EMAIL)
+                    if (data.IS_EMAIL)
                     {
                         body = body.Replace("[[SENT_TO]]", data.EMAIL ?? "FOX Rehab");
                     }
@@ -2703,7 +2703,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                         body = body.Replace("[[SENT_TO]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(data.FAX) ?? "FOX Rehab");
                     }
                 }
-                var sendingDate = Helper.GetCurrentDate().ToString("MM/dd/yyyy") +" " + Helper.GetCurrentDate().ToString("hh:mm tt");
+                var sendingDate = Helper.GetCurrentDate().ToString("MM/dd/yyyy") + " " + Helper.GetCurrentDate().ToString("hh:mm tt");
                 body = body.Replace("[[RECEIVED_DATE]]", receivedDate);
                 body = body.Replace("[[RECEIVED_TIME]]", receivedTime);
                 body = body.Replace("[[BODY]]", data.BODY);
@@ -3051,7 +3051,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             //var taskSubTypeList = _taskSubTypeRepository.GetMany(t => t.PRACTICE_CODE == profile.PracticeCode && t.DELETED == false && t.TASK_TYPE_ID == task_type_id);
             var taskTypes = GetTaskTypes(profile.PracticeCode);
             //var taskTypes = _taskTypeRepository.GetMany(t => t.PRACTICE_CODE == profile.PracticeCode && !t.DELETED);
-            var referralSource = _referralSourceTableRepository.GetFirst(t=> t.FOX_SOURCE_CATEGORY_ID == FOX_SOURCE_CATEGORY_ID && t.DELETED == false);
+            var referralSource = _referralSourceTableRepository.GetFirst(t => t.FOX_SOURCE_CATEGORY_ID == FOX_SOURCE_CATEGORY_ID && t.DELETED == false);
             var currentTaskType = taskTypes.Find(e => e.TASK_TYPE_ID == task_type_id);
             foreach (var taskSubType in taskSubTypeList)
             {
@@ -3063,7 +3063,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 {
                     IS_CHECKED = true;
                 }
-                else if(FOX_SOURCE_CATEGORY_ID != null && referralSource !=null && !string.IsNullOrEmpty(referralSource.DESCRIPTION) && !string.IsNullOrEmpty(taskSubType.NAME)
+                else if (FOX_SOURCE_CATEGORY_ID != null && referralSource != null && !string.IsNullOrEmpty(referralSource.DESCRIPTION) && !string.IsNullOrEmpty(taskSubType.NAME)
                     && referralSource.DESCRIPTION.ToLower() == taskSubType.NAME.ToLower())
                 {
                     IS_CHECKED = true;
@@ -3257,7 +3257,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     //taskLoglist.Add(new TaskLog() { ACTION = "Username :", ACTION_DETAIL = "Username : " + Indexer.LAST_NAME + ", " + Indexer.FIRST_NAME });
                     //taskLoglist.Add(new TaskLog() { ACTION = "indexer :", ACTION_DETAIL = "Indexer >" });
 
-                    porta_logs.Add("Completed Date & Time :" + sourceDetail.COMPLETED_DATE );
+                    porta_logs.Add("Completed Date & Time :" + sourceDetail.COMPLETED_DATE);
                     if (Indexer != null)
                     {
                         porta_logs.Add("Username : " + Indexer.LAST_NAME + ", " + Indexer.FIRST_NAME);
@@ -3275,14 +3275,14 @@ namespace FOX.BusinessOperations.IndexInfoServices
                         if (WORK_QUEUE.VO_DATE_TIME != null)
                         {
                             //taskLoglist.Add(new TaskLog() { ACTION = "Date & Time :", ACTION_DETAIL = "Date & Time :" + WORK_QUEUE.VO_DATE_TIME });
-                            porta_logs.Add("Date & Time :" + WORK_QUEUE.VO_DATE_TIME );
+                            porta_logs.Add("Date & Time :" + WORK_QUEUE.VO_DATE_TIME);
 
                         }
 
-                        if(!String.IsNullOrWhiteSpace(WORK_QUEUE.VO_RECIEVED_BY))
+                        if (!String.IsNullOrWhiteSpace(WORK_QUEUE.VO_RECIEVED_BY))
                         {
                             //taskLoglist.Add(new TaskLog() { ACTION = "Received By :", ACTION_DETAIL = "Received By :" + WORK_QUEUE.VO_RECIEVED_BY });
-                            porta_logs.Add("Received By :" + WORK_QUEUE.VO_RECIEVED_BY );
+                            porta_logs.Add("Received By :" + WORK_QUEUE.VO_RECIEVED_BY);
 
                         }
                         if (WORK_QUEUE.VO_ON_BEHALF_OF != null)
@@ -3291,10 +3291,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
                             var on_behalf_of = GetOrderingRefrralSource(WORK_QUEUE.VO_ON_BEHALF_OF);
                             //var on_behalf_of = _InsertUpdateOrderingSourceRepository.GetFirst(t => t.DELETED == false && t.SOURCE_ID == WORK_QUEUE.VO_ON_BEHALF_OF);
-                            if(on_behalf_of != null)
+                            if (on_behalf_of != null)
                             {
                                 //taskLoglist.Add(new TaskLog() { ACTION = "On Behalf of : ", ACTION_DETAIL = "On Behalf of : " + on_behalf_of.FIRST_NAME ?? ""  + " " + on_behalf_of.LAST_NAME ?? "" + " - " + on_behalf_of.REFERRAL_REGION ?? "" });
-                                porta_logs.Add("On Behalf of : " + on_behalf_of.FIRST_NAME ?? "" + " " + on_behalf_of.LAST_NAME ?? "" + " - " + on_behalf_of.REFERRAL_REGION ?? "" );
+                                porta_logs.Add("On Behalf of : " + on_behalf_of.FIRST_NAME ?? "" + " " + on_behalf_of.LAST_NAME ?? "" + " - " + on_behalf_of.REFERRAL_REGION ?? "");
 
                             }
                             Procedure_information = true;
@@ -3318,12 +3318,12 @@ namespace FOX.BusinessOperations.IndexInfoServices
                         if (!String.IsNullOrWhiteSpace(WORK_QUEUE.HEALTH_NUMBER))
                         {
                             //taskLoglist.Add(new TaskLog() { ACTION = "Contact Number :", ACTION_DETAIL = "Contact Number :" + WORK_QUEUE.HEALTH_NUMBER });
-                            porta_logs.Add("Contact Number :" + WORK_QUEUE.HEALTH_NUMBER );
+                            porta_logs.Add("Contact Number :" + WORK_QUEUE.HEALTH_NUMBER);
                         }
                         if (!String.IsNullOrWhiteSpace(WORK_QUEUE.HEALTH_NAME))
                         {
                             //taskLoglist.Add(new TaskLog() { ACTION = "Home Health Name :", ACTION_DETAIL = "Home Health Name :" + WORK_QUEUE.HEALTH_NAME });
-                            porta_logs.Add("Home Health Name :" + WORK_QUEUE.HEALTH_NAME );
+                            porta_logs.Add("Home Health Name :" + WORK_QUEUE.HEALTH_NAME);
                         }
                         Procedure_information = true;
                     }
@@ -3341,7 +3341,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     if (!String.IsNullOrWhiteSpace(WORK_QUEUE.REASON_FOR_THE_URGENCY))
                     {
                         //taskLoglist.Add(new TaskLog() { ACTION = "Reason for the Urgency", ACTION_DETAIL = "Reason for the Urgency : " + WORK_QUEUE.REASON_FOR_THE_URGENCY });
-                        porta_logs.Add("Reason for the Urgency : " + WORK_QUEUE.REASON_FOR_THE_URGENCY );
+                        porta_logs.Add("Reason for the Urgency : " + WORK_QUEUE.REASON_FOR_THE_URGENCY);
                         Procedure_information = true;
                     }
                     if (WORK_QUEUE.IS_EMERGENCY_ORDER != null && WORK_QUEUE.IS_EMERGENCY_ORDER)
@@ -3366,7 +3366,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                         porta_logs.Add("Speciality Program : " + speciality_program.SPECIALITY_PROGRAM);
                         Procedure_information = true;
                     }
-                    if(Procedure_information)
+                    if (Procedure_information)
                     {
                         //taskLoglist.Add(new TaskLog() { ACTION = "Procedure Information", ACTION_DETAIL = "Procedure Information >" });
                         porta_logs.Add("Procedure Information > ");
@@ -3377,21 +3377,21 @@ namespace FOX.BusinessOperations.IndexInfoServices
                         medicare_insurance = curr_insurances.Find(t => t.FINANCIAL_CLASS_ID == medicare_financial_class.FINANCIAL_CLASS_ID);
                     }
                     FOX_TBL_ELIG_HTML eligibility = new FOX_TBL_ELIG_HTML();
-                    if(medicare_insurance != null)
+                    if (medicare_insurance != null)
                     {
                         eligibility = GetPatienEligibilityDetail(profile.PracticeCode, medicare_insurance.Patient_Insurance_Id, task.PATIENT_ACCOUNT);
                         //eligibility = _eligHtmlRepository.GetFirst(t => t.PRACTICE_CODE == profile.PracticeCode && t.DELETED == false && t.PATIENT_INSURANCE_ID == medicare_insurance.Patient_Insurance_Id && t.PATIENT_ACCOUNT == task.PATIENT_ACCOUNT);
                     }
                     if (medicare_insurance != null && eligibility != null && eligibility.ELIG_HTML_ID != 0)
                     {
-                        if(medicare_insurance.HOSPICE_LIMIT_ID != null)
+                        if (medicare_insurance.HOSPICE_LIMIT_ID != null)
                         {
                             var medicare_limit_hospice = GetMedicareLimit(medicare_insurance.HOSPICE_LIMIT_ID, task.PATIENT_ACCOUNT, profile.PracticeCode);
                             //var medicare_limit_hospice = _MedicareLimitRepository.GetFirst(t => t.MEDICARE_LIMIT_ID == medicare_insurance.HOSPICE_LIMIT_ID && t.Patient_Account == task.PATIENT_ACCOUNT  && t.DELETED == false && t.PRACTICE_CODE == profile.PracticeCode);
                             if (medicare_limit_hospice != null)
                             {
                                 var current_date = Helper.GetCurrentDate();
-                                if(
+                                if (
                                     (
                                         (medicare_limit_hospice.EFFECTIVE_DATE != null && medicare_limit_hospice.EFFECTIVE_DATE <= current_date)
                                         &&
@@ -3416,11 +3416,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                     }
                                     if (medicare_limit_hospice.END_DATE != null)
                                     {
-                                        hospice_string = hospice_string + " - End Date: " +  Convert.ToDateTime(medicare_limit_hospice.END_DATE).ToShortDateString();
+                                        hospice_string = hospice_string + " - End Date: " + Convert.ToDateTime(medicare_limit_hospice.END_DATE).ToShortDateString();
                                     }
 
                                     //taskLoglist.Add(new TaskLog() { ACTION = "Medicare Limit :", ACTION_DETAIL = "Active Hospice: " + hospice_string });
-                                    porta_logs.Add("Active Hospice: " + hospice_string );
+                                    porta_logs.Add("Active Hospice: " + hospice_string);
                                 }
 
 
@@ -3448,7 +3448,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                      )
                                 )
                                 {
-                                    string hhe_string= "";
+                                    string hhe_string = "";
 
                                     if (medicare_limit_hhh.NPI != null)
                                     {
@@ -3457,7 +3457,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
                                     if (medicare_limit_hhh.EFFECTIVE_DATE != null)
                                     {
-                                        hhe_string  = hhe_string  + " - Effective Date: " +   Convert.ToDateTime(medicare_limit_hhh.EFFECTIVE_DATE).ToShortDateString();
+                                        hhe_string = hhe_string + " - Effective Date: " + Convert.ToDateTime(medicare_limit_hhh.EFFECTIVE_DATE).ToShortDateString();
                                     }
                                     if (medicare_limit_hhh.END_DATE != null)
                                     {
@@ -3465,7 +3465,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                     }
 
                                     //taskLoglist.Add(new TaskLog() { ACTION = "Medicare Limit :", ACTION_DETAIL = "Active Home Health Episode: " + hhe_string });
-                                    porta_logs.Add("Active Home Health Episode: " + hhe_string );
+                                    porta_logs.Add("Active Home Health Episode: " + hhe_string);
                                 }
                             }
                         }
@@ -3475,7 +3475,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     {
 
                         //taskLoglist.Add(new TaskLog() { ACTION = "Notes: ", ACTION_DETAIL = "Note #" + count + ") " + note.NOTE_DESC });
-                        porta_logs.Add("Note #" + count + ") " + note.NOTE_DESC );
+                        porta_logs.Add("Note #" + count + ") " + note.NOTE_DESC);
                         count--;
                     }
                     if (notes.Count != 0)
@@ -3488,7 +3488,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     if (treatmentLocation != null && treatmentLocation.REGION != null && treatmentLocation.REGION != "")
                     {
                         //taskLoglist.Add(new TaskLog() { ACTION = "Treatment Region: ", ACTION_DETAIL = "Treatment Region: " + treatmentLocation.REGION });
-                        porta_logs.Add("Treatment Region: " + treatmentLocation.REGION );
+                        porta_logs.Add("Treatment Region: " + treatmentLocation.REGION);
                     }
                     else if (treatmentLocation != null && treatmentLocation.NAME != null && treatmentLocation.NAME.Contains("Private Home"))
                     {
@@ -3504,25 +3504,25 @@ namespace FOX.BusinessOperations.IndexInfoServices
                             if (address_Private_Home != null && !String.IsNullOrWhiteSpace(address_Private_Home.POS_REGION))
                             {
                                 //taskLoglist.Add(new TaskLog() { ACTION = "Treatment Region: ", ACTION_DETAIL = "Treatment Region: " + address_Private_Home.POS_REGION });
-                                porta_logs.Add("Treatment Region: " + address_Private_Home.POS_REGION );
+                                porta_logs.Add("Treatment Region: " + address_Private_Home.POS_REGION);
                             }
                         }
                     }
-                    if(sourceDetail.FACILITY_NAME != null)
+                    if (sourceDetail.FACILITY_NAME != null)
                     {
                         //taskLoglist.Add(new TaskLog() { ACTION = "Treatment location: ", ACTION_DETAIL = "Treatment location: " + sourceDetail.FACILITY_NAME });
-                        porta_logs.Add("Treatment location: " + sourceDetail.FACILITY_NAME );
+                        porta_logs.Add("Treatment location: " + sourceDetail.FACILITY_NAME);
                     }
-                    if(app_user != null)
+                    if (app_user != null)
                     {
-                        if(app_user.HHH != null)
+                        if (app_user.HHH != null)
                         {
                             var HHH = GetCaseIdentifier(app_user.HHH);
                             //var HHH = _fox_tbl_identifier.GetFirst(t => t.IDENTIFIER_ID == app_user.HHH);
                             if (HHH != null && !String.IsNullOrWhiteSpace(HHH.NAME))
                             {
                                 //taskLoglist.Add(new TaskLog() { ACTION = "HH&H: ", ACTION_DETAIL = "HH&H: " + HHH.NAME });
-                                porta_logs.Add("HH&H: " + HHH.NAME );
+                                porta_logs.Add("HH&H: " + HHH.NAME);
                             }
                         }
                         if (app_user.HOSPITAL != null)
@@ -3532,7 +3532,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                             if (hospital != null && !String.IsNullOrWhiteSpace(hospital.NAME))
                             {
                                 //taskLoglist.Add(new TaskLog() { ACTION = "Hospital: ", ACTION_DETAIL = "Hospital: " + hospital.NAME });
-                                porta_logs.Add("Hospital: " + hospital.NAME );
+                                porta_logs.Add("Hospital: " + hospital.NAME);
                             }
                         }
                         if (app_user.SNF != null)
@@ -3542,7 +3542,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                             if (SNF != null && !String.IsNullOrWhiteSpace(SNF.NAME))
                             {
                                 //taskLoglist.Add(new TaskLog() { ACTION = "SNF: ", ACTION_DETAIL = "SNF: " + SNF.NAME });
-                                porta_logs.Add("SNF: " + SNF.NAME );
+                                porta_logs.Add("SNF: " + SNF.NAME);
                             }
                         }
                         if (app_user.SPECIALITY != null)
@@ -3552,7 +3552,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                             if (speciality != null && !String.IsNullOrWhiteSpace(speciality.NAME))
                             {
                                 //taskLoglist.Add(new TaskLog() { ACTION = "Practice Speciality: ", ACTION_DETAIL = "Practice Speciality: " + speciality.NAME });
-                                porta_logs.Add("Practice Speciality: " + speciality.NAME );
+                                porta_logs.Add("Practice Speciality: " + speciality.NAME);
                             }
                         }
                         if (app_user.ACO != null)
@@ -3562,7 +3562,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                             if (ACO != null && !String.IsNullOrWhiteSpace(ACO.NAME))
                             {
                                 //taskLoglist.Add(new TaskLog() { ACTION = "ACO: ", ACTION_DETAIL = "ACO: " + ACO.NAME });
-                                porta_logs.Add("ACO: " + ACO.NAME );
+                                porta_logs.Add("ACO: " + ACO.NAME);
 
                             }
                         }
@@ -3573,7 +3573,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                             if (practice_organization != null && !String.IsNullOrWhiteSpace(practice_organization.NAME))
                             {
                                 //taskLoglist.Add(new TaskLog() { ACTION = "Practice/Organization Name: ", ACTION_DETAIL = "Practice/Organization Name: " + practice_organization.NAME });
-                                porta_logs.Add("Practice/Organization Name: " + practice_organization.NAME );
+                                porta_logs.Add("Practice/Organization Name: " + practice_organization.NAME);
 
                             }
                         }
@@ -3582,10 +3582,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     //taskLoglist.Add(new TaskLog() { ACTION = "Document Type : ", ACTION_DETAIL = "Document Type : " + documentType.NAME });
                     //taskLoglist.Add(new TaskLog() { ACTION = "Sender Email/FAX : ", ACTION_DETAIL = "Sender Email/FAX : " + sourceDetail.SORCE_NAME });
                     //taskLoglist.Add(new TaskLog() { ACTION = "Source Information", ACTION_DETAIL = "Source Information >" });
-                    porta_logs.Add("Ordering Referral Source: " + ORS.CODE + " - " + ORS.LAST_NAME + ", " + ORS.FIRST_NAME + " - " + ORS.REFERRAL_REGION + " - NPI: " + ORS.NPI );
-                    porta_logs.Add("Document Type : " + documentType.NAME );
-                    porta_logs.Add("Sender Email/FAX : " + sourceDetail.SORCE_NAME );
-                    porta_logs.Add( "Source Information >" );
+                    porta_logs.Add("Ordering Referral Source: " + ORS.CODE + " - " + ORS.LAST_NAME + ", " + ORS.FIRST_NAME + " - " + ORS.REFERRAL_REGION + " - NPI: " + ORS.NPI);
+                    porta_logs.Add("Document Type : " + documentType.NAME);
+                    porta_logs.Add("Sender Email/FAX : " + sourceDetail.SORCE_NAME);
+                    porta_logs.Add("Source Information >");
                 }
                 if (patient != null)
                 {
@@ -3610,7 +3610,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                     if (ins.Pri_Sec_Oth_Type == "S" && ins_name != "")
                                     {
                                         //taskLoglist.Add(new TaskLog() { ACTION = "Secondary Insurance ", ACTION_DETAIL = "Secondary Insurance: " + ' ' + ins_name });
-                                        porta_logs.Add("Secondary Insurance: " + ' ' + ins_name );
+                                        porta_logs.Add("Secondary Insurance: " + ' ' + ins_name);
                                     }
                                 }
                                 foreach (var ins in curr_insurances)
@@ -3620,7 +3620,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                     if (ins.Pri_Sec_Oth_Type == "P" && ins_name != "")
                                     {
                                         //taskLoglist.Add(new TaskLog() { ACTION = "Primary Insurance ", ACTION_DETAIL = "Primary Insurance: " + ' ' + ins_name });
-                                        porta_logs.Add("Primary Insurance: " + ' ' + ins_name );
+                                        porta_logs.Add("Primary Insurance: " + ' ' + ins_name);
                                     }
                                 }
                             }
@@ -3648,19 +3648,21 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
 
                     //taskLoglist.Add(new TaskLog() { ACTION = "Name ", ACTION_DETAIL = " Name : " + patient.First_Name + ' ' + patient.Last_Name });
-                    porta_logs.Add(" Name : " + patient.First_Name + ' ' + patient.Last_Name );
+                    porta_logs.Add(" Name : " + patient.First_Name + ' ' + patient.Last_Name);
                     //taskLoglist.Add(new TaskLog() { ACTION = "+ Patient Information", ACTION_DETAIL = "Patient Information >" });
-                    porta_logs.Add(" <br>Patient Information >" );
+                    porta_logs.Add(" <br>Patient Information >");
                 }
             }
             porta_logs.Reverse();
             StringBuilder portalog = new StringBuilder();
 
-            foreach(string str in porta_logs)
+            foreach (string str in porta_logs)
             {
-                portalog.Append(str + "<br>") ;
+                portalog.Append(str + "<br>");
             }
-            taskLoglist.Add(new TaskLog(){ ACTION = "Porta Logs",
+            taskLoglist.Add(new TaskLog()
+            {
+                ACTION = "Porta Logs",
                 ACTION_DETAIL = portalog.ToString()
             }
                         );
@@ -3707,7 +3709,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 //    _patientAccount.Value = DBNull.Value;
                 //}
                 var result = SpRepository<pendingBalanceAmount>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_PENDING_BALANCE @PATIENT_ACCOUNT", _patientAccount);
-                if(result == null)
+                if (result == null)
                 {
                     return new pendingBalanceAmount();
                 }
@@ -3847,7 +3849,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             //open_By.Size = 150;
             //SpRepository<string>.GetSingleObjectWithStoreProcedure(string.Format( "exec FOX_PROC_SET_PATIENT_OPENBY {0}, {1}, {2}, {3}", patient_Account, user_Name, practice_Code, open_By));
             string temp = SpRepository<string>.GetListWithStoreProcedure(@" FOX_PROC_SET_PATIENT_OPENBY @PATIENT_ACCOUNT, @USER_NAME, @PRACTICE_CODE", patient_Account, user_Name, practice_Code).SingleOrDefault();
-            return string.IsNullOrEmpty(temp) ?  null : temp;
+            return string.IsNullOrEmpty(temp) ? null : temp;
 
 
 
@@ -3914,7 +3916,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             var sourceDetail = _InsertSourceAddRepository.GetFirst(t => !t.DELETED && t.PRACTICE_CODE == work_order.PRACTICE_CODE && t.WORK_ID == work_order.WORK_ID && work_order.WORK_ID != 0);
             var documentType = _foxdocumenttypeRepository.GetFirst(t => t.DOCUMENT_TYPE_ID == sourceDetail.DOCUMENT_TYPE).NAME ?? "";
             //var ORS = _InsertUpdateOrderingSourceRepository.GetFirst(t => t.SOURCE_ID == sourceDetail.SENDER_ID);
-            var address = _PatientAddressRepository.GetMany(t => t.PATIENT_ACCOUNT == work_order.PATIENT_ACCOUNT && t.ADDRESS_TYPE == "Home Address" && !(t.DELETED ?? false)).OrderByDescending(t=>t.MODIFIED_DATE).FirstOrDefault();
+            var address = _PatientAddressRepository.GetMany(t => t.PATIENT_ACCOUNT == work_order.PATIENT_ACCOUNT && t.ADDRESS_TYPE == "Home Address" && !(t.DELETED ?? false)).OrderByDescending(t => t.MODIFIED_DATE).FirstOrDefault();
             var diagnosis_string = "";
             var diagnosis = _InsertDiagnosisRepository.GetMany(t => t.DELETED == false && t.WORK_ID == work_id);
             var specialty = _InsertProceuresRepository.GetFirst(t => t.DELETED == false && t.WORK_ID == work_id);
@@ -3947,7 +3949,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
             if (diagnosis != null && diagnosis.Count > 0)
             {
-                foreach(var item in diagnosis)
+                foreach (var item in diagnosis)
                 {
                     diagnosis_string = diagnosis_string + item.DIAG_CODE + " " + item.DIAG_DESC + " <br />";
                 }
@@ -4043,7 +4045,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     var Verbal = htmldoc.DocumentNode.SelectSingleNode("//span[@id='VERBAL']");
                     Verbal.Remove();
                 }
-                if(work_order.IS_EVALUATE_TREAT == null || work_order.IS_EVALUATE_TREAT == false)
+                if (work_order.IS_EVALUATE_TREAT == null || work_order.IS_EVALUATE_TREAT == false)
                 {
                     var evaluate = htmldoc.DocumentNode.SelectSingleNode("//span[@id='EVALUATE_TREAT']");
                     evaluate.Remove();
@@ -4062,13 +4064,13 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 {
                     body = body.Replace("[[PATIENT_HOME_ADDRESS]]", address.ADDRESS ?? "");
                     TextInfo ti = CultureInfo.CurrentCulture.TextInfo;
-                    body = body.Replace("[[PATIENT_HOME_ADDRESS_2]]", ti.ToTitleCase(address.CITY) + ", " + address.STATE + " " +address.ZIP);
+                    body = body.Replace("[[PATIENT_HOME_ADDRESS_2]]", ti.ToTitleCase(address.CITY) + ", " + address.STATE + " " + address.ZIP);
 
                 }
                 else
                 {
-                    body = body.Replace("[[PATIENT_HOME_ADDRESS]]",  "");
-                    body = body.Replace("[[PATIENT_HOME_ADDRESS_2]]",  "");
+                    body = body.Replace("[[PATIENT_HOME_ADDRESS]]", "");
+                    body = body.Replace("[[PATIENT_HOME_ADDRESS_2]]", "");
                 }
                 body = body.Replace("[[PATIENT_PRI_INS]]", pri_insurance ?? "");
 
@@ -4087,12 +4089,13 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
                 body = body.Replace("[[discipline]]", discipline ?? "");
 
-                if(specialty != null && !String.IsNullOrWhiteSpace(specialty.SPECIALITY_PROGRAM ))
+                if (specialty != null && !String.IsNullOrWhiteSpace(specialty.SPECIALITY_PROGRAM))
                 {
                     body = body.Replace("[[specialty_program]]", specialty.SPECIALITY_PROGRAM ?? "");
-                }else
+                }
+                else
                 {
-                    body = body.Replace("[[specialty_program]]",  "");
+                    body = body.Replace("[[specialty_program]]", "");
                 }
 
                 if (work_order.IS_EMERGENCY_ORDER)
@@ -4129,7 +4132,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
                 body = body.Replace("[[additional_notes]]", work_order.REASON_FOR_VISIT ?? "");
                 var provider = _InsertUpdateOrderingSourceRepository.GetFirst(t => t.SOURCE_ID == sourceDetail.SENDER_ID);
-                if(provider != null)
+                if (provider != null)
                 {
                     body = body.Replace("[[provider_name]]", provider.LAST_NAME + ", " + provider.FIRST_NAME + " " + provider.REFERRAL_REGION);
                     body = body.Replace("[[provider_NPI]]", provider.NPI ?? "");
@@ -4140,10 +4143,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 else
                 {
                     body = body.Replace("[[provider_name]]", "");
-                    body = body.Replace("[[provider_NPI]]",  "");
+                    body = body.Replace("[[provider_NPI]]", "");
                     body = body.Replace("[[provider_phone]]", "");
-                    body = body.Replace("[[provider_fax]]",  "");
-                    body = body.Replace("[[provider_date]]",  "");
+                    body = body.Replace("[[provider_fax]]", "");
+                    body = body.Replace("[[provider_date]]", "");
                 }
 
                 if (obj._approval)
@@ -4153,7 +4156,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 }
                 else
                 {
-                    body = body.Replace("<img style=\"width:30%; height: 60px;margin:6px;\" src=\"[[Signature]]\" alt=\"Signature\">", "________" );
+                    body = body.Replace("<img style=\"width:30%; height: 60px;margin:6px;\" src=\"[[Signature]]\" alt=\"Signature\">", "________");
                     body = body.Replace("[[current_Date]]", "");
                 }
 
@@ -4660,7 +4663,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 }
                 else
                 {
-                    return  new FacilityLocation();
+                    return new FacilityLocation();
                 }
             }
             else
@@ -4672,11 +4675,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
         public bool UpdateOCRValue(long? work_id, UserProfile profile)
         {
             var ocrStatus = _OcrStatusRepository.GetFirst(x => x.OCR_STATUS.ToLower() == "Data pulled into referral" && !(x.DELETED ?? false)).OCR_STATUS_ID;
-            if(ocrStatus != null)
+            if (ocrStatus != null)
             {
-                var que = _QueueRepository.GetFirst(x => x.WORK_ID == work_id && !x.DELETED  && x.PRACTICE_CODE == profile.PracticeCode);
+                var que = _QueueRepository.GetFirst(x => x.WORK_ID == work_id && !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode);
 
-                if(que != null)
+                if (que != null)
                 {
                     que.OCR_STATUS_ID = ocrStatus;
                     que.MODIFIED_BY = profile.UserName;
@@ -4957,7 +4960,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         public ReferralSourceAndGroups getAllReferralSourceAndGroups(UserProfile profile)
         {
             ReferralSourceAndGroups response = new ReferralSourceAndGroups();
-            response.ReferralSource = _referralSourceTableRepository.GetMany(x => !(x.DELETED) && (x.PRACTICE_CODE ==profile.PracticeCode));
+            response.ReferralSource = _referralSourceTableRepository.GetMany(x => !(x.DELETED) && (x.PRACTICE_CODE == profile.PracticeCode));
             response.Groups = _groupRepository.GetMany(x => !(x.DELETED) && (x.PRACTICE_CODE == profile.PracticeCode));
             return response;
         }
@@ -5042,5 +5045,100 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 return new List<PatientListResponse>();
             }
         }
+        /// <summary>
+        /// This Function is used to Get Duplicate Referral Info of Patient
+        /// </summary>
+        /// <param name="workId"></param>
+        /// <param name="userProfile"></param>
+        /// <returns></returns>
+        public List<DuplicateReferralInfo> GetDuplicateReferralInformation(checkDuplicateReferralRequest checkDuplicateReferral, UserProfile userProfile)
+        {
+            try
+            {
+                if (checkDuplicateReferral != null)
+                {
+                    var wORK_ID = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = checkDuplicateReferral.workID };
+                    var getWorkID = SpRepository<GETtAll_IndexifoRes>.GetSingleObjectWithStoreProcedure(@"exec [FOX_GET_INDEX_ALL_INFO] @WORK_ID", wORK_ID);
+
+                    if (getWorkID != null && getWorkID.PATIENT_ACCOUNT != null)
+                    {
+                        var Patient_Account = new SqlParameter("PATIENT_ACCOUNT", SqlDbType.BigInt) { Value = getWorkID.PATIENT_ACCOUNT };
+                        var Practice_Code = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = userProfile.PracticeCode };
+                        var order_Id = new SqlParameter("ORDER_ID", SqlDbType.BigInt) { Value = getWorkID.WORK_ID };
+                        var result = SpRepository<DuplicateReferralInfo>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_Duplicate_Referral] @PATIENT_ACCOUNT, @PRACTICE_CODE, @ORDER_ID", Patient_Account, Practice_Code, order_Id);
+                        if (result != null && result.Count() > 0)
+                        {
+                            List<DuplicateReferralInfo> MainList = new List<DuplicateReferralInfo>();
+                            if (!string.IsNullOrEmpty(checkDuplicateReferral.splitedIDs))
+                            {
+                                var splitedIDs = checkDuplicateReferral.splitedIDs.Split(',');
+                                if (splitedIDs != null && splitedIDs.Length > 0)
+                                {
+                                    foreach (var item in splitedIDs)
+                                    {
+                                        foreach (var ite in result)
+                                        {
+                                            if (item != null)
+                                            {
+                                                //var DepartIDs = ite.DEPARTMENT_ID.Split(',');
+                                                if (ite.DEPARTMENT_ID.Contains(item.ToString()))
+                                                {
+                                                    if (MainList != null)
+                                                    {
+                                                        if (MainList.Find(e => e.WORK_ID == ite.WORK_ID) == null)
+                                                        {
+                                                            MainList.Add(ite);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                return MainList;
+                            }
+                            else
+                                return new List<DuplicateReferralInfo>();
+                        }
+                    }
+                }
+                return new List<DuplicateReferralInfo>();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        /// <summary>
+        /// Get All Patient Docs.
+        /// </summary>
+        /// <param name="patientAccountStr"></param>
+        /// <param name="userProfile"></param>
+        /// <returns></returns>
+        public List<WorkOrderDocs> GetWorkOrderDocs(string patientAccountStr, UserProfile userProfile)
+        {
+            List< WorkOrderDocs> list = new List<WorkOrderDocs>();
+            var _parmPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = userProfile.PracticeCode };
+            var _patientAccount = !string.IsNullOrWhiteSpace(patientAccountStr) ? new SqlParameter { ParameterName = "PATIENT_ACCOUNT", Value = long.Parse(patientAccountStr) } : new SqlParameter { ParameterName = "PATIENT_ACCOUNT", Value = DBNull.Value };
+            list = SpRepository<WorkOrderDocs>.GetListWithStoreProcedure(@"exec [FOX_PROC_ALL_PATIENT_DOCUMENTS]  @PATIENT_ACCOUNT, @PRACTICE_CODE", _parmPracticeCode, _patientAccount);
+            if(list != null)
+            {
+                return list;
+            }
+            return list = new List<WorkOrderDocs>();
+        }
+        /// <summary>
+        /// This Function is used to save Log History
+        /// </summary>
+        /// <param name="workId"></param>
+        /// <param name="userProfile"></param>
+        public void SaveLogMessage(Index_infoReq workId, UserProfile userProfile)
+        {
+            if (workId != null)
+            {
+                Helper.LogSingleWorkOrderChange(Convert.ToInt64(workId.WORK_ID), workId.WORK_ID.ToString(), "Duplicate referral warning overridden and marked complete", userProfile.FirstName + " " + userProfile.LastName);
+            }
+        }
     }
-    }
+}

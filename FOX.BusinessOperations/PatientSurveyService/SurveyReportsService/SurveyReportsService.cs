@@ -122,25 +122,30 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
 
             patientSurveySearchRequest.RECORD_PER_PAGE = 0;
 
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Recommended,Not Recommended,Deceased";
+            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Completed Survey ,Deceased,Not Enough Services Provided";
             list = new List<PatientSurvey>();
             list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.COMPLETED = list.Count;
 
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Recommended";
+            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Completed Survey";
             list = new List<PatientSurvey>();
             list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            obj.RECOMMENDED = list.Count;
+            obj.COMPLETED_SURVEY = list.Count;
 
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Recommended";
-            list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            obj.NOT_RECOMMENDED = list.Count;
+            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Recommended";
+            //list = new List<PatientSurvey>();
+            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
+            //obj.NOT_RECOMMENDED = list.Count;
 
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Deceased";
             list = new List<PatientSurvey>();
             list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.DECEASED = list.Count;
+
+            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Enough Services Provided";
+            list = new List<PatientSurvey>();
+            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
+            obj.NOT_ENOUGH_SERVICES_PROVIDE = list.Count;
 
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Callback,Not Answered";
             list = new List<PatientSurvey>();

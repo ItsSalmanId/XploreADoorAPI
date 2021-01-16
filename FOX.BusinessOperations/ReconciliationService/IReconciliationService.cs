@@ -40,6 +40,8 @@ namespace FOX.BusinessOperations.ReconciliationService
         List<SOFT_RECONCILIATION_PAYMENT> GetSoftReconsilitionPayment(SOFT_RECONCILIATION_SERACH_REQUEST obj, UserProfile profile);
         List<SOFT_RECONCILIATION_PAYMENT> GetWebsoftPayment(SOFT_RECONCILIATION_SERACH_REQUEST softRequest, UserProfile profile);
         HRAutoEmailsUploadResponse ReadExcelForHrEmails(string fileName, UserProfile profile);
-        MTBC_Credentials_Fox_Automation GetLastUploadFileStatusForHrAutoEmails(UserProfile profile);
+        MTBC_Credentials_Fox_Automation GetLastUploadFileStatusForHrAutoEmails(UserProfile profile, string dataTypeName);
+        List<MTBC_Category_Description_Count> GetMTBCDistinctCategoryName(UserProfile profile);
+        string GetLastFileUploadDetails();
     }
 }

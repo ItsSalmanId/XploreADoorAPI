@@ -11,7 +11,6 @@ using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.Settings.User;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -26,7 +25,6 @@ namespace FOX.BusinessOperations.ReconciliationService
     public class ReconciliationService : IReconciliationService
     {
         private readonly DBContextReconciliations _reconciliationCPContext = new DBContextReconciliations();
-        private readonly DBContextHrAutoEmails _hrAutoEmailsContext = new DBContextHrAutoEmails();
         private readonly DbContextPatient _PatientContext = new DbContextPatient();
         private readonly DbContextSecurity _userContext = new DbContextSecurity();
         private readonly GenericRepository<ReconciliationStatus> _reconciliationStatusRepository;
@@ -48,7 +46,7 @@ namespace FOX.BusinessOperations.ReconciliationService
             _reconciliationCPLogsRepository = new GenericRepository<ReconciliationCPLogs>(_reconciliationCPContext);
             _userRepository = new GenericRepository<User>(_userContext);
             _foxInsuranceRepository = new GenericRepository<FoxInsurancePayers>(_PatientContext);
-            _foxhrautoemailsRepository = new GenericRepository<MTBC_Credentials_Fox_Automation>(_hrAutoEmailsContext);
+            _foxhrautoemailsRepository = new GenericRepository<MTBC_Credentials_Fox_Automation>(_reconciliationCPContext);
         }
 
         public List<ReconciliationStatus> GetReconciliationStatuses(UserProfile profile)
@@ -2269,13 +2267,22 @@ namespace FOX.BusinessOperations.ReconciliationService
             }
         }
         List<MTBC_Credentials_Fox_Automation> test = new List<MTBC_Credentials_Fox_Automation>();
-        public List<string> HR_Records = new List<string>();
+        public List<long> HR_Records = new List<long>();
         public HRAutoEmailsUploadResponse ReadExcelForHrEmails(string fileName, UserProfile profile)
         {
+            string[] subStringFileName = null;
             try
             {
                 DataTable tbl = new DataTable();
                 ResponseModel responseModel = new ResponseModel();
+                if (!string.IsNullOrWhiteSpace(fileName))
+                {
+                    subStringFileName = fileName.Split('_');
+                    if (subStringFileName != null)
+                    {
+                        fileName = subStringFileName[1] + "_" + subStringFileName[2];
+                    }
+                }
                 string path = @"~\FoxDocumentDirectory\HRAutoEmailsUploadedFiles\UploadFiles\" + fileName;
                 path = HttpContext.Current.Server.MapPath(path);
                 string fileType = path.Substring(path.Length - 3);
@@ -2329,6 +2336,16 @@ namespace FOX.BusinessOperations.ReconciliationService
 
                     }
                 }
+
+                if (!string.IsNullOrWhiteSpace(subStringFileName[0]))
+                {
+                    var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                    var dataType = new SqlParameter { ParameterName = "DATATYPE", SqlDbType = SqlDbType.VarChar, Value = subStringFileName[0].ToString() };
+
+                    var result = SpRepository<HRAutoEmailsUploadResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_DELETE_REC_FROM_MTBC_CREDENTIALS  @PRACTICE_CODE ,@DATATYPE"
+                                                                                                       , PracticeCode, dataType).ToList();
+                }
+
                 totalRecordInFile = tbl.Rows.Count;
                 foreach (System.Data.DataRow row in tbl.Rows)
                 {
@@ -2345,7 +2362,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                     if (row.Table.Columns.Contains("Work Contact: Work Email") && !string.IsNullOrEmpty(row["Work Contact: Work Email"].ToString()))
                         temp.WORK_EMAIL = row["Work Contact: Work Email"].ToString();
                     if (row.Table.Columns.Contains("Personel Mobile") && !string.IsNullOrEmpty(row["Personel Mobile"].ToString()))
-                        temp.PERSONEL_MOBILE = row["Personel Mobile"].ToString();
+                        temp.PERSONAL_MOBILE = row["Personel Mobile"].ToString();
                     if (row.Table.Columns.Contains("License/Certification Description") && !string.IsNullOrEmpty(row["License/Certification Description"].ToString()))
                         temp.CERTIFICATION_DESCRIPTION = row["License/Certification Description"].ToString();
                     if (row.Table.Columns.Contains("Category Description") && !string.IsNullOrEmpty(row["Category Description"].ToString()))
@@ -2368,20 +2385,22 @@ namespace FOX.BusinessOperations.ReconciliationService
                         if (DateTime.TryParse(row["Created Datee"].ToString(), out date))
                             temp.CREATED_DATE = date;
                     }
-                    temp.FILE_NAME = fileName;
+                    if (row.Table.Columns.Contains("Issuing State") && !string.IsNullOrEmpty(row["Issuing State"].ToString()))
+                        temp.ISSUING_STATE = row["Issuing State"].ToString();
+                    if (row.Table.Columns.Contains("Employee Name/Description") && !string.IsNullOrEmpty(row["Employee Name/Description"].ToString()))
+                        temp.EMPLOYEE_NAME_DESCRIPTION = row["Employee Name/Description"].ToString();
+                    if (row.Table.Columns.Contains("University Description") && !string.IsNullOrEmpty(row["University Description"].ToString()))
+                        temp.UNIVERSITY_DESCRIPTION = row["University Description"].ToString();
+                    if (row.Table.Columns.Contains("Mentor") && !string.IsNullOrEmpty(row["Mentor"].ToString()))
+                        temp.MENTOR = row["Mentor"].ToString();
+                    temp.HR_FILE_NAME = fileName;
+                    temp.DATA_TYPE = subStringFileName[0];
                     test.Add(temp);
+
+                    //var mtbcHrAutoEmailResult = _foxhrautoemailsRepository.GetAll().Select(s => s.DATA_TYPE);
                     InsertExcelValuesOfHrAutoEmailsToDB(temp, profile);
                 }
-                using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["DB5Connection"].ToString()))
-                {
-                    connection.Open();
-                    SqlCommand cmd = new SqlCommand("FOX_PROC_DELETE_REC_FROM_MTBC_CREDENTIALS", connection);
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@FILE_NAME", fileName);
-                    cmd.Connection = connection;
-                    cmd.ExecuteNonQuery();
-                    connection.Close();
-                }
+
                 if (test.Count > 20000)
                 {
                     responseData = new HRAutoEmailsUploadResponse();
@@ -2390,7 +2409,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                 }
                 else if (test.Count > 0 && test.Count < 20000)
                 {
-                    MTBC_Credentials_Fox_Automation last_upload_status = GetLastUploadFileStatusForHrAutoEmails(profile);
+                    MTBC_Credentials_Fox_Automation last_upload_status = GetLastUploadFileStatusForHrAutoEmails(profile, subStringFileName[0]);
                     string virtualPath = @"/" + profile.PracticeDocumentDirectory + "/" + "HRAutoEmailsLogFiles/";
                     var exportPath = HttpContext.Current.Server.MapPath("~" + virtualPath);
                     var name = fileName.Substring(0, fileName.LastIndexOf('.'));
@@ -2404,7 +2423,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                     {
 
                         responseData.IsSuccess = true;
-                        responseData.HR_FILE_NAME = last_upload_status.FILE_NAME;
+                        responseData.HR_FILE_NAME = last_upload_status.HR_FILE_NAME;
                         responseData.RECORD_INSERTED = last_upload_status.RECORDS_ADDED_SUCCESSFULLY;
                         responseData.TOTAL_RECORDS = test.Count;
                         responseData.Failled_Record = test.Count - last_upload_status.RECORDS_ADDED_SUCCESSFULLY;
@@ -2432,17 +2451,13 @@ namespace FOX.BusinessOperations.ReconciliationService
                 HRAutoEmailsUploadResponse responseData = new HRAutoEmailsUploadResponse();
                 if (HR_Records.Count > 0)
                 {
-                    using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["DB5Connection"].ToString()))
-                    {
-                        connection.Open();
-                        SqlCommand cmd = new SqlCommand("FOX_PROC_DELETE_REC_FROM_MTBC_CREDENTIALS", connection);
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@FILE_NAME", fileName);
-                        cmd.Connection = connection;
-                        cmd.ExecuteNonQuery();
-                        connection.Close();
+                    //var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                    //var start_range = new SqlParameter { ParameterName = "START_RANGE", SqlDbType = SqlDbType.BigInt, Value = HR_Records.First() };
+                    //var end_range = new SqlParameter { ParameterName = "END_RANGE", SqlDbType = SqlDbType.BigInt, Value = HR_Records.Last() };
 
-                    }
+                    //var result = SpRepository<HRAutoEmailsUploadResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_DELETE_REC_FROM_MTBC_CREDENTIALS  @PRACTICE_CODE, @START_RANGE ,@END_RANGE"
+                    //                                                                                   , PracticeCode, start_range, end_range).ToList();
+
 
                     string virtualPath = @"/" + profile.PracticeDocumentDirectory + "/" + "HRAutoEmailsLogFiles/";
                     var exportPath = HttpContext.Current.Server.MapPath("~" + virtualPath);
@@ -2457,12 +2472,12 @@ namespace FOX.BusinessOperations.ReconciliationService
                     {
 
                         responseData.IsSuccess = true;
-                        responseData.HR_FILE_NAME = last_upload_status.FILE_NAME;
+                        responseData.HR_FILE_NAME = last_upload_status.HR_FILE_NAME;
                         responseData.RECORD_INSERTED = last_upload_status.RECORDS_ADDED_SUCCESSFULLY;
                         responseData.TOTAL_RECORDS = test.Count;
                         responseData.Failled_Record = test.Count - last_upload_status.RECORDS_ADDED_SUCCESSFULLY;
                         responseData.Message = "Record Added";
-                        responseData.Last_UPLAOD_DATE = last_upload_status.CREATED_DATE;
+                        responseData.Last_UPLAOD_DATE = last_upload_status.LAST_UPLOAD_DATE;
                         responseData.Upload_by = profile.UserName;
                         responseData.File_Path = pathtowriteFile;
                     }
@@ -2512,53 +2527,32 @@ namespace FOX.BusinessOperations.ReconciliationService
                 MTBC_Credentials_Fox_Automation record = new MTBC_Credentials_Fox_Automation();
                 if (lst.WORK_EMAIL != null)
                 {
-
-                    var key = lst.ASSOCIATION_ID;
-
-                    using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["DB5Connection"].ToString()))
-                    {
-                        connection.Open();
-                        SqlCommand cmd = new SqlCommand();
-
-                        cmd.CommandText = "[INSERT_RECORD_IN_MTBC_Credentials_Fox_Automation]";
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@Association_ID", lst.ASSOCIATION_ID ?? "");
-                        cmd.Parameters.AddWithValue("@First_Name", lst.FIRST_NAME ?? "");
-                        cmd.Parameters.AddWithValue("@Last_Name", lst.LAST_NAME ?? "");
-                        cmd.Parameters.AddWithValue("@Work_Email", lst.WORK_EMAIL ?? "");
-                        cmd.Parameters.AddWithValue("@Personel_Mobile", lst.PERSONEL_MOBILE ?? "");
-                        cmd.Parameters.AddWithValue("@Certification_Description", lst.CERTIFICATION_DESCRIPTION ?? "");
-                        cmd.Parameters.AddWithValue("@Category_Description", lst.CATEGORY_DESCRIPTION ?? "");
-                        cmd.Parameters.AddWithValue("@Effective_Date", lst.EFFECTIVE_DATE ?? System.Data.SqlTypes.SqlDateTime.Null);
-                        cmd.Parameters.AddWithValue("@Expiration_Date", lst.EXPIRATION_DATE ?? System.Data.SqlTypes.SqlDateTime.Null);
-                        cmd.Parameters.AddWithValue("@Created_Date", DateTime.Now);
-                        cmd.Parameters.AddWithValue("@Deleted", false);
-                        cmd.Parameters.AddWithValue("@File_Name", lst.FILE_NAME + "(" + profile.UserName + ")");
-                        cmd.Connection = connection;
-                        cmd.ExecuteNonQuery();
-                        //record.PRACTICE_CODE = profile.PracticeCode;
-                        //record.MTBC_CREDENTIALS_AUTOMATION_ID = CommonService.Helper.getMaximumId("MTBC_CREDENTIALS_AUTOMATION_ID");
-                        //    var key = record.ASSOCIATION_ID;
-                        //    record.ASSOCIATION_ID = lst.ASSOCIATION_ID;
-                        //    record.FIRST_NAME = lst.FIRST_NAME;
-                        //    record.LAST_NAME = lst.LAST_NAME;
-                        //    record.WORK_EMAIL = lst.WORK_EMAIL;
-                        //    record.PERSONEL_MOBILE = lst.PERSONEL_MOBILE;
-                        //    record.CERTIFICATION_DESCRIPTION = lst.CERTIFICATION_DESCRIPTION;
-                        //    record.CATEGORY_DESCRIPTION = lst.CATEGORY_DESCRIPTION;
-                        //    record.EFFECTIVE_DATE = lst.EFFECTIVE_DATE;
-                        //    record.EXPIRATION_DATE = lst.EXPIRATION_DATE;
-                        //    record.FILE_NAME = lst.FILE_NAME + "(" +profile.UserName + ")";
-                        //    //record.CREATED_BY = profile.UserName;
-                        //    record.CREATED_DATE = DateTime.Now;
-                        //    //record.MODIFIED_BY = profile.UserName;
-                        //    //record.MODIFIED_DATE = DateTime.Now;
-                        //    record.DELETED = lst.DELETED;
-                        //   _foxhrautoemailsRepository.Insert(record);
-                        //_foxhrautoemailsRepository.Save();
-                        HR_Records.Add(key);
-                        connection.Close();
-                    }
+                    record.PRACTICE_CODE = profile.PracticeCode;
+                    record.MTBC_CREDENTIALS_AUTOMATION_ID = CommonService.Helper.getMaximumId("MTBC_CREDENTIALS_AUTOMATION_ID");
+                    var key = record.MTBC_CREDENTIALS_AUTOMATION_ID;
+                    record.ASSOCIATION_ID = lst.ASSOCIATION_ID;
+                    record.FIRST_NAME = lst.FIRST_NAME;
+                    record.LAST_NAME = lst.LAST_NAME;
+                    record.WORK_EMAIL = lst.WORK_EMAIL;
+                    record.PERSONAL_MOBILE = lst.PERSONAL_MOBILE;
+                    record.CERTIFICATION_DESCRIPTION = lst.CERTIFICATION_DESCRIPTION;
+                    record.CATEGORY_DESCRIPTION = lst.CATEGORY_DESCRIPTION;
+                    record.EFFECTIVE_DATE = lst.EFFECTIVE_DATE;
+                    record.EXPIRATION_DATE = lst.EXPIRATION_DATE;
+                    record.ISSUING_STATE = lst.ISSUING_STATE;
+                    record.EMPLOYEE_NAME_DESCRIPTION = lst.EMPLOYEE_NAME_DESCRIPTION;
+                    record.UNIVERSITY_DESCRIPTION = lst.UNIVERSITY_DESCRIPTION;
+                    record.MENTOR = lst.MENTOR;
+                    record.DATA_TYPE = lst.DATA_TYPE;
+                    record.HR_FILE_NAME = lst.HR_FILE_NAME;
+                    record.CREATED_BY = profile.UserName;
+                    record.CREATED_DATE = DateTime.Now;
+                    record.MODIFIED_BY = profile.UserName;
+                    record.MODIFIED_DATE = DateTime.Now;
+                    record.DELETED = lst.DELETED;
+                    _foxhrautoemailsRepository.Insert(record);
+                    _foxhrautoemailsRepository.Save();
+                    HR_Records.Add(key);
                 }
             }
             catch (Exception ex)
@@ -2568,22 +2562,11 @@ namespace FOX.BusinessOperations.ReconciliationService
             }
 
         }
-        public MTBC_Credentials_Fox_Automation GetLastUploadFileStatusForHrAutoEmails(UserProfile profile)
+        public MTBC_Credentials_Fox_Automation GetLastUploadFileStatusForHrAutoEmails(UserProfile profile, string dataTypeName = null)
         {
-            MTBC_Credentials_Fox_Automation result = new MTBC_Credentials_Fox_Automation();
-
-            var records = _foxhrautoemailsRepository.GetMany(t => !t.DELETED).OrderByDescending(t => t.CREATED_DATE).ToList();
-            if (records != null && records.Any())
-            {
-                var logdetails = _foxhrautoemailsRepository.GetMany(t => !t.DELETED).OrderByDescending(t => t.CREATED_DATE).First();
-                result = logdetails;
-                result.RECORDS_ADDED_SUCCESSFULLY = records.Count();
-                result.LAST_UPLOAD_DATE = logdetails.CREATED_DATE;
-                result.CREATED_BY = logdetails.FILE_NAME?.Split('(', ')')[1];
-                result.FILE_NAME = logdetails.FILE_NAME?.Substring(0, result.FILE_NAME.IndexOf('('));
-
-            }
-            return result;
+            SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
+            var dataType = new SqlParameter { ParameterName = "DATA_TYPE", SqlDbType = SqlDbType.VarChar, Value = dataTypeName.ToString() };
+            return SpRepository<MTBC_Credentials_Fox_Automation>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_GET_HR_AUTOEMAILS_UPLOAD_LOG @PRACTICE_CODE, @DATA_TYPE", practiceCode, dataType);
         }
 
         public ReconciliationUploadResponse ReadExcel(string fileName, UserProfile profile)
@@ -2895,7 +2878,7 @@ namespace FOX.BusinessOperations.ReconciliationService
 
         private ReconcialtionImport GetReconsiliatinTable(ReconcialtionImport lst)
         {
-            if (lst != null)
+            if(lst != null)
             {
                 //string checkNo = GetCheckNo(recon.CheckNoBatchNo);
                 string checkNo = lst.CheckNoBatchNo;
@@ -3032,6 +3015,39 @@ namespace FOX.BusinessOperations.ReconciliationService
             }
             return temp.ToString();
 
+        }
+
+        public List<MTBC_Category_Description_Count> GetMTBCDistinctCategoryName(UserProfile profile)
+        {
+            try
+            {
+                var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                var distinctCategory = SpRepository<MTBC_Category_Description_Count>.GetListWithStoreProcedure(@"EXEC [FOX_PROC_GET_DISTINCT_MTBC_CREDENTIALS_CATEGORY] @PRACTICE_CODE", practiceCode);
+                return distinctCategory.ToList();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public string GetLastFileUploadDetails()
+        {
+            try
+            {
+                var result = _foxhrautoemailsRepository.GetAll().OrderByDescending(o => o.CREATED_DATE).AsEnumerable();
+                if (result != null && result.Count() > 0)
+                {
+                    return result.FirstOrDefault().DATA_TYPE;
+                }
+                return string.Empty;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }
