@@ -3181,6 +3181,14 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("SURVEY_ID_Str");
                 }
+                if (dc.Contains("IS_EXCEPTIONAL"))
+                {
+                    dc.Remove("IS_EXCEPTIONAL");
+                }
+                if (dc.Contains("IS_PROTECTIVE_EQUIPMENT"))
+                {
+                    dc.Remove("IS_PROTECTIVE_EQUIPMENT");
+                }
             }
             if (CalledFrom.Equals("Interface_Log_Report"))
             {
@@ -6451,9 +6459,9 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["ROW"].ColumnName = "Sr. #";
                 }
-                if (dtcol.Contains("IS_EXCEPTIONAL"))
+                if (dtcol.Contains("Is_exceptional_Str"))
                 {
-                    dtcol["IS_EXCEPTIONAL"].ColumnName = "Exceptional Feedback";
+                    dtcol["Is_exceptional_Str"].ColumnName = "Exceptional Feedback";
                 }
                 if (dtcol.Contains("PATIENT_ACCOUNT_NUMBER"))
                 {
@@ -6527,9 +6535,9 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["Is_Questioned_Answered_Str"].ColumnName = "Complaint Resolved";
                 }
-                if (dtcol.Contains("IS_PROTECTIVE_EQUIPMENT"))
+                if (dtcol.Contains("Is_protective_equipment_Str"))
                 {
-                    dtcol["IS_PROTECTIVE_EQUIPMENT"].ColumnName = "Protective Equipment";
+                    dtcol["Is_protective_equipment_Str"].ColumnName = "Protective Equipment";
                 }
             }
             else if (dt.TableName == "Detailed_Survey_old")
@@ -6538,9 +6546,9 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["ROW"].ColumnName = "Sr. #";
                 }
-                if (dtcol.Contains("IS_EXCEPTIONAL"))
+                if (dtcol.Contains("Is_exceptional_Str"))
                 {
-                    dtcol["IS_EXCEPTIONAL"].ColumnName = "Exceptional Feedback";
+                    dtcol["Is_exceptional_Str"].ColumnName = "Exceptional Feedback";
                 }
                 if (dtcol.Contains("PATIENT_ACCOUNT_NUMBER"))
                 {
@@ -6606,9 +6614,9 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["Is_Responsed_By_HQ_Str"].ColumnName = "Response from HQ";
                 }
-                if (dtcol.Contains("IS_PROTECTIVE_EQUIPMENT"))
+                if (dtcol.Contains("Is_protective_equipment_Str"))
                 {
-                    dtcol["IS_PROTECTIVE_EQUIPMENT"].ColumnName = "Protective Equipment";
+                    dtcol["Is_protective_equipment_Str"].ColumnName = "Protective Equipment";
                 }
             }
             else if (dt.TableName == "Interface_Logs")
