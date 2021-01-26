@@ -4358,7 +4358,15 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("ZIP");
                 }
+<<<<<<< Updated upstream
         }
+=======
+                if (dc.Contains("APPOINTMENT_COMPLETE_DATE_TIME"))//
+                {
+                    dc.Remove("APPOINTMENT_COMPLETE_DATE_TIME");
+                }
+            }
+>>>>>>> Stashed changes
             if (CalledFrom.Equals("Patient_Scheduler_List"))
             {
                 if (dc.Contains("APPOINTMENT_ID"))
