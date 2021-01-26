@@ -4338,14 +4338,14 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("PATIENT_ADDRESS_LATITUDE_STR");
                 }
-                if (dc.Contains("AL_LONGITUDE_STR"))
-                {
-                    dc.Remove("AL_LONGITUDE_STR");
-                }
-                if (dc.Contains("AL_LATITUDE_STR"))
-                {
-                    dc.Remove("AL_LATITUDE_STR");
-                }
+                //if (dc.Contains("AL_LONGITUDE_STR"))
+                //{
+                //    dc.Remove("AL_LONGITUDE_STR");
+                //}
+                //if (dc.Contains("AL_LATITUDE_STR"))
+                //{
+                //    dc.Remove("AL_LATITUDE_STR");
+                //}
                 if (dc.Contains("CITY"))
                 {
                     dc.Remove("CITY");
@@ -7039,6 +7039,22 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dtcol.Contains("DESCRIPTION"))
                 {
                     dtcol["DESCRIPTION"].ColumnName = "Discipline";
+                }
+                if (dtcol.Contains("APPOINTMENT_COMPLETE_DATE_STR"))
+                {
+                    dtcol["APPOINTMENT_COMPLETE_DATE_STR"].ColumnName = "Appointment Completion Date";
+                }
+                if (dtcol.Contains("APPOINTMENT_COMPLETE_TIME_STR"))
+                {
+                    dtcol["APPOINTMENT_COMPLETE_TIME_STR"].ColumnName = "Appointment Completion Time";
+                }
+                if (dtcol.Contains("AL_LATITUDE_STR"))
+                {
+                    dtcol["AL_LATITUDE_STR"].ColumnName = "Latitude";
+                }
+                if (dtcol.Contains("AL_LONGITUDE_STR"))
+                {
+                    dtcol["AL_LONGITUDE_STR"].ColumnName = "Longitude";
                 }
             }
             else if (dt.TableName == "Patient_Scheduler_List")

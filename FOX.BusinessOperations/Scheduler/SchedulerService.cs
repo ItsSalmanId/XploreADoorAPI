@@ -1013,6 +1013,24 @@ namespace FOX.BusinessOperations.Scheduler
                        checkNull(result[i].POS_ADDRESS) + ", " + checkNull(text_info.ToTitleCase(result[i].POS_CITY?.ToLower())) + ", " + checkNull(result[i].POS_STATE) + " " + checkNull(result[i].POS_ZIP);
                     }
                     result[i].PROVIDER = string.IsNullOrEmpty(result[i].PROVIDER) ? string.Empty : text_info.ToTitleCase(result[i].PROVIDER);
+                    if (result[i].AL_LONGITUDE_STR != null && result[i].AL_LONGITUDE_STR != "" 
+                        && result[i].AL_LATITUDE_STR != null && result[i].AL_LATITUDE_STR != "")
+                    {
+                        result[i].AL_LONGITUDE_STR = result[i].AL_LONGITUDE_STR;
+                        result[i].AL_LATITUDE_STR = result[i].AL_LATITUDE_STR;
+                    }
+                    else if ((result[i].AL_LONGITUDE_STR == null || result[i].AL_LONGITUDE_STR == "")
+                        && (result[i].AL_LATITUDE_STR == null || result[i].AL_LATITUDE_STR == ""))
+                    {
+                        result[i].AL_LONGITUDE_STR = result[i].PATIENTA_ADDRESS_LONGITUDE_STR ;
+                        result[i].AL_LATITUDE_STR = result[i].PATIENT_ADDRESS_LATITUDE_STR;
+                    }
+                    else
+                    {
+                        result[i].AL_LONGITUDE_STR = "";
+                        result[i].AL_LATITUDE_STR = "";
+                    }
+
                 }
                 exported = ExportToExcel.CreateExcelDocument<Appointment>(result, pathtowriteFile, CalledFrom.Replace(' ', '_'));
                 return virtualPath + fileName;
