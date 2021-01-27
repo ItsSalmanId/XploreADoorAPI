@@ -121,6 +121,10 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string ACTIVE_FORMAT { get; set; }
         public bool? IS_EXCEPTIONAL { get; set; }
         public bool? IS_PROTECTIVE_EQUIPMENT { get; set; }
+        [NotMapped]
+        public string Is_exceptional_Str { get; set; }
+        [NotMapped]
+        public string Is_protective_equipment_Str { get; set; }
     }
 
     [Table("FOX_TBL_PATIENT_SURVEY_HISTORY")]

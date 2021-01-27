@@ -155,15 +155,20 @@ namespace FOX.DataModels.Models.Scheduler
             [NotMapped]
             public string PATIENT_ADDRESS_LATITUDE_STR { get; set; }
             [NotMapped]
-            public string AL_LONGITUDE_STR { get; set; }
-            [NotMapped]
-            public string AL_LATITUDE_STR { get; set; }
-            [NotMapped]
             public string CITY { get; set; }
             [NotMapped]
             public string STATE { get; set; }
             [NotMapped]
-            public string ZIP { get; set; }          
+            public string ZIP { get; set; }
+            [NotMapped]
+            public string APPOINTMENT_COMPLETE_DATE_STR { get; set; }
+            [NotMapped]
+            public string APPOINTMENT_COMPLETE_TIME_STR { get; set; }
+            public DateTime? APPOINTMENT_COMPLETE_DATE_TIME { get; set; }
+            [NotMapped]
+            public string AL_LONGITUDE_STR { get; set; }
+            [NotMapped]
+            public string AL_LATITUDE_STR { get; set; }
         }
 
         [Table("FOX_TBL_CANCELLATION_REASON")]

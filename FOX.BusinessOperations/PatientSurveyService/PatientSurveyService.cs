@@ -13,6 +13,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Web;
+using System.Web.Configuration;
 
 namespace FOX.BusinessOperations.PatientSurveyService
 {
@@ -439,9 +440,15 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 
                 if (patientSurvey.IS_EXCEPTIONAL == true)
                 {
-                    sendTo = "usamabinahmed@mtbc.com";
-                    //sendTo = "bradley.pennypacker@foxrehab.org";
                     
+                    if (AppConfiguration.ClientURL.Contains("https://fox.mtbc.com/") && profile.PracticeCode== 1012714 )
+                    {
+                     sendTo = WebConfigurationManager.AppSettings["PatientSurveyEmailAddressForLive"].ToString();
+                    }
+                    else
+                    {
+                        sendTo = WebConfigurationManager.AppSettings["PatientSurveyEmailAddressForTest"].ToString();
+                    }
                      _subject = "Exceptional feedback ";
                         if(!string.IsNullOrEmpty(patientSurvey.SURVEY_STATUS_CHILD))
                     {

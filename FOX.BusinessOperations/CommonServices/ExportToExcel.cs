@@ -3181,6 +3181,14 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("SURVEY_ID_Str");
                 }
+                if (dc.Contains("IS_EXCEPTIONAL"))
+                {
+                    dc.Remove("IS_EXCEPTIONAL");
+                }
+                if (dc.Contains("IS_PROTECTIVE_EQUIPMENT"))
+                {
+                    dc.Remove("IS_PROTECTIVE_EQUIPMENT");
+                }
             }
             if (CalledFrom.Equals("Interface_Log_Report"))
             {
@@ -4330,14 +4338,14 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("PATIENT_ADDRESS_LATITUDE_STR");
                 }
-                if (dc.Contains("AL_LONGITUDE_STR"))
-                {
-                    dc.Remove("AL_LONGITUDE_STR");
-                }
-                if (dc.Contains("AL_LATITUDE_STR"))
-                {
-                    dc.Remove("AL_LATITUDE_STR");
-                }
+                //if (dc.Contains("AL_LONGITUDE_STR"))
+                //{
+                //    dc.Remove("AL_LONGITUDE_STR");
+                //}
+                //if (dc.Contains("AL_LATITUDE_STR"))
+                //{
+                //    dc.Remove("AL_LATITUDE_STR");
+                //}
                 if (dc.Contains("CITY"))
                 {
                     dc.Remove("CITY");
@@ -4350,7 +4358,11 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("ZIP");
                 }
-        }
+                if (dc.Contains("APPOINTMENT_COMPLETE_DATE_TIME"))// missing Lines
+                {
+                    dc.Remove("APPOINTMENT_COMPLETE_DATE_TIME");
+                }
+            }
             if (CalledFrom.Equals("Patient_Scheduler_List"))
             {
                 if (dc.Contains("APPOINTMENT_ID"))
@@ -6451,9 +6463,9 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["ROW"].ColumnName = "Sr. #";
                 }
-                if (dtcol.Contains("IS_EXCEPTIONAL"))
+                if (dtcol.Contains("Is_exceptional_Str"))
                 {
-                    dtcol["IS_EXCEPTIONAL"].ColumnName = "Exceptional Feedback";
+                    dtcol["Is_exceptional_Str"].ColumnName = "Exceptional Feedback";
                 }
                 if (dtcol.Contains("PATIENT_ACCOUNT_NUMBER"))
                 {
@@ -6527,9 +6539,9 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["Is_Questioned_Answered_Str"].ColumnName = "Complaint Resolved";
                 }
-                if (dtcol.Contains("IS_PROTECTIVE_EQUIPMENT"))
+                if (dtcol.Contains("Is_protective_equipment_Str"))
                 {
-                    dtcol["IS_PROTECTIVE_EQUIPMENT"].ColumnName = "Protective Equipment";
+                    dtcol["Is_protective_equipment_Str"].ColumnName = "Protective Equipment";
                 }
             }
             else if (dt.TableName == "Detailed_Survey_old")
@@ -6538,9 +6550,9 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["ROW"].ColumnName = "Sr. #";
                 }
-                if (dtcol.Contains("IS_EXCEPTIONAL"))
+                if (dtcol.Contains("Is_exceptional_Str"))
                 {
-                    dtcol["IS_EXCEPTIONAL"].ColumnName = "Exceptional Feedback";
+                    dtcol["Is_exceptional_Str"].ColumnName = "Exceptional Feedback";
                 }
                 if (dtcol.Contains("PATIENT_ACCOUNT_NUMBER"))
                 {
@@ -6606,9 +6618,9 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["Is_Responsed_By_HQ_Str"].ColumnName = "Response from HQ";
                 }
-                if (dtcol.Contains("IS_PROTECTIVE_EQUIPMENT"))
+                if (dtcol.Contains("Is_protective_equipment_Str"))
                 {
-                    dtcol["IS_PROTECTIVE_EQUIPMENT"].ColumnName = "Protective Equipment";
+                    dtcol["Is_protective_equipment_Str"].ColumnName = "Protective Equipment";
                 }
             }
             else if (dt.TableName == "Interface_Logs")
@@ -7031,6 +7043,22 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dtcol.Contains("DESCRIPTION"))
                 {
                     dtcol["DESCRIPTION"].ColumnName = "Discipline";
+                }
+                if (dtcol.Contains("APPOINTMENT_COMPLETE_DATE_STR"))
+                {
+                    dtcol["APPOINTMENT_COMPLETE_DATE_STR"].ColumnName = "Appointment Completion Date";
+                }
+                if (dtcol.Contains("APPOINTMENT_COMPLETE_TIME_STR"))
+                {
+                    dtcol["APPOINTMENT_COMPLETE_TIME_STR"].ColumnName = "Appointment Completion Time";
+                }
+                if (dtcol.Contains("AL_LATITUDE_STR"))
+                {
+                    dtcol["AL_LATITUDE_STR"].ColumnName = "Latitude";
+                }
+                if (dtcol.Contains("AL_LONGITUDE_STR"))
+                {
+                    dtcol["AL_LONGITUDE_STR"].ColumnName = "Longitude";
                 }
             }
             else if (dt.TableName == "Patient_Scheduler_List")
