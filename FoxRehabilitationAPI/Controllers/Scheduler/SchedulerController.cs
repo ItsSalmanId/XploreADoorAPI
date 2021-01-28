@@ -12,6 +12,7 @@ using static FOX.DataModels.Models.Scheduler.SchedulerModel;
 namespace FoxRehabilitationAPI.Controllers.Scheduler
 {
     [ExceptionHandlingFilter]
+    [Authorize]
     public class SchedulerController : BaseApiController
     {
         private readonly ISchedulerService _SchedulerService;
