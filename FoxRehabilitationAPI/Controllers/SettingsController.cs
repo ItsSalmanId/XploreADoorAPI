@@ -73,11 +73,11 @@ namespace FoxRehabilitationAPI.Controllers
                     _userServices.SaveSenderName(user, profile);
                 }
 
-                if (user.USER_TYPE.ToLower().Contains("external") && (user.IS_APPROVED ?? false) && (user.ROLE_ID.HasValue && user.ROLE_ID == 108 || user.ROLE_ID.HasValue && user.ROLE_ID == 109))
-                {
-                    _userServicess.AddUpdateReferralSourceInfo(user.USER_NAME, profile);
+                //if (user.USER_TYPE.ToLower().Contains("external") && (user.IS_APPROVED ?? false) && (user.ROLE_ID.HasValue && user.ROLE_ID == 108 || user.ROLE_ID.HasValue && user.ROLE_ID == 109))
+                //{
+                //    _userServicess.AddUpdateReferralSourceInfo(user.USER_NAME, profile);
 
-                }
+                //}
                 return Request.CreateResponse(HttpStatusCode.OK, profile);
             }
             else
@@ -85,10 +85,10 @@ namespace FoxRehabilitationAPI.Controllers
                 if (_userServices.UpdateUser(userToUpdate, user, profile, canUpdateUser))
                 {
 
-                    if (!string.IsNullOrWhiteSpace(user.USER_TYPE) && user.USER_TYPE.ToLower().Contains("external") && (user.IS_APPROVED ?? false) && (user.ROLE_ID.HasValue && user.ROLE_ID == 108 || user.ROLE_ID.HasValue && user.ROLE_ID == 109))
-                    {
-                        _userServicess.AddUpdateReferralSourceInfo(userToUpdate.USER_NAME, profile);
-                    }
+                    //if (!string.IsNullOrWhiteSpace(user.USER_TYPE) && user.USER_TYPE.ToLower().Contains("external") && (user.IS_APPROVED ?? false) && (user.ROLE_ID.HasValue && user.ROLE_ID == 108 || user.ROLE_ID.HasValue && user.ROLE_ID == 109))
+                    //{
+                    //    _userServicess.AddUpdateReferralSourceInfo(userToUpdate.USER_NAME, profile);
+                    //}
 
                     return Request.CreateResponse(HttpStatusCode.OK, profile);
                 }
