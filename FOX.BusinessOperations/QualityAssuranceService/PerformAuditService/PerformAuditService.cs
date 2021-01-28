@@ -197,7 +197,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
         public bool InsertAuditScores(SurveyAuditScores req, UserProfile profile)
         {
             string _body = string.Empty;
-           _body  = "<style>  body, table, td {font-family:'Calibri'!important;} table { border-collapse:separate; }@media screen and(max-width:740px) { table { width: 100 % !important; text-align:center!important;} } body {font-size:14px!important;}  table th { font-weight: normal; border-right: 1px solid #fff;text-align: center;font-weight: bold;line-height: normal;}table td, th{ padding: 3px 7px; color: #555555;font-size: 12px; height: 24px; font-weight: normal;}a{ text-decoration: none; }.first-section th{background: #f2f2f2;}.first-section {background: #f2f2f2;}.second-section {background: #e1f4ff;}.third-section {background: #fff2cc;}</style> ";
+           _body  = "<style>  body, table, td {font-family:'Calibri'!important;} table { border-collapse:separate; }@media screen and(max-width:740px) { table { width: 100 % !important; text-align:center!important;} } body {font-size:14px!important;}  table th { font-weight: normal; border-right: 1px solid #fff;text-align: center;font-weight: bold;line-height: normal;}table td, th{ padding: 3px 7px; color: #555555;font-size: 16px; height: 24px; font-weight: normal;}a{ text-decoration: none; }.first-section th{background: #f2f2f2;}.first-section {background: #f2f2f2;}.second-section {background: #e1f4ff;}.third-section {background: #fff2cc;}</style> ";
             string _subject = string.Empty;
             string sendTo = string.Empty;
             DateTime? callDate;
@@ -253,9 +253,9 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                     }
                     if (req.CALL_SCANARIO != null)
                     {
-                        _body += "<b>Call handling: </b> " + req.CALL_SCANARIO + "</br>";
+                        _body += "<b>Call handling: </b> " + req.CALL_SCANARIO + "</br></br>";
                     }                    
-                    _body += "<b>Evaluation details: </b></br></br></div>";                     
+                    _body += "<b>Evaluation details: </b></br></br></br></div>";                     
                     _body += req.HTML_TEMPLETE;
                     _subject = "PHD audit summary-" +(string.IsNullOrEmpty(req.AUDITOR_NAME) ? "" : req.AUDITOR_NAME + ".")  + (string.IsNullOrEmpty(req.CALL_SCANARIO) ? "" : req.CALL_SCANARIO + ",")  +Convert.ToDateTime(callDate).ToShortDateString();
                     Helper.Email(req.AGENT_EMAIL, _subject, _body, profile, null, null, null, null);
