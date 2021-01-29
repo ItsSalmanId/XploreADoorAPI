@@ -12,6 +12,7 @@ using System.Web.Mvc;
 namespace FoxRehabilitationAPI.Controllers.Quality_Assurance
 {
     [ExceptionHandlingFilter]
+    [Authorize]
     public class EvaluationSetupController : BaseApiController
     {
         private readonly IEvaluationSetupService _EvaluationSetupService;
