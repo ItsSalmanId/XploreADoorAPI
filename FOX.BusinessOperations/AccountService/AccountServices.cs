@@ -868,10 +868,16 @@ namespace FOX.BusinessOperations.AccountService
                 {
                     ProfileTokensSecurity profileTokenSecurity = new ProfileTokensSecurity()
                     {
+                        TokenSecurityID = Helper.getMaximumId("Fox_TokenSecurityID"),
                         AuthToken = token.AuthToken,
                         isLogOut = true,
                         IssuedOn = token.IssuedOn,
-                        ExpiresOn = DateTime.Now
+                        ExpiresOn = DateTime.Now,
+                        CREATED_BY = profile.UserName,
+                        CREATED_DATE = Helper.GetCurrentDate(),
+                        MODIFIED_BY = profile.UserName,
+                        MODIFIED_DATE = Helper.GetCurrentDate(),
+                        DELETED = false
                     };
                     _profileTokenSecurityRepository.Insert(profileTokenSecurity);
                     _profileTokenSecurityRepository.Save();
