@@ -440,6 +440,11 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 
                 if (patientSurvey.IS_EXCEPTIONAL == true)
                 {
+<<<<<<< HEAD
+=======
+                    //sendTo = "usamabinahmed@mtbc.com";
+                    sendTo = "bradley.pennypacker@foxrehab.org";
+>>>>>>> master
                     
                     if (AppConfiguration.ClientURL.Contains("https://fox.mtbc.com/") && profile.PracticeCode== 1012714 )
                     {
