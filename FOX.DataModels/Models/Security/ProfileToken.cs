@@ -43,6 +43,11 @@ namespace FOX.DataModels.Models.Security
             public string AuthToken { get; set; }
             public System.DateTime IssuedOn { get; set; }
             public System.DateTime ExpiresOn { get; set; }
+            public string CREATED_BY { get; set; }
+            public DateTime CREATED_DATE { get; set; }
+            public string MODIFIED_BY { get; set; }
+            public DateTime MODIFIED_DATE { get; set; }
+            public bool DELETED { get; set; }
         }
     }
 }
