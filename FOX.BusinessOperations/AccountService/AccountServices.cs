@@ -28,6 +28,7 @@ using System.Text;
 using System.Net.NetworkInformation;
 using System.Xml;
 using System.Collections.Specialized;
+using static FOX.DataModels.Models.Security.ProfileToken;
 
 namespace FOX.BusinessOperations.AccountService
 {
@@ -46,6 +47,7 @@ namespace FOX.BusinessOperations.AccountService
         private readonly GenericRepository<FOX_TBL_PATIENT> _FoxTblPatientRepository;
         private readonly GenericRepository<ProfileToken> profileToken;
         private readonly GenericRepository<WS_TBL_FOX_Login_LOGS> _loginLogsRepository;
+        private readonly GenericRepository<ProfileTokensSecurity> _profileTokenSecurityRepository;
         //DbContextCases
         private readonly DbContextCases _DbContextCases = new DbContextCases();
         private readonly DbContextIndexinfo _IndexinfoContext = new DbContextIndexinfo();
@@ -67,6 +69,7 @@ namespace FOX.BusinessOperations.AccountService
             _FoxTblPatientRepository = new GenericRepository<FOX_TBL_PATIENT>(_PatientContext);
             profileToken = new GenericRepository<ProfileToken>(security);
             _loginLogsRepository = new GenericRepository<WS_TBL_FOX_Login_LOGS>(security);
+            _profileTokenSecurityRepository = new GenericRepository<ProfileTokensSecurity>(security);
         }
         public ResponseGetSenderTypesModel getSenderTypes()
         {
@@ -857,18 +860,40 @@ namespace FOX.BusinessOperations.AccountService
 
         public ResponseModel SignOut(LogoutModal obj, UserProfile profile)
         {
-            ResponseModel resp = new ResponseModel();
-            ProfileToken token = profileToken.GetFirst(x => x.AuthToken == obj.token && x.UserId == profile.userID);
-            if (token != null)
+            try
             {
-                token.ExpiresOn = DateTime.Now;
-                profileToken.Update(token);
-                profileToken.Save();
-                resp.Success = true;
+                ResponseModel resp = new ResponseModel();
+                ProfileToken token = profileToken.GetFirst(x => x.AuthToken == obj.token && x.UserId == profile.userID);
+                if (token != null)
+                {
+                    ProfileTokensSecurity profileTokenSecurity = new ProfileTokensSecurity()
+                    {
+                        TokenSecurityID = Helper.getMaximumId("Fox_TokenSecurityID"),
+                        AuthToken = token.AuthToken,
+                        isLogOut = true,
+                        IssuedOn = token.IssuedOn,
+                        ExpiresOn = DateTime.Now,
+                        CREATED_BY = profile.UserName,
+                        CREATED_DATE = Helper.GetCurrentDate(),
+                        MODIFIED_BY = profile.UserName,
+                        MODIFIED_DATE = Helper.GetCurrentDate(),
+                        DELETED = false
+                    };
+                    _profileTokenSecurityRepository.Insert(profileTokenSecurity);
+                    _profileTokenSecurityRepository.Save();
+                    token.ExpiresOn = DateTime.Now;
+                    profileToken.Update(token);
+                    profileToken.Save();
+                    resp.Success = true;
+                    return resp;
+                }
+                resp.Success = false;
                 return resp;
             }
-            resp.Success = false;
-            return resp;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         public void InsertLogs(dynamic user, string encryptedPassword, string detectedBrowser, string requestType)
         {

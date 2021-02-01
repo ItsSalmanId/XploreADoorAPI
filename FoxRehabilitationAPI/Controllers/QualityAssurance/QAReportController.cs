@@ -12,6 +12,7 @@ using System.Web.Mvc;
 namespace FoxRehabilitationAPI.Controllers.Quality_Assurance
 {
     [ExceptionHandlingFilter]
+    [Authorize]
     public class QAReportController : BaseApiController
     {
         private readonly IQAReportService _QAReportService;

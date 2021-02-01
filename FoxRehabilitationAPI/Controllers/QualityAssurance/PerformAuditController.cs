@@ -12,6 +12,7 @@ using System.Web.Mvc;
 namespace FoxRehabilitationAPI.Controllers.Quality_Assurance
 {
     [ExceptionHandlingFilter]
+    [Authorize]
     public class PerformAuditController : BaseApiController
     {
         private readonly IPerformAuditService _PerformAuditService;

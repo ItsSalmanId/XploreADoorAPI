@@ -34,6 +34,20 @@ namespace FOX.DataModels.Models.Security
         [NotMapped]
         public int AUTO_LOCK_TIMESPAN { get; set; }
 
-  
+        [Table("FOX_TBL_PROFILE_TOKENS_SECURITY")]
+        public class ProfileTokensSecurity //: Alachisoft.NCache.Runtime.Serialization.ICompactSerializable
+        {
+            [Key]
+            public long TokenSecurityID { get; set; }
+            public bool isLogOut { get; set; }
+            public string AuthToken { get; set; }
+            public System.DateTime IssuedOn { get; set; }
+            public System.DateTime ExpiresOn { get; set; }
+            public string CREATED_BY { get; set; }
+            public DateTime CREATED_DATE { get; set; }
+            public string MODIFIED_BY { get; set; }
+            public DateTime MODIFIED_DATE { get; set; }
+            public bool DELETED { get; set; }
+        }
     }
 }

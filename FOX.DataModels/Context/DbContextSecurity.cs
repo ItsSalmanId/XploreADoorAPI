@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
+using static FOX.DataModels.Models.Security.ProfileToken;
 
 namespace FOX.DataModels.Context
 {
@@ -40,6 +41,7 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<FOX_TBL_USER_RIGHTS_TYPE>().Property(t => t.RIGHT_TYPE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<FOX_TBL_APP_USER_ADDITIONAL_INFO>().Property(t => t.FOX_USER_ADDITIONAL_INFO_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             //modelBuilder.Entity<WS_TBL_FOX_Login_LOGS>().Property(t => t.LogId).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<ProfileTokensSecurity>().Property(t => t.TokenSecurityID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);       
         }
 
 
@@ -62,7 +64,7 @@ namespace FOX.DataModels.Context
         public virtual DbSet<FOX_TBL_USER_RIGHTS_TYPE> RightsType { get; set; }
         public virtual DbSet<FOX_TBL_APP_USER_ADDITIONAL_INFO> USER_ADDITIONAL_INFO { get; set; }
         public virtual DbSet<WS_TBL_FOX_Login_LOGS> FoxLoginLogs { get; set; }
-
+        public virtual DbSet<ProfileTokensSecurity> ProfileTokensSecurities { get; set; }
 
         #endregion
     }

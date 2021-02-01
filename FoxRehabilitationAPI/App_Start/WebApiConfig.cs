@@ -13,6 +13,7 @@ using System.Web.Http.Cors;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using FoxRehabilitationAPI.Filters;
 
 namespace FoxRehabilitationAPI
 {
@@ -26,6 +27,7 @@ namespace FoxRehabilitationAPI
             // Configure Web API to use only bearer token authentication.
             config.SuppressDefaultHostAuthentication();
             config.Filters.Add(new HostAuthenticationFilter(OAuthDefaults.AuthenticationType));
+            config.Filters.Add(new AuthorizationHandlerAttribute());
 
             string Origins = @"
                                 http://localhost:14479,

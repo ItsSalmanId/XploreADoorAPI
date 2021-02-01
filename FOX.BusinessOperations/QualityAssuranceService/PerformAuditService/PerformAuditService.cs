@@ -197,7 +197,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
         public bool InsertAuditScores(SurveyAuditScores req, UserProfile profile)
         {
             string _body = string.Empty;
-           _body  = "<style>  body, table, td {font-family:arial!important;} table  { border-collapse:separate; }@media screen and(max-width:740px) { table { width: 100 % !important; text-align:center!important;} } body {font-size:14px!important;}  table th { background: #8fabbf;color: #fff;font-weight: normal; border-right: 1px solid #fff;text-align: center;font-weight: bold;line-height: normal;}table td, th{ padding: 3px 7px; color: #555555;font-size: 12px; height: 24px; font-weight: normal;}table tr:nth-of-type(odd) {background-color: #f2f2f2;}a{ text-decoration: none; }   </style> ";
+           _body  = "<style>  body, table, td {font-family:'Calibri'!important;} table { border-collapse:separate; }@media screen and(max-width:740px) { table { width: 100 % !important; text-align:center!important;} } body {font-size:14px!important;}  table th { font-weight: normal; border-right: 1px solid #fff;text-align: center;font-weight: bold;line-height: normal;}table td, th{ padding: 3px 7px; color: #555555;font-size: 16px; height: 24px; font-weight: normal;}a{ text-decoration: none; }.first-section th{background: #f2f2f2;}.first-section {background: #f2f2f2;}.second-section {background: #e1f4ff;}.third-section {background: #fff2cc;}</style> ";
             string _subject = string.Empty;
             string sendTo = string.Empty;
             DateTime? callDate;
@@ -243,26 +243,22 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                     
                     req.AUDITOR_NAME = profile.FirstName + ' ' + profile.LastName;
                     req.AGENT_EMAIL = req.AGENT_EMAIL;
+                     _body += "<div style='font-family:Calibri'>A helpdesk record has been audited with following specifics:<br/><br/>";
 
-                    _body += " <h3 style=margin:0;><b>Body:</b></h3>";
-                    _body += "<h4 style=font-weight:normal;margin-top:0>A helpdesk record has been audited with following specifics:</h4 > ";
-                    _body += "<h3 style=font-weight:normal;margin:0;><b>Auditor: </b>" + req.AUDITOR_NAME + "</h3>" ;
-                    if (req.MRN !=null)
+                    _body += "<b>Auditor: </b> " + req.AUDITOR_NAME + "</br>";
+                    _body += "<b>Audited on: </b> " + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt") + "</br>";
+                    if (req.MRN != null)
                     {
-
-                    _body += " <h3 style=font-weight: normal; margin: 0; ><b>Audited on: MRN:</b>" + req.MRN + " " + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt") + "</h3>";
+                        _body += "<b>MRN: </b> " + req.MRN + "</br>";
                     }
-                    if(req.CALL_SCANARIO != null)
+                    if (req.CALL_SCANARIO != null)
                     {
-                    _body += "<h3 style=font - weight: normal; margin: 0; ><b>Call handling: </b> " + req.CALL_SCANARIO + "</h3>";
-                    }
-                    _body += "<h3 style=font-weight:normal;><b>Evaluation details:</b> </h3>";
+                        _body += "<b>Call handling: </b> " + req.CALL_SCANARIO + "</br></br>";
+                    }                    
+                    _body += "<b>Evaluation details: </b></br></br></br></div>";                     
                     _body += req.HTML_TEMPLETE;
                     _subject = "PHD audit summary-" +(string.IsNullOrEmpty(req.AUDITOR_NAME) ? "" : req.AUDITOR_NAME + ".")  + (string.IsNullOrEmpty(req.CALL_SCANARIO) ? "" : req.CALL_SCANARIO + ",")  +Convert.ToDateTime(callDate).ToShortDateString();
-
-                    //req.AGENT_EMAIL = "usamabinahmed@mtbc.com";
                     Helper.Email(req.AGENT_EMAIL, _subject, _body, profile, null, null, null, null);
-                    //Helper.SendEmail(req.AUDITOR_EMAIL, _subject, _body, null,profile, null, null);
 
                 }
                 return true;

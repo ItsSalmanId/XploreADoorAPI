@@ -3792,7 +3792,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 converter.Options.DisplayHeader = false;
                 converter.Options.WebPageWidth = 768;
 
-                PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at (800) 597-0848 or email admit@foxrehab.org",
+                PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at +1 (800) 597 - 0848 or email admit@foxrehab.org",
                     new Font("Arial", 10));
 
                 // footer settings
@@ -4134,10 +4134,19 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 var provider = _InsertUpdateOrderingSourceRepository.GetFirst(t => t.SOURCE_ID == sourceDetail.SENDER_ID);
                 if (provider != null)
                 {
+                    if(provider.FAX != null)
+                    {
+                        var splitedFaxIndex = provider.FAX.Substring(0);
+                        if(splitedFaxIndex != null && splitedFaxIndex.Length >= 10)
+                        {
+                            var newFormatFax = 1 + " " +"(" + splitedFaxIndex[0] + splitedFaxIndex[1] + splitedFaxIndex[2] + ")" + " " + splitedFaxIndex[3] + splitedFaxIndex[4] + splitedFaxIndex[5] + " " + "<span> &#8208;</span>" + " " + splitedFaxIndex[6] +
+                            splitedFaxIndex[7] + splitedFaxIndex[8] + splitedFaxIndex[9];
+                            body = body.Replace("[[provider_fax]]", "+" + newFormatFax ?? "");
+                        }
+                    }
                     body = body.Replace("[[provider_name]]", provider.LAST_NAME + ", " + provider.FIRST_NAME + " " + provider.REFERRAL_REGION);
                     body = body.Replace("[[provider_NPI]]", provider.NPI ?? "");
                     body = body.Replace("[[provider_phone]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(provider.PHONE) ?? "");
-                    body = body.Replace("[[provider_fax]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(provider.FAX) ?? "");
                     body = body.Replace("[[provider_date]]", Helper.GetCurrentDate().ToShortDateString() ?? "");
                 }
                 else
