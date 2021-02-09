@@ -68,7 +68,7 @@ namespace FOX.BusinessOperations.RequestForOrder
         public RequestForOrderService()
         {
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
-            _OriginalQueueFiles = new GenericRepository<OriginalQueueFiles>(_QueueContext);       
+            _OriginalQueueFiles = new GenericRepository<OriginalQueueFiles>(_QueueContext);
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
             _UserRepository = new GenericRepository<User>(security);
             _FOX_TBL_SENDER_NAME = new GenericRepository<DataModels.Models.SenderName.FOX_TBL_SENDER_NAME>(_DbContextCommon);
@@ -198,7 +198,7 @@ namespace FOX.BusinessOperations.RequestForOrder
             //return new ResponseGeneratingWorkOrder() { WorkId = 544600 };
         }
         public ResponseModel SendEmail(RequestSendEmailModel requestSendEmailModel, UserProfile Profile)
-        {           
+        {
             try
             {
                 var config = Helper.GetServiceConfiguration(Profile.PracticeCode);
@@ -217,9 +217,9 @@ namespace FOX.BusinessOperations.RequestForOrder
                             //orderingRefSourceFullName = orderingRefSource?.LAST_NAME + ", " + orderingRefSource?.FIRST_NAME;
                         }
                     }
-                 
-                   //var encryptedWorkId = StringCipher.Encrypt(requestSendEmailModel.WorkId.ToString());
-                   var encryptedWorkId = requestSendEmailModel.WorkId.ToString();
+
+                    //var encryptedWorkId = StringCipher.Encrypt(requestSendEmailModel.WorkId.ToString());
+                    var encryptedWorkId = requestSendEmailModel.WorkId.ToString();
                     string link = AppConfiguration.ClientURL + @"#/VerifyWorkOrder?value=" + HttpUtility.UrlEncode(encryptedWorkId);
                     //if (!string.IsNullOrWhiteSpace(orderingRefSourceFullName))
                     //{
@@ -239,26 +239,26 @@ namespace FOX.BusinessOperations.RequestForOrder
                         string attachmentPath = "";
                         //For Live
                         List<string> _bccList = new List<string>() { "muhammadali9@mtbc.com" };
-                        
+
                         //For QA UAT
                         //List<string> _bccList = new List<string>() { "abdulsattar@mtbc.com" };
-                                                                                               //string _body = @"
-                                                                                               //        <p>***Important Message regarding your patient’s care***</p>
-                                                                                               //        <p>Please login to see the request for referral from Fox Rehabilitation</p>
-                                                                                               //        <p><a style='padding: 5px 15px 5px 15px;color:#fff; font-size:16px;text-decoration:none; outline:none;background-color:#ff671f;' target='_blank' href='http://172.16.0.207:8961/#/VerifyWorkOrder?value=54812928&name=1163testing'>Login To Fox Rehab Portal</a></p>
-                                                                                               //        < b>FOX Rehabilitation</b>
-                                                                                               //        <br />
-                                                                                               //        <b>T</b> 877 407 3422 <br />
-                                                                                               //        <b>F</b> 877 407 4329 Main<br />
-                                                                                               //        <b>F</b> 800 597 0848 Patient Referral<br />
-                                                                                               //        <b>E</b> <a href='mailTo:clientservices@foxrehab.org'>clientservices@foxrehab.org</a><br />
-                                                                                               //        <br />
-                                                                                               //        <b>Checkout our NEW website -</b>
-                                                                                               //        <a href='https://www.foxrehab.org/'>www.foxrehab.org</a>
-                                                                                               //        <br />
-                                                                                               //        <br />Physical, Occupational & Speech Therapy.<br />
-                                                                                               //        <b>FOX Rehabilitates Lives.</b>
-                                                                                               //        ";
+                        //string _body = @"
+                        //        <p>***Important Message regarding your patient’s care***</p>
+                        //        <p>Please login to see the request for referral from Fox Rehabilitation</p>
+                        //        <p><a style='padding: 5px 15px 5px 15px;color:#fff; font-size:16px;text-decoration:none; outline:none;background-color:#ff671f;' target='_blank' href='http://172.16.0.207:8961/#/VerifyWorkOrder?value=54812928&name=1163testing'>Login To Fox Rehab Portal</a></p>
+                        //        < b>FOX Rehabilitation</b>
+                        //        <br />
+                        //        <b>T</b> 877 407 3422 <br />
+                        //        <b>F</b> 877 407 4329 Main<br />
+                        //        <b>F</b> 800 597 0848 Patient Referral<br />
+                        //        <b>E</b> <a href='mailTo:clientservices@foxrehab.org'>clientservices@foxrehab.org</a><br />
+                        //        <br />
+                        //        <b>Checkout our NEW website -</b>
+                        //        <a href='https://www.foxrehab.org/'>www.foxrehab.org</a>
+                        //        <br />
+                        //        <br />Physical, Occupational & Speech Therapy.<br />
+                        //        <b>FOX Rehabilitates Lives.</b>
+                        //        ";
 
                         string _body = @"
                         <table style='width:100%; padding:0px;background:#fff;font-family: sans-serif !important;' cellpadding='0' cellspacing='0'>
@@ -302,7 +302,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                                                         <table style='width:250px;font-family: sans-serif !important;' cellpadding='0' cellspacing='0'>
                                                             <tr>
                                                                 <td style='text-align: center;background-color:#ff671f; border:1px solid #ff671f; vertical-align:middle; line-height:normal; padding:5px 15px 5px 15px;'>
-                                                                    <a style='color:#fff; font-size:16px;text-decoration:none; outline:none;background-color:#ff671f;' target='_blank' href='" +link + @"'>Login To Fox Rehab Portal</a>
+                                                                    <a style='color:#fff; font-size:16px;text-decoration:none; outline:none;background-color:#ff671f;' target='_blank' href='" + link + @"'>Login To Fox Rehab Portal</a>
                                                                 </td>
                                                             </tr>
                                                         </table>
@@ -315,9 +315,9 @@ namespace FOX.BusinessOperations.RequestForOrder
                                                 <tr>
                                                     <td style='line-height: 1.5'>
                                                         <strong>Rehabilitation </strong><br>
-                                                        <strong>T</strong> +1 (877) 407 - 3422 <br>
-                                                        <strong>F</strong> +1 (877) 407 - 4329 Main<br>
-                                                        <strong>F</strong> +1 (800) 597 - 0848 Patient Referral<br>
+                                                        <strong>T</strong> 877 407 3422 <br>
+                                                        <strong>F</strong> 877 407 4329 Main<br>
+                                                        <strong>F</strong> 800 597 0848 Patient Referral<br>
                                                         <strong>E</strong> clientservices@foxrehab.org<br><br>
                                                             
                                                         <strong>Checkout our NEW website</strong> - <a href='www.foxrehab.org' target='_blank'>www.foxrehab.org</a> <br><br>
@@ -380,8 +380,9 @@ namespace FOX.BusinessOperations.RequestForOrder
                     if (responseHTMLToPDF != null && (responseHTMLToPDF?.Success ?? false))
                     {
                         var resultfax = _IFaxService.SendFax(new string[] { requestSendFAXModel.ReceipientFaxNumber }, new string[] { "" }, null, responseHTMLToPDF.FileName, responseHTMLToPDF.FilePath, requestSendFAXModel.Subject, false, Profile);
-                        if (resultfax == "failed") {
-                             htmlstring = "<html><body><h2>Delivery Report</h2><p>Subject:" + requestSendFAXModel.Subject + "</p><p>From:" + requestSendFAXModel.SenderName + "</p><p>To:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Sent:" + DateTime.Now + "</p><br/><div style='padding:10px;background-color:#ff9999;width: 50%;'><p>Delivery report for:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Failed:</p><p>Message failed to deliver </p></div></body></html>";
+                        if (resultfax == "failed")
+                        {
+                            htmlstring = "<html><body><h2>Delivery Report</h2><p>Subject:" + requestSendFAXModel.Subject + "</p><p>From:" + requestSendFAXModel.SenderName + "</p><p>To:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Sent:" + DateTime.Now + "</p><br/><div style='padding:10px;background-color:#ff9999;width: 50%;'><p>Delivery report for:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Failed:</p><p>Message failed to deliver </p></div></body></html>";
                         }
                         else
                         {
@@ -391,7 +392,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                         ResponseHTMLToPDF responseHTMLToPDF2 = HTMLToPDF2(config, htmlstring, "tempdfdelivery");
                         string deliveryfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
                         string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
-                        int numberOfPages = getNumberOfPagesOfPDF(filePath);                    
+                        int numberOfPages = getNumberOfPagesOfPDF(filePath);
                         //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
                         //SavePdfToImages(filePath, imagesPath, requestSendFAXModel.WorkId, numberOfPages, "Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName);
                         SavePdfToImages(filePath, config, requestSendFAXModel.WorkId, numberOfPages, "Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
@@ -443,7 +444,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                 converter.Options.DisplayHeader = false;
                 converter.Options.WebPageWidth = 768;
 
-                PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at +1 (800) 597 - 0848 or email admit@foxrehab.org",
+                PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at (800) 597-0848 or email admit@foxrehab.org",
                     new Font("Arial", 10));
 
                 // footer settings
@@ -650,6 +651,8 @@ namespace FOX.BusinessOperations.RequestForOrder
                 {
                     var imgPath = "";
                     var logoImgPath = "";
+                    var imgPathServer = "";
+                    var logoImgPathServer = "";
                     string deliveryReportId = "";
                     Random random = new Random();
 
@@ -704,9 +707,13 @@ namespace FOX.BusinessOperations.RequestForOrder
                             logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + ".jpg";
                         }
                     }
+
+                    Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter, PdfPath, i, imgPathServer, logoImgPathServer));
+                    myThread.Start();
+                    threadsList.Add(myThread);
                     //End
                     //string ImgDirPath = "FoxDocumentDirectory\\Fox\\Images";
-                    
+
                     //if (sorcetype.Split(':')?[0] == "DR")
                     //{
                     //     imgPath = config.IMAGES_PATH_DB + "\\" + deliveryReportId + "_" + i + ".jpg";
@@ -736,6 +743,41 @@ namespace FOX.BusinessOperations.RequestForOrder
                 {
                     AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName);
                 }
+            }
+        }
+        public void newThreadImplementaion(ref List<int> threadCounter, string PdfPath, int i, string imgPath, string logoImgPath)
+        {
+            try
+            {
+                System.Drawing.Image img;
+                PdfFocus f = new PdfFocus();
+                f.Serial = "10261435399";
+                f.OpenPdf(PdfPath);
+
+                if (f.PageCount > 0)
+                {
+                    //Save all PDF pages to jpeg images
+                    f.ImageOptions.Dpi = 120;
+                    f.ImageOptions.ImageFormat = ImageFormat.Jpeg;
+
+                    var image = f.ToImage(i + 1);
+                    //Next manipulate with Jpeg in memory or save to HDD, open in a viewer
+                    using (var ms = new MemoryStream(image))
+                    {
+                        img = System.Drawing.Image.FromStream(ms);
+                        img.Save(imgPath, ImageFormat.Jpeg);
+                        Bitmap bmp = new Bitmap(img);
+                        img.Dispose();
+                        ConvertPDFToImages ctp = new ConvertPDFToImages();
+                        ctp.SaveWithNewDimention(bmp, 115, 150, 100, logoImgPath);
+                        bmp.Dispose();
+                    }
+                }
+                threadCounter.Add(1);
+            }
+            catch (Exception ex)
+            {
+                threadCounter.Add(1);
             }
         }
         private int getNumberOfPagesOfPDF(string PdfPath)
@@ -786,7 +828,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                 {
                     originalQueue.TOTAL_PAGES = originalQueue.TOTAL_PAGES + 1;
                 }
-                    
+
                 originalQueue.MODIFIED_BY = userName;
                 originalQueue.MODIFIED_DATE = DateTime.Now;
 
@@ -820,97 +862,97 @@ namespace FOX.BusinessOperations.RequestForOrder
                 throw exception;
             }
         }
-public ResponseModel DeleteWorkOrder(RequestDeleteWorkOrder requestDeleteWorkOrder, UserProfile Profile)
-{
-    try
-    {
-        OriginalQueue originalQueue = _QueueRepository.Get(t => t.WORK_ID == requestDeleteWorkOrder?.WorkId && !t.DELETED);
-
-        if (originalQueue != null)
+        public ResponseModel DeleteWorkOrder(RequestDeleteWorkOrder requestDeleteWorkOrder, UserProfile Profile)
         {
-            originalQueue.DELETED = true;
-            originalQueue.MODIFIED_BY = Profile.UserName;
-            originalQueue.MODIFIED_DATE = DateTime.Now;
-
-            _QueueRepository.Update(originalQueue);
-            _QueueRepository.Save();
-            return new ResponseModel() { Message = "Delete work order successfully.", ErrorMessage = "", Success = true };
-        }
-        else
-            return new ResponseModel() { Message = "Work order not found.", ErrorMessage = "", Success = true };
-    }
-    catch (Exception exception)
-    {
-        //throw exception;
-        return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
-    }
-}
-
-public ResponseModel DownloadPdf(RequestDownloadPdfModel requestDownloadPdfModel, UserProfile Profile)
-{
-    try
-    {
-        var config = Helper.GetServiceConfiguration(Profile.PracticeCode);
-        if (config.PRACTICE_CODE != null
-            && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
-            && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
-        {
-            ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestDownloadPdfModel.AttachmentHTML, requestDownloadPdfModel.FileName.Replace(' ', '_'));
-            //return new ResponseModel() { Message = @"FoxDocumentDirectory\RequestForOrderPDF\" + responseHTMLToPDF.FileName, ErrorMessage = "", Success = true };
-            return new ResponseModel() { Message = config.ORIGINAL_FILES_PATH_DB + responseHTMLToPDF.FileName, ErrorMessage = "", Success = true };
-
-        }
-        else
-        {
-            return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = "DB configuration for file paths not found. See service configuration.", Success = false };
-        }
-    }
-    catch (Exception exception)
-    {
-        //TO DO Log exception here
-        //throw exception;
-        return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
-    }
-}
-
-public ResponseModel AddDocument_SignOrder(ReqAddDocument_SignOrder reqAddDocument_SignOrder, UserProfile Profile)
-{
-    try
-    {
-        var config = Helper.GetServiceConfiguration(Profile.PracticeCode);
-        if (config.PRACTICE_CODE != null
-            && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
-            && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
-        {
-            ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, reqAddDocument_SignOrder.AttachmentHTML, reqAddDocument_SignOrder.FileName.Replace(' ', '_'));
-            if (responseHTMLToPDF != null && (responseHTMLToPDF?.Success ?? false))
+            try
             {
-                string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
-                int numberOfPages = getNumberOfPagesOfPDF(filePath);
+                OriginalQueue originalQueue = _QueueRepository.Get(t => t.WORK_ID == requestDeleteWorkOrder?.WorkId && !t.DELETED);
+
+                if (originalQueue != null)
+                {
+                    originalQueue.DELETED = true;
+                    originalQueue.MODIFIED_BY = Profile.UserName;
+                    originalQueue.MODIFIED_DATE = DateTime.Now;
+
+                    _QueueRepository.Update(originalQueue);
+                    _QueueRepository.Save();
+                    return new ResponseModel() { Message = "Delete work order successfully.", ErrorMessage = "", Success = true };
+                }
+                else
+                    return new ResponseModel() { Message = "Work order not found.", ErrorMessage = "", Success = true };
+            }
+            catch (Exception exception)
+            {
+                //throw exception;
+                return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
+            }
+        }
+
+        public ResponseModel DownloadPdf(RequestDownloadPdfModel requestDownloadPdfModel, UserProfile Profile)
+        {
+            try
+            {
+                var config = Helper.GetServiceConfiguration(Profile.PracticeCode);
+                if (config.PRACTICE_CODE != null
+                    && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
+                    && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
+                {
+                    ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestDownloadPdfModel.AttachmentHTML, requestDownloadPdfModel.FileName.Replace(' ', '_'));
+                    //return new ResponseModel() { Message = @"FoxDocumentDirectory\RequestForOrderPDF\" + responseHTMLToPDF.FileName, ErrorMessage = "", Success = true };
+                    return new ResponseModel() { Message = config.ORIGINAL_FILES_PATH_DB + responseHTMLToPDF.FileName, ErrorMessage = "", Success = true };
+
+                }
+                else
+                {
+                    return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = "DB configuration for file paths not found. See service configuration.", Success = false };
+                }
+            }
+            catch (Exception exception)
+            {
+                //TO DO Log exception here
+                //throw exception;
+                return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
+            }
+        }
+
+        public ResponseModel AddDocument_SignOrder(ReqAddDocument_SignOrder reqAddDocument_SignOrder, UserProfile Profile)
+        {
+            try
+            {
+                var config = Helper.GetServiceConfiguration(Profile.PracticeCode);
+                if (config.PRACTICE_CODE != null
+                    && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
+                    && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
+                {
+                    ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, reqAddDocument_SignOrder.AttachmentHTML, reqAddDocument_SignOrder.FileName.Replace(' ', '_'));
+                    if (responseHTMLToPDF != null && (responseHTMLToPDF?.Success ?? false))
+                    {
+                        string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
+                        int numberOfPages = getNumberOfPagesOfPDF(filePath);
                         //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
                         //SavePdfToImages(filePath, imagesPath, reqAddDocument_SignOrder.WorkId, numberOfPages, "Email", Profile.UserEmailAddress, Profile.UserName);
                         SavePdfToImages(filePath, config, reqAddDocument_SignOrder.WorkId, numberOfPages, "Email", Profile.UserEmailAddress, Profile.UserName, false);
                         return new ResponseModel() { Message = "Add document in sign order successfully.", ErrorMessage = "", Success = true };
+                    }
+                    else
+                    {
+                        return new ResponseModel() { Message = "Add document in sign order successfully.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
+                        //return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
+                    }
+                }
+                else
+                {
+                    return new ResponseModel() { Message = "Add document in sign order unsuccessfull.", ErrorMessage = "DB configuration for file paths not found. See service configuration.", Success = false };
+                }
             }
-            else
+            catch (Exception exception)
             {
-                return new ResponseModel() { Message = "Add document in sign order successfully.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
-                //return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
+                //TO DO Log exception here
+                //throw exception;
+                return new ResponseModel() { Message = "Email sent successfully.", ErrorMessage = exception.ToString(), Success = false };
+                //return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
             }
         }
-        else
-        {
-            return new ResponseModel() { Message = "Add document in sign order unsuccessfull.", ErrorMessage = "DB configuration for file paths not found. See service configuration.", Success = false };
-        }
-    }
-    catch (Exception exception)
-    {
-        //TO DO Log exception here
-        //throw exception;
-        return new ResponseModel() { Message = "Email sent successfully.", ErrorMessage = exception.ToString(), Success = false };
-        //return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
-    }
-}
 
         public ReferralSource GetUserReferralSource(string email, long userId)
         {
@@ -954,7 +996,8 @@ public ResponseModel AddDocument_SignOrder(ReqAddDocument_SignOrder reqAddDocume
 
                 return refSrc;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }

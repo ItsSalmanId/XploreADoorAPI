@@ -109,7 +109,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private readonly GenericRepository<FOX_TBL_REFERRAL_SOURCE> _referralSourceTableRepository;
         private readonly GenericRepository<GROUP> _UserGroupseRepository;
         private readonly GenericRepository<FOX_TBL_ZIP_STATE_COUNTY> _zipStateCountyRepository;
-
+        private static List<Thread> threadsList = new List<Thread>();
         public IndexInfoService()
         {
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
@@ -2498,7 +2498,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                         logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + ".jpg";
                     }
 
-                    Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter,PdfPath, i, imgPathServer, logoImgPathServer));
+                    Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter, PdfPath, i, imgPathServer, logoImgPathServer));
                     myThread.Start();
                     threadsList.Add(myThread);
                     AddFilesToDatabase(imgPath, workId, lworkid, logoImgPath);
@@ -2524,11 +2524,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 f.Serial = "10261435399";
                 f.OpenPdf(PdfPath);
 
-                    if (f.PageCount > 0)
-                    {
-                        //Save all PDF pages to jpeg images
-                        f.ImageOptions.Dpi = 120;
-                        f.ImageOptions.ImageFormat = ImageFormat.Jpeg;
+                if (f.PageCount > 0)
+                {
+                    //Save all PDF pages to jpeg images
+                    f.ImageOptions.Dpi = 120;
+                    f.ImageOptions.ImageFormat = ImageFormat.Jpeg;
 
                     var image = f.ToImage(i + 1);
                     //Next manipulate with Jpeg in memory or save to HDD, open in a viewer
@@ -2549,7 +2549,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 threadCounter.Add(1);
             }
-            
+
         }
         private void AddFilesToDatabase(string filePath, string workId, long lworkid, string logoPath)
         {
@@ -2642,7 +2642,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, coverLetterTemplate, "tempcoversletter");
                     string coverfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
                     SavePdfToImages(coverfilePath, config, data.UNIQUE_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
-
                     string newFileName = commonService.AddCoverPageForFax(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME, coverLetterTemplate);
 
                     if (!attachmentPath.FILE_PATH.EndsWith("\\"))
@@ -3812,7 +3811,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 converter.Options.DisplayHeader = false;
                 converter.Options.WebPageWidth = 768;
 
-                PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at +1 (800) 597 - 0848 or email admit@foxrehab.org",
+                PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at (800) 597-0848 or email admit@foxrehab.org",
                     new Font("Arial", 10));
 
                 // footer settings
@@ -4154,19 +4153,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 var provider = _InsertUpdateOrderingSourceRepository.GetFirst(t => t.SOURCE_ID == sourceDetail.SENDER_ID);
                 if (provider != null)
                 {
-                    if(provider.FAX != null)
-                    {
-                        var splitedFaxIndex = provider.FAX.Substring(0);
-                        if(splitedFaxIndex != null && splitedFaxIndex.Length >= 10)
-                        {
-                            var newFormatFax = 1 + " " +"(" + splitedFaxIndex[0] + splitedFaxIndex[1] + splitedFaxIndex[2] + ")" + " " + splitedFaxIndex[3] + splitedFaxIndex[4] + splitedFaxIndex[5] + " " + "<span> &#8208;</span>" + " " + splitedFaxIndex[6] +
-                            splitedFaxIndex[7] + splitedFaxIndex[8] + splitedFaxIndex[9];
-                            body = body.Replace("[[provider_fax]]", "+" + newFormatFax ?? "");
-                        }
-                    }
                     body = body.Replace("[[provider_name]]", provider.LAST_NAME + ", " + provider.FIRST_NAME + " " + provider.REFERRAL_REGION);
                     body = body.Replace("[[provider_NPI]]", provider.NPI ?? "");
                     body = body.Replace("[[provider_phone]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(provider.PHONE) ?? "");
+                    body = body.Replace("[[provider_fax]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(provider.FAX) ?? "");
                     body = body.Replace("[[provider_date]]", Helper.GetCurrentDate().ToShortDateString() ?? "");
                 }
                 else
@@ -5147,11 +5137,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
         /// <returns></returns>
         public List<WorkOrderDocs> GetWorkOrderDocs(string patientAccountStr, UserProfile userProfile)
         {
-            List< WorkOrderDocs> list = new List<WorkOrderDocs>();
+            List<WorkOrderDocs> list = new List<WorkOrderDocs>();
             var _parmPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = userProfile.PracticeCode };
             var _patientAccount = !string.IsNullOrWhiteSpace(patientAccountStr) ? new SqlParameter { ParameterName = "PATIENT_ACCOUNT", Value = long.Parse(patientAccountStr) } : new SqlParameter { ParameterName = "PATIENT_ACCOUNT", Value = DBNull.Value };
             list = SpRepository<WorkOrderDocs>.GetListWithStoreProcedure(@"exec [FOX_PROC_ALL_PATIENT_DOCUMENTS]  @PATIENT_ACCOUNT, @PRACTICE_CODE", _parmPracticeCode, _patientAccount);
-            if(list != null)
+            if (list != null)
             {
                 return list;
             }

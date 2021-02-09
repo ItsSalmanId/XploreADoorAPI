@@ -100,88 +100,88 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
         {
             //try
             //{
-                OriginalQueue originalQueue = new OriginalQueue();
-                var workId = Helper.getMaximumId("WORK_ID");
-                originalQueue.WORK_ID = workId;
-                originalQueue.UNIQUE_ID = workId.ToString();
-                originalQueue.PRACTICE_CODE = Profile.PracticeCode;
-                originalQueue.CREATED_BY = originalQueue.MODIFIED_BY = Profile.UserName;
-                originalQueue.CREATED_DATE = originalQueue.MODIFIED_DATE = DateTime.Now;
-                originalQueue.IS_EMERGENCY_ORDER = false;
-                originalQueue.supervisor_status = false;
-                originalQueue.DELETED = false;
-                originalQueue.RECEIVE_DATE = originalQueue.CREATED_DATE;
-                originalQueue.SORCE_NAME = Profile.UserEmailAddress;
-                originalQueue.SORCE_TYPE = "Email";
+            OriginalQueue originalQueue = new OriginalQueue();
+            var workId = Helper.getMaximumId("WORK_ID");
+            originalQueue.WORK_ID = workId;
+            originalQueue.UNIQUE_ID = workId.ToString();
+            originalQueue.PRACTICE_CODE = Profile.PracticeCode;
+            originalQueue.CREATED_BY = originalQueue.MODIFIED_BY = Profile.UserName;
+            originalQueue.CREATED_DATE = originalQueue.MODIFIED_DATE = DateTime.Now;
+            originalQueue.IS_EMERGENCY_ORDER = false;
+            originalQueue.supervisor_status = false;
+            originalQueue.DELETED = false;
+            originalQueue.RECEIVE_DATE = originalQueue.CREATED_DATE;
+            originalQueue.SORCE_NAME = Profile.UserEmailAddress;
+            originalQueue.SORCE_TYPE = "Email";
 
-                originalQueue.WORK_STATUS = "Created";
-                originalQueue.IS_VERIFIED_BY_RECIPIENT = false;
+            originalQueue.WORK_STATUS = "Created";
+            originalQueue.IS_VERIFIED_BY_RECIPIENT = false;
 
-                originalQueue.PATIENT_ACCOUNT = reqSubmitUploadOrderImagesModel.PATIENT_ACCOUNT;
-                originalQueue.FOX_TBL_SENDER_TYPE_ID = reqSubmitUploadOrderImagesModel.FOX_TBL_SENDER_TYPE_ID;
-                originalQueue.FOX_TBL_SENDER_NAME_ID = reqSubmitUploadOrderImagesModel.FOX_TBL_SENDER_NAME_ID;
-                originalQueue.SENDER_ID = reqSubmitUploadOrderImagesModel.SENDER_ID;
-                originalQueue.DOCUMENT_TYPE = reqSubmitUploadOrderImagesModel.DOCUMENT_TYPE;
-                originalQueue.DEPARTMENT_ID = reqSubmitUploadOrderImagesModel.DEPARTMENT_ID;
-                originalQueue.FACILITY_NAME = reqSubmitUploadOrderImagesModel.FACILITY_NAME;
-                originalQueue.FACILITY_ID = reqSubmitUploadOrderImagesModel.FACILITY_ID;
-                originalQueue.IS_EMERGENCY_ORDER = reqSubmitUploadOrderImagesModel.IS_EMERGENCY_ORDER;
-                originalQueue.RFO_Type = "Upload_Images";
+            originalQueue.PATIENT_ACCOUNT = reqSubmitUploadOrderImagesModel.PATIENT_ACCOUNT;
+            originalQueue.FOX_TBL_SENDER_TYPE_ID = reqSubmitUploadOrderImagesModel.FOX_TBL_SENDER_TYPE_ID;
+            originalQueue.FOX_TBL_SENDER_NAME_ID = reqSubmitUploadOrderImagesModel.FOX_TBL_SENDER_NAME_ID;
+            originalQueue.SENDER_ID = reqSubmitUploadOrderImagesModel.SENDER_ID;
+            originalQueue.DOCUMENT_TYPE = reqSubmitUploadOrderImagesModel.DOCUMENT_TYPE;
+            originalQueue.DEPARTMENT_ID = reqSubmitUploadOrderImagesModel.DEPARTMENT_ID;
+            originalQueue.FACILITY_NAME = reqSubmitUploadOrderImagesModel.FACILITY_NAME;
+            originalQueue.FACILITY_ID = reqSubmitUploadOrderImagesModel.FACILITY_ID;
+            originalQueue.IS_EMERGENCY_ORDER = reqSubmitUploadOrderImagesModel.IS_EMERGENCY_ORDER;
+            originalQueue.RFO_Type = "Upload_Images";
 
-                originalQueue.ASSIGNED_TO = null;
-                originalQueue.ASSIGNED_BY = null;
-                originalQueue.ASSIGNED_DATE = null;
-               
-                _QueueRepository.Insert(originalQueue);
-                _QueueRepository.Save();
-                GenerateAndSaveImagesOfUploadedFiles(workId, reqSubmitUploadOrderImagesModel.FileNameList, Profile);
-                if (reqSubmitUploadOrderImagesModel.Is_Manual_ORS)
+            originalQueue.ASSIGNED_TO = null;
+            originalQueue.ASSIGNED_BY = null;
+            originalQueue.ASSIGNED_DATE = null;
+
+            _QueueRepository.Insert(originalQueue);
+            _QueueRepository.Save();
+            GenerateAndSaveImagesOfUploadedFiles(workId, reqSubmitUploadOrderImagesModel.FileNameList, Profile);
+            if (reqSubmitUploadOrderImagesModel.Is_Manual_ORS)
+            {
+                string body = string.Empty;
+                string template_html = HttpContext.Current.Server.MapPath(@"~/HtmlTemplates/ORS_info_Template.html");
+                var config = Helper.GetServiceConfiguration(Profile.PracticeCode);
+                body = File.ReadAllText(template_html);
+                body = body.Replace("[[provider_name]]", reqSubmitUploadOrderImagesModel.ORS_NAME ?? "");
+                body = body.Replace("[[provider_NPI]]", reqSubmitUploadOrderImagesModel.ORS_NPI ?? "");
+                body = body.Replace("[[provider_phone]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(reqSubmitUploadOrderImagesModel.ORS_PHONE) ?? "");
+                body = body.Replace("[[provider_fax]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(reqSubmitUploadOrderImagesModel.ORS_FAX) ?? "");
+                long pageCounter = 1;
+                ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, body, "orsInfo");
+                string coverfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
+                var ext = Path.GetExtension(coverfilePath).ToLower();
+                int numberOfPages = getNumberOfPagesOfPDF(coverfilePath);
+                SavePdfToImages(coverfilePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
+
+                FOX_TBL_NOTES_HISTORY notes = new FOX_TBL_NOTES_HISTORY();
+                notes.NOTE_ID = Helper.getMaximumId("NOTE_ID");
+
+                notes.CREATED_BY = Profile.UserName;
+                notes.CREATED_DATE = Helper.GetCurrentDate().ToString();
+                notes.DELETED = false;
+                notes.MODIFIED_DATE = Helper.GetCurrentDate();
+                notes.MODIFIED_BY = Profile.UserName;
+                notes.PRACTICE_CODE = Profile.PracticeCode;
+                _NotesRepository.Insert(notes);
+                _NotesRepository.Save();
+
+                var newObj = new FOX_TBL_NOTES_HISTORY()
                 {
-                    string body = string.Empty;
-                    string template_html = HttpContext.Current.Server.MapPath(@"~/HtmlTemplates/ORS_info_Template.html");
-                    var config = Helper.GetServiceConfiguration(Profile.PracticeCode);
-                    body = File.ReadAllText(template_html);
-                    body = body.Replace("[[provider_name]]", reqSubmitUploadOrderImagesModel.ORS_NAME??"");
-                    body = body.Replace("[[provider_NPI]]", reqSubmitUploadOrderImagesModel.ORS_NPI ?? "");
-                    body = body.Replace("[[provider_phone]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(reqSubmitUploadOrderImagesModel.ORS_PHONE) ?? "");
-                    body = body.Replace("[[provider_fax]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(reqSubmitUploadOrderImagesModel.ORS_FAX) ?? "");
-                    long pageCounter = 1;
-                    ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, body, "orsInfo");
-                    string coverfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
-                    var ext = Path.GetExtension(coverfilePath).ToLower();
-                    int numberOfPages = getNumberOfPagesOfPDF(coverfilePath);
-                    SavePdfToImages(coverfilePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
-
-                    FOX_TBL_NOTES_HISTORY notes = new FOX_TBL_NOTES_HISTORY();
-                    notes.NOTE_ID = Helper.getMaximumId("NOTE_ID");
-                   
-                    notes.CREATED_BY = Profile.UserName;
-                    notes.CREATED_DATE = Helper.GetCurrentDate().ToString();
-                    notes.DELETED = false;
-                    notes.MODIFIED_DATE = Helper.GetCurrentDate();
-                    notes.MODIFIED_BY = Profile.UserName;
-                    notes.PRACTICE_CODE = Profile.PracticeCode;
-                    _NotesRepository.Insert(notes);
-                    _NotesRepository.Save();
-
-                    var newObj = new FOX_TBL_NOTES_HISTORY()
-                    {
-                        WORK_ID = workId,
-                        NOTE_DESC = "Custom ordering referral source is added by the user. See the attached referral for details"
-                    };
-                    InsertNotesHistory(newObj, Profile);
+                    WORK_ID = workId,
+                    NOTE_DESC = "Custom ordering referral source is added by the user. See the attached referral for details"
+                };
+                InsertNotesHistory(newObj, Profile);
             }
             if (!String.IsNullOrWhiteSpace(reqSubmitUploadOrderImagesModel.NOTE_DESC))
+            {
+                var newObj = new FOX_TBL_NOTES_HISTORY()
                 {
-                    var newObj = new FOX_TBL_NOTES_HISTORY()
-                    {
-                        WORK_ID = workId,
-                        NOTE_DESC = reqSubmitUploadOrderImagesModel.NOTE_DESC
-                    };
-                    InsertNotesHistory(newObj, Profile);
-                }
+                    WORK_ID = workId,
+                    NOTE_DESC = reqSubmitUploadOrderImagesModel.NOTE_DESC
+                };
+                InsertNotesHistory(newObj, Profile);
+            }
 
-                return new ResSubmitUploadOrderImagesModel() { Message = "Work Order Created Successfully. workId = " + workId, ErrorMessage = "", Success = true };
+            return new ResSubmitUploadOrderImagesModel() { Message = "Work Order Created Successfully. workId = " + workId, ErrorMessage = "", Success = true };
             //}
             //catch (Exception exception)
             //{
@@ -196,43 +196,43 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
         {
             //try
             //{
-                var config = Helper.GetServiceConfiguration(profile.PracticeCode);
-                if (config.PRACTICE_CODE != null
-                    && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
-                    && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
-                {
-                    //string pdfPath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.PdfPath);
-                    //string imagesPath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.ImagesPath);
+            var config = Helper.GetServiceConfiguration(profile.PracticeCode);
+            if (config.PRACTICE_CODE != null
+                && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
+                && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
+            {
+                //string pdfPath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.PdfPath);
+                //string imagesPath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.ImagesPath);
 
-                    int totalPages = 0;
-                    long pageCounter = originalQueueFilesCount;
-                    foreach (var filePath1 in FileNameList)
-                    {
-                        string filePath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.RequestForOrderUploadImages + @"\" + filePath1);
-                        var ext = Path.GetExtension(filePath).ToLower();
+                int totalPages = 0;
+                long pageCounter = originalQueueFilesCount;
+                foreach (var filePath1 in FileNameList)
+                {
+                    string filePath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.RequestForOrderUploadImages + @"\" + filePath1);
+                    var ext = Path.GetExtension(filePath).ToLower();
                     if (!Directory.Exists(config.ORIGINAL_FILES_PATH_SERVER))
                     {
                         Directory.CreateDirectory(config.ORIGINAL_FILES_PATH_SERVER);
                     }
                     if (ext == ".tiff" || ext == ".tif" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".gif")
-                        {
-                            ConvertPDFToImages pdfToImg = new ConvertPDFToImages();
-                            int numberOfPages = pdfToImg.tifToImage(filePath, config.IMAGES_PATH_SERVER, workId, pageCounter, config.IMAGES_PATH_DB, out pageCounter, true);
-                            totalPages += numberOfPages;
-                        }
-                        else
-                        {
-                            int numberOfPages = getNumberOfPagesOfPDF(filePath);
+                    {
+                        ConvertPDFToImages pdfToImg = new ConvertPDFToImages();
+                        int numberOfPages = pdfToImg.tifToImage(filePath, config.IMAGES_PATH_SERVER, workId, pageCounter, config.IMAGES_PATH_DB, out pageCounter, true);
+                        totalPages += numberOfPages;
+                    }
+                    else
+                    {
+                        int numberOfPages = getNumberOfPagesOfPDF(filePath);
                         SavePdfToImages(filePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
                         totalPages += numberOfPages;
-                        }
                     }
-                    AddToDatabase("", totalPages + originalQueueFilesCount, workId);
                 }
-                else
-                {
-                    throw new Exception("DB configuration for file paths not found. See service configuration.");
-                }
+                AddToDatabase("", totalPages + originalQueueFilesCount, workId);
+            }
+            else
+            {
+                throw new Exception("DB configuration for file paths not found. See service configuration.");
+            }
             //}
             //catch (Exception ex)
             //{
@@ -256,7 +256,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             {
                 for (int i = 0; i < noOfPages; i++, pageCounter++)
                 {
-                    Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter, PdfPath,i,config, workId, pageCounter));
+                    Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter, PdfPath, i, config, workId, pageCounter));
                     myThread.Start();
                     threadsList.Add(myThread);
                     var imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + pageCounter + ".jpg";
@@ -278,7 +278,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             pageCounterOut = pageCounter;
         }
 
-        public void newThreadImplementaion(ref List<int> threadCounter, string PdfPath,int i, ServiceConfiguration config, long workId, int pageCounter)
+        public void newThreadImplementaion(ref List<int> threadCounter, string PdfPath, int i, ServiceConfiguration config, long workId, int pageCounter)
         {
             try
             {
@@ -312,7 +312,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             {
                 threadCounter.Add(1);
             }
-            pageCounterOut = pageCounter;
+
         }
 
         private void AddFilesToDatabase(string filePath, long workId, string logoPath)
