@@ -863,29 +863,29 @@ namespace FOX.BusinessOperations.AccountService
             try
             {
                 ResponseModel resp = new ResponseModel();
-                ProfileToken token = profileToken.GetFirst(x => x.AuthToken == obj.token && x.UserId == profile.userID);
-                if (token != null)
+                ProfileToken token = new ProfileToken();
+                if (obj.token != null)
                 {
-                    ProfileTokensSecurity profileTokenSecurity = new ProfileTokensSecurity()
+                    var paramAuthToken = new SqlParameter { ParameterName = "AUTHTOKEN", SqlDbType = SqlDbType.NVarChar, Value = obj.token };
+                    var paramUserID = new SqlParameter { ParameterName = "USERID", SqlDbType = SqlDbType.NVarChar, Value = profile.userID };
+                    token = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_PROFILE_TOKEN @AUTHTOKEN, @USERID", paramAuthToken, paramUserID);
+
+                    if (token != null)
                     {
-                        TokenSecurityID = Helper.getMaximumId("Fox_TokenSecurityID"),
-                        AuthToken = token.AuthToken,
-                        isLogOut = true,
-                        IssuedOn = token.IssuedOn,
-                        ExpiresOn = DateTime.Now,
-                        CREATED_BY = profile.UserName,
-                        CREATED_DATE = Helper.GetCurrentDate(),
-                        MODIFIED_BY = profile.UserName,
-                        MODIFIED_DATE = Helper.GetCurrentDate(),
-                        DELETED = false
-                    };
-                    _profileTokenSecurityRepository.Insert(profileTokenSecurity);
-                    _profileTokenSecurityRepository.Save();
-                    token.ExpiresOn = DateTime.Now;
-                    profileToken.Update(token);
-                    profileToken.Save();
-                    resp.Success = true;
-                    return resp;
+                        var tokenSecurityID = Helper.getMaximumId("Fox_TokenSecurityID");
+                        var paramSecurityID = new SqlParameter { ParameterName = "TokenSecurityID", SqlDbType = SqlDbType.BigInt, Value = tokenSecurityID } ;
+                        var paramtokenAuthToken = new SqlParameter { ParameterName = "AUTHTOKEN", SqlDbType = SqlDbType.NVarChar, Value = token.AuthToken };
+                        var paramtokenIssuedOn = new SqlParameter { ParameterName = "ISSUEDON", SqlDbType = SqlDbType.NVarChar, Value = token.IssuedOn };
+                        var paramtokenUserName = new SqlParameter { ParameterName = "USER_NAME", SqlDbType = SqlDbType.NVarChar, Value = profile.UserName };
+                        var profileTokenResponse = SpRepository<ProfileTokensSecurity>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_INSERT_TOKEN_ON_LOGOUT @TokenSecurityID, @AUTHTOKEN, @ISSUEDON, @USER_NAME",
+                            paramSecurityID, paramtokenAuthToken, paramtokenIssuedOn,  paramtokenUserName);
+
+                        token.ExpiresOn = DateTime.Now;
+                        profileToken.Update(token);
+                        profileToken.Save();
+                        resp.Success = true;
+                        return resp;
+                    }
                 }
                 resp.Success = false;
                 return resp;
