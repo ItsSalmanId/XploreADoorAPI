@@ -17,6 +17,8 @@ using FOX.DataModels.Models.SenderName;
 using FOX.DataModels.Models.ServiceConfiguration;
 using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.RequestForOrder;
+using System.Diagnostics;
+using System.Threading;
 
 namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
 {
@@ -35,6 +37,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
         private readonly DbContextCommon _DbContextCommon = new DbContextCommon();
         private readonly GenericRepository<FOX_TBL_SENDER_NAME> _FOX_TBL_SENDER_NAME;
         private readonly GenericRepository<FoxDocumentType> _foxdocumenttypeRepository;
+        private static List<Thread> threadsList = new List<Thread>();
         public UploadOrderImagesService()
         {
             _NotesRepository = new GenericRepository<FOX_TBL_NOTES_HISTORY>(_IndexinfoContext);
@@ -207,11 +210,11 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                     {
                         string filePath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.RequestForOrderUploadImages + @"\" + filePath1);
                         var ext = Path.GetExtension(filePath).ToLower();
-                        if (!Directory.Exists(config.ORIGINAL_FILES_PATH_SERVER))
-                        {
-                            Directory.CreateDirectory(config.ORIGINAL_FILES_PATH_SERVER);
-                        }
-                        if (ext == ".tiff" || ext == ".tif" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".gif")
+                    if (!Directory.Exists(config.ORIGINAL_FILES_PATH_SERVER))
+                    {
+                        Directory.CreateDirectory(config.ORIGINAL_FILES_PATH_SERVER);
+                    }
+                    if (ext == ".tiff" || ext == ".tif" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".gif")
                         {
                             ConvertPDFToImages pdfToImg = new ConvertPDFToImages();
                             int numberOfPages = pdfToImg.tifToImage(filePath, config.IMAGES_PATH_SERVER, workId, pageCounter, config.IMAGES_PATH_DB, out pageCounter, true);
@@ -284,35 +287,30 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                 f.Serial = "10261435399";
                 f.OpenPdf(PdfPath);
 
-                    if (f.PageCount > 0)
-                    {
-                        //Save all PDF pages to jpeg images
-                        f.ImageOptions.Dpi = 120;
-                        f.ImageOptions.ImageFormat = ImageFormat.Jpeg;
+                if (f.PageCount > 0)
+                {
+                    //Save all PDF pages to jpeg images
+                    f.ImageOptions.Dpi = 120;
+                    f.ImageOptions.ImageFormat = ImageFormat.Jpeg;
+                    var image = f.ToImage(i + 1);
+                    //Next manipulate with Jpeg in memory or save to HDD, open in a viewer
 
-                        var image = f.ToImage(i + 1);
-                        //Next manipulate with Jpeg in memory or save to HDD, open in a viewer
-                        using (var ms = new MemoryStream(image))
-                        {
-                            img = System.Drawing.Image.FromStream(ms);
-                            img.Save(config.IMAGES_PATH_SERVER + "\\" + workId + "_" + pageCounter + ".jpg", ImageFormat.Jpeg);
-                            Bitmap bmp = new Bitmap(img);
-                            img.Dispose();
-                            ConvertPDFToImages ctp = new ConvertPDFToImages();
-                            ctp.SaveWithNewDimention(bmp, 115, 150, 100, config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + pageCounter + ".jpg");
-                            bmp.Dispose();
-                            
-                        }
+                    using (var ms = new MemoryStream(image))
+                    {
+                        img = System.Drawing.Image.FromStream(ms);
+                        img.Save(config.IMAGES_PATH_SERVER + "\\" + workId + "_" + pageCounter + ".jpg", ImageFormat.Jpeg);
+                        Bitmap bmp = new Bitmap(img);
+                        img.Dispose();
+                        ConvertPDFToImages ctp = new ConvertPDFToImages();
+                        ctp.SaveWithNewDimention(bmp, 115, 150, 100, config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + pageCounter + ".jpg");
+                        bmp.Dispose();
                     }
-                    //End
-                    //string ImgDirPath = "FoxDocumentDirectory\\Fox\\Images";
-                    //var imgPath = ImageFilePath + "\\" + workId + "_" + pageCounter + ".jpg";
-                    //var logoImgPath = ImageFilePath + "\\Logo_" + workId + "_" + pageCounter + ".jpg";
-                    var imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + pageCounter + ".jpg";
-                    var logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + pageCounter + ".jpg";
-                    AddFilesToDatabase(imgPath, workId, logoImgPath);
+                    threadCounter.Add(1);
                 }
-                //AddToDatabase(PdfPath, noOfPages, workId);
+            }
+            catch (Exception ex)
+            {
+                threadCounter.Add(1);
             }
             pageCounterOut = pageCounter;
         }
