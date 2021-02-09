@@ -2464,7 +2464,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 throw;
             }
         }
-
+        //New Thread Implementation
         public void SavePdfToImages(string PdfPath, ServiceConfiguration config, string workId, long lworkid, int noOfPages, string sorcetype, string sorceName, string userName, bool approval = true)
         {
             List<int> threadCounter = new List<int>();

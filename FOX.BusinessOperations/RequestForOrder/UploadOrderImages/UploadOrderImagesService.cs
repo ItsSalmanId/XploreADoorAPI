@@ -244,7 +244,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             iTextSharp.text.pdf.PdfReader pdfReader = new iTextSharp.text.pdf.PdfReader(PdfPath);
             return pdfReader.NumberOfPages;
         }
-
+        //New Thread Implementation
         private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, int pageCounter, out long pageCounterOut)
         {
             List<int> threadCounter = new List<int>();

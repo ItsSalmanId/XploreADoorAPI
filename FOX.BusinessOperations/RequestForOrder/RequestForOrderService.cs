@@ -636,7 +636,7 @@ namespace FOX.BusinessOperations.RequestForOrder
         //        AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName);
         //    }
         //}
-
+        //New Thread Implementation
         private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, string sorcetype, string sorceName, string userName, bool _isFromIndexInfo)
         {
             List<int> threadCounter = new List<int>();
