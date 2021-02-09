@@ -18,7 +18,6 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Threading.Tasks;
 using FOX.DataModels.Models.Settings.FacilityLocation;
 using ZXing;
 using System.Drawing;
@@ -41,6 +40,10 @@ using System.Globalization;
 using FOX.DataModels.Models.FoxPHD;
 using FOX.DataModels.Models.SenderType;
 using FOX.DataModels.Models.StatesModel;
+using System.Timers;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FOX.BusinessOperations.IndexInfoServices
 {
@@ -2464,6 +2467,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
         public void SavePdfToImages(string PdfPath, ServiceConfiguration config, string workId, long lworkid, int noOfPages, string sorcetype, string sorceName, string userName, bool approval = true)
         {
+            List<int> threadCounter = new List<int>();
             if (!Directory.Exists(config.IMAGES_PATH_SERVER))
             {
                 Directory.CreateDirectory(config.IMAGES_PATH_SERVER);
@@ -2473,10 +2477,52 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 for (int i = 0; i < noOfPages; i++)
                 {
                     string deliveryReportId = "";
-                    System.Drawing.Image img;
-                    PdfFocus f = new PdfFocus();
-                    f.Serial = "10261435399";
-                    f.OpenPdf(PdfPath);
+                    //End
+                    //string ImgDirPath = "FoxDocumentDirectory\\Fox\\Images";
+                    var imgPath = "";
+                    var logoImgPath = "";
+                    var imgPathServer = "";
+                    var logoImgPathServer = "";
+                    if (sorcetype.Split(':')?[0] == "DR")
+                    {
+                        imgPath = config.IMAGES_PATH_DB + "\\" + deliveryReportId + "_" + i + ".jpg";
+                        logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + deliveryReportId + "_" + i + ".jpg";
+                        imgPathServer = config.IMAGES_PATH_SERVER + "\\" + deliveryReportId + "_" + i + ".jpg";
+                        logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + deliveryReportId + "_" + i + ".jpg";
+                    }
+                    else
+                    {
+                        imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + ".jpg";
+                        logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + ".jpg";
+                        imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + ".jpg";
+                        logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + ".jpg";
+                    }
+
+                    Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter,PdfPath, i, imgPathServer, logoImgPathServer));
+                    myThread.Start();
+                    threadsList.Add(myThread);
+                    AddFilesToDatabase(imgPath, workId, lworkid, logoImgPath);
+                }
+                while (noOfPages > threadCounter.Count)
+                {
+                    //loop untill record complete
+                }
+
+                foreach (var thread in threadsList)
+                {
+                    thread.Abort();
+                }
+                AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, approval);
+            }
+        }
+        public void newThreadImplementaion(ref List<int> threadCounter, string PdfPath, int i, string imgPath, string logoImgPath)
+        {
+            try
+            {
+                System.Drawing.Image img;
+                PdfFocus f = new PdfFocus();
+                f.Serial = "10261435399";
+                f.OpenPdf(PdfPath);
 
                     if (f.PageCount > 0)
                     {
@@ -2484,53 +2530,27 @@ namespace FOX.BusinessOperations.IndexInfoServices
                         f.ImageOptions.Dpi = 120;
                         f.ImageOptions.ImageFormat = ImageFormat.Jpeg;
 
-                        var image = f.ToImage(i + 1);
-                        //Next manipulate with Jpeg in memory or save to HDD, open in a viewer
-                        using (var ms = new MemoryStream(image))
-                        {
-                            if (sorcetype.Split(':')?[0] == "DR")
-                            {
-                                deliveryReportId = workId + DateTime.Now.Ticks;
-                                img = System.Drawing.Image.FromStream(ms);
-                                img.Save(config.IMAGES_PATH_SERVER + "\\" + deliveryReportId + "_" + i + ".jpg", ImageFormat.Jpeg);
-                                Bitmap bmp = new Bitmap(img);
-                                ConvertPDFToImages ctp = new ConvertPDFToImages();
-                                img.Dispose();
-                                ctp.SaveWithNewDimention(bmp, 115, 150, 100, config.IMAGES_PATH_SERVER + "\\Logo_" + deliveryReportId + "_" + i + ".jpg");
-                                bmp.Dispose();
-                            }
-                            else
-                            {
-                                img = System.Drawing.Image.FromStream(ms);
-                                img.Save(config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + ".jpg", ImageFormat.Jpeg);
-                                Bitmap bmp = new Bitmap(img);
-                                ConvertPDFToImages ctp = new ConvertPDFToImages();
-                                img.Dispose();
-                                ctp.SaveWithNewDimention(bmp, 115, 150, 100, config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + ".jpg");
-                                bmp.Dispose();
-                            }
-                        }
-                    }
-                    //End
-                    //string ImgDirPath = "FoxDocumentDirectory\\Fox\\Images";
-                    var imgPath = "";
-                    var logoImgPath = "";
-                    if (sorcetype.Split(':')?[0] == "DR")
+                    var image = f.ToImage(i + 1);
+                    //Next manipulate with Jpeg in memory or save to HDD, open in a viewer
+                    using (var ms = new MemoryStream(image))
                     {
-                        imgPath = config.IMAGES_PATH_DB + "\\" + deliveryReportId + "_" + i + ".jpg";
-                        logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + deliveryReportId + "_" + i + ".jpg";
+                        img = System.Drawing.Image.FromStream(ms);
+                        img.Save(imgPath, ImageFormat.Jpeg);
+                        Bitmap bmp = new Bitmap(img);
+                        ConvertPDFToImages ctp = new ConvertPDFToImages();
+                        img.Dispose();
+                        ctp.SaveWithNewDimention(bmp, 115, 150, 100, logoImgPath);
+                        bmp.Dispose();
                     }
-                    else
-                    {
-                        imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + ".jpg";
-                        logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + ".jpg";
-                    }
-                    AddFilesToDatabase(imgPath, workId, lworkid, logoImgPath);
                 }
-                AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, approval);
+                threadCounter.Add(1);
             }
+            catch (Exception ex)
+            {
+                threadCounter.Add(1);
+            }
+            
         }
-
         private void AddFilesToDatabase(string filePath, string workId, long lworkid, string logoPath)
         {
             try

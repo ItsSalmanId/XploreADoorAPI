@@ -220,8 +220,8 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                         else
                         {
                             int numberOfPages = getNumberOfPagesOfPDF(filePath);
-                            SavePdfToImages(filePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
-                            totalPages += numberOfPages;
+                        SavePdfToImages(filePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
+                        totalPages += numberOfPages;
                         }
                     }
                     AddToDatabase("", totalPages + originalQueueFilesCount, workId);
@@ -244,6 +244,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
 
         private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, int pageCounter, out long pageCounterOut)
         {
+            List<int> threadCounter = new List<int>();
             if (!Directory.Exists(config.IMAGES_PATH_SERVER))
             {
                 Directory.CreateDirectory(config.IMAGES_PATH_SERVER);
@@ -252,10 +253,36 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             {
                 for (int i = 0; i < noOfPages; i++, pageCounter++)
                 {
-                    System.Drawing.Image img;
-                    PdfFocus f = new PdfFocus();
-                    f.Serial = "10261435399";
-                    f.OpenPdf(PdfPath);
+                    Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter, PdfPath,i,config, workId, pageCounter));
+                    myThread.Start();
+                    threadsList.Add(myThread);
+                    var imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + pageCounter + ".jpg";
+                    var logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + pageCounter + ".jpg";
+                    AddFilesToDatabase(imgPath, workId, logoImgPath);
+                }
+                while (noOfPages > threadCounter.Count)
+                {
+                    //loop untill record complete
+                }
+
+                foreach (var thread in threadsList)
+                {
+                    thread.Abort();
+                }
+
+                //AddToDatabase(PdfPath, noOfPages, workId);
+            }
+            pageCounterOut = pageCounter;
+        }
+
+        public void newThreadImplementaion(ref List<int> threadCounter, string PdfPath,int i, ServiceConfiguration config, long workId, int pageCounter)
+        {
+            try
+            {
+                System.Drawing.Image img;
+                PdfFocus f = new PdfFocus();
+                f.Serial = "10261435399";
+                f.OpenPdf(PdfPath);
 
                     if (f.PageCount > 0)
                     {

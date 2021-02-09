@@ -29,6 +29,8 @@ using FOX.DataModels.Models.IndexInfo;
 using ZXing;
 using System.Linq;
 using FOX.DataModels.Models.SenderType;
+using System.Threading;
+using System.Diagnostics;
 
 namespace FOX.BusinessOperations.RequestForOrder
 {
@@ -61,6 +63,7 @@ namespace FOX.BusinessOperations.RequestForOrder
         private readonly GenericRepository<User> _User;
         private readonly GenericRepository<FOX_TBL_SENDER_TYPE> _SenderTypeRepository;
         private readonly IFaxService _IFaxService = new FaxService();
+        private static List<Thread> threadsList = new List<Thread>();
         //string ImgDirPath = "FoxDocumentDirectory\\Fox\\Images";
         public RequestForOrderService()
         {
@@ -636,6 +639,7 @@ namespace FOX.BusinessOperations.RequestForOrder
 
         private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, string sorcetype, string sorceName, string userName, bool _isFromIndexInfo)
         {
+            List<int> threadCounter = new List<int>();
             if (!Directory.Exists(config.IMAGES_PATH_SERVER))
             {
                 Directory.CreateDirectory(config.IMAGES_PATH_SERVER);
@@ -647,90 +651,57 @@ namespace FOX.BusinessOperations.RequestForOrder
                     var imgPath = "";
                     var logoImgPath = "";
                     string deliveryReportId = "";
-                    System.Drawing.Image img;
-                    PdfFocus f = new PdfFocus();
-                    f.Serial = "10261435399";
-                    f.OpenPdf(PdfPath);
+                    Random random = new Random();
 
-                    if (f.PageCount > 0)
+                    if (sorcetype.Split(':')?[0] == "DR")
                     {
-                       
-                        
-                        //Save all PDF pages to jpeg images
-                        f.ImageOptions.Dpi = 120;
-                        f.ImageOptions.ImageFormat = ImageFormat.Jpeg;
-
-                        var image = f.ToImage(i + 1);
-                        //Next manipulate with Jpeg in memory or save to HDD, open in a viewer
-                        using (var ms = new MemoryStream(image))
+                        deliveryReportId = Convert.ToString(workId) + DateTime.Now.Ticks;
+                        if (_isFromIndexInfo)
                         {
-                            Random random = new Random();
-                            if (sorcetype.Split(':')?[0] == "DR")
-                            {
-                                deliveryReportId = Convert.ToString(workId) + DateTime.Now.Ticks;
-                                img = System.Drawing.Image.FromStream(ms);
-                                if (_isFromIndexInfo)
-                                {
-                                    var randomString = random.Next();
-                                    imgPath = config.IMAGES_PATH_DB + "\\" + deliveryReportId + "_" + i + "_" + randomString + ".jpg";
-                                    img.Save(config.IMAGES_PATH_SERVER + "\\" + deliveryReportId + "_" + i + "_" + randomString + ".jpg", ImageFormat.Jpeg);
-                                }
-                                else
-                                {
-                                    imgPath = config.IMAGES_PATH_DB + "\\" + deliveryReportId + "_" + i + ".jpg";
-                                    img.Save(config.IMAGES_PATH_SERVER + "\\" + deliveryReportId + "_" + i + ".jpg", ImageFormat.Jpeg);
-                                }
-                               
-                                Bitmap bmp = new Bitmap(img);
-                                ConvertPDFToImages ctp = new ConvertPDFToImages();
-                                img.Dispose();
-                                if (_isFromIndexInfo)
-                                {
-                                    var randomString = random.Next();
-                                    logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + deliveryReportId + "_" + i + "_" + randomString + ".jpg";
-                                    ctp.SaveWithNewDimention(bmp, 115, 150, 100, config.IMAGES_PATH_SERVER + "\\Logo_" + deliveryReportId + "_" + i + "_" + randomString + ".jpg");
-                                }
-                                else
-                                {
-                                    logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + deliveryReportId + "_" + i + ".jpg";
-                                    ctp.SaveWithNewDimention(bmp, 115, 150, 100, config.IMAGES_PATH_SERVER + "\\Logo_" + deliveryReportId + "_" + i + ".jpg");
-                                }
-                               
-                                bmp.Dispose();
-                            }
-                            else
-                            {
-                                img = System.Drawing.Image.FromStream(ms);
-                                if (_isFromIndexInfo)
-                                {
-                                    var randomString = random.Next();
-                                    imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
-                                    img.Save(config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + "_" + randomString + ".jpg", ImageFormat.Jpeg);
-                                }
-                                else
-                                {
-                                    imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + ".jpg";
-                                    img.Save(config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + ".jpg", ImageFormat.Jpeg);
-                                }
-                                
-                                Bitmap bmp = new Bitmap(img);
-                                ConvertPDFToImages ctp = new ConvertPDFToImages();
-                                img.Dispose();
-
-                                if (_isFromIndexInfo)
-                                {
-                                    var randomString = random.Next();
-                                    logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + "_" + randomString + ".jpg";
-                                    ctp.SaveWithNewDimention(bmp, 115, 150, 100, config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + "_" + randomString + ".jpg");
-                                }
-                                else
-                                {
-                                    logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + ".jpg";
-                                    ctp.SaveWithNewDimention(bmp, 115, 150, 100, config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + ".jpg");
-                                }
-                                
-                                bmp.Dispose();
-                            }
+                            var randomString = random.Next();
+                            imgPath = config.IMAGES_PATH_DB + "\\" + deliveryReportId + "_" + i + "_" + randomString + ".jpg";
+                            imgPathServer = config.IMAGES_PATH_SERVER + "\\" + deliveryReportId + "_" + i + "_" + randomString + ".jpg";
+                        }
+                        else
+                        {
+                            imgPath = config.IMAGES_PATH_DB + "\\" + deliveryReportId + "_" + i + ".jpg";
+                            imgPathServer = config.IMAGES_PATH_SERVER + "\\" + deliveryReportId + "_" + i + ".jpg";
+                        }
+                        if (_isFromIndexInfo)
+                        {
+                            var randomString = random.Next();
+                            logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + deliveryReportId + "_" + i + "_" + randomString + ".jpg";
+                            logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + deliveryReportId + "_" + i + "_" + randomString + ".jpg";
+                        }
+                        else
+                        {
+                            logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + deliveryReportId + "_" + i + ".jpg";
+                            logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + deliveryReportId + "_" + i + ".jpg";
+                        }
+                    }
+                    else
+                    {
+                        if (_isFromIndexInfo)
+                        {
+                            var randomString = random.Next();
+                            imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
+                            imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
+                        }
+                        else
+                        {
+                            imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + ".jpg";
+                            imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + ".jpg";
+                        }
+                        if (_isFromIndexInfo)
+                        {
+                            var randomString = random.Next();
+                            logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + "_" + randomString + ".jpg";
+                            logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + "_" + randomString + ".jpg";
+                        }
+                        else
+                        {
+                            logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + ".jpg";
+                            logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + ".jpg";
                         }
                     }
                     //End
@@ -747,6 +718,15 @@ namespace FOX.BusinessOperations.RequestForOrder
                     //    logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + ".jpg";
                     //}
                     AddFilesToDatabase(imgPath, workId, logoImgPath, _isFromIndexInfo);
+                }
+                while (noOfPages > threadCounter.Count)
+                {
+                    //loop untill record complete
+                }
+
+                foreach (var thread in threadsList)
+                {
+                    thread.Abort();
                 }
                 if (_isFromIndexInfo)
                 {
@@ -907,12 +887,10 @@ public ResponseModel AddDocument_SignOrder(ReqAddDocument_SignOrder reqAddDocume
             {
                 string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
                 int numberOfPages = getNumberOfPagesOfPDF(filePath);
-                //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
-                //SavePdfToImages(filePath, imagesPath, reqAddDocument_SignOrder.WorkId, numberOfPages, "Email", Profile.UserEmailAddress, Profile.UserName);
-                SavePdfToImages(filePath, config, reqAddDocument_SignOrder.WorkId, numberOfPages, "Email", Profile.UserEmailAddress, Profile.UserName, false);
-
-
-                return new ResponseModel() { Message = "Add document in sign order successfully.", ErrorMessage = "", Success = true };
+                        //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
+                        //SavePdfToImages(filePath, imagesPath, reqAddDocument_SignOrder.WorkId, numberOfPages, "Email", Profile.UserEmailAddress, Profile.UserName);
+                        SavePdfToImages(filePath, config, reqAddDocument_SignOrder.WorkId, numberOfPages, "Email", Profile.UserEmailAddress, Profile.UserName, false);
+                        return new ResponseModel() { Message = "Add document in sign order successfully.", ErrorMessage = "", Success = true };
             }
             else
             {
