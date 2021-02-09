@@ -198,7 +198,7 @@ namespace FOX.BusinessOperations.CommonServices.UploadFiles
                         {
                             responseUploadFilesModel.FilePath = "";
                             responseUploadFilesModel.Message = message;
-                            responseUploadFilesModel.Success = true;
+                            responseUploadFilesModel.Success = false;
                             responseUploadFilesModel.ErrorMessage = "";
                             return responseUploadFilesModel;
                         }
