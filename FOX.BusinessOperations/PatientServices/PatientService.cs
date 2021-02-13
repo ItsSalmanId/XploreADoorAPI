@@ -10529,20 +10529,21 @@ namespace FOX.BusinessOperations.PatientServices
             {
                 //try
                 //{
-                    if (loc.UpdatePatientAddress == true)
-                    {
-                        FacilityLocation patientAddress = new FacilityLocation();
-                       
-                        var patientPos = _PatientPOSLocationRepository.GetMany(e =>e.Patient_Account == loc.PATIENT_ACCOUNT && e.Is_Default == true && e.Loc_ID !=0 && e.Deleted == false).OrderByDescending(t => t.Modified_Date).FirstOrDefault();
-                        PatientAddress address = _PatientAddressRepository.GetFirst(e => e.PATIENT_ACCOUNT == patientPos.Patient_Account && e.PATIENT_POS_ID == patientPos.Patient_POS_ID && e.DELETED == false);
+                if (loc.UpdatePatientAddress == true)
+                {
+                    FacilityLocation patientAddress = new FacilityLocation();
 
+                    var patientPos = _PatientPOSLocationRepository.GetMany(e => e.Patient_Account == loc.PATIENT_ACCOUNT && e.Is_Default == true && e.Loc_ID != 0 && e.Deleted == false).OrderByDescending(t => t.Modified_Date).FirstOrDefault();
+                    if (patientPos != null)
+                    {
+                        PatientAddress address = _PatientAddressRepository.GetFirst(e => e.PATIENT_ACCOUNT == patientPos.Patient_Account && e.PATIENT_POS_ID == patientPos.Patient_POS_ID && e.DELETED == false);
                         if (address != null)
                         {
                             patientAddress.Zip = address.ZIP;
                             patientAddress.City = address.CITY;
                             patientAddress.State = address.STATE;
                             patientAddress.Address = address.ADDRESS;
-                        if (loc.SetCoordinatesManually == false)
+                            if (loc.SetCoordinatesManually == false)
                             {
                                 POSCoordinates coordinates = GetCoordinates(patientAddress);
                                 if (coordinates != null)
@@ -10575,7 +10576,8 @@ namespace FOX.BusinessOperations.PatientServices
 
                         }
                     }
-                    else
+                }
+                else
                     {
                         FacilityLocation pos = _FacilityLocationRepository.GetFirst(e => e.LOC_ID == loc.LOC_ID && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
                         if (pos != null)
