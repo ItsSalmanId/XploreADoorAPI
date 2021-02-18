@@ -339,7 +339,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                         //Helper.Email("noreply@mtbc.com", requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, null, _bccList, new List<string>() { attachmentPath });
                         Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail and Sending Email || Start Time of Sending Email " + Helper.GetCurrentDate().ToLocalTime());
                         Helper.Email(requestSendEmailModel.EmailAddress, requestSendEmailModel.WorkId.ToString() + ':' + requestSendEmailModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath });
-                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail and Sending Email || Start Time of Sending Email " + Helper.GetCurrentDate().ToLocalTime());
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail and Sending Email || End Time of Sending Email " + Helper.GetCurrentDate().ToLocalTime());
 
                         string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
                         int numberOfPages = getNumberOfPagesOfPDF(filePath);
@@ -348,21 +348,21 @@ namespace FOX.BusinessOperations.RequestForOrder
                        
                         Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail and chcecking SavePdfToImages || Start Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
                         SavePdfToImages(filePath, config, requestSendEmailModel.WorkId, numberOfPages, "Email", requestSendEmailModel.EmailAddress, Profile.UserName, requestSendEmailModel._isFromIndexInfo);
-                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail and chcecking SavePdfToImages || Start Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail and chcecking SavePdfToImages || End Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
 
-                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail || Start Time of SendEmail in If Success Case " + Helper.GetCurrentDate().ToLocalTime());
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail || End Time of SendEmail in If Success Case " + Helper.GetCurrentDate().ToLocalTime());
                         return new ResponseModel() { Message = "Email sent successfully, our admission team is processing your referral", ErrorMessage = "", Success = true };
                     }
                     else
                     {
-                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail || Start Time of SendEmail in If Failure Case " + Helper.GetCurrentDate().ToLocalTime());
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail || End Time of SendEmail in If Failure Case " + Helper.GetCurrentDate().ToLocalTime());
                         return new ResponseModel() { Message = "Email sent successfully, our admission team is processing your referral", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
                         //return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
                     }
                 }
                 else
                 {
-                    Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail || Start Time of SendEmail in Else Failure Case " + Helper.GetCurrentDate().ToLocalTime());
+                    Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail || End Time of SendEmail in Else Failure Case " + Helper.GetCurrentDate().ToLocalTime());
                     return new ResponseModel() { Message = "Email could not be sent.", ErrorMessage = "DB configuration for file paths not found. See service configuration.", Success = false };
                 }
             }
@@ -371,7 +371,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                 //TO DO Log exception here
                 //throw exception;
                 //return new ResponseModel() { Message = "Email sent successfully, our admission team is processing your referral.", ErrorMessage = exception.ToString(), Success = false };
-                Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail || Start Time of SendEmail in Catch Failure Case " + Helper.GetCurrentDate().ToLocalTime());
+                Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail || End Time of SendEmail in Catch Failure Case " + Helper.GetCurrentDate().ToLocalTime());
                 return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
             }
         }
@@ -419,7 +419,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                         SavePdfToImages(filePath, config, requestSendFAXModel.WorkId, numberOfPages, "Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
                         Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX and chcecking SavePdfToImages First Call Time || End Time of Function SavePdfToImages First Call Time" + Helper.GetCurrentDate().ToLocalTime());
 
-                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX and chcecking SavePdfToImages Second Call Time || End Time of Function SavePdfToImages Second Call Time" + Helper.GetCurrentDate().ToLocalTime());
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX and chcecking SavePdfToImages Second Call Time || Start Time of Function SavePdfToImages Second Call Time" + Helper.GetCurrentDate().ToLocalTime());
                         SavePdfToImages(deliveryfilePath, config, requestSendFAXModel.WorkId, 1, "DR:Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
                         Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX and chcecking SavePdfToImages Second Call Time || End Time of Function SavePdfToImages Second Call Time" + Helper.GetCurrentDate().ToLocalTime());
 
