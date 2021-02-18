@@ -11,6 +11,7 @@ using System.Linq;
 using System.Web;
 using System.IO;
 using System;
+using FOX.BusinessOperations.CommonService;
 
 namespace FOX.BusinessOperations.IndexInfoServices.UploadWorkOrderFiles
 {
@@ -33,8 +34,9 @@ namespace FOX.BusinessOperations.IndexInfoServices.UploadWorkOrderFiles
             long workId = reqSaveUploadWorkOrderFiles.WORK_ID;
 
             var originalQueueFilesCount = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
-
+            Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SaveUploadWorkOrderFiles > GenerateAndSaveImagesOfUploadedFiles || Start Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
             _IUploadOrderImagesService.GenerateAndSaveImagesOfUploadedFiles(workId, reqSaveUploadWorkOrderFiles.FileNameList, Profile, originalQueueFilesCount);
+            Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SaveUploadWorkOrderFiles > GenerateAndSaveImagesOfUploadedFiles || End Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
 
             result.WORK_ID = workId;
             result.FilePaths = SpRepository<FilePath>.GetListWithStoreProcedure(@"exec FOX_GET_File_PAGES  @WORK_ID", new SqlParameter("WORK_ID ", SqlDbType.BigInt) { Value = workId });
