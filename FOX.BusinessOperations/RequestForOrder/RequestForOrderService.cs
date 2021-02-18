@@ -199,6 +199,7 @@ namespace FOX.BusinessOperations.RequestForOrder
         }
         public ResponseModel SendEmail(RequestSendEmailModel requestSendEmailModel, UserProfile Profile)
         {
+            Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail WORK_ID ("+ requestSendEmailModel.WorkId+") || Start Time of SendEmail " + Helper.GetCurrentDate().ToLocalTime());
             try
             {
                 var config = Helper.GetServiceConfiguration(Profile.PracticeCode);
@@ -336,25 +337,32 @@ namespace FOX.BusinessOperations.RequestForOrder
                             ";
 
                         //Helper.Email("noreply@mtbc.com", requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, null, _bccList, new List<string>() { attachmentPath });
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail and Sending Email || Start Time of Sending Email " + Helper.GetCurrentDate().ToLocalTime());
                         Helper.Email(requestSendEmailModel.EmailAddress, requestSendEmailModel.WorkId.ToString() + ':' + requestSendEmailModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath });
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail and Sending Email || Start Time of Sending Email " + Helper.GetCurrentDate().ToLocalTime());
 
                         string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
                         int numberOfPages = getNumberOfPagesOfPDF(filePath);
                         //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
                         //SavePdfToImages(filePath, imagesPath, requestSendEmailModel.WorkId, numberOfPages, "Email", requestSendEmailModel.EmailAddress, Profile.UserName);
+                       
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail and chcecking SavePdfToImages || Start Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
                         SavePdfToImages(filePath, config, requestSendEmailModel.WorkId, numberOfPages, "Email", requestSendEmailModel.EmailAddress, Profile.UserName, requestSendEmailModel._isFromIndexInfo);
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail and chcecking SavePdfToImages || Start Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
 
-
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail || Start Time of SendEmail in If Success Case " + Helper.GetCurrentDate().ToLocalTime());
                         return new ResponseModel() { Message = "Email sent successfully, our admission team is processing your referral", ErrorMessage = "", Success = true };
                     }
                     else
                     {
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail || Start Time of SendEmail in If Failure Case " + Helper.GetCurrentDate().ToLocalTime());
                         return new ResponseModel() { Message = "Email sent successfully, our admission team is processing your referral", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
                         //return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
                     }
                 }
                 else
                 {
+                    Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail || Start Time of SendEmail in Else Failure Case " + Helper.GetCurrentDate().ToLocalTime());
                     return new ResponseModel() { Message = "Email could not be sent.", ErrorMessage = "DB configuration for file paths not found. See service configuration.", Success = false };
                 }
             }
@@ -363,11 +371,13 @@ namespace FOX.BusinessOperations.RequestForOrder
                 //TO DO Log exception here
                 //throw exception;
                 //return new ResponseModel() { Message = "Email sent successfully, our admission team is processing your referral.", ErrorMessage = exception.ToString(), Success = false };
+                Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail || Start Time of SendEmail in Catch Failure Case " + Helper.GetCurrentDate().ToLocalTime());
                 return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
             }
         }
         public ResponseModel SendFAX(RequestSendFAXModel requestSendFAXModel, UserProfile Profile)
         {
+            Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX Work_ID ("+ requestSendFAXModel.WorkId +") || Start Time of Function SendFAX " + Helper.GetCurrentDate().ToLocalTime());
             try
             {
                 string htmlstring = "";
@@ -376,10 +386,16 @@ namespace FOX.BusinessOperations.RequestForOrder
                     && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
                     && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
                 {
+                    Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX > HTMLToPDF || Start Time of Function SendFAX > HTMLToPDF " + Helper.GetCurrentDate().ToLocalTime());
                     ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestSendFAXModel.AttachmentHTML, requestSendFAXModel.FileName);
+                    Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX > HTMLToPDF || End Time of Function SendFAX > HTMLToPDF " + Helper.GetCurrentDate().ToLocalTime());
+
                     if (responseHTMLToPDF != null && (responseHTMLToPDF?.Success ?? false))
                     {
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX || Sending Fax " + Helper.GetCurrentDate().ToLocalTime());
                         var resultfax = _IFaxService.SendFax(new string[] { requestSendFAXModel.ReceipientFaxNumber }, new string[] { "" }, null, responseHTMLToPDF.FileName, responseHTMLToPDF.FilePath, requestSendFAXModel.Subject, false, Profile);
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX || End Time of Sending Fax " + Helper.GetCurrentDate().ToLocalTime());
+
                         if (resultfax == "failed")
                         {
                             htmlstring = "<html><body><h2>Delivery Report</h2><p>Subject:" + requestSendFAXModel.Subject + "</p><p>From:" + requestSendFAXModel.SenderName + "</p><p>To:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Sent:" + DateTime.Now + "</p><br/><div style='padding:10px;background-color:#ff9999;width: 50%;'><p>Delivery report for:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Failed:</p><p>Message failed to deliver </p></div></body></html>";
@@ -389,24 +405,37 @@ namespace FOX.BusinessOperations.RequestForOrder
                             htmlstring = "<html><body><h2>Delivery Report</h2><p>Subject:" + requestSendFAXModel.Subject + "</p><p>From:" + requestSendFAXModel.SenderName + "</p><p>To:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Sent:" + DateTime.Now + "</p><br/><div style='padding:10px;width: 50%;'><p>Delivery report for:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Delivered Successfully:</p><p>Message delivered to recipient. </p></div></body></html>";
                         }
                         //hl
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX > HTMLToPDF2 || Start Time of Function SendFAX > HTMLToPDF2 " + Helper.GetCurrentDate().ToLocalTime());
                         ResponseHTMLToPDF responseHTMLToPDF2 = HTMLToPDF2(config, htmlstring, "tempdfdelivery");
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX > HTMLToPDF2 || End Time of Function SendFAX > HTMLToPDF2 " + Helper.GetCurrentDate().ToLocalTime());
+                       
                         string deliveryfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
                         string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
                         int numberOfPages = getNumberOfPagesOfPDF(filePath);
                         //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
                         //SavePdfToImages(filePath, imagesPath, requestSendFAXModel.WorkId, numberOfPages, "Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName);
+
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX and chcecking SavePdfToImages First Call Time || Start Time of Function SavePdfToImages First Call Time" + Helper.GetCurrentDate().ToLocalTime());
                         SavePdfToImages(filePath, config, requestSendFAXModel.WorkId, numberOfPages, "Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX and chcecking SavePdfToImages First Call Time || End Time of Function SavePdfToImages First Call Time" + Helper.GetCurrentDate().ToLocalTime());
+
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX and chcecking SavePdfToImages Second Call Time || End Time of Function SavePdfToImages Second Call Time" + Helper.GetCurrentDate().ToLocalTime());
                         SavePdfToImages(deliveryfilePath, config, requestSendFAXModel.WorkId, 1, "DR:Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX and chcecking SavePdfToImages Second Call Time || End Time of Function SavePdfToImages Second Call Time" + Helper.GetCurrentDate().ToLocalTime());
+
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX || End Time of Function SendFAX in If and Case 1" + Helper.GetCurrentDate().ToLocalTime());
                         return new ResponseModel() { Message = "Fax sent successfully, our admission team is processing your referral.", ErrorMessage = "", Success = true };
                     }
                     else
                     {
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX || End Time of Function SendFAX in If and Case 2" + Helper.GetCurrentDate().ToLocalTime());
                         return new ResponseModel() { Message = "Fax sent successfully, our admission team is processing your referral.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
                         //return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
                     }
                 }
                 else
                 {
+                    Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX || End Time of Function SendFAX in Else and Failure Case" + Helper.GetCurrentDate().ToLocalTime());
                     return new ResponseModel() { Message = "Fax could not be sent.", ErrorMessage = "DB configuration for file paths not found. See service configuration.", Success = false };
                 }
             }
@@ -414,6 +443,7 @@ namespace FOX.BusinessOperations.RequestForOrder
             {
                 //TO DO Log exception here
                 //throw exception;
+                Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendFAX || End Time of Function SendFAX in Catch Case" + Helper.GetCurrentDate().ToLocalTime());
                 return new ResponseModel() { Message = "Fax sent successfully, our admission team is processing your referral.", ErrorMessage = exception.ToString(), Success = false };
             }
         }
@@ -456,11 +486,14 @@ namespace FOX.BusinessOperations.RequestForOrder
 
                 //string pdfPath = HttpContext.Current.Server.MapPath("~/" + @"FoxDocumentDirectory\RequestForOrderPDF\");
                 string pdfPath = config.ORIGINAL_FILES_PATH_SERVER;
+                Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function HTMLToPDF >  Checking Directory Create Time || Start Time of HTMLToPDF > Directory Create Time " + Helper.GetCurrentDate().ToLocalTime());
 
                 if (!Directory.Exists(pdfPath))
                 {
                     Directory.CreateDirectory(pdfPath);
                 }
+                Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function HTMLToPDF >  Checking Directory Create Time || End Time of HTMLToPDF > Directory Create Time " + Helper.GetCurrentDate().ToLocalTime());
+
                 fileName += DateTime.Now.Ticks + ".pdf";
                 string pdfFilePath = pdfPath + fileName;
 
@@ -543,10 +576,12 @@ namespace FOX.BusinessOperations.RequestForOrder
                 PdfDocument doc = converter.ConvertHtmlString(htmlDoc.DocumentNode.OuterHtml);
                 //string pdfPath = HttpContext.Current.Server.MapPath("~/" + @"FoxDocumentDirectory\RequestForOrderPDF\");
                 string pdfpath = config.ORIGINAL_FILES_PATH_SERVER;
+                Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function HTMLToPDF2 > Checking time of Directory Create || Start Time of Function HTMLToPDF2 > Checking time of Directory Create " + Helper.GetCurrentDate().ToLocalTime());
                 if (!Directory.Exists(pdfpath))
                 {
                     Directory.CreateDirectory(pdfpath);
                 }
+                Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function HTMLToPDF2 > Checking time of Directory Create || End Time of Function HTMLToPDF2 > Checking time of Directory Create " + Helper.GetCurrentDate().ToLocalTime());
                 fileName = fileName + DateTime.Now.Ticks + ".pdf";
                 string pdfFilePath = pdfpath + "\\" + fileName;
                 // save pdf document
@@ -554,7 +589,6 @@ namespace FOX.BusinessOperations.RequestForOrder
 
                 // close pdf document
                 doc.Close();
-
                 return new ResponseHTMLToPDF() { FileName = fileName, FilePath = pdfpath, Success = true, ErrorMessage = "" };
             }
             catch (Exception exception)
@@ -641,12 +675,17 @@ namespace FOX.BusinessOperations.RequestForOrder
         private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, string sorcetype, string sorceName, string userName, bool _isFromIndexInfo)
         {
             List<int> threadCounter = new List<int>();
+            Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SavePdfToImages > Checkin Time of Directory Create || Start Time of Function SavePdfToImages > Checkin Time of Directory Create" + Helper.GetCurrentDate().ToLocalTime());
             if (!Directory.Exists(config.IMAGES_PATH_SERVER))
             {
                 Directory.CreateDirectory(config.IMAGES_PATH_SERVER);
             }
+            Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SavePdfToImages > Checkin Time of Directory Create || End Time of Function SavePdfToImages > Checkin Time of Directory Create" + Helper.GetCurrentDate().ToLocalTime());
+
             if (System.IO.File.Exists(PdfPath))
             {
+                Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SavePdfToImages > Checkin Time of Threading || Start Time of Function SavePdfToImages > Checkin Time of Threading" + Helper.GetCurrentDate().ToLocalTime());
+
                 for (int i = 0; i < noOfPages; i++)
                 {
                     var imgPath = "";
@@ -735,13 +774,18 @@ namespace FOX.BusinessOperations.RequestForOrder
                 {
                     thread.Abort();
                 }
+                Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SavePdfToImages > Checkin Time of Threading || End Time of Function SavePdfToImages > Checkin Time of Threading" + Helper.GetCurrentDate().ToLocalTime());
                 if (_isFromIndexInfo)
                 {
+                    Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SavePdfToImages > Checkin Time of AddToDatabaseForRFO || Start Time of Function SavePdfToImages > Checkin Time of AddToDatabaseForRFO" + Helper.GetCurrentDate().ToLocalTime());
                     AddToDatabaseForRFO(workId, userName);
+                    Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SavePdfToImages > Checkin Time of AddToDatabaseForRFO || End Time of Function SavePdfToImages > Checkin Time of AddToDatabaseForRFO" + Helper.GetCurrentDate().ToLocalTime());
                 }
                 else
                 {
+                    Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SavePdfToImages > Checkin Time of AddToDatabase || Start Time of Function SavePdfToImages > Checkin Time of AddToDatabase" + Helper.GetCurrentDate().ToLocalTime());
                     AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName);
+                    Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SavePdfToImages > Checkin Time of AddToDatabase || End Time of Function SavePdfToImages > Checkin Time of AddToDatabase" + Helper.GetCurrentDate().ToLocalTime());
                 }
             }
         }
@@ -917,6 +961,7 @@ namespace FOX.BusinessOperations.RequestForOrder
 
         public ResponseModel AddDocument_SignOrder(ReqAddDocument_SignOrder reqAddDocument_SignOrder, UserProfile Profile)
         {
+            Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  AddDocument_SignOrder Work_ID (" + reqAddDocument_SignOrder.WorkId + ") || Start Time of Function AddDocument_SignOrder " + Helper.GetCurrentDate().ToLocalTime());
             try
             {
                 var config = Helper.GetServiceConfiguration(Profile.PracticeCode);
@@ -931,17 +976,24 @@ namespace FOX.BusinessOperations.RequestForOrder
                         int numberOfPages = getNumberOfPagesOfPDF(filePath);
                         //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
                         //SavePdfToImages(filePath, imagesPath, reqAddDocument_SignOrder.WorkId, numberOfPages, "Email", Profile.UserEmailAddress, Profile.UserName);
+                       
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  AddDocument_SignOrder > Checkin Time of SavePdfToImages || Start Time of Function AddDocument_SignOrder > Checkin Time of SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
                         SavePdfToImages(filePath, config, reqAddDocument_SignOrder.WorkId, numberOfPages, "Email", Profile.UserEmailAddress, Profile.UserName, false);
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  AddDocument_SignOrder > Checkin Time of SavePdfToImages || End Time of Function AddDocument_SignOrder > Checkin Time of SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
+                       
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  AddDocument_SignOrder || End Time of Function AddDocument_SignOrder in If and Success Case" + Helper.GetCurrentDate().ToLocalTime());
                         return new ResponseModel() { Message = "Add document in sign order successfully.", ErrorMessage = "", Success = true };
                     }
                     else
                     {
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  AddDocument_SignOrder || End Time of Function AddDocument_SignOrder in If and Failure Case" + Helper.GetCurrentDate().ToLocalTime());
                         return new ResponseModel() { Message = "Add document in sign order successfully.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
                         //return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
                     }
                 }
                 else
                 {
+                    Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  AddDocument_SignOrder || End Time of Function AddDocument_SignOrder in else Case" + Helper.GetCurrentDate().ToLocalTime());
                     return new ResponseModel() { Message = "Add document in sign order unsuccessfull.", ErrorMessage = "DB configuration for file paths not found. See service configuration.", Success = false };
                 }
             }
@@ -949,6 +1001,7 @@ namespace FOX.BusinessOperations.RequestForOrder
             {
                 //TO DO Log exception here
                 //throw exception;
+                Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  AddDocument_SignOrder || End Time of Function AddDocument_SignOrder in Catch Case" + Helper.GetCurrentDate().ToLocalTime());
                 return new ResponseModel() { Message = "Email sent successfully.", ErrorMessage = exception.ToString(), Success = false };
                 //return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
             }
