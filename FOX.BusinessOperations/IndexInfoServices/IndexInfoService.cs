@@ -2418,10 +2418,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
             if (model.IS_EMAIL)
             {
-                
                 return SendEmailToSender(model, profile, WORK_ID);
-               
-
             }
             else
             {
@@ -2453,15 +2450,16 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     bool sent = Helper.Email(sendTo, subject, body, profile, data.work_id, null, null, new List<string> { Path.Combine(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME) });
                     Helper.TokenTaskCancellationExceptionLog("IndexInfoService: IndexInfoService: In Function SendEmailToSender > Sending Email || End Time of Sending Email " + Helper.GetCurrentDate().ToLocalTime());
 
-
                     if (sent)
                     {
                         ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, body, "tempcoversletter");
                         string coverfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
+                        
                         Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendEmailOrFaxToSender > SendEmailToSender > SavePdfToImages || Start Time of Function SavePdfToImages " + Helper.GetCurrentDate().ToLocalTime());
                         SavePdfToImages(coverfilePath, config, WORK_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
                         Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendEmailOrFaxToSender > SendEmailToSender > SavePdfToImages || End Time of Function SavePdfToImages " + Helper.GetCurrentDate().ToLocalTime());
                     }
+
                     Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendEmailOrFaxToSender > SendEmailToSender || End Time of Function SendEmailToSender in If " + Helper.GetCurrentDate().ToLocalTime());
                     return sent;
                 }
@@ -2520,8 +2518,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     threadsList.Add(myThread);
                     AddFilesToDatabase(imgPath, workId, lworkid, logoImgPath);
                 }
-
-
                 while (noOfPages > threadCounter.Count)
                 {
                     //loop untill record complete
@@ -2532,6 +2528,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     thread.Abort();
                 }
                 Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SavePdfToImages Checking Thread Complete Time || End Time of Threading" + Helper.GetCurrentDate().ToLocalTime());
+                
                 Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SavePdfToImages Checking AddToDatabase Time || Start Time of AddToDatabase" + Helper.GetCurrentDate().ToLocalTime());
                 AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, approval);
                 Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SavePdfToImages Checking AddToDatabase Time || End Time of AddToDatabase" + Helper.GetCurrentDate().ToLocalTime());
