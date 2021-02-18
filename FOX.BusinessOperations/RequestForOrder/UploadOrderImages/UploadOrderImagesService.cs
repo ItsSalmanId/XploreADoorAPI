@@ -17,6 +17,7 @@ using FOX.DataModels.Models.SenderName;
 using FOX.DataModels.Models.ServiceConfiguration;
 using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.RequestForOrder;
+using System.Threading;
 
 namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
 {
@@ -35,6 +36,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
         private readonly DbContextCommon _DbContextCommon = new DbContextCommon();
         private readonly GenericRepository<FOX_TBL_SENDER_NAME> _FOX_TBL_SENDER_NAME;
         private readonly GenericRepository<FoxDocumentType> _foxdocumenttypeRepository;
+        private static List<Thread> threadsList = new List<Thread>();
         public UploadOrderImagesService()
         {
             _NotesRepository = new GenericRepository<FOX_TBL_NOTES_HISTORY>(_IndexinfoContext);
@@ -295,11 +297,6 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                 PdfFocus f = new PdfFocus();
                 f.Serial = "10261435399";
                 f.OpenPdf(PdfPath);
-                    System.Drawing.Image img;
-                    PdfFocus f = new PdfFocus();
-                    f.Serial = "10261435399";
-                    f.OpenPdf(PdfPath);
-
                 if (f.PageCount > 0)
                 {
                     //Save all PDF pages to jpeg images
