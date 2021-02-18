@@ -2543,11 +2543,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 f.Serial = "10261435399";
                 f.OpenPdf(PdfPath);
 
-                    if (f.PageCount > 0)
-                    {
-                        //Save all PDF pages to jpeg images
-                        f.ImageOptions.Dpi = 120;
-                        f.ImageOptions.ImageFormat = ImageFormat.Jpeg;
+                if (f.PageCount > 0)
+                {
+                    //Save all PDF pages to jpeg images
+                    f.ImageOptions.Dpi = 120;
+                    f.ImageOptions.ImageFormat = ImageFormat.Jpeg;
 
                     var image = f.ToImage(i + 1);
                     //Next manipulate with Jpeg in memory or save to HDD, open in a viewer
@@ -2568,7 +2568,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 threadCounter.Add(1);
             }
-
+        }
         private void AddFilesToDatabase(string filePath, string workId, long lworkid, string logoPath)
         {
             try
