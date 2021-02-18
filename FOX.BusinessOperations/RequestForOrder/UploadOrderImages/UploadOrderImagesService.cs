@@ -98,7 +98,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             //try
             //{
             var workId = Helper.getMaximumId("WORK_ID");
-            Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SubmitUploadOrderImages Work_ID (" + workId + ") || Start Time of Function SubmitUploadOrderImages" + Helper.GetCurrentDate().ToLocalTime());
+            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages Work_ID (" + workId + ") || Start Time of Function SubmitUploadOrderImages" + Helper.GetCurrentDate().ToLocalTime());
             OriginalQueue originalQueue = new OriginalQueue();
           
             originalQueue.WORK_ID = workId;
@@ -134,9 +134,9 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             _QueueRepository.Insert(originalQueue);
             _QueueRepository.Save();
 
-            Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SubmitUploadOrderImages > GenerateAndSaveImagesOfUploadedFiles || Start Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
+            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > GenerateAndSaveImagesOfUploadedFiles || Start Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
             GenerateAndSaveImagesOfUploadedFiles(workId, reqSubmitUploadOrderImagesModel.FileNameList, Profile);
-            Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SubmitUploadOrderImages > GenerateAndSaveImagesOfUploadedFiles || End Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
+            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > GenerateAndSaveImagesOfUploadedFiles || End Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
 
             if (reqSubmitUploadOrderImagesModel.Is_Manual_ORS)
             {
@@ -154,9 +154,9 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                 var ext = Path.GetExtension(coverfilePath).ToLower();
                 int numberOfPages = getNumberOfPagesOfPDF(coverfilePath);
 
-                Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SubmitUploadOrderImages > SavePdfToImages || Start Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
+                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > SavePdfToImages || Start Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
                 SavePdfToImages(coverfilePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
-                Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SubmitUploadOrderImages > SavePdfToImages || End Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
+                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > SavePdfToImages || End Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
 
                     FOX_TBL_NOTES_HISTORY notes = new FOX_TBL_NOTES_HISTORY();
                     notes.NOTE_ID = Helper.getMaximumId("NOTE_ID");
@@ -186,7 +186,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                 };
                 InsertNotesHistory(newObj, Profile);
             }
-            Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SubmitUploadOrderImages || End Time of Function SubmitUploadOrderImages" + Helper.GetCurrentDate().ToLocalTime());
+            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages || End Time of Function SubmitUploadOrderImages" + Helper.GetCurrentDate().ToLocalTime());
             return new ResSubmitUploadOrderImagesModel() { Message = "Work Order Created Successfully. workId = " + workId, ErrorMessage = "", Success = true };
             //}
             //catch (Exception exception)
@@ -254,15 +254,15 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
         private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, int pageCounter, out long pageCounterOut)
         {
             List<int> threadCounter = new List<int>();
-            Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SavePdfToImages > Checking Time of Directory Create || Start Time of Function SavePdfToImages > Checking Time of Directory Create" + Helper.GetCurrentDate().ToLocalTime());
+            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SavePdfToImages > Checking Time of Directory Create || Start Time of Function SavePdfToImages > Checking Time of Directory Create" + Helper.GetCurrentDate().ToLocalTime());
             if (!Directory.Exists(config.IMAGES_PATH_SERVER))
             {
                 Directory.CreateDirectory(config.IMAGES_PATH_SERVER);
             }
-            Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SavePdfToImages > Checking Time of Directory Create || End Time of Function SavePdfToImages > Checking Time of Directory Create" + Helper.GetCurrentDate().ToLocalTime());
+            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SavePdfToImages > Checking Time of Directory Create || End Time of Function SavePdfToImages > Checking Time of Directory Create" + Helper.GetCurrentDate().ToLocalTime());
             if (System.IO.File.Exists(PdfPath))
             {
-                Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SavePdfToImages > Checking Time of Threading || Start Time of Function SavePdfToImages > Checking Time of Threading" + Helper.GetCurrentDate().ToLocalTime());
+                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SavePdfToImages > Checking Time of Threading || Start Time of Function SavePdfToImages > Checking Time of Threading" + Helper.GetCurrentDate().ToLocalTime());
                 for (int i = 0; i < noOfPages; i++, pageCounter++)
                 {
                     Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter, PdfPath, i, config, workId, pageCounter));
@@ -281,7 +281,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                 {
                     thread.Abort();
                 }
-                Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SavePdfToImages > Checking Time of Threading || End Time of Function SavePdfToImages > Checking Time of Threading" + Helper.GetCurrentDate().ToLocalTime());
+                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SavePdfToImages > Checking Time of Threading || End Time of Function SavePdfToImages > Checking Time of Threading" + Helper.GetCurrentDate().ToLocalTime());
                 //AddToDatabase(PdfPath, noOfPages, workId);
             }
             pageCounterOut = pageCounter;
