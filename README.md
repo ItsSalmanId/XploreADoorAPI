@@ -23,7 +23,7 @@
 [![Quality Gate Status](http://172.16.0.121:9001/api/project_badges/measure?project=Fox_API&metric=alert_status)](http://172.16.0.121:9001/dashboard?id=Fox_API)
 
 ## Code Repository
-[![Code Repository](http://azure-devopssrv/DefaultCollection/Fox/_git/FoxRehabilitationAPI)](http://azure-devopssrv/DefaultCollection/Fox/_git/FoxRehabilitationAPI)
+
 ## Current Sprint
 
 ## Related Projects
