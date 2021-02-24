@@ -474,7 +474,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                 converter.Options.DisplayHeader = false;
                 converter.Options.WebPageWidth = 768;
 
-                PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at (800) 597-0848 or email admit@foxrehab.org",
+                PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at +1 (800) 597 - 0848 or email admit@foxrehab.org",
                     new Font("Arial", 10));
 
                 // footer settings
