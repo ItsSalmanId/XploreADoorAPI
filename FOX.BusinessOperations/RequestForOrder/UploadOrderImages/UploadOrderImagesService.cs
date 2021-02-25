@@ -238,7 +238,8 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                             totalPages += numberOfPages;
                         }
                     }
-                    AddToDatabase("", totalPages + originalQueueFilesCount, workId);
+
+                AddToDatabase("", totalPages + originalQueueFilesCount, profile.UserName, workId, config.PRACTICE_CODE); 
                 }
                 else
                 {
