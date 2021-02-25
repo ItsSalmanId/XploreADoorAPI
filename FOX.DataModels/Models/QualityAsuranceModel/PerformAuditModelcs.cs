@@ -76,6 +76,9 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         [NotMapped]
         public string AGENT_EMAIL { get; set; }
         public int? PHD_CALL_SCENARIO_ID { get; set; }
+        public long? PATIENT_ACCOUNT { get; set; }
+        [NotMapped]
+        public string PATIENT_ACCOUNT_STR { get; set; }
     }
 
     //public class CallLogModel : BaseModel
@@ -157,6 +160,8 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public string DATE_TO_STR { get; set; }
         public int TIME_FRAME { get; set; }
         public string CALL_TYPE { get; set; }
+        public long? PATIENT_ACCOUNT { get; set; }
+        public string PATIENT_ACCOUNT_STR { get; set; }
     }
     public class FeedBackCaller : BaseModel
     {

@@ -399,7 +399,7 @@ namespace FOX.BusinessOperations.AccountService
                     string sendToOfAdminEmail = string.Empty;
                     string firstName = string.IsNullOrEmpty(user.FIRST_NAME) ? string.Empty : user.FIRST_NAME;
                     string lastName = string.IsNullOrEmpty(user.LAST_NAME) ? string.Empty : user.LAST_NAME;
-                    if (!Helper.IsTestUser(firstName.ToLower(), lastName.ToLower()))
+                    if (!Helper.IsTestUser(firstName.ToLower(), lastName.ToLower()) && AppConfiguration.ClientURL.Contains("https://fox.mtbc.com/"))
                     {
                         sendToOfAdminEmail = AppConfiguration.SendEmailToAdminOnExternalUserSignUp_CC;
                     }
@@ -476,6 +476,7 @@ namespace FOX.BusinessOperations.AccountService
                     #region email to admin
 
                     string bodyOfAdminEmail = string.Empty;
+                    string sendToOfAdminEmail = string.Empty;
                     string templatePathOfAdminEmail = HttpContext.Current.Server.MapPath("~/HtmlTemplates/external_user_signup_email_to_admin.html");
                     if (File.Exists(templatePathOfAdminEmail))
                     {
@@ -507,7 +508,10 @@ namespace FOX.BusinessOperations.AccountService
                                            .Replace("[[COMMENTS]]", user.COMMENTS);
                     }
                     string subjectOfAdminEmail = "New signup request: " + user.LAST_NAME + ", " + user.FIRST_NAME + ", " + user.USER_TYPE;
-                    string sendToOfAdminEmail = "support@foxrehab.org";
+                    if(AppConfiguration.ClientURL.Contains("https://fox.mtbc.com/"))
+                    {
+                     sendToOfAdminEmail = "support@foxrehab.org";
+                    }
 
                     //string sendToOfAdminEmail = "usmanfarooq@mtbc.com";
                     //string sendToOfAdminEmail = "asimshah4@mtbc.com";
@@ -656,7 +660,7 @@ namespace FOX.BusinessOperations.AccountService
             string firstName = string.IsNullOrEmpty(user.FIRST_NAME) ? string.Empty : user.FIRST_NAME;
             string lastName = string.IsNullOrEmpty(user.LAST_NAME) ? string.Empty : user.LAST_NAME;
 
-            if (!Helper.IsTestUser(firstName.ToLower(), lastName.ToLower()))
+            if (!Helper.IsTestUser(firstName.ToLower(), lastName.ToLower()) && (AppConfiguration.ClientURL.Contains("https://fox.mtbc.com/") || AppConfiguration.ClientURL.Contains("https://fox2.mtbc.com/")))
             {
                 sendToOfAdminEmail = AppConfiguration.SendEmailToAdminOnExternalUserSignUp_To;
                 _ccListOfAdminEmail.Add(AppConfiguration.SendEmailToAdminOnExternalUserSignUp_CC);

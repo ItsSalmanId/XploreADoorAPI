@@ -24,6 +24,8 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public int TIME_FRAME { get; set; }
         public string CALL_TYPE { get; set; }
         public int PHD_CALL_SCENARIO_ID { get; set; }
+        public long? PATIENT_ACCOUNT { get; set; }
+        public string PATIENT_ACCOUNT_STR { get; set; }
     }
     public class AuditScoresList : BaseModel
     {

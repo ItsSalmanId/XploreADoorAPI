@@ -91,8 +91,16 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QAReportService
                 default:
                     break;
             }
-
+            if (reg.PATIENT_ACCOUNT_STR == "")
+            {
+                reg.PATIENT_ACCOUNT = null;
+            }
+            else
+            {
+                reg.PATIENT_ACCOUNT = long.Parse(reg.PATIENT_ACCOUNT_STR);
+            }
             SqlParameter _practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+            SqlParameter _patientAcount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = reg.PATIENT_ACCOUNT ?? 0};
             SqlParameter _searchText = new SqlParameter { ParameterName = "SEARCH_TEXT", Value = reg.SEARCH_TEXT };
             SqlParameter _agentName = new SqlParameter { ParameterName = "AGENT_NAME", Value = reg.AGENT_NAME };
             SqlParameter _auditorName = new SqlParameter { ParameterName = "AUDITOR_NAME", Value = reg.AUDITOR_NAME };
@@ -105,11 +113,9 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QAReportService
             SqlParameter _calltype = new SqlParameter { ParameterName = "CALL_TYPE", Value = reg.CALL_TYPE };
             SqlParameter _callSacnario = new SqlParameter { ParameterName = "PHD_CALL_SCENARIO_ID", Value = reg.PHD_CALL_SCENARIO_ID };
 
-
-
             tempList = SpRepository<AuditScoresListTemp>.GetListWithStoreProcedure(@"exec FOX_PROC_AUDTIT_SCORES_LIST
-                            @PRACTICE_CODE, @SEARCH_TEXT, @AGENT_NAME, @AUDITOR_NAME, @DATE_FROM, @DATE_TO, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER, @CALL_TYPE ,@PHD_CALL_SCENARIO_ID"
-                            , _practiceCode, _searchText, _agentName, _auditorName, _dateFrom, _dateTos, _currentPage, _recordPerPage, _sortBy, _sortOrder, _calltype, _callSacnario);
+                            @PATIENT_ACCOUNT, @PRACTICE_CODE, @SEARCH_TEXT, @AGENT_NAME, @AUDITOR_NAME, @DATE_FROM, @DATE_TO, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER, @CALL_TYPE ,@PHD_CALL_SCENARIO_ID"
+                            , _patientAcount, _practiceCode, _searchText, _agentName, _auditorName, _dateFrom, _dateTos, _currentPage, _recordPerPage, _sortBy, _sortOrder, _calltype, _callSacnario);
             Criteria = GetListOfGradingCriteria(profile.PracticeCode);
             if(Criteria.Count >0)
             {

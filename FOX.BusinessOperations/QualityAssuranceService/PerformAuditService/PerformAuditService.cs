@@ -2,6 +2,7 @@
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.FoxPHD;
+using FOX.DataModels.Models.Patient;
 using FOX.DataModels.Models.PatientSurvey;
 using FOX.DataModels.Models.QualityAsuranceModel;
 using FOX.DataModels.Models.Security;
@@ -18,6 +19,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
 {
     public class PerformAuditService : IPerformAuditService
     {
+        private readonly DbContextPatient _PatientContext = new DbContextPatient();
         private readonly DBContextQueue _QueueContext = new DBContextQueue();
         private readonly DBContextQualityAssurance _qualityAssuranceContext = new DBContextQualityAssurance();
         private readonly DbContextPatientSurvey _patientSurveyContext = new DbContextPatientSurvey();
@@ -31,6 +33,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
         private readonly GenericRepository<GradingSetup> _gradingSetupRepository;
         private readonly GenericRepository<PhdCallScenario> _PhdCallScenarioRepository;
         private readonly DBContextFoxPHD _DBContextFoxPHD = new DBContextFoxPHD();
+        private readonly GenericRepository<Patient> _PatientRepository;
         public List<GradingSetup> GradingCriteria = new List<GradingSetup>();
 
         public PerformAuditService()
@@ -44,6 +47,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             _userTableRepository = new GenericRepository<User>(_qualityAssuranceContext);
             _gradingSetupRepository = new GenericRepository<GradingSetup>(_qualityAssuranceContext);
             _PhdCallScenarioRepository = new GenericRepository<PhdCallScenario>(_DBContextFoxPHD);
+            _PatientRepository = new GenericRepository<Patient>(_PatientContext);
             GradingCriteria = new List<GradingSetup>();
         }
         public TotalNumbers GetTotalNumbersOfCriteria(long practiceCode, RequestModelForCallType obj)
@@ -136,7 +140,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
 
 
             var noAssociatedList = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode &&
-                x.AUDITOR_NAME == profile.UserName && x.PHD_CALL_ID.ToString().EndsWith("0000") &&
+                x.AUDITOR_NAME == profile.UserName && x.PHD_CALL_ID.ToString().EndsWith("0000") &&/* x.PATIENT_ACCOUNT != null &&*/
                 (request.PHD_CALL_SCENARIO_ID != 0 ? (x.PHD_CALL_SCENARIO_ID == request.PHD_CALL_SCENARIO_ID) : true));
             var List = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.AUDITOR_NAME == profile.UserName).Select(x => new SurveyAuditScores() { SURVEY_CALL_ID = x.SURVEY_CALL_ID, PHD_CALL_ID = x.PHD_CALL_ID }).ToList();
 
@@ -165,6 +169,13 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                             notAssociatedCall.CREATED_DATE = list.CREATED_DATE;
                             notAssociatedCall.LOGS = "Not Associated Call | Patient Helpdesk";
                             notAssociatedCall.IS_AUDITED = true;
+                            var patient = _PatientRepository.GetFirst(x => x.Patient_Account == list.PATIENT_ACCOUNT && x.Practice_Code == profile.PracticeCode && (x.DELETED ?? false) == false);
+                            if (patient != null)
+                            {
+                                notAssociatedCall.MRN = patient.Chart_Id == null ? "" : patient.Chart_Id;
+                                notAssociatedCall.FIRST_NAME = patient.First_Name == null ? "" : patient.First_Name;
+                                notAssociatedCall.LAST_NAME = patient.Last_Name == null ? "" : patient.Last_Name;
+                            }
                             lst.Add(notAssociatedCall);
 
                         }
@@ -184,6 +195,13 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                         notAssociatedCall.CREATED_BY = list.AGENT_NAME;
                         notAssociatedCall.CREATED_DATE = list.CREATED_DATE;
                         notAssociatedCall.LOGS = "Not Associated Call | Patient Helpdesk";
+                        var patient = _PatientRepository.GetFirst(x => x.Patient_Account == list.PATIENT_ACCOUNT && x.Practice_Code == profile.PracticeCode && (x.DELETED ?? false) == false);
+                        if (patient != null)
+                        {
+                            notAssociatedCall.MRN = patient.Chart_Id == null ? "" : patient.Chart_Id;
+                            notAssociatedCall.FIRST_NAME = patient.First_Name == null ? "" : patient.First_Name;
+                            notAssociatedCall.LAST_NAME = patient.Last_Name == null ? "" : patient.Last_Name;
+                        }
                         lst.Add(notAssociatedCall);
                     }
                 }
@@ -228,6 +246,14 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                 req.MODIFIED_BY = profile.UserName;
                 req.MODIFIED_DATE = Helper.GetCurrentDate();
                 req.DELETED = false;
+                if (req.PATIENT_ACCOUNT_STR == "")
+                {
+                    req.PATIENT_ACCOUNT = null;
+                }
+                else
+                {
+                    req.PATIENT_ACCOUNT = long.Parse(req.PATIENT_ACCOUNT_STR);
+                }
                 if (req.PHD_CALL_ID == 0)
                 {
                     var date = DateTime.Now.ToString("yyyyMMddHHmmss");
@@ -271,7 +297,6 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
         }
         public List<SurveyAuditScores> ListAuditedCalls(RequestCallFromQA req, UserProfile profile)
         {
-
             req.DATE_TO = Helper.GetCurrentDate();
             switch (req.TIME_FRAME)
             {
@@ -296,6 +321,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                     break;
             }
 
+            SqlParameter _patientAcount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = req.PATIENT_ACCOUNT ?? 0 };
             SqlParameter _practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
             SqlParameter _agentName = new SqlParameter { ParameterName = "AGENT_NAME", Value = req.AGENT_NAME };
             SqlParameter _auditorName = new SqlParameter { ParameterName = "AUDITOR_NAME", Value = req.AUDITOR_NAME };
@@ -305,8 +331,8 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
 
 
             var Result = SpRepository<SurveyAuditScores>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_AUDITED_CALL_LIST
-                            @PRACTICE_CODE, @AGENT_NAME, @AUDITOR_NAME, @DATE_FROM, @DATE_TO ,@CALL_TYPE",
-                             _practiceCode,  _agentName, _auditorName, _dateFrom, _dateTos,_calltype);
+                             @PATIENT_ACCOUNT, @PRACTICE_CODE, @AGENT_NAME, @AUDITOR_NAME, @DATE_FROM, @DATE_TO ,@CALL_TYPE",
+                             _patientAcount, _practiceCode,  _agentName, _auditorName, _dateFrom, _dateTos,_calltype);
             return Result;
         }
 

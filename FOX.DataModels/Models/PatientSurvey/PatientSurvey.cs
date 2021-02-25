@@ -125,6 +125,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string Is_exceptional_Str { get; set; }
         [NotMapped]
         public string Is_protective_equipment_Str { get; set; }
+        public DateTime? SURVEY_COMPLETED_DATE { get; set; }
     }
 
     [Table("FOX_TBL_PATIENT_SURVEY_HISTORY")]
