@@ -316,9 +316,9 @@ namespace FOX.BusinessOperations.RequestForOrder
                                                 <tr>
                                                     <td style='line-height: 1.5'>
                                                         <strong>Rehabilitation </strong><br>
-                                                        <strong>T</strong> 877 407 3422 <br>
-                                                        <strong>F</strong> 877 407 4329 Main<br>
-                                                        <strong>F</strong> 800 597 0848 Patient Referral<br>
+                                                        <strong>T</strong> +1 (877) 407 - 3422 <br>
+                                                        <strong>F</strong> +1 (877) 407 - 4329 Main<br>
+                                                        <strong>F</strong> +1 (800) 597 - 0848 Patient Referral<br>
                                                         <strong>E</strong> clientservices@foxrehab.org<br><br>
                                                             
                                                         <strong>Checkout our NEW website</strong> - <a href='www.foxrehab.org' target='_blank'>www.foxrehab.org</a> <br><br>
