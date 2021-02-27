@@ -333,7 +333,7 @@ namespace FOX.BusinessOperations.HrAutoEmail
                 var ExistingHrAutoEmailDetail = _hrAutoEmailRepository.GetFirst(r => r.HR_CONFIGURE_ID == hrAutoEmail.HR_CONFIGURE_ID && r.DELETED == false);
 
                 var newStr = Regex.Replace(hrAutoEmail.NAME, " {2,}", " ");
-                var result = _hrAutoEmailRepository.GetAll().Where(h => h.PRACTICE_CODE == userProfile.PracticeCode).Select(s => s.NAME.Trim().ToLower()).Contains(newStr.Trim().ToLower());
+                var result = _hrAutoEmailRepository.GetAll().Where(h => h.PRACTICE_CODE == userProfile.PracticeCode && !h.DELETED).Select(s => s.NAME.Trim().ToLower()).Contains(newStr.Trim().ToLower());
 
                 if (ExistingHrAutoEmailDetail.NAME.Trim().ToLower() == newStr.Trim().ToLower() && result == true)
                 {

@@ -10529,20 +10529,21 @@ namespace FOX.BusinessOperations.PatientServices
             {
                 //try
                 //{
-                    if (loc.UpdatePatientAddress == true)
+                    if (loc.UpdatePatientAddress == true && loc.FACILITY_TYPE_NAME.ToLower() == "private home")
                     {
                         FacilityLocation patientAddress = new FacilityLocation();
                        
                         var patientPos = _PatientPOSLocationRepository.GetMany(e =>e.Patient_Account == loc.PATIENT_ACCOUNT && e.Is_Default == true && e.Loc_ID !=0 && e.Deleted == false).OrderByDescending(t => t.Modified_Date).FirstOrDefault();
+                    if (patientPos != null)
+                    {
                         PatientAddress address = _PatientAddressRepository.GetFirst(e => e.PATIENT_ACCOUNT == patientPos.Patient_Account && e.PATIENT_POS_ID == patientPos.Patient_POS_ID && e.DELETED == false);
-
                         if (address != null)
                         {
                             patientAddress.Zip = address.ZIP;
                             patientAddress.City = address.CITY;
                             patientAddress.State = address.STATE;
                             patientAddress.Address = address.ADDRESS;
-                        if (loc.SetCoordinatesManually == false)
+                            if (loc.SetCoordinatesManually == false)
                             {
                                 POSCoordinates coordinates = GetCoordinates(patientAddress);
                                 if (coordinates != null)
@@ -10567,6 +10568,7 @@ namespace FOX.BusinessOperations.PatientServices
                             }
                             address.MODIFIED_BY = profile.UserName;
                             address.MODIFIED_DATE = Helper.GetCurrentDate();
+
                             _PatientAddressRepository.Update(address);
                             _PatientAddressRepository.Save();
                             response.Latitude = address.Latitude.ToString();
@@ -10574,6 +10576,7 @@ namespace FOX.BusinessOperations.PatientServices
                             response.Address = address.ADDRESS;
 
                         }
+                    }
                     }
                     else
                     {

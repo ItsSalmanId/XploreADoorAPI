@@ -18,6 +18,9 @@ using FOX.DataModels.Models.ServiceConfiguration;
 using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.RequestForOrder;
 using System.Threading;
+using System.Diagnostics;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
 {
@@ -235,7 +238,8 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                             totalPages += numberOfPages;
                         }
                     }
-                    AddToDatabase("", totalPages + originalQueueFilesCount, workId);
+
+                AddToDatabase("", totalPages + originalQueueFilesCount, profile.UserName, workId, config.PRACTICE_CODE); 
                 }
                 else
                 {
@@ -329,27 +333,37 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
         {
             try
             {
-                OriginalQueueFiles originalQueueFiles = _OriginalQueueFiles.GetFirst(t => t.WORK_ID == workId && !t.deleted && t.FILE_PATH1.Equals(filePath) && t.FILE_PATH.Equals(logoPath));
+                //OriginalQueueFiles originalQueueFiles = _OriginalQueueFiles.GetFirst(t => t.WORK_ID == workId && !t.deleted && t.FILE_PATH1.Equals(filePath) && t.FILE_PATH.Equals(logoPath));
 
-                if (originalQueueFiles == null)
-                {
-                    //If Work Order files is deleted
-                    originalQueueFiles = _OriginalQueueFiles.Get(t => t.WORK_ID == workId && t.deleted && t.FILE_PATH1.Equals(filePath) && t.FILE_PATH.Equals(logoPath));
-                    if (originalQueueFiles == null)
-                    {
-                        originalQueueFiles = new OriginalQueueFiles();
+                //if (originalQueueFiles == null)
+                //{
+                //    //If Work Order files is deleted
+                //    originalQueueFiles = _OriginalQueueFiles.Get(t => t.WORK_ID == workId && t.deleted && t.FILE_PATH1.Equals(filePath) && t.FILE_PATH.Equals(logoPath));
+                //    if (originalQueueFiles == null)
+                //    {
+                //        originalQueueFiles = new OriginalQueueFiles();
 
-                        originalQueueFiles.FILE_ID = Helper.getMaximumId("FOXREHAB_FILE_ID");
-                        originalQueueFiles.WORK_ID = workId;
-                        originalQueueFiles.UNIQUE_ID = workId.ToString();
-                        originalQueueFiles.FILE_PATH1 = filePath;
-                        originalQueueFiles.FILE_PATH = logoPath;
-                        originalQueueFiles.deleted = false;
+                //        originalQueueFiles.FILE_ID = Helper.getMaximumId("FOXREHAB_FILE_ID");
+                //        originalQueueFiles.WORK_ID = workId;
+                //        originalQueueFiles.UNIQUE_ID = workId.ToString();
+                //        originalQueueFiles.FILE_PATH1 = filePath;
+                //        originalQueueFiles.FILE_PATH = logoPath;
+                //        originalQueueFiles.deleted = false;
 
-                        _OriginalQueueFiles.Insert(originalQueueFiles);
-                        _OriginalQueueFiles.Save();
-                    }
-                }
+                //        //_OriginalQueueFiles.Insert(originalQueueFiles);
+                //        //_OriginalQueueFiles.Save();
+                //    }
+                //}
+
+                long iD = Helper.getMaximumId("FOXREHAB_FILE_ID");
+                var fileId = new SqlParameter("FILE_ID", SqlDbType.BigInt) { Value = iD };
+                var parmWorkID = new SqlParameter("WORKID", SqlDbType.BigInt) { Value = workId };
+                var parmFilePath = new SqlParameter("FILEPATH", SqlDbType.VarChar) { Value = filePath };
+                var parmLogoPath = new SqlParameter("LOGOPATH", SqlDbType.VarChar) { Value = logoPath };
+                var _isFromIndexInfo = new SqlParameter("IS_FROM_INDEX_INFO", SqlDbType.Bit) { Value = false };
+
+                var result = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_AD_FILES_TO_DB_FROM_RFO @FILE_ID, @WORKID, @FILEPATH, @LOGOPATH, @IS_FROM_INDEX_INFO",
+                    fileId, parmWorkID, parmFilePath, parmLogoPath, _isFromIndexInfo);
             }
             catch (Exception exception)
             {
@@ -357,25 +371,35 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             }
         }
 
-        private void AddToDatabase(string filePath, int noOfPages, long workId)
+        private void AddToDatabase(string filePath, int noOfPages, string userName, long workId, long? practiceCode )
         {
             try
             {
-                OriginalQueue originalQueue = _QueueRepository.Get(t => t.WORK_ID == workId && !t.DELETED);
-                if (originalQueue != null)
-                {
-                    //TO DO
-                    //originalQueue.WORK_STATUS = "Indexed";
-                    originalQueue.TOTAL_PAGES = noOfPages;
-                    originalQueue.FILE_PATH = filePath;
-                    originalQueue.FAX_ID = "";
+                //OriginalQueue originalQueue = _QueueRepository.Get(t => t.WORK_ID == workId && !t.DELETED);
+                //if (originalQueue != null)
+                //{
+                //    //TO DO
+                //    //originalQueue.WORK_STATUS = "Indexed";
+                //    originalQueue.TOTAL_PAGES = noOfPages;
+                //    originalQueue.FILE_PATH = filePath;
+                //    originalQueue.FAX_ID = "";
 
-                    //originalQueue.MODIFIED_BY = userName;
-                    originalQueue.MODIFIED_DATE = DateTime.Now;
+                //    //originalQueue.MODIFIED_BY = userName;
+                //    originalQueue.MODIFIED_DATE = DateTime.Now;
 
-                    _QueueRepository.Update(originalQueue);
-                    _QueueRepository.Save();
-                }
+                //    //_QueueRepository.Update(originalQueue);
+                //    //_QueueRepository.Save();
+                //}
+
+
+                var PracticeCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
+                var workid = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = workId };
+                var username = new SqlParameter { ParameterName = "@USER_NAME", SqlDbType = SqlDbType.VarChar, Value = userName };
+                var filePaths = new SqlParameter { ParameterName = "@FILE_PATH", SqlDbType = SqlDbType.VarChar, Value = filePath };
+                var noofpages = new SqlParameter { ParameterName = "@NO_OF_PAGES", SqlDbType = SqlDbType.Int, Value = noOfPages };
+
+                var result = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_ADD_TO_DB_FROM_UPLOAD_ORDER_IMAGES @PRACTICE_CODE, @WORK_ID, @USER_NAME, @FILE_PATH, @NO_OF_PAGES",
+                    PracticeCode, workid, username, filePaths, noofpages);
             }
             catch (Exception exception)
             {
