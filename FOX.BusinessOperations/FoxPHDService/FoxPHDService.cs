@@ -1387,6 +1387,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                         caseHistory.CS_Pri_Resp_Person = CsPrimaryPerson.ToUpper();
                         caseHistory.CS_Modified_Date = DateTime.Today.Date;
                         caseHistory.cs_deleted = false;
+                        caseHistory.rowguid = Guid.NewGuid();
                         db.CSCaseHistories.Add(caseHistory);
                         db.SaveChanges();
                     }
