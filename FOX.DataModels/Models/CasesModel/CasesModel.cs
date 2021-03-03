@@ -971,6 +971,7 @@ namespace FOX.DataModels.Models.CasesModel
         public long? Work_ID { get; set; }
         public string APPLICATION { get; set; }
         public long? APPOINTMENT_ID { get; set; }
+        public long? GENERAL_NOTE_ID { get; set; }
     }
 
     public class CaseAndOpenIssues
