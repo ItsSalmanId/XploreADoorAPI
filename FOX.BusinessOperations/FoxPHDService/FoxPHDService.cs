@@ -729,6 +729,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                         interfaceSynch.DELETED = false;
                         interfaceSynch.IS_SYNCED = false;
                         interfaceSynch.APPLICATION = "PORTAL - PHD Calls";
+                        interfaceSynch.GENERAL_NOTE_ID = Convert.ToInt64(ObjPHDCallDetailRequest.GENERAL_NOTE_ID ?? 0);
                         __InterfaceSynchModelRepository.Insert(interfaceSynch);
                         __InterfaceSynchModelRepository.Save();
                     }
