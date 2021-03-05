@@ -1299,6 +1299,7 @@ namespace FOX.BusinessOperations.RequestForOrder
             obj.CREATED_BY = userName;
             obj.CREATED_DATE = Helper.GetCurrentDate();
             _fox_tbl_TherapyTreatmentRequestForm.Insert(obj);
+            _fox_tbl_TherapyTreatmentRequestForm.Save();
 
             //SqlParameter id = new SqlParameter("THERAPY_TREATMENT_REFERRAL_REQUEST_FORM_ID", Pid);
             //SqlParameter _workid = new SqlParameter("WORK_ID",  WorkId);
