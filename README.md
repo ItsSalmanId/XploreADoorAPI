@@ -1,4 +1,4 @@
-#Fox Rehabilitation ("Client")
+#Fox Rehabilitation ("API")
 General description of the project with screenshots of project
 
 <p align="center">
