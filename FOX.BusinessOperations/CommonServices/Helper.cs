@@ -899,7 +899,7 @@ namespace FOX.BusinessOperations.CommonService
 
         public static ServiceConfiguration GetServiceConfiguration(long practiceCode)
         {
-            practiceCode = AppConfiguration.GetPracticeCode;
+            //practiceCode = AppConfiguration.GetPracticeCode;
             var config = new ServiceConfiguration();
             var configList = SpRepository<ServiceConfiguration>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SERVICE_CONFIGURATION");
             if (configList.Count() > 0)
