@@ -512,7 +512,7 @@ namespace FOX.BusinessOperations.SettingsService.ClinicianSetupService
                         body += "</tr></table><br /><br />";
 
                         body += "<p style='margin: 0px;'>Regards,</ p><br />";
-                        body += "<p style='margin: 0px;'>MTBC Support team</ p><br />";
+                        body += "<p style='margin: 0px;'>CareCloud Support team</ p><br />";
                         body += "</body>";
 
                         string sendTo = string.Empty;
