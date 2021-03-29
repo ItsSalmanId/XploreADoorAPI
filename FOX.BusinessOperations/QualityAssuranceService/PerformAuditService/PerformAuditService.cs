@@ -1,4 +1,5 @@
 ﻿using FOX.BusinessOperations.CommonService;
+using FOX.BusinessOperations.CommonServices;
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.FoxPHD;
@@ -9,6 +10,7 @@ using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.Settings.RoleAndRights;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -214,25 +216,85 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
         }
         public bool InsertAuditScores(SurveyAuditScores req, UserProfile profile)
         {
-            string _body = string.Empty;
-           _body  = "<style>  body, table, td {font-family:'Calibri'!important;} table { border-collapse:separate; }@media screen and(max-width:740px) { table { width: 100 % !important; text-align:center!important;} } body {font-size:14px!important;}  table th { font-weight: normal; border-right: 1px solid #fff;text-align: center;font-weight: bold;line-height: normal;}table td, th{ padding: 3px 7px; color: #555555;font-size: 16px; height: 24px; font-weight: normal;}a{ text-decoration: none; }.first-section th{background: #f2f2f2;}.first-section {background: #f2f2f2;}.second-section {background: #e1f4ff;}.third-section {background: #fff2cc;}</style> ";
-            string _subject = string.Empty;
-            string sendTo = string.Empty;
-            DateTime? callDate;
-            callDate = req.CREATED_DATE;
             GradingCriteria = GetListOfGradingCriteria(profile.PracticeCode, req);
             var Obj = new List<SurveyAuditScores>();
+            SurveyAuditScores existingScores = new SurveyAuditScores();
+            string createdBy = "";
+            DateTime? createdDate = new DateTime();
+            long survey_score_id = 0;
             if ((req.SURVEY_CALL_ID != 0 && req.SURVEY_CALL_ID != null)) // in case of patient survey
             {
                 Obj = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.SURVEY_CALL_ID == req.SURVEY_CALL_ID && x.AUDITOR_NAME == profile.UserName);
+                existingScores = _auditScoresRepository.GetFirst(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.SURVEY_CALL_ID == req.SURVEY_CALL_ID && x.AUDITOR_NAME == profile.UserName);
                 req.CALL_TYPE = "survey";
                 req.PHD_CALL_ID = null;
             }
             if ((req.PHD_CALL_ID != 0 && req.PHD_CALL_ID != null)) // in case of patient helpdesk
             {
                 Obj = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.PHD_CALL_ID == req.PHD_CALL_ID && x.AUDITOR_NAME == profile.UserName);
-                req.SURVEY_CALL_ID = null;
+                existingScores = _auditScoresRepository.GetFirst(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.PHD_CALL_ID == req.PHD_CALL_ID && x.AUDITOR_NAME == profile.UserName);
                 req.CALL_TYPE = "phd";
+                req.SURVEY_CALL_ID = null;
+            }
+            if (req.EDIT_AUDIT_REPORT)
+            {
+                survey_score_id = existingScores.SURVEY_AUDIT_SCORES_ID;
+                createdBy = existingScores.CREATED_BY;
+                createdDate = existingScores.CREATED_DATE;
+            }
+            if (Obj.Count == 1 && req.EDIT_AUDIT_REPORT)
+            {
+                var parentProperties = req.GetType().GetProperties();
+                var childProperties = existingScores.GetType().GetProperties();
+                foreach (var parentProperty in parentProperties)
+                {
+                    foreach (var childProperty in childProperties)
+                    {
+                        if (parentProperty.Name == childProperty.Name && parentProperty.PropertyType == childProperty.PropertyType)
+                        {
+                            childProperty.SetValue(existingScores, parentProperty.GetValue(req));
+                            break;
+                        }
+                    }
+                }
+                existingScores.SURVEY_AUDIT_SCORES_ID = survey_score_id;
+                existingScores.PRACTICE_CODE = profile.PracticeCode;
+                existingScores.AUDITOR_NAME = profile.UserName;
+                existingScores.GRADE = getGrade(req.TOTAL_POINTS);
+                existingScores.CREATED_BY = createdBy;
+                existingScores.CREATED_DATE = createdDate;
+                existingScores.MODIFIED_BY = profile.UserName;
+                existingScores.MODIFIED_DATE = Helper.GetCurrentDate();
+                existingScores.DELETED = false;
+                if (existingScores.PATIENT_ACCOUNT_STR == "")
+                {
+                    existingScores.PATIENT_ACCOUNT = null;
+                }
+                else
+                {
+                    long account;
+                    bool success = long.TryParse(existingScores.PATIENT_ACCOUNT_STR, out account);
+                    if (success)
+                    {
+                        existingScores.PATIENT_ACCOUNT = account;
+                    }
+
+                }
+                if (existingScores.PHD_CALL_ID == 0)
+                {
+                    var date = DateTime.Now.ToString("yyyyMMddHHmmss");
+                    date = date + "0000";
+                    existingScores.PHD_CALL_ID = long.Parse(date);
+                }
+                Obj = null;
+                _auditScoresRepository.Update(existingScores);
+                _auditScoresRepository.Save();
+                //Sending Email to Auditor in PHD CASE
+                SendEmailForAudit(existingScores, profile);
+                return true;
+                //}
+
+
             }
 
             if (Obj.Count == 0)
@@ -264,34 +326,55 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                 _auditScoresRepository.Save();
 
                 //Sending Email to Auditor in PHD CASE
-                if(req.CALL_TYPE == "phd")
-                {
-                    
-                    req.AUDITOR_NAME = profile.FirstName + ' ' + profile.LastName;
-                    req.AGENT_EMAIL = req.AGENT_EMAIL;
-                     _body += "<div style='font-family:Calibri'>A helpdesk record has been audited with following specifics:<br/><br/>";
-
-                    _body += "<b>Auditor: </b> " + req.AUDITOR_NAME + "</br>";
-                    _body += "<b>Audited on: </b> " + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt") + "</br>";
-                    if (req.MRN != null)
-                    {
-                        _body += "<b>MRN: </b> " + req.MRN + "</br>";
-                    }
-                    if (req.CALL_SCANARIO != null)
-                    {
-                        _body += "<b>Call handling: </b> " + req.CALL_SCANARIO + "</br></br>";
-                    }                    
-                    _body += "<b>Evaluation details: </b></br></br></br></div>";                     
-                    _body += req.HTML_TEMPLETE;
-                    _subject = "PHD audit summary-" +(string.IsNullOrEmpty(req.AUDITOR_NAME) ? "" : req.AUDITOR_NAME + ".")  + (string.IsNullOrEmpty(req.CALL_SCANARIO) ? "" : req.CALL_SCANARIO + ",")  +Convert.ToDateTime(callDate).ToShortDateString();
-                    Helper.Email(req.AGENT_EMAIL, _subject, _body, profile, null, null, null, null);
-
-                }
+                SendEmailForAudit(req, profile);
                 return true;
             }
             else
             {
                 return false;
+            }
+
+
+        }
+        public void SendEmailForAudit(SurveyAuditScores req, UserProfile profile)
+        {
+            string _body = string.Empty;
+            List<string> cc = new List<string>();
+
+            _body = "<style>  body, table, td {font-family:'Calibri'!important;} table { border-collapse:separate; }@media screen and(max-width:740px) { table { width: 100 % !important; text-align:center!important;} } body {font-size:14px!important;}  table th { font-weight: normal; border-right: 1px solid #fff;text-align: center;font-weight: bold;line-height: normal;}table td, th{ padding: 3px 7px; color: #555555;font-size: 16px; height: 24px; font-weight: normal;}a{ text-decoration: none; }.first-section th{background: #f2f2f2;}.first-section {background: #f2f2f2;}.second-section {background: #e1f4ff;}.third-section {background: #fff2cc;}.fourth-section {​background:#DAA520;}​.totalscor{​font-size:16px!important; color:#000!important}​</style> ";
+            string _subject = string.Empty;
+            string sendTo = string.Empty;
+            DateTime? callDate;
+            callDate = req.CREATED_DATE;
+            if (req.CALL_TYPE == "phd")
+            {
+
+                req.AUDITOR_NAME = profile.FirstName + ' ' + profile.LastName;
+                req.AGENT_EMAIL = req.AGENT_EMAIL;
+
+                if (req.EDIT_AUDIT_REPORT)
+                {
+                    cc = new List<string>(ConfigurationManager.AppSettings["CClistForEditAuditEmail"].Split(new char[] { ';' }));
+                }
+                _body += "<div style='font-family:Calibri'>A helpdesk record has been audited with following specifics:<br/><br/>";
+                var link = AppConfiguration.ClientURL + @"#/PlayRecording?value=" + req.CALL_RECORDING_URL;
+                link += "&name=" + profile.UserEmailAddress;
+                _body += "<b>Date of Call: " + callDate.Value.ToString("MM/dd/yyyy") + "<a href = " + link + ">" + " Click here to listen audio call</a></b>" + "</br>";
+                _body += "<b>Auditor: </b> " + req.AUDITOR_NAME + "</br>";
+                _body += "<b>Audited on: </b> " + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt") + "</br>";
+                if (req.MRN != null)
+                {
+                    _body += "<b>MRN: </b> " + req.MRN + "</br>";
+                }
+                if (req.CALL_SCANARIO != null)
+                {
+                    _body += "<b>Call handling: </b> " + req.CALL_SCANARIO + "</br></br>";
+                }
+                _body += "<b>Evaluation details: </b></br></br></br></div>";
+                _body += req.HTML_TEMPLETE;
+                _subject = "PHD audit summary-" + (string.IsNullOrEmpty(req.AUDITOR_NAME) ? "" : req.AUDITOR_NAME + ".") + (string.IsNullOrEmpty(req.CALL_SCANARIO) ? "" : req.CALL_SCANARIO + ",") + Convert.ToDateTime(callDate).ToShortDateString();
+                Helper.Email(req.AGENT_EMAIL, _subject, _body, profile, null, null, cc, null);
+
             }
 
         }

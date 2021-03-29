@@ -79,6 +79,10 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public long? PATIENT_ACCOUNT { get; set; }
         [NotMapped]
         public string PATIENT_ACCOUNT_STR { get; set; }
+        [NotMapped]
+        public bool EDIT_AUDIT_REPORT { get; set; }
+        [NotMapped]
+        public string CALL_RECORDING_URL { get; set; }
     }
 
     //public class CallLogModel : BaseModel
