@@ -130,6 +130,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             originalQueue.FACILITY_NAME = reqSubmitUploadOrderImagesModel.FACILITY_NAME;
             originalQueue.FACILITY_ID = reqSubmitUploadOrderImagesModel.FACILITY_ID;
             originalQueue.IS_EMERGENCY_ORDER = reqSubmitUploadOrderImagesModel.IS_EMERGENCY_ORDER;
+            originalQueue.REASON_FOR_VISIT = reqSubmitUploadOrderImagesModel.NOTE_DESC;
             originalQueue.RFO_Type = "Upload_Images";
 
             originalQueue.ASSIGNED_TO = null;
