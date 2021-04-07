@@ -144,6 +144,8 @@ namespace FOX.DataModels.Models.FoxPHD
         [NotMapped]
         public bool _IsSSCM { get; set; }
         public string FILE_PATH { get; set; }
+        [NotMapped]
+        public bool AUDITED { get; set; }
     }
     [Table("FOX_TBL_PHD_CALL_PATIENT_VERIFICATION")]
     public class PhdPatientVerification
