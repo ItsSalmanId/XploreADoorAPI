@@ -237,6 +237,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             DateTime? createdDate = new DateTime();
             long survey_score_id = 0;
             long? patientAccount = 0;
+            
             if ((req.SURVEY_CALL_ID != 0 && req.SURVEY_CALL_ID != null)) // in case of patient survey
             {
                 Obj = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.SURVEY_CALL_ID == req.SURVEY_CALL_ID /* && x.AUDITOR_NAME == profile.UserName*/);
