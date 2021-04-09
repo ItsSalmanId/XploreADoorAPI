@@ -237,7 +237,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             DateTime? createdDate = new DateTime();
             long survey_score_id = 0;
             long? patientAccount = 0;
-            
+            string recordingpath = "";
             if ((req.SURVEY_CALL_ID != 0 && req.SURVEY_CALL_ID != null)) // in case of patient survey
             {
                 Obj = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.SURVEY_CALL_ID == req.SURVEY_CALL_ID /* && x.AUDITOR_NAME == profile.UserName*/);
@@ -258,6 +258,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                 createdBy = existingScores.CREATED_BY;
                 createdDate = existingScores.CREATED_DATE;
                 patientAccount = existingScores.PATIENT_ACCOUNT;
+                recordingpath = existingScores.CALL_RECORDING_URL;
             }
             if (existingScores != null && req.EDIT_AUDIT_REPORT)
             {
@@ -283,6 +284,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                 existingScores.MODIFIED_BY = profile.UserName;
                 existingScores.MODIFIED_DATE = Helper.GetCurrentDate();
                 existingScores.DELETED = false;
+                existingScores.CALL_RECORDING_URL = recordingpath;
                 if (patientAccount != null)
                 {
                     existingScores.PATIENT_ACCOUNT_STR = patientAccount.ToString();
@@ -360,7 +362,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             string _body = string.Empty;
             List<string> cc = new List<string>();
 
-            _body = "<style>  body, table, td {font-family:'Calibri'!important;} table { border-collapse:separate; }@media screen and(max-width:740px) { table { width: 100 % !important; text-align:center!important;} } body {font-size:14px!important;}  table th { font-weight: normal; border-right: 1px solid #fff;text-align: center;font-weight: bold;line-height: normal;}table td, th{ padding: 3px 7px; color: #555555;font-size: 16px; height: 24px; font-weight: normal;}a{ text-decoration: none; }.first-section th{background: #f2f2f2;}.first-section {background: #f2f2f2;}.second-section {background: #e1f4ff;}.third-section {background: #fff2cc;}.fourth-section {​background:#DAA520;}​.totalscor{​font-size:16px!important; color:#000!important}​</style> ";
+            _body = "<style>  body, table, td {font-family:'Calibri'!important;} table { border-collapse:separate; }@media screen and(max-width:740px) { table { width: 100 % !important; text-align:center!important;} } body {font-size:14px!important;}  table th { font-weight: normal; border-right: 1px solid #fff;text-align: center;font-weight: bold;line-height: normal;}table td, th{ padding: 3px 7px; color: #555555;font-size: 16px; height: 24px; font-weight: normal;}a{ text-decoration: none; }.first-section th{background: #f2f2f2;}.first-section {background: #f2f2f2;}.second-section {background: #e1f4ff;}.third-section {background: #fff2cc;}.fourth-section {background:#DAA520;}.totalscor{font-size:16px!important;color:#000!important}</style> ";
             string _subject = string.Empty;
             string sendTo = string.Empty;
             DateTime? callDate;
