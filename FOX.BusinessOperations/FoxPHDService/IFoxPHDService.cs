@@ -25,5 +25,9 @@ namespace FOX.BusinessOperations.FoxPHDService
         string ExportAdvancedDailyReport(ExportAdvancedDailyReport exportAdvancedDailyReport, UserProfile profile);
         List<PhdCallLogHistoryDetail> GetPhdCallLogHistoryDetails(string phdCallDetailID, UserProfile userProfile);
         List<WebSoftCaseStatusResponse> GetWebSoftCaseStatusResponses(string sscmCaseNumber);
+        List<CallHandlingDefaultValues> GetPhdCallScenariosList(string req, UserProfile profile);
+        List<PhdCallScenario> GetPhdCallScenarios(UserProfile profile);
+        ResponseModel SavePhdScanarios(List<DefaultVauesForPhdUsers> obj, UserProfile profile);
+        DefaultVauesForPhdUsers GetDefaultHandlingValue(UserProfile profile);
     }
 }

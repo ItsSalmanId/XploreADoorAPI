@@ -144,6 +144,8 @@ namespace FOX.DataModels.Models.FoxPHD
         [NotMapped]
         public bool _IsSSCM { get; set; }
         public string FILE_PATH { get; set; }
+        [NotMapped]
+        public bool AUDITED { get; set; }
     }
     [Table("FOX_TBL_PHD_CALL_PATIENT_VERIFICATION")]
     public class PhdPatientVerification
@@ -574,4 +576,33 @@ namespace FOX.DataModels.Models.FoxPHD
         public string Department_Name { get; set; }
         public long CS_Practice_Code { get; set; }
     }
+    public class CallHandlingDefaultValues
+    {
+        public long USER_ID { get; set; }
+        public string USER_NAME { get; set; }
+        public string CALLER_NAME { get; set; }
+        public long? PHD_CALL_SCENARIO_ID { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public DateTime? MODIFIED_DATE { get; set; }
+    }
+
+    [Table("FOX_TBL_DEFAULT_CALL_HANDLING_VALUES")]
+    public class DefaultVauesForPhdUsers
+    {
+        [Key]
+        public long DAEAULT_HANDLING_ID { get; set; }
+        public long USER_ID { get; set; }
+        public long? PHD_CALL_SCENARIO_ID { get; set; }
+        public long PRACTICE_CODE { get; set; }
+        public bool DELETED { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime? CREATED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public DateTime? MODIFIED_DATE { get; set; }
+    }
+    public class SavePhdScanariosList
+    {
+        public List<DefaultVauesForPhdUsers> PhdCallScenarios { get; set; }
+    }
+
 }

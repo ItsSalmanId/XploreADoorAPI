@@ -17,21 +17,15 @@ General description of the project with screenshots of project
 [![Build Status](http://azure-devopssrv/DefaultCollection/Fox/_apis/build/status/FOXAPI-UAT-CI?branchName=feature)](http://azure-devopssrv/DefaultCollection/Fox/_build/latest?definitionId=20&branchName=feature)
 
 ## Code Repository
-A guideline for implementing the project.
-It lets you resume work quickly if a project was previously set aside for a prolonged period of time.
-Purpose of the code repo for further development 
-Who contributed code, instructions on how to use the content within the repo
-A list of technology used and any links to further information related to this technology
-How should problems be handled? How should developers advance the changes?
-Instructions to deploy the project locally for testing
+Clone the project using below link
+http://azuredevopssrv.mtbc.com/DefaultCollection/Fox/_git/FoxRehabilitationAPI
+
+Create your new branch from feature and start work on it.
 
 ### Tools Used
-What technologies were used in the creation of the project and potentially much more.
-Required tooling (IDEs, testing frameworks, languages, etc.)
-Suggested tooling (visual Git tools, IDE add-ins, libraries packages and its versions, etc.)
-Team standards (coding standards, test requirements, etc.)
-Project documentation link
-You also give instructions in depth of how the code works and how everything is put together.
+visual Studio 2019,
+Visual Studio Code 2019,
+SQL Server
 
 ## Known Issues or Bugs
 Overview of bugs list
@@ -45,27 +39,38 @@ Overview of bugs list
 [![Quality Gate Status](http://172.16.0.121:9001/api/project_badges/measure?project=Fox_API&metric=alert_status)](http://172.16.0.121:9001/dashboard?id=Fox_API)
 
 ## Current Sprint
-Use this part to mention planned changes and the development direction or indicate the completion date of the project.
+DOCS 5A (2 Mar)
 
 
 ## History
-Information about versions (no, release date) and status of those
-
+<p><ol>Last Release: 27/Feb/2021</ol>
+<ol>Status Done</ol></p>
 
 ## Related Projects
-Related API service, Related Web/Mobile App, etc.
+<p><ol> 1- https://fox.mtbc.com/ </ol></p>
+<ol>2- ACU Service</ol>
+<ol>3- EDI Service</ol>
+<ol>4- SMS Service</ol>
+<ol>5- Active directory</ol> 
+<ol>6- FoxRehab PHD Service</ol>
+<ol>7- FoxRehab Fax Import Service</ol>
+<ol>8- FoxRehab Survey Import Service</ol>
+<ol>9- FoxRehab Email delivery service</ol>
+<ol>10- Fox Trax (Mobile App)</ol></p>
+
 
 ## Incompatibility
-Share any incompatible software and tools.
+Fox Docs is only compatible with Google Chrome
 
 # Contribute
-Explain how other users and developers can contribute to make your code better. 
+<p><ol>Optimization Review all the code before going to production</ol>
+<ol>Changes are made on the basis of Client's requirements</ol></p>
 
 #Legal Information
 
 ## Copyright and disclaimer
-Copyright and licensing information
-Copyright (c) Medical & Transcription Billing Company. All rights reserved.
+<p><ol>Copyright and licensing information</ol>
+<ol>Copyright (c) Medical & Transcription Billing Company. All rights reserved.</ol></p>
 
 ## End-User License Agreements and Third-Party
 End-user license agreements (EULAs) and third-party legal notices links
@@ -73,20 +78,17 @@ End-user license agreements (EULAs) and third-party legal notices links
 --------------------------------------------------------------
 
 #End User Info
-For end users, answers questions about installing, updating or using the application.
+open the link (https://fox.mtbc.com/) Create an account and login or contact with Administrator at FoxRehab.org 
 
 ##FAQ
-FAQ section with all previously asked questions
+<p><ol>1- Commonly questions related to main flow are asked.</ol>
+<ol>2- How referrals are marked complete?</ol>
+<ol>3- How referrals are interfaced?</ol>
+<ol>4- How referrals are signed?</ol></p>
 
 ##Change log
-The list of changes introduced in each version or a link to a more comprehensive change log file.
-Added for new features.
-Changed for changes in existing functionality.
-Deprecated for soon-to-be removed features.
-Removed for now removed features.
-Fixed for any bug fixes.
-Security in case of vulnerabilities.
+<p><ol>Main flow optimization.</ol>
+<ol>Client requirements.</ol></p>
 
 ##Feedback
-Instruct users how to get help with this project 
-links, email, Phone, Fax information
+In case of any issue or concern please send an email to alias <b>foxdev@mtbc.com</b>

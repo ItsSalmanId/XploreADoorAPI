@@ -30,6 +30,8 @@ namespace FOX.DataModels.Models.Patient
             }
         }
         public string City { get; set; }
+        [NotMapped]
+        public string HomeAddress { get; set; }
         public string State { get; set; }
         public string ZIP { get; set; }
         public long Practice_Code { get; set; }
