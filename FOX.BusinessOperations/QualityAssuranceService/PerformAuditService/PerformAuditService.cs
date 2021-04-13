@@ -237,7 +237,6 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             DateTime? createdDate = new DateTime();
             long survey_score_id = 0;
             long? patientAccount = 0;
-            string recordingpath = "";
             if ((req.SURVEY_CALL_ID != 0 && req.SURVEY_CALL_ID != null)) // in case of patient survey
             {
                 Obj = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.SURVEY_CALL_ID == req.SURVEY_CALL_ID /* && x.AUDITOR_NAME == profile.UserName*/);
@@ -258,7 +257,6 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                 createdBy = existingScores.CREATED_BY;
                 createdDate = existingScores.CREATED_DATE;
                 patientAccount = existingScores.PATIENT_ACCOUNT;
-                recordingpath = existingScores.CALL_RECORDING_URL;
             }
             if (existingScores != null && req.EDIT_AUDIT_REPORT)
             {
@@ -284,7 +282,6 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                 existingScores.MODIFIED_BY = profile.UserName;
                 existingScores.MODIFIED_DATE = Helper.GetCurrentDate();
                 existingScores.DELETED = false;
-                existingScores.CALL_RECORDING_URL = recordingpath;
                 if (patientAccount != null)
                 {
                     existingScores.PATIENT_ACCOUNT_STR = patientAccount.ToString();
