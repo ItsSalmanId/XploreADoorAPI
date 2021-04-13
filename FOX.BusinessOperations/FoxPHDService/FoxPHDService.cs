@@ -51,6 +51,7 @@ namespace FOX.BusinessOperations.FoxPHDService
         private readonly GenericRepository<FoxDocumentType> _foxDocumentTypeRepository;
         private readonly GenericRepository<PatientPATDocument> _foxPatientPATdocumentRepository;
         private readonly GenericRepository<PatientDocumentFiles> _foxPatientdocumentFilesRepository;
+        private readonly GenericRepository<DefaultVauesForPhdUsers> _DefaultVauesForPhdUsersRepository;
         public FoxPHDService()
         {
             _PatientRepository = new GenericRepository<Patient>(_PatientContext);
@@ -69,6 +70,7 @@ namespace FOX.BusinessOperations.FoxPHDService
             _foxDocumentTypeRepository = new GenericRepository<FoxDocumentType>(_patientDocument);
             _foxPatientPATdocumentRepository = new GenericRepository<PatientPATDocument>(_PatientPATDocumentContext);
             _foxPatientdocumentFilesRepository = new GenericRepository<PatientDocumentFiles>(_PatientPATDocumentContext);
+            _DefaultVauesForPhdUsersRepository = new GenericRepository<DefaultVauesForPhdUsers>(_DBContextFoxPHD);
         }
 
         public DropdownLists GetDropdownLists(UserProfile profile)
@@ -1588,6 +1590,66 @@ namespace FOX.BusinessOperations.FoxPHDService
                 throw;
             }
         }
+        public List<CallHandlingDefaultValues> GetPhdCallScenariosList(string req, UserProfile profile)
+        {
+            List<CallHandlingDefaultValues> obj = new List<CallHandlingDefaultValues>();
+            var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+            var SearchText = new SqlParameter { ParameterName = "@SEARCH_TEXT", SqlDbType = SqlDbType.VarChar, Value = string.IsNullOrEmpty(req) ? "" : req };
+            obj = SpRepository<CallHandlingDefaultValues>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_CALL_HANDLING_DEFAULT_VALUES @PRACTICE_CODE,@SEARCH_TEXT", PracticeCode, SearchText);
+            return obj;
+        }
+        public List<PhdCallScenario> GetPhdCallScenarios(UserProfile profile)
+        {
+            List<PhdCallScenario> res = new List<PhdCallScenario>();
+            res = _PhdCallScenarioRepository.GetMany(s => s.PRACTICE_CODE == profile.PracticeCode && s.DELETED == false).OrderBy(o => o.NAME).ToList();
+            return res;
+        }
+        public ResponseModel SavePhdScanarios(List<DefaultVauesForPhdUsers> obj, UserProfile profile)
+        {
+            ResponseModel response = new ResponseModel();
+            DefaultVauesForPhdUsers phdSanariosObj = new DefaultVauesForPhdUsers();
+            foreach (var value in obj)
+            {
+                var phdSanarios = _DefaultVauesForPhdUsersRepository.GetFirst(x => x.USER_ID == value.USER_ID && x.PRACTICE_CODE == profile.PracticeCode && !x.DELETED);
+                if (phdSanarios != null)
+                {
+                    phdSanarios.PHD_CALL_SCENARIO_ID = value.PHD_CALL_SCENARIO_ID;
+                    phdSanarios.MODIFIED_BY = profile.UserName;
+                    phdSanarios.MODIFIED_DATE = Helper.GetCurrentDate();
+                    _DefaultVauesForPhdUsersRepository.Update(phdSanarios);
+                    _DefaultVauesForPhdUsersRepository.Save();
+                    response.ErrorMessage = "Record updated successfully";
+                    response.Success = true;
+
+                }
+                else
+                {
+                    var test = Helper.getMaximumId("DAEAULT_HANDLING_ID");
+                    phdSanariosObj.DAEAULT_HANDLING_ID = Helper.getMaximumId("DAEAULT_HANDLING_ID");
+                    phdSanariosObj.USER_ID = value.USER_ID;
+                    phdSanariosObj.PHD_CALL_SCENARIO_ID = value.PHD_CALL_SCENARIO_ID;
+                    phdSanariosObj.PRACTICE_CODE = profile.PracticeCode;
+                    phdSanariosObj.DELETED = false;
+                    phdSanariosObj.CREATED_BY = profile.UserName;
+                    phdSanariosObj.CREATED_DATE = Helper.GetCurrentDate();
+                    phdSanariosObj.MODIFIED_BY = profile.UserName;
+                    phdSanariosObj.MODIFIED_DATE = Helper.GetCurrentDate();
+                    _DefaultVauesForPhdUsersRepository.Insert(phdSanariosObj);
+                    _DefaultVauesForPhdUsersRepository.Save();
+                    response.ErrorMessage = "Record inserted successfully";
+                    response.Success = true;
+                }
+            }
+            return response;
+        }
+
+        public DefaultVauesForPhdUsers GetDefaultHandlingValue(UserProfile profile)
+        {
+            var user = _userRepository.GetFirst(x => x.USER_NAME == profile.UserName && !x.DELETED);
+            var phdSanarios = _DefaultVauesForPhdUsersRepository.GetFirst(x => x.USER_ID == user.USER_ID && x.PRACTICE_CODE == user.PRACTICE_CODE && !x.DELETED);
+            return phdSanarios;
+
+        }
     }
 }
-    
+
