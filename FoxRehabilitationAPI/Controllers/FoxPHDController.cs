@@ -4,6 +4,7 @@ using FoxRehabilitationAPI.Filters;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Collections.Generic;
 
 namespace FoxRehabilitationAPI.Controllers
 {
@@ -109,6 +110,28 @@ namespace FoxRehabilitationAPI.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "SSCM Case Number is Null");
             }
+        }
+        [HttpGet]
+        public HttpResponseMessage GetdefaultCallHandling(string searchText)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetPhdCallScenariosList(searchText, GetProfile()));
+        }
+        [HttpGet]
+        public HttpResponseMessage GetCallHandlingValues()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetPhdCallScenarios(GetProfile()));
+        }
+
+        [HttpPost]
+        public HttpResponseMessage SavedefaultCallHandling(List<DefaultVauesForPhdUsers> Obj)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.SavePhdScanarios(Obj, GetProfile()));
+        }
+
+        [HttpGet]
+        public HttpResponseMessage GetDefaultPhdScanarios()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetDefaultHandlingValue(GetProfile()));
         }
     }
 }
