@@ -7293,8 +7293,8 @@ namespace FOX.BusinessOperations.PatientServices
                             model.Active_Coverage_From = dateTimeFrom;
                             if (hasEndDate)
                             {
-                                DateTime? dateTimeTo = dateTimeList.OrderByDescending(t => t.Date).FirstOrDefault();
-                                model.Active_Coverage_To = dateTimeTo;
+                                //DateTime? dateTimeTo = dateTimeList.OrderByDescending(t => t.Date).FirstOrDefault();
+                                //model.Active_Coverage_To = dateTimeTo;
                             }
                         }
                     }
