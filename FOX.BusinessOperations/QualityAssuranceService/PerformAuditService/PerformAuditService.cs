@@ -370,9 +370,13 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                 req.AUDITOR_NAME = profile.FirstName + ' ' + profile.LastName;
                 req.AGENT_EMAIL = req.AGENT_EMAIL;
 
-                if (req.EDIT_AUDIT_REPORT)
+                if (req.EDIT_AUDIT_REPORT && AppConfiguration.ClientURL.Contains("https://fox.mtbc.com/") && profile.PracticeCode == 1012714)
                 {
                     cc = new List<string>(ConfigurationManager.AppSettings["CClistForEditAuditEmail"].Split(new char[] { ';' }));
+                }
+                else
+                {
+                    cc = new List<string>(ConfigurationManager.AppSettings["CClistForEditAuditEmailTest"].Split(new char[] { ';' }));
                 }
                 _body += "<div style='font-family:Calibri'>A helpdesk record has been audited with following specifics:<br/><br/>";
                 var link = AppConfiguration.ClientURL + @"#/PlayRecording?value=" + req.CALL_RECORDING_URL;
