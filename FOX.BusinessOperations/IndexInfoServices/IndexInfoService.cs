@@ -823,7 +823,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 //    _FoxTblPatientRepository.Update(Patient);
                 //    _FoxTblPatientRepository.Save();
                 //}
-                sendMail(sourceAddDetail.WORK_ID, profile, false);
+                if (Helper.GetDocumentName(sourceAddDetail.DOCUMENT_TYPE).Equals("Unsigned Order") || Helper.GetDocumentName(sourceAddDetail.DOCUMENT_TYPE).Equals("Signed Order"))
+                {
+                    sendMail(sourceAddDetail.WORK_ID, profile, false);
+                }
 
                 ////Web Services Send Notification
 
