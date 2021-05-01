@@ -96,6 +96,12 @@ namespace FOX.DataModels.Models.Settings.ClinicianSetup
         [NotMapped]
         public string DISPLINE_NAME { get; set; }
         public string STATUS { get; set; }
+        [NotMapped]
+        public string SENIOR_REGIONAL_DIRECTOR { get; set; }
+        [NotMapped]
+        public string REGIONAL_DIRECTOR { get; set; }
+        [NotMapped]
+        public string ACCOUNT_MANAGER { get; set; }
         public int? PRIMARY_POS_DISTANCE { get; set; }
         [NotMapped]
         public string VISIT_QOUTA_WEEK { get; set; }
