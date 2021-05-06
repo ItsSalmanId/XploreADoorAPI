@@ -130,6 +130,7 @@ namespace FOX.DataModels.Models.OriginalQueueModel
         [NotMapped]
         public bool IS_STRATEGIC { get; set; }
         public string RFO_Type { get; set; }
+        public string REFERRAL_EMAIL_SENT_TO { get; set; }
         [NotMapped]
         public bool Is_Manual_ORS { get; set; }
         [NotMapped]
