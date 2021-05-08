@@ -11,7 +11,7 @@ namespace FOX.BusinessOperations.PatientMaintenanceService.PatientInsuranceServi
         string ExportToExcelInsuranceSetup(UnmappedInsuranceRequest unmappedInsuranceRequest, UserProfile profile);
         MTBCInsurancesSearchData GetMTBCInsurancesSearchData();
         List<MTBCInsurances> GetMTBCInsurances(MTBCInsurancesRequest mtbcInsurancesRequest);
-        FoxInsurancePayers MapUnmappedInsurance(FoxInsurancePayers foxInsurancePayors);
+        FoxInsurancePayers MapUnmappedInsurance(FoxInsurancePayers foxInsurancePayors, UserProfile profile);
         List<ClaimInsuranceViewModel> GetUnpaidClaimsForInsurance(ClaimInsuranceSearchReq searchReq, UserProfile profile);
     }
 }

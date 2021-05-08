@@ -46,7 +46,7 @@ namespace FoxRehabilitationAPI.Controllers.PatientMaintenance.PatientInsurance
         [HttpPost]
         public HttpResponseMessage MapUnmappedInsurance(FoxInsurancePayers foxInsurancePayors)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _patientInsuranceServices.MapUnmappedInsurance(foxInsurancePayors));
+            return Request.CreateResponse(HttpStatusCode.OK, _patientInsuranceServices.MapUnmappedInsurance(foxInsurancePayors, GetProfile()));
         }
 
         [HttpPost]

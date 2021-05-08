@@ -164,12 +164,13 @@ namespace FOX.BusinessOperations.PatientMaintenanceService.PatientInsuranceServi
             }
         }
 
-        public FoxInsurancePayers MapUnmappedInsurance(FoxInsurancePayers foxInsurancePayors)
+        public FoxInsurancePayers MapUnmappedInsurance(FoxInsurancePayers foxInsurancePayors, UserProfile profile)
         {
             var dbfoxInsurance = _foxInsurancePayorsRepository.GetByID(foxInsurancePayors.FOX_TBL_INSURANCE_ID);
             if (dbfoxInsurance != null)
             {
                 dbfoxInsurance.INSURANCE_ID = foxInsurancePayors.INSURANCE_ID;
+                dbfoxInsurance.MODIFIED_BY = profile.UserName;
                 _foxInsurancePayorsRepository.Update(dbfoxInsurance);
                 _foxInsurancePayorsRepository.Save();
             }
