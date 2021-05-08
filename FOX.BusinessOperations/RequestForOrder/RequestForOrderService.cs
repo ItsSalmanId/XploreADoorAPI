@@ -338,8 +338,20 @@ namespace FOX.BusinessOperations.RequestForOrder
 
                         //Helper.Email("noreply@mtbc.com", requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, null, _bccList, new List<string>() { attachmentPath });
                         Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail and Sending Email || Start Time of Sending Email " + Helper.GetCurrentDate().ToLocalTime());
-                        Helper.Email(requestSendEmailModel.EmailAddress, requestSendEmailModel.WorkId.ToString() + ':' + requestSendEmailModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath });
+                        bool emailStatus = Helper.Email(requestSendEmailModel.EmailAddress, requestSendEmailModel.WorkId.ToString() + ':' + requestSendEmailModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath });
                         Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function  SendEmail and Sending Email || End Time of Sending Email " + Helper.GetCurrentDate().ToLocalTime());
+
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || Start Time of Finding WORK ID " + Helper.GetCurrentDate().ToLocalTime());
+                        var queueResult = _QueueRepository.GetFirst(s => s.WORK_ID == requestSendEmailModel.WorkId && s.DELETED == false);
+                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || End Time of Finding WORK ID " + Helper.GetCurrentDate().ToLocalTime());
+                        if (queueResult != null&& emailStatus == true)
+                        {
+                            Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || Start Time of Saving Email Address Against the WORK ID " + Helper.GetCurrentDate().ToLocalTime());
+                            queueResult.REFERRAL_EMAIL_SENT_TO = requestSendEmailModel.EmailAddress;
+                            _QueueRepository.Update(queueResult);
+                            _QueueRepository.Save();
+                            Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || End Time of Saving Email Address Against the WORK ID " + Helper.GetCurrentDate().ToLocalTime());
+                        }
 
                         string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
                         int numberOfPages = getNumberOfPagesOfPDF(filePath);

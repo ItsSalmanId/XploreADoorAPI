@@ -7267,7 +7267,7 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dtcol.Contains("ASSIGNED_DATE"))
                     dt.Columns["ASSIGNED_DATE"].ColumnName = "Assigned Date";
                 if (dtcol.Contains("ElapseTime"))
-                    dt.Columns["ElapseTime"].ColumnName = "ElapseTime";
+                    dt.Columns["ElapseTime"].ColumnName = "ElapseTime"; 
                 if (dtcol.Contains("TOTAL_PAGES"))
                     dt.Columns["TOTAL_PAGES"].ColumnName = "Pages";
 
@@ -7284,6 +7284,12 @@ namespace FOX.BusinessOperations.CommonServices
                     dt.Columns["STATE"].ColumnName = "State";
                 if (dtcol.Contains("STATUS"))
                     dt.Columns["STATUS"].ColumnName = "Status";
+                if (dtcol.Contains("SENIOR_REGIONAL_DIRECTOR"))
+                    dt.Columns["SENIOR_REGIONAL_DIRECTOR"].ColumnName = "Senior Regional Director";
+                if (dtcol.Contains("REGIONAL_DIRECTOR"))
+                    dt.Columns["REGIONAL_DIRECTOR"].ColumnName = "Regional Director";
+                if (dtcol.Contains("ACCOUNT_MANAGER"))
+                    dt.Columns["ACCOUNT_MANAGER"].ColumnName = "Account Manager";
                 if (dtcol.Contains("TREATMENT_LOCATION"))
                     dt.Columns["TREATMENT_LOCATION"].ColumnName = "Primary Treatment Location";
                 if (dtcol.Contains("DISPLINE_NAME"))
