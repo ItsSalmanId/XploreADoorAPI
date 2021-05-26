@@ -73,10 +73,10 @@ namespace FOX.BusinessOperations.PatientSurveyService
            var dbSurvey = _patientSurveyRepository.GetByID(patientSurvey.SURVEY_ID);
             if (dbSurvey != null) //update
             {
-                if (patientSurvey.IS_SURVEYED == true)
-                {
-                    AddPatientSurveyHistory(dbSurvey, profile);
-                }
+                //if (patientSurvey.IS_SURVEYED == true)
+                //{
+                //    AddPatientSurveyHistory(dbSurvey, profile);
+                //}
                 dbSurvey.IS_SURVEYED = true;
                 if (!string.IsNullOrEmpty(patientSurvey.SURVEY_STATUS_BASE))
                 {
@@ -126,6 +126,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 dbSurvey.MODIFIED_DATE = Helper.GetCurrentDate();
                 dbSurvey.IS_EXCEPTIONAL = patientSurvey.IS_EXCEPTIONAL;
                 dbSurvey.SURVEY_COMPLETED_DATE = Helper.GetCurrentDate();
+                AddPatientSurveyHistory(dbSurvey, profile);
 
                 var surveyId = new SqlParameter { ParameterName = "@SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = dbSurvey.SURVEY_ID };
                 var practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = dbSurvey.PRACTICE_CODE ?? null };
@@ -517,10 +518,13 @@ namespace FOX.BusinessOperations.PatientSurveyService
                     link = AppConfiguration.ClientURL + @"#/Reporting/PatientSurveyDetail?value=" + HttpUtility.UrlEncode(dbSurvey.SURVEY_ID.ToString());
                     link += "&name=" + profile.UserEmailAddress;
                     _body += "<p>Please   <a href = " +  link + "> " + " click here to login</a>" + " and see the survey details.</p>";
-                      //_body += "<h3 style=font-weight:normal;margin:0;><b>Auditor: </b><a href=" +link + " > " + " click here to login </a></h3>";
-                    Helper.Email(sendTo, _subject, _body, profile, null, null, null, null);
+                    //_body += "<h3 style=font-weight:normal;margin:0;><b>Auditor: </b><a href=" +link + " > " + " click here to login </a></h3>";
+                    if (!string.IsNullOrEmpty(sendTo))
+                    {
+                        Helper.Email(sendTo, _subject, _body, profile, null, null, null, null);
+                    }
                 }
-              
+
                 //_patientSurveyRepository.Update(dbSurvey);
                 //_patientSurveyRepository.Save();
             }
