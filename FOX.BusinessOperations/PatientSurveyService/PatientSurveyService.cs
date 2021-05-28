@@ -110,6 +110,10 @@ namespace FOX.BusinessOperations.PatientSurveyService
                         dbSurvey.SURVEY_FLAG = null;
                         dbSurvey.IS_PROTECTIVE_EQUIPMENT = null;
                     }
+                    if(patientSurvey.SURVEY_STATUS_BASE.Equals("Incomplete") && patientSurvey.SURVEY_STATUS_CHILD.Equals("Callback"))
+                    {
+                        dbSurvey.FEEDBACK = patientSurvey.FEEDBACK;
+                    }
                 }
                 if(patientSurvey.ACTIVE_FORMAT == "New Format")
                 {
