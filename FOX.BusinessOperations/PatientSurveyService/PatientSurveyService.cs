@@ -129,7 +129,14 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 dbSurvey.MODIFIED_BY = profile.UserName; 
                 dbSurvey.MODIFIED_DATE = Helper.GetCurrentDate();
                 dbSurvey.IS_EXCEPTIONAL = patientSurvey.IS_EXCEPTIONAL;
-                dbSurvey.SURVEY_COMPLETED_DATE = Helper.GetCurrentDate();
+                if (dbSurvey.IN_PROGRESS == true)
+                {
+                    dbSurvey.SURVEY_COMPLETED_DATE = patientSurvey.SURVEY_COMPLETED_DATE;
+                }
+                else
+                {
+                    dbSurvey.SURVEY_COMPLETED_DATE = Helper.GetCurrentDate();
+                }
                 AddPatientSurveyHistory(dbSurvey, profile);
 
                 var surveyId = new SqlParameter { ParameterName = "@SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = dbSurvey.SURVEY_ID };
@@ -429,6 +436,10 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 if (dbSurvey.IS_PROTECTIVE_EQUIPMENT == null)
                 {
                     isprotectiveEquipment.Value = DBNull.Value;
+                }
+                if(dbSurvey.SURVEY_COMPLETED_DATE == null)
+                {
+                    surveyCompletedDate.Value = DBNull.Value;
                 }
 
                 var PatientSurveyList = SpRepository<PatientSurvey>.GetListWithStoreProcedure(@"exec FOX_PROC_UPDTAE_PATIENT_SURVEY
