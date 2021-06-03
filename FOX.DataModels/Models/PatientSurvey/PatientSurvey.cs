@@ -10,6 +10,7 @@ namespace FOX.DataModels.Models.PatientSurvey
     {
         [NotMapped]
         public int ROW { get; set; }
+        public string SURVEY_FLAG { get; set; }
         [NotMapped]
         public string MONTH { get; set; }
         public long? PATIENT_ACCOUNT_NUMBER { get; set; }
@@ -92,7 +93,6 @@ namespace FOX.DataModels.Models.PatientSurvey
         public bool? IS_QUESTION_ANSWERED { get; set; }
         [NotMapped]
         public string Is_Questioned_Answered_Str { get; set; }
-        public string SURVEY_FLAG { get; set; }       
         public string SURVEY_FORMAT_TYPE { get; set; }
         public string CREATED_BY { get; set; }
         public DateTime? CREATED_DATE { get; set; }
