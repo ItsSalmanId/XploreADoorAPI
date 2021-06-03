@@ -3101,10 +3101,6 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("SERVICE_OR_PAYMENT_AMOUNT");
                 }
-                if (dc.Contains("SURVEY_FLAG"))
-                {
-                    dc.Remove("SURVEY_FLAG");
-                }
                 if (dc.Contains("SURVEY_FORMAT_TYPE"))
                 {
                     dc.Remove("SURVEY_FORMAT_TYPE");
@@ -6463,6 +6459,10 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["ROW"].ColumnName = "Sr. #";
                 }
+                if (dtcol.Contains("SURVEY_FLAG"))
+                {
+                    dtcol["SURVEY_FLAG"].ColumnName = "Flag";
+                }
                 if (dtcol.Contains("Is_exceptional_Str"))
                 {
                     dtcol["Is_exceptional_Str"].ColumnName = "Exceptional Feedback";
@@ -6542,6 +6542,10 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dtcol.Contains("Is_protective_equipment_Str"))
                 {
                     dtcol["Is_protective_equipment_Str"].ColumnName = "Protective Equipment";
+                }
+                if (dtcol.Contains("SURVEY_COMPLETED_DATE"))
+                {
+                    dtcol["SURVEY_COMPLETED_DATE"].ColumnName = "Survey Completed Date";
                 }
             }
             else if (dt.TableName == "Detailed_Survey_old")

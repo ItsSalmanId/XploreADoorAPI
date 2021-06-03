@@ -1531,6 +1531,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         {
             try
             {
+                Helper.SlownessTrackingExceptionLog("IndexInfoService: In Function  GetIndexPatInfo | Start " + Helper.GetCurrentDate().ToLocalTime());
                 //if (req.Last_Name == null)
                 //    req.Last_Name = "";
                 //if (req.First_Name == null)
@@ -1607,7 +1608,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     //        item.TOTAL_RECORD_PAGES = (int)Math.Ceiling((decimal)item.TOTAL_RECORDS / (decimal)recPerPgae);
                     //    }
                     //}
-
+                    Helper.SlownessTrackingExceptionLog("IndexInfoService: In Function  GetIndexPatInfo | End " + Helper.GetCurrentDate().ToLocalTime());
                     return result;
                 }
                 else
