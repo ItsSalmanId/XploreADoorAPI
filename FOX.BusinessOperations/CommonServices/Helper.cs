@@ -1174,26 +1174,5 @@ namespace FOX.BusinessOperations.CommonService
                 Helper.SendEmailOnException(ex.Message, ex.ToString(), "Exception occurred in Token Exception Filter");
             }
         }
-        public static void SlownessTrackingExceptionLog(string msg)
-        {
-            try
-            {
-                string directoryOther = System.Web.HttpContext.Current.Server.MapPath("\\FoxCriticalSlownessExceptionLog");
-                if (!Directory.Exists(directoryOther))
-                {
-                    Directory.CreateDirectory(directoryOther);
-                }
-                string filePathOther = directoryOther + "\\errors_" + DateTime.Now.Date.ToString("MM-dd-yyyy") + ".txt";
-
-                using (StreamWriter writer = new StreamWriter(filePathOther, true))
-                {
-                    writer.WriteLine(DateTime.Now.ToString() + "   Message: " + msg + Environment.NewLine);
-                }
-            }
-            catch (Exception ex)
-            {
-                Helper.SendEmailOnException(ex.Message, ex.ToString(), "Exception occurred in Token Exception Filter");
-            }
-        }
     }
 }
