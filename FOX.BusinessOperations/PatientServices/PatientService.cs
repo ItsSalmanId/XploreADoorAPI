@@ -1514,12 +1514,9 @@ namespace FOX.BusinessOperations.PatientServices
         public List<PatientInsurance> GetPatientInsurance(long patientAccount, UserProfile profile)
         {
 
-            Helper.SlownessTrackingExceptionLog("PatientService: In Function  GetPatientInsurance | Start " + Helper.GetCurrentDate().ToLocalTime());
             UpdateMedicareCheckboxes(patientAccount, profile);
             var PatientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", Value = patientAccount };
             var result = SpRepository<PatientInsurance>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_INSURANCES @PATIENT_ACCOUNT", PatientAccount);
-            Helper.SlownessTrackingExceptionLog("PatientService: In Function  GetPatientInsurance | End " + Helper.GetCurrentDate().ToLocalTime());
-            Helper.SlownessTrackingExceptionLog("PatientService: In Function  Foreach Loop | Start " + Helper.GetCurrentDate().ToLocalTime());
 
             foreach (var ins in result)
             {
@@ -1564,7 +1561,6 @@ namespace FOX.BusinessOperations.PatientServices
                     }
                 ).OrderBy(w => w.DISPLAY_ORDER).ToList();
             }
-            Helper.SlownessTrackingExceptionLog("PatientService: In Function  Foreach Loop | End " + Helper.GetCurrentDate().ToLocalTime());
             return result;
         }
 
