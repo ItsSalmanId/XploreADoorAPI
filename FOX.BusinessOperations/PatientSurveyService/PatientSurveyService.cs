@@ -77,6 +77,10 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 //{
                 //    AddPatientSurveyHistory(dbSurvey, profile);
                 //}
+                if (dbSurvey.IS_SURVEYED == false)
+                {
+                    dbSurvey.SURVEY_COMPLETED_DATE = Helper.GetCurrentDate();
+                }
                 dbSurvey.IS_SURVEYED = true;
                 if (!string.IsNullOrEmpty(patientSurvey.SURVEY_STATUS_BASE))
                 {
@@ -129,14 +133,6 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 dbSurvey.MODIFIED_BY = profile.UserName; 
                 dbSurvey.MODIFIED_DATE = Helper.GetCurrentDate();
                 dbSurvey.IS_EXCEPTIONAL = patientSurvey.IS_EXCEPTIONAL;
-                if (dbSurvey.IN_PROGRESS == true)
-                {
-                    dbSurvey.SURVEY_COMPLETED_DATE = patientSurvey.SURVEY_COMPLETED_DATE;
-                }
-                else
-                {
-                    dbSurvey.SURVEY_COMPLETED_DATE = Helper.GetCurrentDate();
-                }
                 AddPatientSurveyHistory(dbSurvey, profile);
 
                 var surveyId = new SqlParameter { ParameterName = "@SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = dbSurvey.SURVEY_ID };
