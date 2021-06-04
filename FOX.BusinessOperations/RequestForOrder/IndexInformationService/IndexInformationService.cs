@@ -87,7 +87,6 @@ namespace FOX.BusinessOperations.RequestForOrder.IndexInformationServices
 
         public FacilityLocation GetFacilityByPatientPOS(string patientAccount, long practiceCode)
         {
-            Helper.SlownessTrackingExceptionLog("IndexInformationService: In Function  GetFacilityByPracticePOS | Start " + Helper.GetCurrentDate().ToLocalTime());
             var profile = new UserProfile();
             profile.PracticeCode = practiceCode;
             var _paramsPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practiceCode };
@@ -104,7 +103,6 @@ namespace FOX.BusinessOperations.RequestForOrder.IndexInformationServices
                     }
                 }
             }
-            Helper.SlownessTrackingExceptionLog("IndexInformationService: In Function  GetFacilityByPracticePOS | End " + Helper.GetCurrentDate().ToLocalTime());
             return result;
         }
         public ZipRegionIDName GetRegionByZip(string zipCode, UserProfile profile)
