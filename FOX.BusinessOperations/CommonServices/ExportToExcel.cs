@@ -2925,6 +2925,10 @@ namespace FOX.BusinessOperations.CommonServices
                 //{
                 //    dc.Remove("ROW");
                 //}
+                if (dc.Contains("Is_exceptional_Str"))
+                {
+                    dc.Remove("Is_exceptional_Str");
+                }
                 if (dc.Contains("MODIFIED_DATE"))
                 {
                     dc.Remove("MODIFIED_DATE");
@@ -6463,10 +6467,6 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["SURVEY_FLAG"].ColumnName = "Flag";
                 }
-                if (dtcol.Contains("Is_exceptional_Str"))
-                {
-                    dtcol["Is_exceptional_Str"].ColumnName = "Exceptional Feedback";
-                }
                 if (dtcol.Contains("PATIENT_ACCOUNT_NUMBER"))
                 {
                     dtcol["PATIENT_ACCOUNT_NUMBER"].ColumnName = "Patient Acc. No";
@@ -6553,10 +6553,6 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dtcol.Contains("ROW"))
                 {
                     dtcol["ROW"].ColumnName = "Sr. #";
-                }
-                if (dtcol.Contains("Is_exceptional_Str"))
-                {
-                    dtcol["Is_exceptional_Str"].ColumnName = "Exceptional Feedback";
                 }
                 if (dtcol.Contains("PATIENT_ACCOUNT_NUMBER"))
                 {
