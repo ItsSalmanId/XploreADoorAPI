@@ -2929,6 +2929,14 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("Is_exceptional_Str");
                 }
+                if (dc.Contains("SURVEY_COMPLETED_DATE"))
+                {
+                    dc.Remove("SURVEY_COMPLETED_DATE");
+                }
+                if (dc.Contains("Modified_Date_Str"))
+                {
+                    dc.Remove("Modified_Date_Str");
+                }
                 if (dc.Contains("MODIFIED_DATE"))
                 {
                     dc.Remove("MODIFIED_DATE");
@@ -3315,6 +3323,14 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dc.Contains("MODIFIED_DATE"))
                 {
                     dc.Remove("MODIFIED_DATE");
+                }
+                if (dc.Contains("SURVEY_COMPLETED_DATE"))
+                {
+                    dc.Remove("SURVEY_COMPLETED_DATE");
+                }
+                if (dc.Contains("Modified_Date_Str"))
+                {
+                    dc.Remove("Modified_Date_Str");
                 }
                 if (dc.Contains("SURVEY_ID"))
                 {
@@ -6507,9 +6523,13 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["SURVEY_STATUS_BASE"].ColumnName = "Survey Completion Status";
                 }
-                if (dtcol.Contains("Modified_Date_Str"))
+                if (dtcol.Contains("SURVEY_COMPLETED_TIME_STR"))
                 {
-                    dtcol["Modified_Date_Str"].ColumnName = "Survey Date/Time";
+                    dtcol["SURVEY_COMPLETED_TIME_STR"].ColumnName = "Survey Time";
+                }
+                if (dtcol.Contains("SURVEY_COMPLETED_DATE_STR"))
+                {
+                    dtcol["SURVEY_COMPLETED_DATE_STR"].ColumnName = "Survey Date";
                 }
                 //if (dtcol.Contains("MODIFIED_DATE"))
                 //{
@@ -6594,9 +6614,13 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["SURVEY_STATUS_BASE"].ColumnName = "Survey Completion Status";
                 }
-                if (dtcol.Contains("Modified_Date_Str"))
+                if (dtcol.Contains("SURVEY_COMPLETED_TIME_STR"))
                 {
-                    dtcol["Modified_Date_Str"].ColumnName = "Survey Date/Time";
+                    dtcol["SURVEY_COMPLETED_TIME_STR"].ColumnName = "Survey Time";
+                }
+                if (dtcol.Contains("SURVEY_COMPLETED_DATE_STR"))
+                {
+                    dtcol["SURVEY_COMPLETED_DATE_STR"].ColumnName = "Survey Date";
                 }
                 if (dtcol.Contains("Surveyed_BY_FULL_NAME"))
                 {
