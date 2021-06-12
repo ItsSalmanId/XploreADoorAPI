@@ -84,7 +84,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 dbSurvey.IS_SURVEYED = true;
                 if (!string.IsNullOrEmpty(patientSurvey.SURVEY_STATUS_BASE))
                 {
-                    if (patientSurvey.SURVEY_STATUS_BASE.Equals("Completed") && !patientSurvey.SURVEY_STATUS_CHILD.Equals("Deceased"))
+                    if (patientSurvey.SURVEY_STATUS_BASE.Equals("Completed") && !patientSurvey.SURVEY_STATUS_CHILD.Equals("Deceased") && !patientSurvey.SURVEY_STATUS_CHILD.Equals("Not Interested"))
                     {
                         dbSurvey.IS_CONTACT_HQ = patientSurvey.IS_CONTACT_HQ;
                         if (dbSurvey.IS_CONTACT_HQ.Value == true)
