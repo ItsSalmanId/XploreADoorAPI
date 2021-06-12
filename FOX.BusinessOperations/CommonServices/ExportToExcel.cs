@@ -2925,6 +2925,18 @@ namespace FOX.BusinessOperations.CommonServices
                 //{
                 //    dc.Remove("ROW");
                 //}
+                if (dc.Contains("Is_exceptional_Str"))
+                {
+                    dc.Remove("Is_exceptional_Str");
+                }
+                if (dc.Contains("SURVEY_COMPLETED_DATE"))
+                {
+                    dc.Remove("SURVEY_COMPLETED_DATE");
+                }
+                if (dc.Contains("Modified_Date_Str"))
+                {
+                    dc.Remove("Modified_Date_Str");
+                }
                 if (dc.Contains("MODIFIED_DATE"))
                 {
                     dc.Remove("MODIFIED_DATE");
@@ -3311,6 +3323,14 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dc.Contains("MODIFIED_DATE"))
                 {
                     dc.Remove("MODIFIED_DATE");
+                }
+                if (dc.Contains("SURVEY_COMPLETED_DATE"))
+                {
+                    dc.Remove("SURVEY_COMPLETED_DATE");
+                }
+                if (dc.Contains("Modified_Date_Str"))
+                {
+                    dc.Remove("Modified_Date_Str");
                 }
                 if (dc.Contains("SURVEY_ID"))
                 {
@@ -6463,10 +6483,6 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["SURVEY_FLAG"].ColumnName = "Flag";
                 }
-                if (dtcol.Contains("Is_exceptional_Str"))
-                {
-                    dtcol["Is_exceptional_Str"].ColumnName = "Exceptional Feedback";
-                }
                 if (dtcol.Contains("PATIENT_ACCOUNT_NUMBER"))
                 {
                     dtcol["PATIENT_ACCOUNT_NUMBER"].ColumnName = "Patient Acc. No";
@@ -6507,9 +6523,13 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["SURVEY_STATUS_BASE"].ColumnName = "Survey Completion Status";
                 }
-                if (dtcol.Contains("Modified_Date_Str"))
+                if (dtcol.Contains("SURVEY_COMPLETED_TIME_STR"))
                 {
-                    dtcol["Modified_Date_Str"].ColumnName = "Survey Date/Time";
+                    dtcol["SURVEY_COMPLETED_TIME_STR"].ColumnName = "Survey Time";
+                }
+                if (dtcol.Contains("SURVEY_COMPLETED_DATE_STR"))
+                {
+                    dtcol["SURVEY_COMPLETED_DATE_STR"].ColumnName = "Survey Date";
                 }
                 //if (dtcol.Contains("MODIFIED_DATE"))
                 //{
@@ -6554,10 +6574,6 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["ROW"].ColumnName = "Sr. #";
                 }
-                if (dtcol.Contains("Is_exceptional_Str"))
-                {
-                    dtcol["Is_exceptional_Str"].ColumnName = "Exceptional Feedback";
-                }
                 if (dtcol.Contains("PATIENT_ACCOUNT_NUMBER"))
                 {
                     dtcol["PATIENT_ACCOUNT_NUMBER"].ColumnName = "Patient Acc. No";
@@ -6598,9 +6614,13 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["SURVEY_STATUS_BASE"].ColumnName = "Survey Completion Status";
                 }
-                if (dtcol.Contains("Modified_Date_Str"))
+                if (dtcol.Contains("SURVEY_COMPLETED_TIME_STR"))
                 {
-                    dtcol["Modified_Date_Str"].ColumnName = "Survey Date/Time";
+                    dtcol["SURVEY_COMPLETED_TIME_STR"].ColumnName = "Survey Time";
+                }
+                if (dtcol.Contains("SURVEY_COMPLETED_DATE_STR"))
+                {
+                    dtcol["SURVEY_COMPLETED_DATE_STR"].ColumnName = "Survey Date";
                 }
                 if (dtcol.Contains("Surveyed_BY_FULL_NAME"))
                 {

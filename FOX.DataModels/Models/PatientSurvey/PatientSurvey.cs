@@ -24,6 +24,10 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string SURVEY_STATUS_BASE { get; set; }
         public string SURVEY_STATUS_CHILD { get; set; }
         public string FEEDBACK { get; set; }
+        [NotMapped]
+        public string SURVEY_COMPLETED_DATE_STR { get; set; }
+        [NotMapped]
+        public string SURVEY_COMPLETED_TIME_STR { get; set; }
         public DateTime? MODIFIED_DATE { get; set; }
         [NotMapped]
         public string Modified_Date_Str { get; set; }
@@ -126,6 +130,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         [NotMapped]
         public string Is_protective_equipment_Str { get; set; }
         public DateTime? SURVEY_COMPLETED_DATE { get; set; }
+        
     }
 
     [Table("FOX_TBL_PATIENT_SURVEY_HISTORY")]
