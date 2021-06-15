@@ -2947,7 +2947,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                         body += "</body>";
                         string sendTo = string.Empty;
                         List<string> _ccList = new List<string>();
-                        if (profile.PracticeCode == 1012714)
+                        if (profile.PracticeCode == 1012714 && AppConfiguration.ClientURL.Contains("https://fox.mtbc.com/"))
                         {
                             if (res._isADuser)
                             {
@@ -2962,8 +2962,8 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                         }
                         else
                         {
-                            sendTo = "muhammadali9@mtbc.com,Javedakhtar@MTBC.COM";
-                            _ccList.Add("abdulsattar@MTBC.COM");
+                            sendTo = "muhammadali9@mtbc.com,muhammadarslan3@mtbc.com";
+                            _ccList.Add("foxdev@MTBC.COM");
                         }
                         
                         //sendTo = "abdurrafay@mtbc.com,Javedakhtar@MTBC.COM";
