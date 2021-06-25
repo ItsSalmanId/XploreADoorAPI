@@ -365,41 +365,39 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             string sendTo = string.Empty;
             DateTime? callDate;
             callDate = req.CREATED_DATE;
-            if (req.CALL_TYPE == "phd")
+            req.AUDITOR_NAME = profile.FirstName + ' ' + profile.LastName;
+            req.AGENT_EMAIL = req.AGENT_EMAIL;
+
+            if (req.EDIT_AUDIT_REPORT && AppConfiguration.ClientURL.Contains("https://fox.mtbc.com/") && profile.PracticeCode == 1012714)
             {
-
-                req.AUDITOR_NAME = profile.FirstName + ' ' + profile.LastName;
-                req.AGENT_EMAIL = req.AGENT_EMAIL;
-
-                if (req.EDIT_AUDIT_REPORT && AppConfiguration.ClientURL.Contains("https://fox.mtbc.com/") && profile.PracticeCode == 1012714)
-                {
-                    cc = new List<string>(ConfigurationManager.AppSettings["CClistForEditAuditEmail"].Split(new char[] { ';' }));
-                }
-                else
-                {
-                    cc = new List<string>(ConfigurationManager.AppSettings["CClistForEditAuditEmailTest"].Split(new char[] { ';' }));
-                }
-                _body += "<div style='font-family:Calibri'>A helpdesk record has been audited with following specifics:<br/><br/>";
-                var link = AppConfiguration.ClientURL + @"#/PlayRecording?value=" + req.CALL_RECORDING_URL;
-                link += "&name=" + profile.UserEmailAddress;
-                _body += "<b>Date of Call: " + callDate.Value.ToString("MM/dd/yyyy") + "<a href = " + link + ">" + " Click here to listen audio call</a></b>" + "</br>";
-                _body += "<b>Auditor: </b> " + req.AUDITOR_NAME + "</br>";
-                _body += "<b>Audited on: </b> " + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt") + "</br>";
-                if (req.MRN != null)
-                {
-                    _body += "<b>MRN: </b> " + req.MRN + "</br>";
-                }
-                if (req.CALL_SCANARIO != null)
-                {
-                    _body += "<b>Call handling: </b> " + req.CALL_SCANARIO + "</br></br>";
-                }
-                _body += "<b>Evaluation details: </b></br></br></br></div>";
-                _body += req.HTML_TEMPLETE;
-                _subject = "PHD audit summary-" + (string.IsNullOrEmpty(req.AUDITOR_NAME) ? "" : req.AUDITOR_NAME + ".") + (string.IsNullOrEmpty(req.CALL_SCANARIO) ? "" : req.CALL_SCANARIO);
-                Helper.Email(req.AGENT_EMAIL, _subject, _body, profile, null, null, cc, null);
-
+                cc = new List<string>(ConfigurationManager.AppSettings["CClistForEditAuditEmail"].Split(new char[] { ';' }));
             }
-
+            else
+            {
+                cc = new List<string>(ConfigurationManager.AppSettings["CClistForEditAuditEmailTest"].Split(new char[] { ';' }));
+            }
+            _body += "<div style='font-family:Calibri'>A helpdesk record has been audited with following specifics:<br/><br/>";
+            var link = AppConfiguration.ClientURL + @"#/PlayRecording?value=" + req.CALL_RECORDING_URL;
+            link += "&name=" + profile.UserEmailAddress;
+            _body += "<b>Date of Call: " + callDate.Value.ToString("MM/dd/yyyy") + "<a href = " + link + ">" + " Click here to listen audio call</a></b>" + "</br>";
+            _body += "<b>Auditor: </b> " + req.AUDITOR_NAME + "</br>";
+            _body += "<b>Audited on: </b> " + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt") + "</br>";
+            if (req.MRN != null && req.CALL_TYPE == "survey")
+            {
+                _body += "<b>MRN: </b> " + req.MRN + "</br></br>";
+            }
+            if(req.MRN != null && req.CALL_TYPE == "phd")
+            {
+                _body += "<b>MRN: </b> " + req.MRN + "</br>";
+            }
+            if (req.CALL_SCANARIO != null)
+            {
+                _body += "<b>Call handling: </b> " + req.CALL_SCANARIO + "</br></br>";
+            }
+            _body += "<b>Evaluation details: </b></br></br></br></div>";
+            _body += req.HTML_TEMPLETE;
+            _subject = req.CALL_TYPE.ToUpper() + " audit summary-" + (string.IsNullOrEmpty(req.AUDITOR_NAME) ? "" : req.AUDITOR_NAME + ".") + (string.IsNullOrEmpty(req.CALL_SCANARIO) ? "" : req.CALL_SCANARIO);
+            Helper.Email(req.AGENT_EMAIL, _subject, _body, profile, null, null, cc, null);
         }
         public List<SurveyAuditScores> ListAuditedCalls(RequestCallFromQA req, UserProfile profile)
         {
