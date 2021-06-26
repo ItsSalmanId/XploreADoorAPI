@@ -53,6 +53,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
             var provider = new SqlParameter { ParameterName = "PROVIDER", Value = patientSurveySearchRequest.PROVIDER };
             var region = new SqlParameter { ParameterName = "REGION", Value = patientSurveySearchRequest.REGION };
             var state = new SqlParameter { ParameterName = "STATE", Value = patientSurveySearchRequest.STATE };
+            var flag = new SqlParameter { ParameterName = "FLAG", Value = patientSurveySearchRequest.FLAG };
             var format = new SqlParameter { ParameterName = "FORMAT", Value = patientSurveySearchRequest.FORMAT };
             var surveyedBy = new SqlParameter { ParameterName = "SURVEYED_BY", Value = patientSurveySearchRequest.SURVEYED_BY };
             var surveyStatus = new SqlParameter { ParameterName = "SURVEYED_STATUS", Value = patientSurveySearchRequest.SURVEYED_STATUS_CHILD };
@@ -63,8 +64,8 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
             var SortOrder = Helper.getDBNullOrValue("SORT_ORDER", patientSurveySearchRequest.SORT_ORDER);
 
             var patientSurvey = SpRepository<PatientSurvey>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PSR_DETAILED_REPORT
-                            @PRACTICE_CODE, @DATE_FROM, @DATE_TO, @PROVIDER, @REGION, @STATE, @FORMAT, @SURVEYED_BY, @SURVEYED_STATUS, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORT_BY, @SORT_ORDER",
-                            PracticeCode, dateFrom, dateTo, provider, region, state, format, surveyedBy, surveyStatus, CurrentPage, RecordPerPage, searchText, SortBy, SortOrder);
+                            @PRACTICE_CODE, @DATE_FROM, @DATE_TO, @PROVIDER, @REGION, @STATE, @FLAG, @FORMAT, @SURVEYED_BY, @SURVEYED_STATUS, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORT_BY, @SORT_ORDER",
+                            PracticeCode, dateFrom, dateTo, provider, region, state, flag, format, surveyedBy, surveyStatus, CurrentPage, RecordPerPage, searchText, SortBy, SortOrder);
             return patientSurvey;
         }
         public List<PatientSurvey> GetALLPSRDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile)
@@ -100,6 +101,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
             var provider = new SqlParameter { ParameterName = "PROVIDER", Value = patientSurveySearchRequest.PROVIDER };
             var region = new SqlParameter { ParameterName = "REGION", Value = patientSurveySearchRequest.REGION };
             var state = new SqlParameter { ParameterName = "STATE", Value = patientSurveySearchRequest.STATE };
+            var flag = new SqlParameter { ParameterName = "FLAG", Value = patientSurveySearchRequest.FLAG };
             var format = new SqlParameter { ParameterName = "FORMAT", Value = patientSurveySearchRequest.FORMAT };
             var surveyedBy = new SqlParameter { ParameterName = "SURVEYED_BY", Value = patientSurveySearchRequest.SURVEYED_BY };
             var surveyStatus = new SqlParameter { ParameterName = "SURVEYED_STATUS", Value = patientSurveySearchRequest.SURVEYED_STATUS_CHILD };
@@ -110,8 +112,8 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
             var SortOrder = Helper.getDBNullOrValue("SORT_ORDER", patientSurveySearchRequest.SORT_ORDER);
 
              list = SpRepository<PatientSurvey>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PSR_DETAILED_REPORT
-                            @PRACTICE_CODE, @DATE_FROM, @DATE_TO, @PROVIDER, @REGION, @STATE, @FORMAT, @SURVEYED_BY, @SURVEYED_STATUS, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORT_BY, @SORT_ORDER",
-                            PracticeCode, dateFrom, dateTo, provider, region, state, format, surveyedBy, surveyStatus, CurrentPage, RecordPerPage, searchText, SortBy, SortOrder);
+                            @PRACTICE_CODE, @DATE_FROM, @DATE_TO, @PROVIDER, @REGION, @STATE, @FLAG, @FORMAT, @SURVEYED_BY, @SURVEYED_STATUS, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORT_BY, @SORT_ORDER",
+                            PracticeCode, dateFrom, dateTo, provider, region, state, flag, format, surveyedBy, surveyStatus, CurrentPage, RecordPerPage, searchText, SortBy, SortOrder);
          
             return list;
         }
