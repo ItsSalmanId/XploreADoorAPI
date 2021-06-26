@@ -144,9 +144,16 @@ namespace FOX.DataModels.Models.IndexInfo
         public int? TOTAL_RECORD_PAGES { get; set; }
         [NotMapped]
         public int? TOTAL_RECORDS { get; set; }
+        public string NPI { get; set; }
+        public long? SOURCE_ID { get; set; }
+    }
+    public class PatLastORS
+    {
+        public string NPI { get; set; }
+        public long? SOURCE_ID { get; set; }
     }
 
-    public class GetDiagnosisReq
+        public class GetDiagnosisReq
     {
         public string Diag_Code { get; set; }
     }

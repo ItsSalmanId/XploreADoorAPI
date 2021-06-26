@@ -34,6 +34,8 @@ namespace FOX.DataModels.Models.Security
         public long? PRACTICE_ORGANIZATION_ID { get; set; }
         public string SIGNATURE_PATH { get; set; }
         public string ROLE_NAME { get; set; }
+        public string SENDER_TYPE { get; set; }
+        public string EMAIL { get; set; }
         public List<RoleAndRights> ApplicationUserRoles { get; set; }
 
     }
