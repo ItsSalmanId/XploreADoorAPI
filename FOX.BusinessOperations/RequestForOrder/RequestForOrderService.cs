@@ -350,18 +350,6 @@ namespace FOX.BusinessOperations.RequestForOrder
                             Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || End Time of Saving Email Address Against the WORK ID " + Helper.GetCurrentDate().ToLocalTime());
                         }
 
-                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || Start Time of Finding WORK ID " + Helper.GetCurrentDate().ToLocalTime());
-                        var queueResult = _QueueRepository.GetFirst(s => s.WORK_ID == requestSendEmailModel.WorkId && s.DELETED == false);
-                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || End Time of Finding WORK ID " + Helper.GetCurrentDate().ToLocalTime());
-                        if (queueResult != null&& emailStatus == true)
-                        {
-                            Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || Start Time of Saving Email Address Against the WORK ID " + Helper.GetCurrentDate().ToLocalTime());
-                            queueResult.REFERRAL_EMAIL_SENT_TO = requestSendEmailModel.EmailAddress;
-                            _QueueRepository.Update(queueResult);
-                            _QueueRepository.Save();
-                            Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || End Time of Saving Email Address Against the WORK ID " + Helper.GetCurrentDate().ToLocalTime());
-                        }
-
                         string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
                         int numberOfPages = getNumberOfPagesOfPDF(filePath);
                         //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
