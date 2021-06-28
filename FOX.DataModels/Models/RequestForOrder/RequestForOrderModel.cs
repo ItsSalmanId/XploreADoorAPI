@@ -34,6 +34,7 @@ namespace FOX.DataModels.Models.RequestForOrder
         public string FileName { get; set; }
         public long WorkId { get; set; }
         public bool _isFromIndexInfo { get; set; }
+        public string Patient_Last_Name { get; set; }
     }
     public class RequestSendFAXModel : BaseModel
     {
