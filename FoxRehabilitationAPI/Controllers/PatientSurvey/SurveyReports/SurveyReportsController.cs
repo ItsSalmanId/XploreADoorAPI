@@ -81,5 +81,17 @@ namespace FoxRehabilitationAPI.Controllers.PatientSurvey.SurveyReports
         {
             return Request.CreateResponse(HttpStatusCode.OK, _surveyReportsService.ExportToExcelRegionWisePatientData(patientSurveySearchRequest, GetProfile()));
         }
+        [HttpPost]
+        public HttpResponseMessage GetAllPendingDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest)
+        {
+            if(patientSurveySearchRequest != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _surveyReportsService.GetAllPendingDetailedReport(patientSurveySearchRequest, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Patient Survey Search Request is null");
+            }
+        }
     }
 }

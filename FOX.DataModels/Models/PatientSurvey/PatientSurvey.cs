@@ -407,6 +407,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string ATTENDING_DOCTOR_NAME { get; set; }
         public string REGION { get; set; }
         public string STATE { get; set; }
+        public string FLAG { get; set; }
         public string DISCIPLINE { get; set; }
         public string FORMAT { get; set; }
         public string SURVEYED_BY { get; set; }

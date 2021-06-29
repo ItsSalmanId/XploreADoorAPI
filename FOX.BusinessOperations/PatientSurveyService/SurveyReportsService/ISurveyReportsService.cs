@@ -8,6 +8,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
     {
         List<PatientSurvey> GetPSRDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile);
         List<PatientSurvey> GetALLPSRDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile);
+        List<PatientSurvey> GetAllPendingDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile);
         PSDRChartData GetALLPendingPSRDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile);
         List<PSRRegionAndQuestionWise> GetPSRRegionAndQuestionWise(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile);
         List<PSRProviderAndQuestionWise> GetPSRProviderAndQuestionWise(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile);
