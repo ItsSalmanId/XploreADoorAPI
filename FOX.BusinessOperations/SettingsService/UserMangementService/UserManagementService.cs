@@ -30,6 +30,7 @@ using System.Threading;
 using System.Text;
 using System.Configuration;
 using FOX.DataModels.Models.Settings.ClinicianSetup;
+using FOX.DataModels.Models.SenderType;
 
 namespace FOX.BusinessOperations.SettingsService.UserMangementService
 {
@@ -45,6 +46,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         private readonly GenericRepository<ReferralRegion> _ReferralRegionRepository;
         private readonly DbContextCommon _DbContextCommon = new DbContextCommon();
         private readonly GenericRepository<FOX_TBL_SENDER_NAME> _FOX_TBL_SENDER_NAME;
+        private readonly GenericRepository<FOX_TBL_SENDER_TYPE> _FOX_TBL_SENDER_TYPE;
         private readonly GenericRepository<PasswordHistory> _passwordHistoryRepository;
         private readonly GenericRepository<FOX_TBL_IDENTIFIER> _fox_tbl_identifier;
         private readonly GenericRepository<Speciality> _speciality;
@@ -72,6 +74,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             _ReferralRegionRepository = new GenericRepository<ReferralRegion>(security);
             _speciality = new GenericRepository<Speciality>(_DbContextCases);
             _FOX_TBL_SENDER_NAME = new GenericRepository<FOX_TBL_SENDER_NAME>(_DbContextCommon);
+            _FOX_TBL_SENDER_TYPE = new GenericRepository<FOX_TBL_SENDER_TYPE>(_DbContextCommon);
             _passwordHistoryRepository = new GenericRepository<PasswordHistory>(security);
             _fox_tbl_identifier = new GenericRepository<FOX_TBL_IDENTIFIER>(_DbContextCases);
             _fox_tbl_practice_organization = new GenericRepository<PracticeOrganization>(_DbContextCommon);
@@ -2514,7 +2517,8 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             userToUpdate.HHH_TEXT = user.HHH_TEXT;
             userToUpdate.PRACTICE_ORGANIZATION_TEXT = user.PRACTICE_ORGANIZATION_TEXT;
             userToUpdate.SNF_TEXT = user.SNF_TEXT;
-            //usr.SENDER_TYPE = user.SENDER_TYPE;
+            var senderName = _FOX_TBL_SENDER_TYPE.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == userToUpdate.FOX_TBL_SENDER_TYPE_ID);
+            userToUpdate.SENDER_TYPE = senderName.SENDER_TYPE_NAME;
             userToUpdate.IS_APPROVED = user.IS_APPROVED;
             userToUpdate.REFERRAL_REGION_ID = user.REFERRAL_REGION_ID;
             userToUpdate.FULL_ACCESS_OVER_APP = user.FULL_ACCESS_OVER_APP;
@@ -2947,7 +2951,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                         body += "</body>";
                         string sendTo = string.Empty;
                         List<string> _ccList = new List<string>();
-                        if (profile.PracticeCode == 1012714)
+                        if (profile.PracticeCode == 1012714 && AppConfiguration.ClientURL.Contains("https://fox.mtbc.com/"))
                         {
                             if (res._isADuser)
                             {
@@ -2962,8 +2966,8 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                         }
                         else
                         {
-                            sendTo = "muhammadali9@mtbc.com,Javedakhtar@MTBC.COM";
-                            _ccList.Add("abdulsattar@MTBC.COM");
+                            sendTo = "muhammadali9@mtbc.com,muhammadarslan3@mtbc.com";
+                            _ccList.Add("foxdev@MTBC.COM");
                         }
                         
                         //sendTo = "abdurrafay@mtbc.com,Javedakhtar@MTBC.COM";

@@ -1576,6 +1576,14 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 //             @Last_Name, @First_Name, @Middle_Name, @SSN, @Gender, @Date_Of_Birth, @Chart_Id, @PRACTICE_CODE, @PRACTICE_ORGANIZATION_ID,@WORK_ID, @Patient_Alias, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER",
                 //             last_Name, first_Name, middle_Name, sSN, gender, date_Of_Birth, chart_Id, Practice_Code, _PRACTICE_ORGANIZATION_ID, work_id, Patient_Alias, _currentPage, _recordPerPage, _sortBy, _sortOrder);
                 var result = SpRepository<IndexPatRes>.GetSingleObjectWithStoreProcedure(@"exec Fox_Get_Patient_Info_Index_Info_single_record @PATIENT_ACCOUNT,@PRACTICE_CODE,@PRACTICE_ORGANIZATION_ID,@WORK_ID", _patientAccount, Practice_Code, _PRACTICE_ORGANIZATION_ID, work_id);
+                var res =  getPatientsLastORS(req.Patient_Account, req.Practice_Code);
+
+                if (res != null)
+                {
+                    result.NPI = res.NPI;
+                    result.SOURCE_ID = res.SOURCE_ID;
+                }
+
                 if (result != null)
                 {
                     //if (Profile.PRACTICE_ORGANIZATION_ID != null && ((!string.IsNullOrEmpty(req.Last_Name) && !string.IsNullOrEmpty(req.SSN)) || (!string.IsNullOrEmpty(req.Last_Name) && !string.IsNullOrEmpty(req.Date_Of_Birth))))
@@ -2435,7 +2443,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
         public bool SendEmailToSender(EmailFaxToSender data, UserProfile profile, string WORK_ID)
         {
-            Helper.TokenTaskCancellationExceptionLog("IndexInfoService: IndexInfoService: In Function  SendEmailOrFaxToSender Work_ID ("+ WORK_ID +") > SendEmailToSender || Start Time of Function SendEmailToSender " + Helper.GetCurrentDate().ToLocalTime());
             try
             {
                 AttachmentData attachmentPath = new CommonServices.CommonServices().GeneratePdfForEmailToSender(data.UNIQUE_ID.ToString(), profile);
@@ -2448,26 +2455,20 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     string sendTo = data.EMAIL;
                     //bool sent = Helper.Email("noreply@mtbc.com", sendTo, subject, body, null, null, new List<string> { Path.Combine(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME) });
 
-                    Helper.TokenTaskCancellationExceptionLog("IndexInfoService: IndexInfoService: In Function SendEmailToSender > Sending Email || Start Time of Sending Email " + Helper.GetCurrentDate().ToLocalTime());
                     bool sent = Helper.Email(sendTo, subject, body, profile, data.work_id, null, null, new List<string> { Path.Combine(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME) });
-                    Helper.TokenTaskCancellationExceptionLog("IndexInfoService: IndexInfoService: In Function SendEmailToSender > Sending Email || End Time of Sending Email " + Helper.GetCurrentDate().ToLocalTime());
-
+                   
                     if (sent)
                     {
                         ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, body, "tempcoversletter");
                         string coverfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
                         
-                        Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendEmailOrFaxToSender > SendEmailToSender > SavePdfToImages || Start Time of Function SavePdfToImages " + Helper.GetCurrentDate().ToLocalTime());
                         SavePdfToImages(coverfilePath, config, WORK_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
-                        Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendEmailOrFaxToSender > SendEmailToSender > SavePdfToImages || End Time of Function SavePdfToImages " + Helper.GetCurrentDate().ToLocalTime());
                     }
 
-                    Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendEmailOrFaxToSender > SendEmailToSender || End Time of Function SendEmailToSender in If " + Helper.GetCurrentDate().ToLocalTime());
                     return sent;
                 }
                 else
                 {
-                    Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendEmailOrFaxToSender > SendEmailToSender || End Time of Function SendEmailToSender In Else " + Helper.GetCurrentDate().ToLocalTime());
                     return false;
                 }
             }
@@ -2481,16 +2482,13 @@ namespace FOX.BusinessOperations.IndexInfoServices
         public void SavePdfToImages(string PdfPath, ServiceConfiguration config, string workId, long lworkid, int noOfPages, string sorcetype, string sorceName, string userName, bool approval = true)
         {
             List<int> threadCounter = new List<int>();
-            Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SavePdfToImages Checking Create Directory Time || Start Time of Directory Create" + Helper.GetCurrentDate().ToLocalTime());
             if (!Directory.Exists(config.IMAGES_PATH_SERVER))
             {
                 Directory.CreateDirectory(config.IMAGES_PATH_SERVER);
             }
-            Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SavePdfToImages Checking Create Directory Time || End Time of Directory Create" + Helper.GetCurrentDate().ToLocalTime());
 
             if (System.IO.File.Exists(PdfPath))
             {
-                Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SavePdfToImages Checking Thread Complete Time || Start Time of Threading" + Helper.GetCurrentDate().ToLocalTime());
                 for (int i = 0; i < noOfPages; i++)
                 {
                     string deliveryReportId = "";
@@ -2500,6 +2498,8 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     var logoImgPath = "";
                     var imgPathServer = "";
                     var logoImgPathServer = "";
+                    Random random = new Random();
+
                     if (sorcetype.Split(':')?[0] == "DR")
                     {
                         imgPath = config.IMAGES_PATH_DB + "\\" + deliveryReportId + "_" + i + ".jpg";
@@ -2509,10 +2509,32 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     }
                     else
                     {
-                        imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + ".jpg";
-                        logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + ".jpg";
-                        imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + ".jpg";
-                        logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + ".jpg";
+                        //imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + ".jpg";
+                        //if (System.IO.File.Exists(imgPath))
+                        //{
+                            var randomString = random.Next();
+                            imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
+                            imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
+
+                        //}
+                        //logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + ".jpg";
+                        //if (System.IO.File.Exists(imgPath))
+                        //{
+                        randomString = random.Next();
+                        logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + "_" + randomString + ".jpg";
+                        logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + "_" + randomString + ".jpg"; logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + "_" + randomString + ".jpg";
+                        //}
+                        //imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + ".jpg";
+                        //if (System.IO.File.Exists(imgPath))
+                        //{
+                        //randomString = random.Next();
+                        //}
+                        //logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + ".jpg";
+                        //if (System.IO.File.Exists(imgPath))
+                        //{
+                        //randomString = random.Next();
+
+                        //}
                     }
 
                     Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter, PdfPath, i, imgPathServer, logoImgPathServer));
@@ -2529,11 +2551,8 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 {
                     thread.Abort();
                 }
-                Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SavePdfToImages Checking Thread Complete Time || End Time of Threading" + Helper.GetCurrentDate().ToLocalTime());
-                
-                Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SavePdfToImages Checking AddToDatabase Time || Start Time of AddToDatabase" + Helper.GetCurrentDate().ToLocalTime());
-                AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, approval,config.PRACTICE_CODE);
-                Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SavePdfToImages Checking AddToDatabase Time || End Time of AddToDatabase" + Helper.GetCurrentDate().ToLocalTime());
+                noOfPages = noOfPages + 1;
+                AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, approval, config.PRACTICE_CODE);
             }
         }
         public void newThreadImplementaion(ref List<int> threadCounter, string PdfPath, int i, string imgPath, string logoImgPath)
@@ -2670,7 +2689,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
         public bool SendFaxToSender(EmailFaxToSender data, UserProfile profile)
         {
-            Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendFaxToSender Work_ID (" + data.UNIQUE_ID + ") || Start Time of Function SendFaxToSender " + Helper.GetCurrentDate().ToLocalTime());
             var commonService = new CommonServices.CommonServices();
             AttachmentData attachmentPath = commonService.GeneratePdfForEmailToSender(data.UNIQUE_ID.ToString(), profile);
             try
@@ -2679,22 +2697,14 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
                 if (!string.IsNullOrEmpty(attachmentPath.FILE_PATH) && !string.IsNullOrEmpty(attachmentPath.FILE_NAME))
                 {
-                    Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendFaxToSender > GetEmailOrFaxToSenderTemplate || Start Time of Function GetEmailOrFaxToSenderTemplate " + Helper.GetCurrentDate().ToLocalTime());
                     string coverLetterTemplate = GetEmailOrFaxToSenderTemplate(data);
-                    Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendFaxToSender > GetEmailOrFaxToSenderTemplate || End Time of Function GetEmailOrFaxToSenderTemplate " + Helper.GetCurrentDate().ToLocalTime());
 
-                    Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendFaxToSender > GetServiceConfiguration || Start Time of Function GetServiceConfiguration " + Helper.GetCurrentDate().ToLocalTime());
                     var config = Helper.GetServiceConfiguration(profile.PracticeCode);
-                    Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendFaxToSender > GetServiceConfiguration || End Time of Function GetServiceConfiguration " + Helper.GetCurrentDate().ToLocalTime());
 
-                    Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendFaxToSender > HTMLToPDF2 || Start Time of Function HTMLToPDF2 " + Helper.GetCurrentDate().ToLocalTime());
                     ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, coverLetterTemplate, "tempcoversletter");
-                    Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendFaxToSender > HTMLToPDF2 || End Time of Function HTMLToPDF2 " + Helper.GetCurrentDate().ToLocalTime());
 
                     string coverfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
-                    Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendFaxToSender > SavePdfToImages || Start Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
                     SavePdfToImages(coverfilePath, config, data.UNIQUE_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
-                    Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendFaxToSender > SavePdfToImages || End Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
                     string newFileName = commonService.AddCoverPageForFax(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME, coverLetterTemplate);
 
                     if (!attachmentPath.FILE_PATH.EndsWith("\\"))
@@ -2706,21 +2716,17 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
                     //var fax = _IFaxService.SendFax(new string[] { data.FAX }, new string[] { "" }, new string[] { coverLetterTemplate }, attachmentPath.FILE_NAME, attachmentPath.FILE_PATH, subject, false, profile);
                    
-                    Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendFaxToSender > Sending Fax || Start Time of Sending Fax" + Helper.GetCurrentDate().ToLocalTime());
                     var fax = _IFaxService.SendFax(new string[] { data.FAX }, new string[] { "" }, new string[] { }, newFileName, attachmentPath.FILE_PATH, subject, false, profile);
-                    Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendFaxToSender > Sending Fax || End Time of Sending Fax" + Helper.GetCurrentDate().ToLocalTime());
 
                     string[] result = fax.Split(',');
                     if ((result[1].Equals("True") || result[1].Equals("true")) && (!result[2].Equals("false") || !result[2].Equals("False")))
                     {
                         Helper.LogFaxData(to: data.FAX, status: "Success", profile: profile, ex: null, work_id: data.work_id, attachments: new List<string> { Path.Combine(string.IsNullOrEmpty(attachmentPath.FILE_PATH) ? string.Empty : attachmentPath.FILE_PATH, string.IsNullOrEmpty(attachmentPath.FILE_NAME) ? string.Empty : attachmentPath.FILE_NAME) });
-                        Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendFaxToSender || End Time of Function SendFaxToSender In Success Case" + Helper.GetCurrentDate().ToLocalTime());
                         return true;
                     }
                     else
                     {
                         Helper.LogFaxData(to: data.FAX, status: "Failed", profile: profile, ex: "FAX could not be sent.", work_id: data.work_id, attachments: new List<string> { Path.Combine(string.IsNullOrEmpty(attachmentPath.FILE_PATH) ? string.Empty : attachmentPath.FILE_PATH, string.IsNullOrEmpty(attachmentPath.FILE_NAME) ? string.Empty : attachmentPath.FILE_NAME) });
-                        Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendFaxToSender || End Time of Function SendFaxToSender In Failure Case" + Helper.GetCurrentDate().ToLocalTime());
 
                         throw new Exception(fax);
                         //return false;
@@ -2730,14 +2736,12 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 {
                     //Helper.LogFaxData(to: data.FAX, status: "Failed", profile: profile,   ex: "PDF could not be generated.", work_id: data.work_id, attachments: new List<string> { Path.Combine(string.IsNullOrEmpty(attachmentPath.FILE_PATH) ? string.Empty : attachmentPath.FILE_PATH, string.IsNullOrEmpty(attachmentPath.FILE_NAME) ? string.Empty : attachmentPath.FILE_NAME) });
                     //throw new Exception("PDF could not be generated.");
-                    Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendFaxToSender || End Time of Function SendFaxToSender in Else " + Helper.GetCurrentDate().ToLocalTime());
                     return false;
                 }
             }
             catch (Exception ex)
             {
                 Helper.LogFaxData(to: data.FAX, status: "Failed", profile: profile, ex: ex.Message, work_id: data.work_id, attachments: new List<string> { Path.Combine(string.IsNullOrEmpty(attachmentPath.FILE_PATH) ? string.Empty : attachmentPath.FILE_PATH, string.IsNullOrEmpty(attachmentPath.FILE_NAME) ? string.Empty : attachmentPath.FILE_NAME) });
-                Helper.TokenTaskCancellationExceptionLog("IndexInfoService: In Function  SendFaxToSender || End Time of Function SendFaxToSender In Catch Case" + Helper.GetCurrentDate().ToLocalTime());
                 throw;
             }
         }
@@ -3872,13 +3876,13 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 converter.Options.DisplayHeader = false;
                 converter.Options.WebPageWidth = 768;
 
-                PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at +1 (800) 597 - 0848 or email admit@foxrehab.org",
-                    new Font("Arial", 10));
+                //PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at +1 (800) 597 - 0848 or email admit@foxrehab.org",
+                //    new Font("Arial", 10));
 
-                // footer settings
-                converter.Options.DisplayFooter = true;
-                converter.Footer.Height = 50;
-                converter.Footer.Add(text);
+                //footer settings
+                //converter.Options.DisplayFooter = true;
+                //converter.Footer.Height = 50;
+                //converter.Footer.Add(text);
 
                 PdfDocument doc = converter.ConvertHtmlString(htmlDoc.DocumentNode.OuterHtml);
 
@@ -3994,8 +3998,8 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
             var patient = _PatientRepository.GetFirst(x => x.Patient_Account == work_order.PATIENT_ACCOUNT && x.Practice_Code == work_order.PRACTICE_CODE && x.DELETED == false);
             var sourceDetail = _InsertSourceAddRepository.GetFirst(t => !t.DELETED && t.PRACTICE_CODE == work_order.PRACTICE_CODE && t.WORK_ID == work_order.WORK_ID && work_order.WORK_ID != 0);
-            var documentType = _foxdocumenttypeRepository.GetFirst(t => t.DOCUMENT_TYPE_ID == sourceDetail.DOCUMENT_TYPE).NAME ?? "";
-            //var ORS = _InsertUpdateOrderingSourceRepository.GetFirst(t => t.SOURCE_ID == sourceDetail.SENDER_ID);
+            var documentType = _foxdocumenttypeRepository.GetFirst(t => t.NAME == "Signed Order").NAME ?? "";
+            var ORS = _InsertUpdateOrderingSourceRepository.GetFirst(t => t.SOURCE_ID == sourceDetail.SENDER_ID);
             var address = _PatientAddressRepository.GetMany(t => t.PATIENT_ACCOUNT == work_order.PATIENT_ACCOUNT && t.ADDRESS_TYPE == "Home Address" && !(t.DELETED ?? false)).OrderByDescending(t => t.MODIFIED_DATE).FirstOrDefault();
             var diagnosis_string = "";
             var diagnosis = _InsertDiagnosisRepository.GetMany(t => t.DELETED == false && t.WORK_ID == work_id);
@@ -4160,7 +4164,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     body = body.Replace("[[QRCode]]", qrCode.ENCODED_IMAGE_BYTES ?? "");
                 }
                 body = body.Replace("[[DOCUMENT_TYPE]]", documentType ?? "");
-                //body = body.Replace("[[ORS]]", ORS.LAST_NAME + ", " + ORS.FIRST_NAME ?? "");
+                body = body.Replace("[[ORS]]", ORS.LAST_NAME + ", " + ORS.FIRST_NAME ?? "");
                 body = body.Replace("[[SENDER]]", Sender == null ? "" : Sender.LAST_NAME + ", " + Sender.FIRST_NAME ?? "");
                 body = body.Replace("[[TREATMENT_LOCATION]]", sourceDetail.FACILITY_NAME ?? "");
 
@@ -4241,12 +4245,12 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 if (obj._approval)
                 {
                     body = body.Replace("[[Signature]]", obj.base64textString ?? "");
-                    body = body.Replace("[[current_Date]]", Helper.GetCurrentDate().ToShortDateString() ?? "");
+                    body = body.Replace("[[current_Date]]", Helper.GetCurrentDate().ToString("MM/dd/yyyy h:mm tt") ?? "");
                 }
                 else
                 {
                     body = body.Replace("<img style=\"width:30%; height: 60px;margin:6px;\" src=\"[[Signature]]\" alt=\"Signature\">", "________");
-                    body = body.Replace("[[current_Date]]", "");
+                    body = body.Replace("[[current_Date]]", Helper.GetCurrentDate().ToString("MM/dd/yyyy h:mm tt") ?? "");
                 }
 
                 //"<p style=\"display: inline - block; \"><span style = \"display:inline-block;border-bottom:1px solid #12222E;width:100px;\" ></ span ></ p > "
@@ -5228,6 +5232,15 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 Helper.LogSingleWorkOrderChange(Convert.ToInt64(workId.WORK_ID), workId.WORK_ID.ToString(), "Duplicate referral warning overridden and marked complete", userProfile.FirstName + " " + userProfile.LastName);
             }
+        }
+
+        public PatLastORS getPatientsLastORS(long patient_Account, long practice_Code)
+        {
+            var _patientAccount = new SqlParameter("PATIENT_ACCOUNT", SqlDbType.BigInt) { Value = patient_Account };
+            var _practice_Code = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practice_Code };
+
+            return SpRepository<PatLastORS>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ORS_BY_PATIENT_ACCOUNT @PATIENT_ACCOUNT, @PRACTICE_CODE ", _patientAccount, _practice_Code);
+
         }
     }
 }

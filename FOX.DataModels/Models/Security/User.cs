@@ -60,7 +60,7 @@ namespace FOX.DataModels.Models.Security
         public string USER_TYPE { get; set; }
         [NotMapped]
         public string PRACTICE_NAME { get; set; }
-        //public string SENDER_TYPE { get; set; }
+        public string SENDER_TYPE { get; set; }
         public string NPI { get; set; }
         public string MOBILE_PHONE { get; set; }
         public string FAX { get; set; }
