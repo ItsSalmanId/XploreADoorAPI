@@ -149,7 +149,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
             list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.NOT_ENOUGH_SERVICES_PROVIDE = list.Count;
 
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Callback,Not Answered";
+            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Callback,Not Answered,New Case Same Discipline";
             list = new List<PatientSurvey>();
             list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.INCOMPLETE = list.Count;
@@ -168,6 +168,11 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
             list = new List<PatientSurvey>();
             list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.NOT_INTERESTED = list.Count;
+
+            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "New Case Same Discipline";
+            list = new List<PatientSurvey>();
+            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
+            obj.NEW_CASE_SAME_DISCIPLINE = list.Count;
 
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Pending";
             patientSurveySearchRequest.TIME_FRAME = 4;
