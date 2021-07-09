@@ -84,7 +84,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 dbSurvey.IS_SURVEYED = true;
                 if (!string.IsNullOrEmpty(patientSurvey.SURVEY_STATUS_BASE))
                 {
-                    if (patientSurvey.SURVEY_STATUS_BASE.Equals("Completed") && !patientSurvey.SURVEY_STATUS_CHILD.Equals("Deceased") && !patientSurvey.SURVEY_STATUS_CHILD.Equals("Not Interested"))
+                    if (patientSurvey.SURVEY_STATUS_BASE.Equals("Completed") && !patientSurvey.SURVEY_STATUS_CHILD.Equals("Deceased") && !patientSurvey.SURVEY_STATUS_CHILD.Equals("Not Interested") && !patientSurvey.SURVEY_STATUS_CHILD.Equals("Unable to Complete Survey"))
                     {
                         dbSurvey.IS_CONTACT_HQ = patientSurvey.IS_CONTACT_HQ;
                         if (dbSurvey.IS_CONTACT_HQ.Value == true)
@@ -114,9 +114,14 @@ namespace FOX.BusinessOperations.PatientSurveyService
                         dbSurvey.SURVEY_FLAG = null;
                         dbSurvey.IS_PROTECTIVE_EQUIPMENT = null;
                     }
-                    if(patientSurvey.SURVEY_STATUS_BASE.Equals("Incomplete") && patientSurvey.SURVEY_STATUS_CHILD.Equals("Callback"))
+                    if(patientSurvey.SURVEY_STATUS_BASE.Equals("Incomplete") && (patientSurvey.SURVEY_STATUS_CHILD.Equals("Callback") || patientSurvey.SURVEY_STATUS_CHILD.Equals("New Case Same Discipline")))
                     {
                         dbSurvey.FEEDBACK = patientSurvey.FEEDBACK;
+                    }
+                    if (patientSurvey.SURVEY_STATUS_BASE.Equals("Completed") && patientSurvey.SURVEY_STATUS_CHILD.Equals("Unable to Complete Survey"))
+                    {
+                        dbSurvey.FEEDBACK = patientSurvey.FEEDBACK;
+                        dbSurvey.SURVEY_FLAG = patientSurvey.SURVEY_FLAG;
                     }
                 }
                 if(patientSurvey.ACTIVE_FORMAT == "New Format")
