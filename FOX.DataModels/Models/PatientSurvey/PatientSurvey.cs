@@ -462,6 +462,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public int INCOMPLETE { get; set; }
         public int CALL_BACK { get; set; }
         public int NOT_ANSWERED { get; set; }
+        public int NEW_CASE_SAME_DISCIPLINE { get; set; }
         public int NOT_INTERESTED { get; set; }
         public int PENDING_30 { get; set; }
         public int PENDING_ALL { get; set; }
