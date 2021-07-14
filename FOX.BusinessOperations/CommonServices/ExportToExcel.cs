@@ -28,7 +28,401 @@ namespace FOX.BusinessOperations.CommonServices
                     dc.Remove("TOTAL_RECORDS");
                 }
             }
-                if (CalledFrom.Equals("Patient_Helpdesk"))
+
+            if (CalledFrom.Equals("Users_Reports"))
+            {
+                if (dc.Contains("USER_ID"))
+                {
+                    dc.Remove("USER_ID");
+                }
+                
+                if (dc.Contains("USER_NAME"))
+                {
+                    dc.Remove("USER_NAME");
+                }
+                if (dc.Contains("FIRST_NAME"))
+                {
+                    dc.Remove("FIRST_NAME");
+                }
+                if (dc.Contains("LAST_NAME"))
+                {
+                    dc.Remove("LAST_NAME");
+                }
+                if (dc.Contains("PRACTICE_CODE"))
+                {
+                    dc.Remove("PRACTICE_CODE");
+                }
+                if (dc.Contains("FOX_TBL_SENDER_TYPE_ID"))
+                {
+                    dc.Remove("FOX_TBL_SENDER_TYPE_ID");
+                }
+                if (dc.Contains("TOTAL_RECORD_PAGES"))
+                {
+                    dc.Remove("TOTAL_RECORD_PAGES");
+                }
+                if (dc.Contains("PASSWORD"))
+                {
+                    dc.Remove("PASSWORD");
+                }
+                if (dc.Contains("FAILED_PASSWORD_ATTEMPT_COUNT"))
+                {
+                    dc.Remove("FAILED_PASSWORD_ATTEMPT_COUNT");
+                }
+                if (dc.Contains("PASSWORD_CHANGED_DATE"))
+                {
+                    dc.Remove("PASSWORD_CHANGED_DATE");
+                }
+                if (dc.Contains("DESIGNATION"))
+                {
+                    dc.Remove("DESIGNATION");
+                }
+                if (dc.Contains("IS_ADMIN"))
+                {
+                    dc.Remove("IS_ADMIN");
+                }
+                if (dc.Contains("Status"))
+                {
+                    dc.Remove("Status");
+                }
+                if (dc.Contains("MIDDLE_NAME"))
+                {
+                    dc.Remove("MIDDLE_NAME");
+                }
+                if (dc.Contains("DATE_OF_BIRTH"))
+                {
+                    dc.Remove("DATE_OF_BIRTH");
+                }
+                if (dc.Contains("ZIP"))
+                {
+                    dc.Remove("ZIP");
+                }
+                if (dc.Contains("USER_DISPLAY_NAME"))
+                {
+                    dc.Remove("USER_DISPLAY_NAME");
+                }
+                if (dc.Contains("RESET_PASS"))
+                {
+                    dc.Remove("RESET_PASS");
+                }
+                if (dc.Contains("SECURITY_QUESTION"))
+                {
+                    dc.Remove("SECURITY_QUESTION");
+                }
+                if (dc.Contains("SECURITY_QUESTION_ANSWER"))
+                {
+                    dc.Remove("SECURITY_QUESTION_ANSWER");
+                }
+                if (dc.Contains("LOCKEDBY"))
+                {
+                    dc.Remove("LOCKEDBY");
+                }
+                if (dc.Contains("IS_LOCKED_OUT"))
+                {
+                    dc.Remove("IS_LOCKED_OUT");
+                }
+                if (dc.Contains("LAST_LOGIN_DATE"))
+                {
+                    dc.Remove("LAST_LOGIN_DATE");
+                }
+                if (dc.Contains("COMMENTS"))
+                {
+                    dc.Remove("COMMENTS");
+                }
+                if (dc.Contains("PASS_RESET_CODE"))
+                {
+                    dc.Remove("PASS_RESET_CODE");
+                }
+                if (dc.Contains("ACTIVATION_CODE"))
+                {
+                    dc.Remove("ACTIVATION_CODE");
+                }
+                if (dc.Contains("IS_ACTIVE"))
+                {
+                    dc.Remove("IS_ACTIVE");
+                }
+                if (dc.Contains("PHONE_NO"))
+                {
+                    dc.Remove("PHONE_NO");
+                }
+                if (dc.Contains("ROLE_ID"))
+                {
+                    dc.Remove("ROLE_ID");
+                }
+                if (dc.Contains("ADDRESS_1"))
+                {
+                    dc.Remove("ADDRESS_1");
+                }
+                if (dc.Contains("ADDRESS_2"))
+                {
+                    dc.Remove("ADDRESS_2");
+                }
+                if (dc.Contains("City"))
+                {
+                    dc.Remove("City");
+                }
+                if (dc.Contains("State"))
+                {
+                    dc.Remove("State");
+                }
+                if (dc.Contains("ZIP_Code"))
+                {
+                    dc.Remove("ZIP_Code");
+                }
+                if (dc.Contains("CREATED_BY"))
+                {
+                    dc.Remove("CREATED_BY");
+                }
+                if (dc.Contains("MODIFIED_BY"))
+                {
+                    dc.Remove("MODIFIED_BY");
+                }
+                if (dc.Contains("MODIFIED_DATE"))
+                {
+                    dc.Remove("MODIFIED_DATE");
+                }
+                if (dc.Contains("DELETED"))
+                {
+                    dc.Remove("DELETED");
+                }
+                if (dc.Contains("MANAGER_ID"))
+                {
+                    dc.Remove("MANAGER_ID");
+                }
+                if (dc.Contains("Assigned_Person_Role"))
+                {
+                    dc.Remove("Assigned_Person_Role");
+                }
+                if (dc.Contains("USER_TYPE"))
+                {
+                    dc.Remove("USER_TYPE");
+                }
+                if (dc.Contains("PRACTICE_NAME"))
+                {
+                    dc.Remove("PRACTICE_NAME");
+                }
+                if (dc.Contains("NPI"))
+                {
+                    dc.Remove("NPI");
+                }
+                if (dc.Contains("MOBILE_PHONE"))
+                {
+                    dc.Remove("MOBILE_PHONE");
+                }
+                if (dc.Contains("FAX"))
+                {
+                    dc.Remove("FAX");
+                }
+                if (dc.Contains("FAX_2"))
+                {
+                    dc.Remove("FAX_2");
+                }
+                if (dc.Contains("FAX_3"))
+                {
+                    dc.Remove("FAX_3");
+                }
+                if (dc.Contains("GENDER"))
+                {
+                    dc.Remove("GENDER");
+                }
+                if (dc.Contains("LANGUAGE"))
+                {
+                    dc.Remove("LANGUAGE");
+                }
+                if (dc.Contains("TIME_ZONE"))
+                {
+                    dc.Remove("TIME_ZONE");
+                }
+                if (dc.Contains("CREATED_DATE_STR"))
+                {
+                    dc.Remove("CREATED_DATE_STR");
+                }
+                if (dc.Contains("TERMINATION_DATE"))
+                {
+                    dc.Remove("TERMINATION_DATE");
+                }
+                if (dc.Contains("SIGNATURE_PATH"))
+                {
+                    dc.Remove("SIGNATURE_PATH");
+                }
+                if (dc.Contains("PASSWORD_RESET_TICKS"))
+                {
+                    dc.Remove("PASSWORD_RESET_TICKS");
+                }
+                if (dc.Contains("WORK_PHONE"))
+                {
+                    dc.Remove("WORK_PHONE");
+                }
+                if (dc.Contains("NOTE_ID"))
+                {
+                    dc.Remove("NOTE_ID");
+
+                }
+                if (dc.Contains("ACO"))
+                {
+                    dc.Remove("ACO");
+                }
+                if (dc.Contains("ACO_NAME"))
+                {
+                    dc.Remove("ACO_NAME");
+                }
+                if (dc.Contains("SPECIALITY"))
+                {
+                    dc.Remove("SPECIALITY");
+                }
+                if (dc.Contains("SPECIALITY_NAME"))
+                {
+                    dc.Remove("SPECIALITY_NAME");
+                }
+                if (dc.Contains("SNF"))
+                {
+                    dc.Remove("SNF");
+                }
+                if (dc.Contains("SNF_NAME"))
+                {
+                    dc.Remove("SNF_NAME");
+                }
+                if (dc.Contains("HOSPITAL"))
+                {
+                    dc.Remove("HOSPITAL");
+                }
+                if (dc.Contains("HOSPITAL_NAME"))
+                {
+                    dc.Remove("HOSPITAL_NAME");
+                }
+                if (dc.Contains("HHH"))
+                {
+                    dc.Remove("HHH");
+                }
+                if (dc.Contains("HHH_NAME"))
+                {
+                    dc.Remove("HHH_NAME");
+                }
+                if (dc.Contains("THIRD_PARTY_REFERRAL_SOURCE"))
+                {
+                    dc.Remove("THIRD_PARTY_REFERRAL_SOURCE");
+                }
+                if (dc.Contains("COMMENT"))
+                {
+                    dc.Remove("COMMENT");
+                }
+                if (dc.Contains("PRACTICE_ORGANIZATION_ID"))
+                {
+                    dc.Remove("PRACTICE_ORGANIZATION_ID");
+                }
+                if (dc.Contains("IS_APPROVED"))
+                {
+                    dc.Remove("IS_APPROVED");
+                }
+                if (dc.Contains("hasToSendEmail"))
+                {
+                    dc.Remove("hasToSendEmail");
+                }
+                if (dc.Contains("EXTENSION"))
+                {
+                    dc.Remove("EXTENSION");
+                }
+                if (dc.Contains("IS_ACTIVE_EXTENSION"))
+                {
+                    dc.Remove("IS_ACTIVE_EXTENSION");
+                }
+                if (dc.Contains("PRACTICE_ORGANIZATION_TEXT"))
+                {
+                    dc.Remove("PRACTICE_ORGANIZATION_TEXT");
+                }
+                if (dc.Contains("ACO_TEXT"))
+                {
+                    dc.Remove("ACO_TEXT");
+                }
+                if (dc.Contains("SPECIALITY_TEXT"))
+                {
+                    dc.Remove("SPECIALITY_TEXT");
+                }
+                if (dc.Contains("SNF_TEXT"))
+                {
+                    dc.Remove("SNF_TEXT");
+                }
+                if (dc.Contains("HOSPITAL_TEXT"))
+                {
+                    dc.Remove("HOSPITAL_TEXT");
+                }
+                if (dc.Contains("HHH_TEXT"))
+                {
+                    dc.Remove("HHH_TEXT");
+                }
+                if (dc.Contains("Template"))
+                {
+                    dc.Remove("Template");
+                }
+                if (dc.Contains("USR_REFERRAL_SOURCE_ID"))
+                {
+                    dc.Remove("USR_REFERRAL_SOURCE_ID");
+                }
+                if (dc.Contains("Discriminator"))
+                {
+                    dc.Remove("Discriminator");
+                }
+                if (dc.Contains("PasswordHash"))
+                {
+                    dc.Remove("PasswordHash");
+                }
+                if (dc.Contains("TOTAL_RECORDS"))
+                {
+                    dc.Remove("TOTAL_RECORDS");
+                }
+                if (dc.Contains("IS_AD_USER"))
+                {
+                    dc.Remove("IS_AD_USER");
+                }
+                if (dc.Contains("REFERRAL_REGION_ID"))
+                {
+                    dc.Remove("REFERRAL_REGION_ID");
+                }
+                if (dc.Contains("Region"))
+                {
+                    dc.Remove("Region");
+                }
+                if (dc.Contains("FULL_ACCESS_OVER_APP"))
+                {
+                    dc.Remove("FULL_ACCESS_OVER_APP");
+                }
+                if (dc.Contains("Is_Electronic_POC"))
+                {
+                    dc.Remove("Is_Electronic_POC");
+                }
+                if (dc.Contains("Is_Blocked"))
+                {
+                    dc.Remove("Is_Blocked");
+                }
+                if (dc.Contains("DB_PASSWORD"))
+                {
+                    dc.Remove("DB_PASSWORD");
+                }
+                if (dc.Contains("SELECTED_PASSWORD"))
+                {
+                    dc.Remove("SELECTED_PASSWORD");
+                }
+                if (dc.Contains("SHOW_TO_USER_PASSWORD"))
+                {
+                    dc.Remove("SHOW_TO_USER_PASSWORD");
+                }
+                if (dc.Contains("HIDE_EYE_ICON"))
+                {
+                    dc.Remove("HIDE_EYE_ICON");
+                }
+                if (dc.Contains("ADMIN_PASSWORD"))
+                {
+                    dc.Remove("ADMIN_PASSWORD");
+                }
+                if (dc.Contains("PROFILE"))
+                {
+                    dc.Remove("PROFILE");
+                }
+                if (dc.Contains("AUTO_LOCK_TIME_SPAN"))
+                {
+                    dc.Remove("AUTO_LOCK_TIME_SPAN");
+                }
+            }
+            if (CalledFrom.Equals("Patient_Helpdesk"))
             {
                 if (dc.Contains("FOX_PHD_CALL_DETAILS_ID"))
                 {
@@ -5051,6 +5445,42 @@ namespace FOX.BusinessOperations.CommonServices
                 }
 
             }
+            else if (dt.TableName == "Users_Reports")
+            {
+                if (dtcol.Contains("ROW"))
+                {
+                    dtcol["ROW"].ColumnName = "Sr. #";
+                }
+                
+                if (dtcol.Contains("Employee_name"))
+                {
+                    dtcol["Employee_name"].ColumnName = "Employee Name";
+                }
+                if (dtcol.Contains("EMAIL"))
+                {
+                    dtcol["EMAIL"].ColumnName = "Email Address";
+                }
+                if (dtcol.Contains("RT_USER_ID"))
+                {
+                    dtcol["RT_USER_ID"].ColumnName = "RT User ID";
+                }
+                if (dtcol.Contains("CREATED_DATE"))
+                {
+                    dtcol["CREATED_DATE"].ColumnName = "Effective From";
+                }
+                if (dtcol.Contains("REGION_NAME"))
+                {
+                    dtcol["REGION_NAME"].ColumnName = "Region";
+                }
+                if (dtcol.Contains("ROLE_NAME"))
+                {
+                    dtcol["ROLE_NAME"].ColumnName = "Role";
+                }
+                if (dtcol.Contains("SENDER_TYPE_NAME"))
+                {
+                    dtcol["SENDER_TYPE_NAME"].ColumnName = "Sender Type";
+                }
+            }
             else if (dt.TableName == "Advanced_Daily_Report")
             {
                 if (dtcol.Contains("ROW"))
@@ -5153,11 +5583,11 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["CurrencyAmount"].ColumnName = "Amount";
                 }
-                if(dtcol.Contains("SSCM_CASE_ID"))
+                if (dtcol.Contains("SSCM_CASE_ID"))
                 {
                     dtcol["SSCM_CASE_ID"].ColumnName = "SSCM Case";
                 }
-                if(dtcol.Contains("DOCUMENT_TYPE_NAME"))
+                if (dtcol.Contains("DOCUMENT_TYPE_NAME"))
                 {
                     dtcol["DOCUMENT_TYPE_NAME"].ColumnName = "Document Type";
                 }
@@ -5172,6 +5602,25 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dtcol.Contains("CS_Case_Status"))
                 {
                     dtcol["CS_Case_Status"].ColumnName = "Case Status";
+                }
+            }
+            else if (dt.TableName == "Users_Reports")
+            {
+                if (dtcol.Contains("ROW"))
+                {
+                    dtcol["ROW"].ColumnName = "Sr. #";
+                }
+                if (dtcol.Contains("FIRST_NAME"))
+                {
+                    dtcol["FIRST_NAME"].ColumnName = "First Name";
+                }
+                if (dtcol.Contains("LAST_NAME"))
+                {
+                    dtcol["LAST_NAME"].ColumnName = "Last Name";
+                }
+                if (dtcol.Contains("EMAIL"))
+                {
+                    dtcol["EMAIL"].ColumnName = "Email Address";
                 }
             }
             else if (dt.TableName == "Interface_Log_Report")
@@ -7291,7 +7740,7 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dtcol.Contains("ASSIGNED_DATE"))
                     dt.Columns["ASSIGNED_DATE"].ColumnName = "Assigned Date";
                 if (dtcol.Contains("ElapseTime"))
-                    dt.Columns["ElapseTime"].ColumnName = "ElapseTime"; 
+                    dt.Columns["ElapseTime"].ColumnName = "ElapseTime";
                 if (dtcol.Contains("TOTAL_PAGES"))
                     dt.Columns["TOTAL_PAGES"].ColumnName = "Pages";
 
@@ -7463,6 +7912,10 @@ namespace FOX.BusinessOperations.CommonServices
                     {
                         SetHeaders(dt);
                     }
+                    //else if (dt.TableName == "Users_Reports")
+                    //{
+                    //    SetHeaders(dt);
+                    //}
                     else if (dt.TableName == "Contact_Type")
                     {
                         SetHeaders(dt);
@@ -7587,6 +8040,7 @@ namespace FOX.BusinessOperations.CommonServices
                     {
                         SetHeaders(dt);
                     }
+                  
                     WriteExcelFile(dt, document);
                 }
                 //Trace.WriteLine("Successfully created: " + excelFilename);

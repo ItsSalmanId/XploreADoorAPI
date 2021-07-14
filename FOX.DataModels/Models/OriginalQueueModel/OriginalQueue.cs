@@ -173,6 +173,10 @@ namespace FOX.DataModels.Models.OriginalQueueModel
         public string DateFrom_str { get; set; }
         public string DateTo_str { get; set; }
         public long PracticeCode { get; set; }
+        [NotMapped]
+        public long WORK_ID { get; set; }
+       
+
     }
 
     [Table("FOX_TBL_WORK_QUEUE_File_All")]
