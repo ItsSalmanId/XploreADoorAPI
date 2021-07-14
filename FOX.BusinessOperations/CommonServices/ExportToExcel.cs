@@ -35,7 +35,11 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("USER_ID");
                 }
-                
+                if (dc.Contains("SENDER_TYPE"))
+                {
+                    dc.Remove("SENDER_TYPE");
+                }
+
                 if (dc.Contains("USER_NAME"))
                 {
                     dc.Remove("USER_NAME");
