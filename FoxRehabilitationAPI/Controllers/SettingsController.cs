@@ -106,7 +106,14 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _userServices.GetUsers(req, GetProfile()));
         }
+        //export to excel 08-07-2021
+        [HttpPost]
+        public HttpResponseMessage ExportToExcelUsersReport(UserRequest req)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _userServices.ExportToExcelUsersReport(req, GetProfile()));
+        }
 
+        //close
         [HttpGet]
         public HttpResponseMessage GetSingleUser(string username)
         {

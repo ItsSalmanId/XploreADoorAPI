@@ -384,6 +384,47 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 return new List<User>();
             }
         }
+        //export to excel 08-07-2021
+        public string ExportToExcelUsersReport(UserRequest request, UserProfile profile)
+        {
+            try
+            {
+                string fileName = "Users_Report_List";
+                string exportPath = "";
+                string path = string.Empty;
+                bool exported;
+               request.CurrentPage = 1;
+               request.RecordPerPage = 0;
+                var CalledFrom = "Users_Reports";
+                string virtualPath = @"/" + profile.PracticeDocumentDirectory + "/" + "Fox/ExportedFiles/";
+                exportPath = HttpContext.Current.Server.MapPath("~" + virtualPath);
+                fileName = DocumentHelper.GenerateSignatureFileName(fileName) + ".xlsx";
+                if (!Directory.Exists(exportPath))
+                {
+                    Directory.CreateDirectory(exportPath);
+                }
+                List<User> result = new List<User>();
+                var pathtowriteFile = exportPath + "\\" + fileName;
+                result = GetUsers(request, profile);
+                for (int i = 0; i < result.Count(); i++)
+                {
+                    result[i].ROW = i + 1;
+
+                }
+                exported = ExportToExcel.CreateExcelDocument<User>(result, pathtowriteFile, CalledFrom.Replace(' ', '_'));
+                return virtualPath + fileName;
+            }
+
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        //close
+
+
+
         public User GetSingleUser(string username, UserProfile profile)
         {
             try

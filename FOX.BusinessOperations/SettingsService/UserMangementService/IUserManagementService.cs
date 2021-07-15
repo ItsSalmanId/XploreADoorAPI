@@ -61,5 +61,6 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         string RedirecToTalkEhr(UserProfile profile);
         bool SetAutoLockTimeSetup(int time, UserProfile profile);
         bool DeleteUser(DeleteUserModel res, UserProfile profile);
+        string ExportToExcelUsersReport(UserRequest req, UserProfile profile);
     }
 }
