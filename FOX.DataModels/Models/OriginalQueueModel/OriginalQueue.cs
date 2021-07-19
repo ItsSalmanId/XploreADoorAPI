@@ -160,7 +160,8 @@ namespace FOX.DataModels.Models.OriginalQueueModel
         public string THERAPY_TREATMENT_REFERRAL_REQUEST_HTML { get; set; }
         [NotMapped]
         public string guesttextarea { get; set; }
-       
+        [NotMapped]
+        public string STATUS_TEXT { get; set; }
     }
 
     public class OriginalQueueRequest : BaseModel
@@ -182,8 +183,8 @@ namespace FOX.DataModels.Models.OriginalQueueModel
         public long PracticeCode { get; set; }
         [NotMapped]
         public long WORK_ID { get; set; }
-       
-
+        [NotMapped]
+        public string STATUS_TEXT { get; set; }
     }
 
     [Table("FOX_TBL_WORK_QUEUE_File_All")]
