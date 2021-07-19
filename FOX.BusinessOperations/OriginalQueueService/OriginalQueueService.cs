@@ -66,58 +66,9 @@ namespace FOX.BusinessOperations.OriginalQueueService
             var queue = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ORIGINAL_QUEUE @PRACTICE_CODE, @CURRENT_PAGE, @DATE_FROM, @DATE_TO, @INCLUDE_ARCHIVE, @RECORD_PER_PAGE, @SEARCH_TEXT,@STATUS_TEXT, @SORCE_STRING, @SORCE_TYPE, @WORK_ID, @SORT_BY,@SORT_ORDER",
                 parmPracticeCode, parmCurrentPage, parmDateFrom, parmDateTo, parmIncludeArchive, parmRecordsPerPage, parmSearchText, parmstatus, parmSourceString, parmSourceType, parmworkid, parmSortBy, parmSortOrder);
             resOriginalQueueModel.OriginalQueueList = queue;
-            Helper.TokenTaskCancellationExceptionLog(queue != null && queue.Count() > 0 ? queue[0].TOTAL_RECORDS.ToString() : "Empty");
             return resOriginalQueueModel;
         }
-        public ResOriginalQueueModel GetReferralList(OriginalQueueRequest req, UserProfile Profile)
-        {
-            ResOriginalQueueModel resOriginalQueueModel = new ResOriginalQueueModel();
-            var parmSortBy = new SqlParameter("SORT_BY", SqlDbType.VarChar) { Value = req.SortBy };
-            var parmRecordsPerPage = new SqlParameter("RECORD_PER_PAGE", SqlDbType.BigInt) { Value = req.RecordPerPage };
-            var parmSortOrder = new SqlParameter("SORT_ORDER", SqlDbType.VarChar) { Value = req.SortOrder };
-            var parmSearchText = new SqlParameter("SEARCH_TEXT", SqlDbType.VarChar) { Value = req.SearchText };
-            var parmCurrentPage = new SqlParameter("CURRENT_PAGE", SqlDbType.Int) { Value = req.CurrentPage };
-            var queue = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ORIGINAL_QUEUE_SIGNATURE @CURRENT_PAGE,@RECORD_PER_PAGE,@SEARCH_TEXT,@SORT_BY,@SORT_ORDER", parmCurrentPage, parmRecordsPerPage, parmSearchText, parmSortBy, parmSortOrder);
-            resOriginalQueueModel.OriginalQueueList = queue;
-            return resOriginalQueueModel;
-            //if (!string.IsNullOrEmpty(req.DateFrom_str))
-            //    req.DateFrom = req.DateFrom_str;
-            //if (!string.IsNullOrEmpty(req.DateTo_str))
-            //    req.DateTo = req.DateTo_str;
 
-            ////Edit By Ali
-            //if (req.SearchText.Contains("_"))
-            //{
-            //    var IsUniqueIdExist = _QueueRepository.GetMany(t => t.UNIQUE_ID.Contains(req.SearchText));
-            //    if (IsUniqueIdExist != null && IsUniqueIdExist.Count > 0)
-            //    {
-            //        req.SearchText = req.SearchText.Split('_')[0];
-            //        resOriginalQueueModel.IsUniqueIdExist = true;
-            //        resOriginalQueueModel.Unique_IdList = IsUniqueIdExist.Select(t => t.UNIQUE_ID).ToList();
-            //    }
-            //    req.SearchText = req.SearchText.Replace("_", @"\_");
-            //}
-            //var parmPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
-            //var parmCurrentPage = new SqlParameter("CURRENT_PAGE", SqlDbType.Int) { Value = req.CurrentPage };
-            //var parmDateFrom = Helper.getDBNullOrValue("DATE_FROM", req.DateFrom);
-            //var parmDateTo = Helper.getDBNullOrValue("DATE_TO", req.DateTo);
-
-            ////var parmDateFrom = new SqlParameter("DATE_FROM", SqlDbType.DateTime) { Value = req.DateFrom == null ? new DateTime(1800, 1, 1) : req.DateFrom };
-            ////var parmDateTo = new SqlParameter("DATE_TO", SqlDbType.DateTime) { Value = req.DateTo == null ? new DateTime(1800, 1, 1) : req.DateTo };
-            //var parmIncludeArchive = new SqlParameter("INCLUDE_ARCHIVE", SqlDbType.Bit) { Value = req.IncludeArchive };
-            //var parmRecordsPerPage = new SqlParameter("RECORD_PER_PAGE", SqlDbType.BigInt) { Value = req.RecordPerPage };
-            ////var parmSearchText = new SqlParameter("SEARCH_TEXT", SqlDbType.VarChar) { Value = req.SearchText.Split('_')[0] };
-            //var parmSearchText = new SqlParameter("SEARCH_TEXT", SqlDbType.VarChar) { Value = req.SearchText };
-            //var parmSourceString = new SqlParameter("SORCE_STRING", SqlDbType.VarChar) { Value = req.SorceString };
-            //var parmSourceType = new SqlParameter("SORCE_TYPE", SqlDbType.VarChar) { Value = req.SorceType };
-            //var parmworkid = new SqlParameter("WORK_ID", SqlDbType.VarChar) { Value = req.WORK_ID };
-            //var parmSortBy = new SqlParameter("SORT_BY", SqlDbType.VarChar) { Value = req.SortBy };
-            //var parmSortOrder = new SqlParameter("SORT_ORDER", SqlDbType.VarChar) { Value = req.SortOrder };
-            //var queue = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ORIGINAL_QUEUE");
-
-            //resOriginalQueueModel.OriginalQueueList = queue;
-            //return resOriginalQueueModel;
-        }
         public string ExportToExcelOrignalQueue(OriginalQueueRequest req, UserProfile profile)
         {
             try
