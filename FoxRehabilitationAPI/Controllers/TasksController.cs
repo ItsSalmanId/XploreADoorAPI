@@ -199,5 +199,20 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _TaskServices.GetTaskDashBoardData(model, GetProfile()));
         }
+        [HttpPost]
+        public HttpResponseMessage GetTasksNotifications(NotificationRequestModel req)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _TaskServices.GetTasksNotifications(req, GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage GetTasksNotificationsList(NotificationRequestModel req)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _TaskServices.GetTasksNotificationsList(req, GetProfile()));
+        }
+        [HttpGet]
+        public HttpResponseMessage DeleteNotification(long ID)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _TaskServices.DeleteNotification(ID, GetProfile()));
+        }
     }
 }
