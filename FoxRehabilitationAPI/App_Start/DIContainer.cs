@@ -65,6 +65,7 @@ namespace FoxRehabilitationAPI.App_Start
             container.RegisterType<FOX.BusinessOperations.QualityAssuranceService.QAReportService.IQAReportService, FOX.BusinessOperations.QualityAssuranceService.QAReportService.QAReportService>();
             container.RegisterType<FOX.BusinessOperations.Scheduler.ISchedulerService, FOX.BusinessOperations.Scheduler.SchedulerService>();
             container.RegisterType<FOX.BusinessOperations.HrAutoEmail.IHrAutoEmailService, FOX.BusinessOperations.HrAutoEmail.HrAutoEmailService>();
+            container.RegisterType<FOX.BusinessOperations.SignatureRequiredServices.ISignatureRequiredService, FOX.BusinessOperations.SignatureRequiredServices.SignatureRequiredService>();
             return container;
         }
     }
