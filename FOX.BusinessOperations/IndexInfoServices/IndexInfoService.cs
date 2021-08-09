@@ -3992,13 +3992,21 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 }
             }
             var work_id = long.Parse(obj.workId);
+            var documentType = "";
             var work_order = _QueueRepository.GetFirst(t => t.WORK_ID == work_id && t.DELETED == false);
             var practiceCode = work_order.PRACTICE_CODE.Value.ToString();
             OriginalQueueFiles originalQueueFiles = _OriginalQueueFiles.GetFirst(t => t.UNIQUE_ID == work_order.UNIQUE_ID && !t.deleted);
 
             var patient = _PatientRepository.GetFirst(x => x.Patient_Account == work_order.PATIENT_ACCOUNT && x.Practice_Code == work_order.PRACTICE_CODE && x.DELETED == false);
             var sourceDetail = _InsertSourceAddRepository.GetFirst(t => !t.DELETED && t.PRACTICE_CODE == work_order.PRACTICE_CODE && t.WORK_ID == work_order.WORK_ID && work_order.WORK_ID != 0);
-            var documentType = _foxdocumenttypeRepository.GetFirst(t => t.NAME == "Signed Order").NAME ?? "";
+            if (obj._approval)
+            {
+            documentType = _foxdocumenttypeRepository.GetFirst(t => t.NAME == "Signed Order").NAME ?? "";
+            }
+            else
+            {
+                documentType = _foxdocumenttypeRepository.GetFirst(t => t.NAME == "Unsigned Order").NAME ?? "";
+            }
             var ORS = _InsertUpdateOrderingSourceRepository.GetFirst(t => t.SOURCE_ID == sourceDetail.SENDER_ID);
             var address = _PatientAddressRepository.GetMany(t => t.PATIENT_ACCOUNT == work_order.PATIENT_ACCOUNT && t.ADDRESS_TYPE == "Home Address" && !(t.DELETED ?? false)).OrderByDescending(t => t.MODIFIED_DATE).FirstOrDefault();
             var diagnosis_string = "";

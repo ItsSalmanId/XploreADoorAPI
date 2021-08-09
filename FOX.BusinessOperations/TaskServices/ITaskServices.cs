@@ -57,5 +57,8 @@ namespace FOX.BusinessOperations.TaskServices
         List<FOX_TBL_TASK_TYPE> GetInactiveTaskTypeList(long practiceCode);
         string ExportToExcel(TaskSearchRequest taskSearchRequest, UserProfile profile);
         TaskDashboardResponse GetTaskDashBoardData(TaskDashboardSearchRequest req, UserProfile profile);
+        List<FOX_TBL_NOTIFICATIONS> GetTasksNotifications(NotificationRequestModel req, UserProfile profile);
+        ListResponseModel GetTasksNotificationsList(NotificationRequestModel req, UserProfile profile);
+        bool DeleteNotification(long ID, UserProfile profile);
     }
 }

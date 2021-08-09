@@ -296,6 +296,8 @@
     <Compile Include="SettingsService\ReferralSourceService\ReferralSourceService.cs" />
     <Compile Include="SettingsService\UserMangementService\IUserManagementService.cs" />
     <Compile Include="SettingsService\UserMangementService\UserManagementService.cs" />
+    <Compile Include="SignatureRequiredServices\ISignatureRequiredService.cs" />
+    <Compile Include="SignatureRequiredServices\SignatureRequiredService.cs" />
     <Compile Include="StoreProcedure\Samar.cs" />
     <Compile Include="SupervisorWorkService\ISupervisorWorkService.cs" />
     <Compile Include="SupervisorWorkService\SupervisorWorkService.cs" />

@@ -206,6 +206,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string CALL_TO { get; set; }
         [NotMapped]
         public string CALL_BY { get; set; }
+        public string SERVICE_OR_PAYMENT_DESCRIPTION { get; set; }
 
     }
 

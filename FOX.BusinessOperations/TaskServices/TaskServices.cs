@@ -1893,5 +1893,126 @@ namespace FOX.BusinessOperations.TaskServices
             taskDashboardResponse.TaskTypeDashboardDataString = output;
             return taskDashboardResponse;
         }
+        public List<FOX_TBL_NOTIFICATIONS> GetTasksNotifications(NotificationRequestModel req, UserProfile profile)
+        {
+
+            switch (req.TIME_FRAME)
+            {
+                case 1:
+                    req.DATE_FROM = Helper.GetCurrentDate().AddDays(-7);
+                    req.DATE_TO = Helper.GetCurrentDate();
+                    break;
+                case 2:
+                    req.DATE_FROM = Helper.GetCurrentDate().AddDays(-15);
+                    req.DATE_TO = Helper.GetCurrentDate();
+                    break;
+                case 3:
+                    req.DATE_FROM = Helper.GetCurrentDate().AddDays(-30);
+                    req.DATE_TO = Helper.GetCurrentDate();
+                    break;
+                case 4:
+                    if (!string.IsNullOrEmpty(req.DATE_FROM_STR))
+                        req.DATE_FROM = Convert.ToDateTime(req.DATE_FROM_STR);
+                    else
+                        req.DATE_FROM = Helper.GetCurrentDate().AddYears(-1);
+                    if (!string.IsNullOrEmpty(req.DATE_TO_STR))
+                        req.DATE_TO = Convert.ToDateTime(req.DATE_TO_STR);
+                    else
+                    {
+                        req.DATE_TO = Helper.GetCurrentDate();
+                    }
+                    break;
+                case 5:
+                    req.DATE_FROM = Helper.GetCurrentDate().AddYears(-100);
+                    req.DATE_TO = Helper.GetCurrentDate();
+                    break;
+                default:
+                    break;
+            }
+
+            var pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+            var userid = new SqlParameter { ParameterName = "@USER_ID", SqlDbType = SqlDbType.BigInt, Value = profile.userID };
+            var dateFrom = Helper.getDBNullOrValue("DATE_FROM", req.DATE_FROM.ToString());
+            var dateTo = Helper.getDBNullOrValue("DATE_TO", req.DATE_TO.ToString());
+
+
+            var result = SpRepository<FOX_TBL_NOTIFICATIONS>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_NOTIFICATIONS_OF_TASKS @USER_ID, @PRACTICE_CODE, @DATE_FROM, @DATE_TO",
+                    userid, pracCode, dateFrom, dateTo);
+            return result;
+        }
+
+        public ListResponseModel GetTasksNotificationsList(NotificationRequestModel req, UserProfile profile)
+        {
+
+            switch (req.TIME_FRAME)
+            {
+                case 1:
+                    req.DATE_FROM = Helper.GetCurrentDate().AddDays(-7);
+                    req.DATE_TO = Helper.GetCurrentDate();
+                    break;
+                case 2:
+                    req.DATE_FROM = Helper.GetCurrentDate().AddDays(-15);
+                    req.DATE_TO = Helper.GetCurrentDate();
+                    break;
+                case 3:
+                    req.DATE_FROM = Helper.GetCurrentDate().AddDays(-30);
+                    req.DATE_TO = Helper.GetCurrentDate();
+                    break;
+                case 4:
+                    if (!string.IsNullOrEmpty(req.DATE_FROM_STR))
+                        req.DATE_FROM = Convert.ToDateTime(req.DATE_FROM_STR);
+                    else
+                        req.DATE_FROM = Helper.GetCurrentDate().AddYears(-1);
+                    if (!string.IsNullOrEmpty(req.DATE_TO_STR))
+                        req.DATE_TO = Convert.ToDateTime(req.DATE_TO_STR);
+                    else
+                    {
+                        req.DATE_TO = Helper.GetCurrentDate();
+                    }
+                    break;
+                case 5:
+                    req.DATE_FROM = Helper.GetCurrentDate().AddYears(-100);
+                    req.DATE_TO = Helper.GetCurrentDate();
+                    break;
+                default:
+                    break;
+            }
+
+            var pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+            var userid = new SqlParameter { ParameterName = "@USER_ID", SqlDbType = SqlDbType.BigInt, Value = profile.userID };
+            var dateFrom = Helper.getDBNullOrValue("DATE_FROM", req.DATE_FROM.ToString());
+            var dateTo = Helper.getDBNullOrValue("DATE_TO", req.DATE_TO.ToString());
+
+
+            var result = SpRepository<string>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_NOTIFICATIONS_OF_TASKS_LIST @USER_ID, @PRACTICE_CODE, @DATE_FROM, @DATE_TO",
+                    userid, pracCode, dateFrom, dateTo);
+            ListResponseModel response = new ListResponseModel();
+            response.DATE = result;
+            response.NotificationList = new List<List<FOX_TBL_NOTIFICATIONS>>();
+            var allData = GetTasksNotifications(req, profile);
+
+            foreach (var item in response.DATE)
+            {
+                var list = allData.FindAll(x => x.SENT_ON_STR == item);
+                response.NotificationList.Add(list);
+
+            }
+            return response;
+        }
+        public bool DeleteNotification(long ID, UserProfile profile)
+        {
+            var id = new SqlParameter { ParameterName = "@FOX_NOTIFICATION_ID", SqlDbType = SqlDbType.BigInt, Value = ID };
+            var user = Helper.getDBNullOrValue("@USER",profile.UserName);
+
+            var result = SpRepository<FOX_TBL_NOTIFICATIONS>.GetListWithStoreProcedure(@"exec FOX_PROC_DELETE_NOTIFICATIONS @FOX_NOTIFICATION_ID, @USER", id, user);
+            if (result != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

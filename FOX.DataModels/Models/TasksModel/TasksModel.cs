@@ -599,4 +599,43 @@ namespace FOX.DataModels.Models.TasksModel
         public List<TaskTypeDashboardData> taskTypeDashboardData { get; set; }
         public string TaskTypeDashboardDataString { get; set; }
     }
+
+    [Table("FOX_TBL_NOTIFICATIONS")]
+    public partial class FOX_TBL_NOTIFICATIONS : BaseModel
+    {
+        [Key]
+        public long FOX_NOTIFICATION_ID { get; set; }
+        public string NOTIFICATION_TEXT { get; set; }
+        public Nullable<long> CASE_ID { get; set; }
+        public int CASE_STATUS_ID { get; set; }
+        public Nullable<long> PATIENT_ACCOUNT { get; set; }
+        public string NOTIFICATION_TYPE { get; set; }
+        public System.DateTime SENT_ON { get; set; }
+        public string SENT_ON_STR { get; set; }
+        public long? SENT_BY_USER_ID { get; set; }
+        public long? SENT_TO_USER { get; set; }
+        public Nullable<bool> IS_READ { get; set; }
+        public string APPLICATION { get; set; }
+        public bool DELETED { get; set; }
+        public string CREATED_BY { get; set; }
+        public System.DateTime CREATED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public System.DateTime MODIFIED_DATE { get; set; }
+        public long? TASK_ID { get; set; }
+    }
+    public class NotificationRequestModel :  BaseModel
+    {
+        public int? TIME_FRAME { get; set; }
+        public System.DateTime DATE_FROM { get; set; }
+        public System.DateTime DATE_TO { get; set; }
+        public string DATE_FROM_STR { get; set; }
+        public string DATE_TO_STR { get; set; }
+    }
+
+    public class ListResponseModel : BaseModel
+    {
+       
+        public List<string> DATE { get; set; }
+        public List<List<FOX_TBL_NOTIFICATIONS>> NotificationList { get; set; }
+    }
 }
