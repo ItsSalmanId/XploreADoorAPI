@@ -57,17 +57,18 @@ namespace FOX.BusinessOperations.OriginalQueueService
             var parmRecordsPerPage = new SqlParameter("RECORD_PER_PAGE", SqlDbType.BigInt) { Value = req.RecordPerPage };
             //var parmSearchText = new SqlParameter("SEARCH_TEXT", SqlDbType.VarChar) { Value = req.SearchText.Split('_')[0] };
             var parmSearchText = new SqlParameter("SEARCH_TEXT", SqlDbType.VarChar) { Value = req.SearchText };
+            var parmstatus = new SqlParameter("STATUS_TEXT", SqlDbType.VarChar) { Value = req.STATUS_TEXT };
             var parmSourceString = new SqlParameter("SORCE_STRING", SqlDbType.VarChar) { Value = req.SorceString };
             var parmSourceType = new SqlParameter("SORCE_TYPE", SqlDbType.VarChar) { Value = req.SorceType };
             var parmworkid = new SqlParameter("WORK_ID", SqlDbType.VarChar) { Value = req.WORK_ID };
             var parmSortBy = new SqlParameter("SORT_BY", SqlDbType.VarChar) { Value = req.SortBy };
             var parmSortOrder = new SqlParameter("SORT_ORDER", SqlDbType.VarChar) { Value = req.SortOrder };
-            var queue = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ORIGINAL_QUEUE @PRACTICE_CODE, @CURRENT_PAGE, @DATE_FROM, @DATE_TO, @INCLUDE_ARCHIVE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORCE_STRING, @SORCE_TYPE, @WORK_ID, @SORT_BY,@SORT_ORDER",
-                parmPracticeCode, parmCurrentPage, parmDateFrom, parmDateTo, parmIncludeArchive, parmRecordsPerPage, parmSearchText, parmSourceString, parmSourceType, parmworkid, parmSortBy, parmSortOrder);
-
+            var queue = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ORIGINAL_QUEUE @PRACTICE_CODE, @CURRENT_PAGE, @DATE_FROM, @DATE_TO, @INCLUDE_ARCHIVE, @RECORD_PER_PAGE, @SEARCH_TEXT,@STATUS_TEXT, @SORCE_STRING, @SORCE_TYPE, @WORK_ID, @SORT_BY,@SORT_ORDER",
+                parmPracticeCode, parmCurrentPage, parmDateFrom, parmDateTo, parmIncludeArchive, parmRecordsPerPage, parmSearchText, parmstatus, parmSourceString, parmSourceType, parmworkid, parmSortBy, parmSortOrder);
             resOriginalQueueModel.OriginalQueueList = queue;
             return resOriginalQueueModel;
         }
+
         public string ExportToExcelOrignalQueue(OriginalQueueRequest req, UserProfile profile)
         {
             try
