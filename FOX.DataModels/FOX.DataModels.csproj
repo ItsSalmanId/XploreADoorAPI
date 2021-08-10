@@ -161,6 +161,7 @@
     <Compile Include="Models\Settings\ReferralSource\ReferralSource.cs" />
     <Compile Include="Models\Settings\RoleAndRights\RoleAndRights.cs" />
     <Compile Include="Models\Settings\User\User.cs" />
+    <Compile Include="Models\SignatureRequired\SignatureRequired.cs" />
     <Compile Include="Models\StatesModel\States.cs" />
     <Compile Include="Models\SupervisorWorkModel\SupervisorWork.cs" />
     <Compile Include="Models\TasksModel\TasksModel.cs" />

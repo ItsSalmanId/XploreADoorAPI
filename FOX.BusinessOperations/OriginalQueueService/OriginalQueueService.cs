@@ -46,7 +46,6 @@ namespace FOX.BusinessOperations.OriginalQueueService
                 }
                 req.SearchText = req.SearchText.Replace("_", @"\_");
             }
-
             var parmPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
             var parmCurrentPage = new SqlParameter("CURRENT_PAGE", SqlDbType.Int) { Value = req.CurrentPage };
             var parmDateFrom = Helper.getDBNullOrValue("DATE_FROM", req.DateFrom);
@@ -60,10 +59,11 @@ namespace FOX.BusinessOperations.OriginalQueueService
             var parmSearchText = new SqlParameter("SEARCH_TEXT", SqlDbType.VarChar) { Value = req.SearchText };
             var parmSourceString = new SqlParameter("SORCE_STRING", SqlDbType.VarChar) { Value = req.SorceString };
             var parmSourceType = new SqlParameter("SORCE_TYPE", SqlDbType.VarChar) { Value = req.SorceType };
+            var parmworkid = new SqlParameter("WORK_ID", SqlDbType.VarChar) { Value = req.WORK_ID };
             var parmSortBy = new SqlParameter("SORT_BY", SqlDbType.VarChar) { Value = req.SortBy };
             var parmSortOrder = new SqlParameter("SORT_ORDER", SqlDbType.VarChar) { Value = req.SortOrder };
-            var queue = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ORIGINAL_QUEUE @PRACTICE_CODE, @CURRENT_PAGE, @DATE_FROM, @DATE_TO, @INCLUDE_ARCHIVE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORCE_STRING, @SORCE_TYPE,@SORT_BY,@SORT_ORDER",
-                parmPracticeCode, parmCurrentPage, parmDateFrom, parmDateTo, parmIncludeArchive, parmRecordsPerPage, parmSearchText, parmSourceString, parmSourceType, parmSortBy, parmSortOrder);
+            var queue = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ORIGINAL_QUEUE @PRACTICE_CODE, @CURRENT_PAGE, @DATE_FROM, @DATE_TO, @INCLUDE_ARCHIVE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORCE_STRING, @SORCE_TYPE, @WORK_ID, @SORT_BY,@SORT_ORDER",
+                parmPracticeCode, parmCurrentPage, parmDateFrom, parmDateTo, parmIncludeArchive, parmRecordsPerPage, parmSearchText, parmSourceString, parmSourceType, parmworkid, parmSortBy, parmSortOrder);
 
             resOriginalQueueModel.OriginalQueueList = queue;
             return resOriginalQueueModel;
