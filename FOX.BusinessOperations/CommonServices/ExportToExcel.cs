@@ -5120,6 +5120,69 @@ namespace FOX.BusinessOperations.CommonServices
                     dc.Remove("ZIP");
                 }
             }
+            if (CalledFrom.Equals("Active_Indexer_History"))
+            {
+                if (dc.Contains("ACTIVE_INDEXER_ID_HISTORY"))
+                {
+                    dc.Remove("ACTIVE_INDEXER_ID_HISTORY");
+                }
+                if (dc.Contains("PRACTICE_CODE"))
+                {
+                    dc.Remove("PRACTICE_CODE");
+                }
+                if (dc.Contains("INDEXER"))
+                {
+                    dc.Remove("INDEXER");
+                }
+                if (dc.Contains("CREATED_DATE"))
+                {
+                    dc.Remove("CREATED_DATE");
+                }
+                if (dc.Contains("CREATED_BY"))
+                {
+                    dc.Remove("CREATED_BY");
+                }
+                if (dc.Contains("MODIFIED_DATE"))
+                {
+                    dc.Remove("MODIFIED_DATE");
+                }
+                if (dc.Contains("MODIFIED_BY"))
+                {
+                    dc.Remove("MODIFIED_BY");
+                }
+                if (dc.Contains("DELETED"))
+                {
+                    dc.Remove("DELETED");
+                }
+                if (dc.Contains("FIRST_NAME"))
+                {
+                    dc.Remove("FIRST_NAME");
+                }
+                if (dc.Contains("LAST_NAME"))
+                {
+                    dc.Remove("LAST_NAME");
+                }
+                if (dc.Contains("CurrentPage"))
+                {
+                    dc.Remove("CurrentPage");
+                }
+                if (dc.Contains("RecordPerPage"))
+                {
+                    dc.Remove("RecordPerPage");
+                }
+                if (dc.Contains("SearchText"))
+                {
+                    dc.Remove("SearchText");
+                }
+                if (dc.Contains("TOTAL_RECORD_PAGES"))
+                {
+                    dc.Remove("TOTAL_RECORD_PAGES");
+                }
+                if (dc.Contains("TOTAL_RECORDS"))
+                {
+                    dc.Remove("TOTAL_RECORDS");
+                }
+            }
         }
         private static void SetAmounts(DataTable dt)
         {
@@ -7586,6 +7649,25 @@ namespace FOX.BusinessOperations.CommonServices
                     dtcol["PROVIDER"].ColumnName = "Provider";
                 }
             }
+            else if (dt.TableName == "Active_Indexer_History")
+            {
+                if (dtcol.Contains("ROW"))
+                {
+                    dtcol["ROW"].ColumnName = "Sr. #";
+                }
+                if (dtcol.Contains("FULL_NAME"))
+                {
+                    dtcol["FULL_NAME"].ColumnName = "Assigned To";
+                }
+                if (dtcol.Contains("WORK_ID"))
+                {
+                    dtcol["WORK_ID"].ColumnName = "Work ID";
+                }
+                if (dtcol.Contains("CREATED_DATE_STR"))
+                {
+                    dtcol["CREATED_DATE_STR"].ColumnName = "Date";
+                }
+            }
             else
             {
                 //For Facility Creation
@@ -8044,7 +8126,10 @@ namespace FOX.BusinessOperations.CommonServices
                     {
                         SetHeaders(dt);
                     }
-                  
+                    else if (dt.TableName == "Active_Indexer_History")
+                    {
+                        SetHeaders(dt);
+                    }
                     WriteExcelFile(dt, document);
                 }
                 //Trace.WriteLine("Successfully created: " + excelFilename);
