@@ -39,6 +39,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Configuration;
 
 namespace FOX.BusinessOperations.PatientServices
 {
@@ -9282,7 +9283,8 @@ namespace FOX.BusinessOperations.PatientServices
         {
             EncryptionDecryption encrypt = new EncryptionDecryption();
             string queryString = encrypt.Encrypt(email + "|" + phone + "|" + patientAccount + "|" + pinCode).Replace('+', '!');
-            string link = AppConfiguration.PHRRoutingLink + queryString;
+            //string link = AppConfiguration.PHRRoutingLink + queryString;
+            string link = WebConfigurationManager.AppSettings["PHRPortalURL"].ToString() + queryString;
             return link;
         }
 
