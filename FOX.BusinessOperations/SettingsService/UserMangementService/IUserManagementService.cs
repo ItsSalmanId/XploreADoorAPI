@@ -61,6 +61,12 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         string RedirecToTalkEhr(UserProfile profile);
         bool SetAutoLockTimeSetup(int time, UserProfile profile);
         bool DeleteUser(DeleteUserModel res, UserProfile profile);
+        List<ActiveIndexer> GetActiveIndexers(ActiveIndexer req, UserProfile profile);
+        bool UpdateActiveIndexers(List<ActiveIndexer> res, UserProfile profile);
+        List<ActiveIndexerLogs> GetActiveIndexersLogs(ActiveIndexerLogs req, UserProfile profile);
+        List<ActiveIndexerHistory> GetActiveIndexersHistory(ActiveIndexerHistory req, UserProfile profile);
+        string ExportToExcelHistory(ActiveIndexerHistory req, UserProfile profile);
+        bool CheckActiveStatus(UserProfile profile);
         string ExportToExcelUsersReport(UserRequest req, UserProfile profile);
     }
 }
