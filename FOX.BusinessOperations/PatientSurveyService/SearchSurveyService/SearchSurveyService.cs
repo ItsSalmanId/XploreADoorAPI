@@ -27,6 +27,13 @@ namespace FOX.BusinessOperations.PatientSurveyService.SearchSurveyService
             var _isIncludeSurveyed = new SqlParameter { ParameterName = "IS_INCLUDE_SURVEYED", SqlDbType = SqlDbType.Bit, Value = isIncludeSurveyed };
             var PatientSurveyList = SpRepository<PatientSurvey>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_LIST_OFPATIENT_SURVEY @PRACTICE_CODE, @PATIENT_ACCOUNT, @IS_INCLUDE_SURVEYED",
                 PracticeCode, _patientAccount, _isIncludeSurveyed);
+            if (PatientSurveyList.Count > 0 && PatientSurveyList != null)
+            {
+                foreach (var item in PatientSurveyList)
+                {
+                    item.SURVEY_STATUS_CHILD = _patientSurveyRepository.GetFirst(x => x.SURVEY_ID == item.SURVEY_ID).SURVEY_STATUS_CHILD;
+                }
+            }
             return PatientSurveyList;
         }
         public PatientSurvey GetRandomSurvey(long practiceCode )
