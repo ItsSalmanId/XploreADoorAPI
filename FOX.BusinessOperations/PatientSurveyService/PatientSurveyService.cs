@@ -110,7 +110,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                         dbSurvey.IS_QUESTION_ANSWERED = null;
                         dbSurvey.IS_REFERABLE = null;
                         dbSurvey.IS_IMPROVED_SETISFACTION = null;
-                        //dbSurvey.FEEDBACK = null;
+                        dbSurvey.FEEDBACK = null;
                         dbSurvey.SURVEY_FLAG = null;
                         dbSurvey.IS_PROTECTIVE_EQUIPMENT = null;
                     }
@@ -118,7 +118,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                     {
                         dbSurvey.FEEDBACK = patientSurvey.FEEDBACK;
                     }
-                    if (patientSurvey.SURVEY_STATUS_BASE.Equals("Completed") && patientSurvey.SURVEY_STATUS_CHILD.Equals("Unable to Complete Survey"))
+                    if (patientSurvey.SURVEY_STATUS_BASE.Equals("Completed") && (patientSurvey.SURVEY_STATUS_CHILD.Equals("Unable to Complete Survey") || patientSurvey.SURVEY_STATUS_CHILD.Equals("Not Interested")))
                     {
                         dbSurvey.FEEDBACK = patientSurvey.FEEDBACK;
                         dbSurvey.SURVEY_FLAG = patientSurvey.SURVEY_FLAG;
