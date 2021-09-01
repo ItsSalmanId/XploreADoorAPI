@@ -249,4 +249,97 @@ namespace FOX.DataModels.Models.Security
         public string reason { get; set; }
         public bool _isADuser { get; set; }
     }
+    [Table("FOX_TBL_ACTIVE_INDEXER")]
+    public class ActiveIndexer : BaseModel
+    {
+        [Key]
+        public long ACTIVE_INDEXER_ID { get; set; }
+        public long PRACTICE_CODE { get; set; }
+        public string INDEXER { get; set; }
+        public string DEFAULT_VALUE { get; set; }
+        public bool? IS_ACTIVE { get; set; }
+        public DateTime CREATED_DATE { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime MODIFIED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public bool DELETED { get; set; }
+        [NotMapped]
+        public string FIRST_NAME { get; set; }
+        [NotMapped]
+        public string LAST_NAME { get; set; }
+        [NotMapped]
+        public int CurrentPage { get; set; }
+        [NotMapped]
+        public int RecordPerPage { get; set; }
+        [NotMapped]
+        public string SearchText { get; set; }
+        [NotMapped]
+        public Double TOTAL_RECORD_PAGES { get; set; }
+        [NotMapped]
+        public int TOTAL_RECORDS { get; set; }
+    }
+    [Table("FOX_TBL_ACTIVE_INDEXER_LOGS")]
+    public class ActiveIndexerLogs : BaseModel
+    {
+        [Key]
+        public long ACTIVE_INDEXER_ID_LOGS { get; set; }
+        public long PRACTICE_CODE { get; set; }
+        public string INDEXER { get; set; }
+        public string LOG_MESSAGE { get; set; }
+        public DateTime CREATED_DATE { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime MODIFIED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public bool DELETED { get; set; }
+        [NotMapped]
+        public string FULL_NAME { get; set; }
+        [NotMapped]
+        public string FIRST_NAME { get; set; }
+        [NotMapped]
+        public string LAST_NAME { get; set; }
+        [NotMapped]
+        public int CurrentPage { get; set; }
+        [NotMapped]
+        public int RecordPerPage { get; set; }
+        [NotMapped]
+        public string SearchText { get; set; }
+        [NotMapped]
+        public Double TOTAL_RECORD_PAGES { get; set; }
+        [NotMapped]
+        public int TOTAL_RECORDS { get; set; }
+    }
+
+    [Table("FOX_TBL_ACTIVE_INDEXER_HISTORY")]
+    public class ActiveIndexerHistory : BaseModel
+    {
+        [Key]
+        public long ACTIVE_INDEXER_ID_HISTORY { get; set; }
+        [NotMapped]
+        public int ROW { get; set; }
+        public long PRACTICE_CODE { get; set; }
+        public string INDEXER { get; set; }
+        [NotMapped]
+        public string FULL_NAME { get; set; }
+        public long WORK_ID { get; set; }
+        public DateTime CREATED_DATE { get; set; }
+        public string CREATED_DATE_STR { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime MODIFIED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public bool DELETED { get; set; }
+        [NotMapped]
+        public string FIRST_NAME { get; set; }
+        [NotMapped]
+        public string LAST_NAME { get; set; }
+        [NotMapped]
+        public int CurrentPage { get; set; }
+        [NotMapped]
+        public int RecordPerPage { get; set; }
+        [NotMapped]
+        public string SearchText { get; set; }
+        [NotMapped]
+        public Double TOTAL_RECORD_PAGES { get; set; }
+        [NotMapped]
+        public int TOTAL_RECORDS { get; set; }
+    }
 }

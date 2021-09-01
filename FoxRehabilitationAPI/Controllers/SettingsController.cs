@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using FOX.BusinessOperations.AccountService;
+using System.Collections.Generic;
 
 namespace FoxRehabilitationAPI.Controllers
 {
@@ -508,6 +509,36 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage DeleteUser(DeleteUserModel res)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _userServices.DeleteUser(res, GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage GetActiveIndexers(ActiveIndexer req)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _userServices.GetActiveIndexers(req, GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage UpdateActiveIndexers(List<ActiveIndexer> res)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _userServices.UpdateActiveIndexers(res, GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage GetActiveIndexersLogs(ActiveIndexerLogs res)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _userServices.GetActiveIndexersLogs(res, GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage GetActiveIndexersHistory(ActiveIndexerHistory req)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _userServices.GetActiveIndexersHistory(req, GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage ExportToExcelHistory(ActiveIndexerHistory req)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _userServices.ExportToExcelHistory(req, GetProfile()));
+        }
+        [HttpGet]
+        public HttpResponseMessage CheckActiveStatus()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _userServices.CheckActiveStatus(GetProfile()));
         }
     }
 }

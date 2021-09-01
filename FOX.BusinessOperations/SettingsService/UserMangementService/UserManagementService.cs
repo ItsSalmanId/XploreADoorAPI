@@ -65,6 +65,9 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         private readonly GenericRepository<FOX_TBL_DASHBOARD_ACCESS> _dashBoardAccessRepository;
         private readonly GenericRepository<WS_TBL_FOX_Login_LOGS> _loginLogsRepository;
         private readonly GenericRepository<FoxProviderClass> _FoxProviderClassRepository;
+        private readonly GenericRepository<ActiveIndexer> _ActiveIndexerRepository;
+        private readonly GenericRepository<ActiveIndexerLogs> _ActiveIndexerLogsRepository;
+        private readonly GenericRepository<ActiveIndexerHistory> _ActiveIndexerHistoryRepository;
         public UserManagementService()
         {
             _UserRepository = new GenericRepository<User>(security);
@@ -91,6 +94,9 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             _dashBoardAccessRepository = new GenericRepository<FOX_TBL_DASHBOARD_ACCESS>(_settings);
             _loginLogsRepository = new GenericRepository<WS_TBL_FOX_Login_LOGS>(security);
             _FoxProviderClassRepository = new GenericRepository<FoxProviderClass>(_dbContextSettings);
+            _ActiveIndexerRepository = new GenericRepository<ActiveIndexer>(security);
+            _ActiveIndexerLogsRepository = new GenericRepository<ActiveIndexerLogs>(security);
+            _ActiveIndexerHistoryRepository = new GenericRepository<ActiveIndexerHistory>(security);
         }
         public bool CreateUser(User user, UserProfile profile)
         {
@@ -3033,5 +3039,185 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 return false;
             }
         }
+
+        public List<ActiveIndexer> GetActiveIndexers(ActiveIndexer req, UserProfile profile)
+        {
+            SqlParameter practiceCode = new SqlParameter("@PRACTICE_CODE", profile.PracticeCode);
+            SqlParameter currentPage = new SqlParameter("@CURRENT_PAGE", req.CurrentPage);
+            SqlParameter recordPerPage = new SqlParameter("@RECORD_PER_PAGE", req.RecordPerPage);
+            SqlParameter searchText = new SqlParameter("@SEARCH_TEXT", req.SearchText);
+
+            return  SpRepository<ActiveIndexer>.GetListWithStoreProcedure(@"Exec FOX_PROC_GET_INDEXERS
+            @PRACTICE_CODE, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT", practiceCode, currentPage, recordPerPage, searchText);
+        }
+        public bool UpdateActiveIndexers(List<ActiveIndexer> res, UserProfile profile)
+        {
+            foreach(var item in res)
+            {
+                var indexer = _ActiveIndexerRepository.GetFirst(x => x.INDEXER == item.INDEXER);
+                var user = new User();
+                if (indexer != null)
+                {
+                    user = _UserRepository.GetFirst(x => x.USER_NAME == indexer.INDEXER);
+                }
+                SqlParameter practiceCode = new SqlParameter("@PRACTICE_CODE", profile.PracticeCode);
+                SqlParameter _indexer = new SqlParameter("@INDEXER", item.INDEXER);
+                SqlParameter defaultValue = new SqlParameter("@DEFAULT_VALUE", item.DEFAULT_VALUE);
+                SqlParameter isActive = new SqlParameter("@IS_ACTIVE", item.IS_ACTIVE);
+                SqlParameter modifiedBy = new SqlParameter("@MODIFIED_BY", item.MODIFIED_BY);
+
+                var response = SpRepository<ActiveIndexer>.GetSingleObjectWithStoreProcedure(@"Exec FOX_PROC_UPDATE_ACTIVE_INDEXER
+            @PRACTICE_CODE, @INDEXER, @DEFAULT_VALUE, @IS_ACTIVE, @MODIFIED_BY", practiceCode, _indexer, defaultValue, isActive, modifiedBy);
+
+                SaveActiveIndexersLogs(indexer, response, user, profile);
+            }
+            return true;
+        }
+
+        public void SaveActiveIndexersLogs(ActiveIndexer oldData, ActiveIndexer newData, User user, UserProfile profile)
+        {
+            try
+            {
+               
+                if (oldData != null && newData != null)
+                {
+                    if(oldData.DEFAULT_VALUE != newData.DEFAULT_VALUE)
+                    {
+                        string message = String.Empty;
+                        if (user != null)
+                        {
+                            if (newData.DEFAULT_VALUE.ToLower().Contains("regular"))
+                            {
+                                 message = user.FIRST_NAME + " " + user.LAST_NAME + " default value set as Regular indexer";
+                            }
+                            if (newData.DEFAULT_VALUE.ToLower().Contains("poc"))
+                            {
+                                message = user.FIRST_NAME + " " + user.LAST_NAME + " default value set as POC indexer";
+                            }
+                            if (newData.DEFAULT_VALUE.ToLower().Contains("trainee"))
+                            {
+                                message = user.FIRST_NAME + " " + user.LAST_NAME + " default value set as Trainee indexer";
+                            }
+                        }
+                         
+                        var pID = CommonService.Helper.getMaximumId("ACTIVE_INDEXER_LOG_ID");
+
+                        SqlParameter id = new SqlParameter("@ID", pID);
+                        SqlParameter practiceCode = new SqlParameter("@PRACTICE_CODE", profile.PracticeCode);
+                        SqlParameter indexer = new SqlParameter("@INDEXER", newData.INDEXER);
+                        SqlParameter logMessage = new SqlParameter("@LOG_MESSAGE", message);
+                        SqlParameter createdBy = new SqlParameter("@CREATED_BY", profile.UserName);
+
+                        var response = SpRepository<ActiveIndexerLogs>.GetSingleObjectWithStoreProcedure(@"Exec FOX_PROC_INSERT_ACTIVE_INDEXER_LOGS
+                        @ID, @PRACTICE_CODE, @INDEXER, @LOG_MESSAGE, @CREATED_BY", id, practiceCode, indexer, logMessage, createdBy);
+                    }
+                    if (oldData.IS_ACTIVE != newData.IS_ACTIVE)
+                    {
+                        string message = String.Empty;
+                        if (user != null)
+                        {
+                            if (newData.IS_ACTIVE == true)
+                            {
+                                message = user.FIRST_NAME + " " + user.LAST_NAME + " status changed to active";
+                            }
+                            else
+                            {
+                                message = user.FIRST_NAME + " " + user.LAST_NAME + " status changed to inactive";
+                            }
+                        }
+
+                        var pID = CommonService.Helper.getMaximumId("ACTIVE_INDEXER_LOG_ID");
+
+                        SqlParameter id = new SqlParameter("@ID", pID);
+                        SqlParameter practiceCode = new SqlParameter("@PRACTICE_CODE", profile.PracticeCode);
+                        SqlParameter indexer = new SqlParameter("@INDEXER", newData.INDEXER);
+                        SqlParameter logMessage = new SqlParameter("@LOG_MESSAGE", message);
+                        SqlParameter createdBy = new SqlParameter("@CREATED_BY", profile.UserName);
+
+                        var response = SpRepository<ActiveIndexerLogs>.GetSingleObjectWithStoreProcedure(@"Exec FOX_PROC_INSERT_ACTIVE_INDEXER_LOGS
+                        @ID, @PRACTICE_CODE, @INDEXER, @LOG_MESSAGE, @CREATED_BY", id, practiceCode, indexer, logMessage, createdBy);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<ActiveIndexerLogs> GetActiveIndexersLogs(ActiveIndexerLogs req, UserProfile profile)
+        {
+            SqlParameter indexer = new SqlParameter("@INDEXER", req.INDEXER);
+            SqlParameter practiceCode = new SqlParameter("@PRACTICE_CODE", profile.PracticeCode);
+            SqlParameter currentPage = new SqlParameter("@CURRENT_PAGE", req.CurrentPage);
+            SqlParameter recordPerPage = new SqlParameter("@RECORD_PER_PAGE", req.RecordPerPage);
+
+            return SpRepository<ActiveIndexerLogs>.GetListWithStoreProcedure(@"Exec FOX_PROC_GET_INDEXERS_LOGS
+            @INDEXER, @PRACTICE_CODE, @CURRENT_PAGE, @RECORD_PER_PAGE", practiceCode, currentPage, recordPerPage, indexer);
+        }
+        public List<ActiveIndexerHistory> GetActiveIndexersHistory(ActiveIndexerHistory req, UserProfile profile)
+        {
+            if (!string.IsNullOrEmpty(req.CREATED_DATE_STR))
+                req.CREATED_DATE = Convert.ToDateTime(req.CREATED_DATE_STR);
+
+            SqlParameter practiceCode = new SqlParameter("@PRACTICE_CODE", profile.PracticeCode);
+            SqlParameter currentPage = new SqlParameter("@CURRENT_PAGE", req.CurrentPage);
+            SqlParameter recordPerPage = new SqlParameter("@RECORD_PER_PAGE", req.RecordPerPage);
+            SqlParameter searchText = new SqlParameter("@SEARCH_TEXT", req.SearchText);
+            SqlParameter date = new SqlParameter("@DATE", req.CREATED_DATE.ToString());
+
+            var result =  SpRepository<ActiveIndexerHistory>.GetListWithStoreProcedure(@"Exec FOX_PROC_GET_INDEXERS_HISTORY
+            @PRACTICE_CODE, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @DATE", practiceCode, currentPage, recordPerPage, searchText, date);
+            return result;
+        }
+        public string ExportToExcelHistory(ActiveIndexerHistory req, UserProfile profile)
+        {
+            try
+            {
+                string fileName = "Active_Indexer_History_List";
+                string exportPath = "";
+                string path = string.Empty;
+                bool exported;
+                req.CurrentPage = 1;
+                req.RecordPerPage = 0;
+                var CalledFrom = "Active_Indexer_History";
+                string virtualPath = @"/" + profile.PracticeDocumentDirectory + "/" + "Fox/ExportedFiles/";
+                exportPath = HttpContext.Current.Server.MapPath("~" + virtualPath);
+                fileName = DocumentHelper.GenerateSignatureFileName(fileName) + ".xlsx";
+                if (!Directory.Exists(exportPath))
+                {
+                    Directory.CreateDirectory(exportPath);
+                }
+                List<ActiveIndexerHistory> result = new List<ActiveIndexerHistory>();
+                var pathtowriteFile = exportPath + "\\" + fileName;
+                result = GetActiveIndexersHistory(req, profile);
+                for (int i = 0; i < result.Count(); i++)
+                {
+                    result[i].ROW = i + 1;
+
+                }
+                exported = ExportToExcel.CreateExcelDocument<ActiveIndexerHistory>(result, pathtowriteFile, CalledFrom.Replace(' ', '_'));
+                return virtualPath + fileName;
+            }
+
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public bool CheckActiveStatus(UserProfile profile)
+        {
+            var active = _ActiveIndexerRepository.GetFirst(x => (x.IS_ACTIVE ?? false) == true && x.PRACTICE_CODE == profile.PracticeCode && !(x.DELETED));
+
+            if(active != null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
     }
-}
+} 
