@@ -70,6 +70,10 @@ namespace FOX.DataModels.Models.OriginalQueueModel
         public long? DOCUMENT_TYPE { get; set; }
         public long? SENDER_ID { get; set; }
         public string FACILITY_NAME { get; set; }
+        [NotMapped]
+        public string FINANCIAL_CLASS_NAME { get; set; }
+        [NotMapped]
+        public int FINANCIAL_CLASS_ID { get; set; }
         public long? FACILITY_ID { get; set; }
         public string DEPARTMENT_ID { get; set; }
         public bool IS_EMERGENCY_ORDER { get; set; }
