@@ -466,6 +466,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
         }
         public OriginalQueue InsertSource_AdditionalInfo(DataModels.Models.OriginalQueueModel.OriginalQueue obj, UserProfile profile)
         {
+            //Source Email Validation Vulnerability
+            if (!obj.SORCE_NAME.Equals(profile.UserEmailAddress))
+            {
+                obj.SORCE_NAME = profile.UserEmailAddress;
+            }
             // work id null check
             string user = !string.IsNullOrEmpty(profile.FirstName) ? profile.FirstName + " " + profile.LastName : profile.UserName;
             var listLogMsgs = new List<string>();
