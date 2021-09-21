@@ -466,14 +466,14 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     }
                     if (!string.IsNullOrWhiteSpace(encryptedPassword) && !string.IsNullOrWhiteSpace(encryptedAdminPassword))
                     {
-                        DB_PASSWORD = Encrypt.DecryptPassword(encryptedPassword);
+                        user.DB_PASSWORD = Encrypt.DecryptPassword(encryptedPassword);
                         user.ADMIN_PASSWORD = Encrypt.DecryptPassword(encryptedAdminPassword);
 
                         user.HIDE_EYE_ICON = false;
                     }
                     else
                     {
-                        DB_PASSWORD = user.SHOW_TO_USER_PASSWORD = "";
+                        user.DB_PASSWORD = user.SHOW_TO_USER_PASSWORD = "";
                         user.HIDE_EYE_ICON = true;
                     }
                 }
@@ -494,18 +494,18 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     }
                     if (!string.IsNullOrWhiteSpace(encryptedPassword))
                     {
-                        DB_PASSWORD = Encrypt.DecryptPassword(encryptedPassword);
+                        user.DB_PASSWORD = Encrypt.DecryptPassword(encryptedPassword);
                         user.PROFILE = true;
                     }
                     else
                     {
-                        DB_PASSWORD = user.SHOW_TO_USER_PASSWORD = "";
+                        user.DB_PASSWORD = user.SHOW_TO_USER_PASSWORD = "";
                         user.HIDE_EYE_ICON = true;
                     }
                 }
                 else
                 {
-                    DB_PASSWORD = user.SHOW_TO_USER_PASSWORD = "";
+                    user.DB_PASSWORD = user.SHOW_TO_USER_PASSWORD = "";
                     user.HIDE_EYE_ICON = true;
                 }
 
