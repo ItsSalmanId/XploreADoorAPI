@@ -82,7 +82,16 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpGet]
         public HttpResponseMessage GetDDValues()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetDDValues(GetProfile()));
+            var getProfile = GetProfile();
+            var getUserRight = getProfile.ApplicationUserRoles.Find(x => x.RIGHT_NAME.ToLower() == "view reconciliation cp");
+            if (getUserRight != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetDDValues(GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Access Denied");
+            }
         }
 
         [HttpPost]

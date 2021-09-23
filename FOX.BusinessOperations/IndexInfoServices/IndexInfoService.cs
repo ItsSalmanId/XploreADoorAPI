@@ -466,6 +466,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
         }
         public OriginalQueue InsertSource_AdditionalInfo(DataModels.Models.OriginalQueueModel.OriginalQueue obj, UserProfile profile)
         {
+            //Source Email Validation Vulnerability
+            if (!obj.SORCE_NAME.Equals(profile.UserEmailAddress))
+            {
+                obj.SORCE_NAME = profile.UserEmailAddress;
+            }
             // work id null check
             string user = !string.IsNullOrEmpty(profile.FirstName) ? profile.FirstName + " " + profile.LastName : profile.UserName;
             var listLogMsgs = new List<string>();
@@ -1035,6 +1040,9 @@ namespace FOX.BusinessOperations.IndexInfoServices
             }
             //Stop creating POS in RFO of Patient, Usman Nasir
             //MapTreatmentLocation(obj.PATIENT_ACCOUNT, obj.FACILITY_NAME, obj.FACILITY_ID, profile);
+            var financial_details  = _financialClassRepository.GetFirst(x => x.FINANCIAL_CLASS_ID == obj.FINANCIAL_CLASS_ID);
+            if (financial_details != null) {
+                sourceAddDetail.FINANCIAL_CLASS_NAME = financial_details.NAME.ToString();  }
             return sourceAddDetail;
         }
 
@@ -4026,12 +4034,14 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 }
             }
 
+            var fClass = new FinancialClass();
+
             if (work_order != null && work_order.PATIENT_ACCOUNT != null && work_order.PATIENT_ACCOUNT != 0)
             {
                 var pat = _FoxTblPatientRepository.GetFirst(x => x.Patient_Account == work_order.PATIENT_ACCOUNT);
                 if (pat != null && pat.FINANCIAL_CLASS_ID != null)
                 {
-                    var fClass = _financialClassRepository.GetFirst(x => x.FINANCIAL_CLASS_ID == pat.FINANCIAL_CLASS_ID);
+                    fClass = _financialClassRepository.GetFirst(x => x.FINANCIAL_CLASS_ID == pat.FINANCIAL_CLASS_ID);
                     if (fClass != null && !string.IsNullOrEmpty(fClass.NAME) && fClass.NAME.ToLower().Equals("sa- special account"))
                     {
                         work_order.is_strategic_account = true;
@@ -4175,7 +4185,18 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 body = body.Replace("[[ORS]]", ORS.LAST_NAME + ", " + ORS.FIRST_NAME ?? "");
                 body = body.Replace("[[SENDER]]", Sender == null ? "" : Sender.LAST_NAME + ", " + Sender.FIRST_NAME ?? "");
                 body = body.Replace("[[TREATMENT_LOCATION]]", sourceDetail.FACILITY_NAME ?? "");
-
+                if (fClass != null && !string.IsNullOrEmpty(fClass.NAME) && fClass.NAME.ToLower().Equals("sa- special account"))
+                {
+                    var Title = "Home Health";
+                    var Description = "Home Health Strategic Account";
+                    body = body.Replace("[[Home_Health]]", Title ?? "");
+                    body = body.Replace("[[Home_Health_Description]]", Description ?? "");
+                }
+                else
+                {
+                    body = body.Replace("[[Home_Health]]", "");
+                    body = body.Replace("[[Home_Health_Description]]", "");
+                }
 
                 body = body.Replace("[[Diagnosis_Information]]", diagnosis_string);
 

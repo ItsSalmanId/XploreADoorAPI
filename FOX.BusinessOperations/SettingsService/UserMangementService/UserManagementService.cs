@@ -435,7 +435,11 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         {
             try
             {
+                string DB_PASSWORD = "";
                 var user = _UserRepository.GetSingle(x => x.USER_NAME.Equals(username));
+                //Source Email Validation Vulnerability
+                user.SECURITY_QUESTION = null;
+                user.SECURITY_QUESTION_ANSWER = null;
                 var role = _RoleRepository.GetFirst(x => x.ROLE_ID.Equals(profile.RoleId));
                 var userRole = _RoleRepository.GetFirst(x => x.ROLE_ID.Equals(user.ROLE_ID ?? 0) && !x.DELETED);
                 if(userRole !=null && !string.IsNullOrWhiteSpace(userRole.ROLE_NAME))
