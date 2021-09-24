@@ -40,7 +40,10 @@ namespace FOX.BusinessOperations.PatientSurveyService.SearchSurveyService
             var _dateTo = Helper.getDBNullOrValue("DATE_TO",dateTo.ToString());
             var PatientSurveyList = SpRepository<PatientSurvey>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_RANDOM_PATIENT_SURVEY @PRACTICE_CODE, @DATE_FROM, @DATE_TO", 
                 PracticeCode, _dateFrom, _dateTo);
-            CheckDeceasedPatient(PatientSurveyList.PATIENT_ACCOUNT_NUMBER.ToString(), practiceCode);
+            if(PatientSurveyList != null && PatientSurveyList.PATIENT_ACCOUNT_NUMBER.ToString() != null && !string.IsNullOrEmpty(PatientSurveyList.PATIENT_ACCOUNT_NUMBER.ToString()))
+            {
+                CheckDeceasedPatient(PatientSurveyList.PATIENT_ACCOUNT_NUMBER.ToString(), practiceCode);
+            }
             return PatientSurveyList;
         }
         public ResponseModel CheckDeceasedPatient(string patientAccount, long practiceCode)
