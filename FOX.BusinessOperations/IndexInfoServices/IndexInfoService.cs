@@ -3144,6 +3144,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             var taskTypes = GetTaskTypes(profile.PracticeCode);
             //var taskTypes = _taskTypeRepository.GetMany(t => t.PRACTICE_CODE == profile.PracticeCode && !t.DELETED);
             var referralSource = _referralSourceTableRepository.GetFirst(t => t.FOX_SOURCE_CATEGORY_ID == FOX_SOURCE_CATEGORY_ID && t.DELETED == false);
+            var referralSource2 = _speciality.GetFirst(x => x.SPECIALITY_ID.ToString() == FOX_SOURCE_CATEGORY_ID.ToString());
             var currentTaskType = taskTypes.Find(e => e.TASK_TYPE_ID == task_type_id);
             foreach (var taskSubType in taskSubTypeList)
             {
@@ -3155,8 +3156,8 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 {
                     IS_CHECKED = true;
                 }
-                else if (FOX_SOURCE_CATEGORY_ID != null && referralSource != null && !string.IsNullOrEmpty(referralSource.DESCRIPTION) && !string.IsNullOrEmpty(taskSubType.NAME)
-                    && referralSource.DESCRIPTION.ToLower() == taskSubType.NAME.ToLower())
+                else if (FOX_SOURCE_CATEGORY_ID != null && referralSource != null || referralSource2 != null && !string.IsNullOrEmpty(referralSource.DESCRIPTION) || !string.IsNullOrEmpty(referralSource2.NAME) && !string.IsNullOrEmpty(taskSubType.NAME)
+                    && referralSource.DESCRIPTION.ToLower() == taskSubType.NAME.ToLower() || referralSource2.NAME.ToLower() == taskSubType.NAME.ToLower())
                 {
                     IS_CHECKED = true;
                 }
