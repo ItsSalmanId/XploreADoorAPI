@@ -31,7 +31,16 @@ namespace FoxRehabilitationAPI.Controllers
 
         public HttpResponseMessage GetPatientList(PatientSearchRequest patientSearchRequest)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetPatientList(patientSearchRequest, GetProfile()));
+            var getProfile = GetProfile();
+            var getUserRight = getProfile.ApplicationUserRoles.Find(x => x.RIGHT_NAME.ToLower() == "patient maintenance");
+            if (getUserRight != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetPatientList(patientSearchRequest, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Access Denied");
+            }
         }
 
         [HttpPost]

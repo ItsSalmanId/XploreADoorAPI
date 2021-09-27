@@ -20,7 +20,16 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpPost]
         public HttpResponseMessage GetPatientInformation(PatientsSearchRequest ObjPatientSearchRequest)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetPatientInformation(ObjPatientSearchRequest, GetProfile()));
+            var getProfile = GetProfile();
+            var getUserRight = getProfile.ApplicationUserRoles.Find(x => x.RIGHT_NAME.ToLower() == "view patient helpdesk");
+            if (getUserRight != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetPatientInformation(ObjPatientSearchRequest, getProfile));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Access Denied");
+            }
         }
         [HttpPost]
         public HttpResponseMessage DeleteCallDetailRecordInformation(PHDCallDetail ObjPHDCallDetailRequest)

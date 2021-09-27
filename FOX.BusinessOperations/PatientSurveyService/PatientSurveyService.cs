@@ -2,6 +2,7 @@
 using FOX.BusinessOperations.CommonServices;
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
+using FOX.DataModels.Models.CommonModel;
 using FOX.DataModels.Models.PatientSurvey;
 using FOX.DataModels.Models.QualityAsuranceModel;
 using FOX.DataModels.Models.Security;
@@ -70,7 +71,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
             string link = string.Empty;
             List<right> rightList = new List<right>() ;
             string MRN = "";
-           var dbSurvey = _patientSurveyRepository.GetByID(patientSurvey.SURVEY_ID);
+            var dbSurvey = _patientSurveyRepository.GetByID(patientSurvey.SURVEY_ID);
             if (dbSurvey != null) //update
             {
                 //if (patientSurvey.IS_SURVEYED == true)
@@ -135,7 +136,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 }
                 dbSurvey.SURVEY_STATUS_BASE = patientSurvey.SURVEY_STATUS_BASE;
                 dbSurvey.SURVEY_STATUS_CHILD = patientSurvey.SURVEY_STATUS_CHILD;
-                dbSurvey.MODIFIED_BY = profile.UserName; 
+                dbSurvey.MODIFIED_BY = profile.UserName;
                 dbSurvey.MODIFIED_DATE = Helper.GetCurrentDate();
                 dbSurvey.IS_EXCEPTIONAL = patientSurvey.IS_EXCEPTIONAL;
                 AddPatientSurveyHistory(dbSurvey, profile);
@@ -456,24 +457,25 @@ namespace FOX.BusinessOperations.PatientSurveyService
                  , servicePaymentDesc, provider, region, lastVisitDate, dischargeDate, attendingDocName, ptOtSlp, referralDate, procTranCode, servicePaymentAmnt, isContactHQ, isResponsedByHq, isQuestionAnswered
                  , isReferrable, isImprovedSetisfaction, feedback, surveyFlag, surveyStatusBase, surveyStatusChild, surveyFormat, isSurveyed, inProgress, fileName, sheetName, totalRecordInFile, createdBy
                  , createdDate, modifiedBy, modifiedDate, delete, isExceptional, isprotectiveEquipment, surveyCompletedDate);
-                
+
+                if(patientAccount.Value.ToString() != null && practiceCode.Value != null)
+                {
+                    CheckDeceasedPatient(patientAccount.Value.ToString(), Convert.ToInt64(practiceCode.Value));
+                }
+
                 if (patientSurvey.IS_EXCEPTIONAL == true)
                 {
 
-                    //sendTo = "usamabinahmed@mtbc.com";
-                    sendTo = "bradley.pennypacker@foxrehab.org";
-
-                    
                     if (AppConfiguration.ClientURL.Contains("https://fox.mtbc.com/") && profile.PracticeCode== 1012714 )
                     {
-                     sendTo = WebConfigurationManager.AppSettings["PatientSurveyEmailAddressForLive"].ToString();
+                        sendTo = WebConfigurationManager.AppSettings["PatientSurveyEmailAddressForLive"].ToString();
                     }
                     else
                     {
                         sendTo = WebConfigurationManager.AppSettings["PatientSurveyEmailAddressForTest"].ToString();
                     }
-                     _subject = "Exceptional feedback ";
-                        if(!string.IsNullOrEmpty(patientSurvey.SURVEY_STATUS_CHILD))
+                    _subject = "Exceptional feedback ";
+                    if(!string.IsNullOrEmpty(patientSurvey.SURVEY_STATUS_CHILD))
                     {
                         if (patientSurvey.SURVEY_STATUS_CHILD.ToLower() == "not recommended")
                         {
@@ -485,7 +487,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                         }
                     }
                     _body = "<b>Body:</b> <br> <p>An exceptional feedback was received with following specifics:</p>";
-                        if (!string.IsNullOrEmpty(patientSurvey.PATIENT_FULL_NAME))
+                    if (!string.IsNullOrEmpty(patientSurvey.PATIENT_FULL_NAME))
                     {
                         _body += "<p> Patient: " + patientSurvey.PATIENT_FULL_NAME + "</p>";
                     }
@@ -1064,6 +1066,51 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 return false;
             }
 
+        }
+        public ResponseModel CheckDeceasedPatient(string patientAccount, long practiceCode)
+        {
+            ResponseModel responseModel = new ResponseModel();
+            var result = _patientSurveyRepository.GetMany(x => x.PATIENT_ACCOUNT_NUMBER.ToString() == patientAccount && x.DELETED != true && x.PRACTICE_CODE == practiceCode);
+            if (result != null && result.Count > 0)
+            {
+                foreach (var item in result)
+                {
+                    if (item.SURVEY_STATUS_CHILD != null && item.SURVEY_STATUS_CHILD.ToLower().Contains("deceased"))
+                    {
+                        UpdatePatientSurvey(result);
+                        responseModel.Message = "Successfully Updated";
+                        responseModel.Success = true;
+                        responseModel.ErrorMessage = "";
+                    }
+                    else
+                    {
+                        responseModel.Message = "Not Updated";
+                        responseModel.Success = false;
+                        responseModel.ErrorMessage = "";
+                    }
+                }
+            }
+            else
+            {
+                responseModel.Message = "Response is Empty";
+                responseModel.Success = false;
+                responseModel.ErrorMessage = "";
+            }
+            return responseModel;
+        }
+        public void UpdatePatientSurvey(List<PatientSurvey> patientSurveys)
+        {
+            if (patientSurveys != null)
+            {
+                foreach (var item in patientSurveys)
+                {
+                    item.DELETED = true;
+                    item.MODIFIED_DATE = DateTime.Now;
+                    item.FEEDBACK = "Patient marked as deceased as of " + DateTime.Now;
+                    _patientSurveyRepository.Update(item);
+                    _patientSurveyRepository.Save();
+                }
+            }
         }
     }
 }
