@@ -189,6 +189,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
             list = GetAllPendingDetailedReport(patientSurveySearchRequest, profile);
             obj.PENDING_30 = list.Count;
 
+            obj.DISCHARGE_TO_SURVEY_TIME_DAYS_AVERAGE = DischargeToSurveyTimeDaysAverage(patientSurveySearchRequest, profile); ;
             return obj;
         }
         public string ExportToExcelPSRDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile)
@@ -602,6 +603,20 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
                            PracticeCode, dateFrom, dateTo, provider, region, state, format, surveyedBy, surveyStatus, CurrentPage, RecordPerPage, searchText, SortBy, SortOrder);
 
             return list;
+        }
+        public int DischargeToSurveyTimeDaysAverage(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile)
+        {
+            AverageDaysSurveyCompleted Obj = new AverageDaysSurveyCompleted();
+            var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+            Obj = SpRepository<AverageDaysSurveyCompleted>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_DISCHARGE_SURVEY_LAST_14_DAYS_AVERAGE @PRACTICE_CODE", PracticeCode);
+            if(Obj != null)
+            {
+                return Obj.AVERAGE_DAY;
+            }
+            else
+            {
+                return 0; 
+            }
         }
     }
 }
