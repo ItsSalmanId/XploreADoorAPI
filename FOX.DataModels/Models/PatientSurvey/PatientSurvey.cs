@@ -469,6 +469,11 @@ namespace FOX.DataModels.Models.PatientSurvey
         public int PENDING_30 { get; set; }
         public int PENDING_ALL { get; set; }
         public int NOT_ENOUGH_SERVICES_PROVIDE { get; set; }
+        public int DISCHARGE_TO_SURVEY_TIME_DAYS_AVERAGE { get; set; }
+    }
+    public class AverageDaysSurveyCompleted
+    {
+        public int AVERAGE_DAY { get; set; }
     }
    
 }
