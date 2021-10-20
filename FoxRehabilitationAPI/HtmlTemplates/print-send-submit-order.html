@@ -4,7 +4,7 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
     <style>
         body, table, td {
-            font-family: 'Roboto' !important;
+           /* font-family: 'Roboto' !important;*/
             margin: 0px;
             padding: 0px;
             border: none;
@@ -17,7 +17,7 @@
         p {
             color: #333;
             margin: 0px;
-            font-family: 'Roboto' !important;
+         /* font-family: 'Roboto' !important;*/
         }
 
         img {
@@ -64,9 +64,9 @@
                                                             <img id="QRImage" style="width: 70px; height: 70px;margin:6px;" src="[[QRCode]]" alt="QR Image" />
                                                         </td>
                                                         <td align="center">
-                                                            <div style="font-size: 20pt; font-weight: bold !important;">THERAPY TREATMENT REFERRAL</div>
+                                                            <div style="font-size: 20pt; font-weight: bold!important;">THERAPY TREATMENT REFERRAL</div>
                                                             <div style="font-size: 16pt; font-weight:bold; color:#FF7F50;">[[Home_Health]]</div>
-                                                            <div style="font-size: 16pt; font-weight: bold !important;">***REQUEST***</div>
+                                                            <div style="font-size: 16pt; font-weight: bold!important;">***REQUEST***</div>
                                                         </td>
                                                         <td width="70px"></td>
                                                 </tbody>
@@ -91,6 +91,8 @@
                                             Ordering Referral Source:  [[ORS]] <br />
                                             Sender:  [[SENDER]] <br />
                                             Treatment Location:  [[TREATMENT_LOCATION]] <br />
+                                            Referral Source/Specialty:  [[specialty_program]]<br />
+
                                         </td>
                                     </tr>
                                     <tr>
@@ -99,7 +101,7 @@
                                     <tr>
                                         <td>
                                             <b>Diagnosis Information</b> <br />
-
+                                           
                                             <span></span>[[Diagnosis_Information]] <br />
 
                                         </td>
@@ -110,8 +112,8 @@
                                     <tr>
                                         <td>
                                             <b>Procedure Information</b> <br />
-                                            <span style="font-weight: bold !important;">Disciplines:  [[discipline]]</span> <br />
-                                            Speciality Program:  [[specialty_program]]<br />
+                                            <span style="font-weight: bold!important;">Disciplines:  [[discipline]]</span> <br />
+                                           
                                             Urgent referral:  [[is_urgent_Referral]]<br />
                                             <span id="URGENT">
                                                 Reason for urgency:  [[reason_urgency]]<br />
