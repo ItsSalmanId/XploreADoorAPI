@@ -11,6 +11,7 @@ namespace FOX.BusinessOperations.ReconciliationService
         List<ReconciliationDepositType> GetDepositTypes(UserProfile profile);
         List<ReconciliationCategory> GetReconciliationCategories(UserProfile profile);
         List<ReconciliationCP> GetReconciliationInsurances(ReconciliationCPSearchReq searchReq, UserProfile profile);
+        List<ReconciliationCP> GetReconciliationStates(ReconciliationCPSearchReq searchReq, UserProfile profile);
         List<CheckNoSelectionModel> GetReconciliationCheckNos(ReconciliationCPSearchReq searchReq, UserProfile profile);
         List<AmountSelectionModel> GetAmounts(ReconciliationCPSearchReq searchReq, UserProfile profile);
         List<AmountPostedSelectionModel> GetPostedAmounts(ReconciliationCPSearchReq searchReq, UserProfile profile);

@@ -54,7 +54,11 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetReconciliationInsurances(searchReq, GetProfile()));
         }
-
+        [HttpPost]
+        public HttpResponseMessage GetReconciliationStates([FromBody] ReconciliationCPSearchReq searchReq)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.GetReconciliationStates(searchReq, GetProfile()));
+        }
         [HttpPost]
         public HttpResponseMessage GetReconciliationCheckNos([FromBody] ReconciliationCPSearchReq searchReq)
         {

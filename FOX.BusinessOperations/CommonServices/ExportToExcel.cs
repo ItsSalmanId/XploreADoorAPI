@@ -5329,6 +5329,10 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["DEPOSIT_TYPE_NAME"].ColumnName = "Deposit Type";
                 }
+                if (dtcol.Contains("STATE"))
+                {
+                    dtcol["STATE"].ColumnName = "State";
+                }
                 if (dtcol.Contains("CATEGORY_NAME"))
                 {
                     dtcol["CATEGORY_NAME"].ColumnName = "Category/Account";
