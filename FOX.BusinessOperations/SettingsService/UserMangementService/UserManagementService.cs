@@ -252,7 +252,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     };
                     _passwordHistoryRepository.Insert(ph);
                     _passwordHistoryRepository.Save();
-
+                  
                     var senderName = _FOX_TBL_SENDER_NAME.GetFirst(t => t.SENDER_NAME_CODE.Equals(usr.USER_NAME));
                     if (senderName == null)
                     {
@@ -2131,6 +2131,26 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 _FOX_TBL_SENDER_NAME.Insert(senderName);
                 _FOX_TBL_SENDER_NAME.Save();
             }
+            if (user.ROLE_ID == 101 && user.IS_ACTIVE ==true)
+            {
+                var ActiveIUser = _ActiveIndexerRepository.GetFirst(t => t.INDEXER.Equals(userName));
+                if (ActiveIUser == null)
+                {
+                    ActiveIUser = new ActiveIndexer();
+                    ActiveIUser.INDEXER = user.USER_NAME;
+                    ActiveIUser.DEFAULT_VALUE = "Regular Indexer";
+                    ActiveIUser.IS_ACTIVE = false;
+                    ActiveIUser.LAST_NAME = user.LAST_NAME;
+                    ActiveIUser.MODIFIED_BY = profile.UserName;
+                    ActiveIUser.PRACTICE_CODE = user.PRACTICE_CODE;
+                    ActiveIUser.CREATED_BY = user.CREATED_BY;
+                    ActiveIUser.CREATED_DATE = Helper.GetCurrentDate();
+                    ActiveIUser.MODIFIED_DATE = Helper.GetCurrentDate();
+                    ActiveIUser.ACTIVE_INDEXER_ID = Helper.getMaximumId("ACTIVE_INDEXER_ID");
+                    _ActiveIndexerRepository.Insert(ActiveIUser);
+                    _ActiveIndexerRepository.Save();
+                }
+            }
         }
         public void SaveSenderName(dynamic user, long practiceCode)
         {
@@ -2574,6 +2594,46 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             userToUpdate.REFERRAL_REGION_ID = user.REFERRAL_REGION_ID;
             userToUpdate.FULL_ACCESS_OVER_APP = user.FULL_ACCESS_OVER_APP;
             userToUpdate.USER_TYPE = user.USER_TYPE;
+
+            if (user.ROLE_ID == 101)
+            {
+                var ActiveIUser = _ActiveIndexerRepository.GetFirst(t => t.INDEXER.Equals(userToUpdate.USER_NAME));
+                if (ActiveIUser == null)
+                {
+                    ActiveIUser = new ActiveIndexer();
+                    ActiveIUser.INDEXER = user.USER_NAME;
+                    ActiveIUser.DEFAULT_VALUE = "Regular Indexer";
+                    ActiveIUser.IS_ACTIVE = false;
+                    ActiveIUser.MODIFIED_BY = profile.UserName;
+                    ActiveIUser.PRACTICE_CODE = user.PRACTICE_CODE;
+                    ActiveIUser.CREATED_BY = user.CREATED_BY;
+                    ActiveIUser.CREATED_DATE = Helper.GetCurrentDate();
+                    ActiveIUser.MODIFIED_DATE = Helper.GetCurrentDate();
+                    ActiveIUser.ACTIVE_INDEXER_ID = Helper.getMaximumId("ACTIVE_INDEXER_ID");
+                    _ActiveIndexerRepository.Insert(ActiveIUser);
+                    _ActiveIndexerRepository.Save();
+                }
+                if(ActiveIUser != null)
+                {
+                    
+                    ActiveIUser.INDEXER = ActiveIUser.INDEXER;
+                    ActiveIUser.DEFAULT_VALUE = ActiveIUser.DEFAULT_VALUE;
+                    ActiveIUser.IS_ACTIVE = false;
+                    ActiveIUser.MODIFIED_BY = profile.UserName;
+                    ActiveIUser.PRACTICE_CODE = user.PRACTICE_CODE;
+                    ActiveIUser.CREATED_BY = ActiveIUser.CREATED_BY;
+                    ActiveIUser.CREATED_DATE = ActiveIUser.CREATED_DATE;
+                    ActiveIUser.MODIFIED_DATE = Helper.GetCurrentDate();
+                    ActiveIUser.DELETED = false;
+                    ActiveIUser.ACTIVE_INDEXER_ID = ActiveIUser.ACTIVE_INDEXER_ID;
+                    _ActiveIndexerRepository.Update(ActiveIUser);
+                    _ActiveIndexerRepository.Save();
+                }
+                if (ActiveIUser != null && user.IS_ACTIVE == false)
+                {
+                    ActiveIUser.DELETED = true;
+                }
+            }
             try
             {
                 _UserRepository.Update(userToUpdate);
