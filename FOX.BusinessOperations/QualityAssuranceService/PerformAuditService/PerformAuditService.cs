@@ -139,7 +139,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             //var result = SpRepository<CallLogModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SURVEY_CALL_LIST
             //             @PRACTICE_CODE, @SURVEY_BY, @DATE_FROM, @DATE_TO", PracticeCode, _surveyBy, dateFrom, dateTo);
 
-            var result = SpRepository<CallLogModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_CALL_LIST_FOR_AUDIT_RAFAY
+            var result = SpRepository<CallLogModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_CALL_LIST_FOR_AUDIT
                          @PRACTICE_CODE, @CALL_BY, @CALL_TYPE, @DATE_FROM, @DATE_TO, @PHD_CALL_SCENARIO_ID", PracticeCode, _callBy, _callType, dateFrom, dateTo, callScanario);
             lst = result;
 
