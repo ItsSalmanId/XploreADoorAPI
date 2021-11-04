@@ -4438,6 +4438,44 @@ namespace FOX.BusinessOperations.CommonServices
                     dc.Remove("AGENT_NAME");
                 }
             }
+            if (CalledFrom.Equals("QA_Report_Survey"))
+            {
+                if (dc.Contains("TOTAL_RECORDS"))
+                {
+                    dc.Remove("TOTAL_RECORDS");
+                }
+                if (dc.Contains("TOTAL_RECORD_PAGES"))
+                {
+                    dc.Remove("TOTAL_RECORD_PAGES");
+                }
+                if (dc.Contains("AGENT_NAME"))
+                {
+                    dc.Remove("AGENT_NAME");
+                }
+                if (dc.Contains("WOW_FACTOR"))
+                {
+                    dc.Remove("WOW_FACTOR");
+                }
+            }
+            if (CalledFrom.Equals("QA_Report_AUD_Survey"))
+            {
+                if (dc.Contains("TOTAL_RECORDS"))
+                {
+                    dc.Remove("TOTAL_RECORDS");
+                }
+                if (dc.Contains("TOTAL_RECORD_PAGES"))
+                {
+                    dc.Remove("TOTAL_RECORD_PAGES");
+                }
+                if (dc.Contains("AGENT_NAME"))
+                {
+                    dc.Remove("AGENT_NAME");
+                }
+                if (dc.Contains("WOW_FACTOR"))
+                {
+                    dc.Remove("WOW_FACTOR");
+                }
+            }
             if (CalledFrom.Equals("Daily_Appointment_List"))
             {
                 if (dc.Contains("APPOINTMENT_ID"))
@@ -5522,7 +5560,7 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["ROW"].ColumnName = "Sr. #";
                 }
-                
+
                 if (dtcol.Contains("Employee_name"))
                 {
                     dtcol["Employee_name"].ColumnName = "Employee Name";
@@ -7498,10 +7536,72 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["TOTAL_POINTS"].ColumnName = "Overall Score Selected / Average";
                 }
-                if (dtcol.Contains("WOW_FACTOR"))
+                //if (dtcol.Contains("WOW_FACTOR"))
+                //{
+                //    dtcol["WOW_FACTOR"].ColumnName = "Wow Factor or Negative Feedback Selected / Average";
+                //}
+            }
+            else if (dt.TableName == "QA_Report_Survey")
+            {
+                if (dtcol.Contains("ROW"))
                 {
-                    dtcol["WOW_FACTOR"].ColumnName = "Wow Factor or Negative Feedback Selected / Average";
+                    dtcol["ROW"].ColumnName = "Sr. #";
                 }
+                if (dtcol.Contains("NAME"))
+                {
+                    dtcol["NAME"].ColumnName = "Rep Name";
+                }
+                if (dtcol.Contains("CLIENT_EXPERIENCE_TOTAL"))
+                {
+                    dtcol["CLIENT_EXPERIENCE_TOTAL"].ColumnName = "Call Quality";
+                }
+                if (dtcol.Contains("SYSTEM_PROCESS_TOTAL"))
+                {
+                    dtcol["SYSTEM_PROCESS_TOTAL"].ColumnName = "System Usage";
+                }
+                if (dtcol.Contains("EVALUATIONS"))
+                {
+                    dtcol["EVALUATIONS"].ColumnName = "Evaluation";
+                }
+                if (dtcol.Contains("TOTAL_POINTS"))
+                {
+                    dtcol["TOTAL_POINTS"].ColumnName = "Average Total Score";
+                }
+                //if (dtcol.Contains("WOW_FACTOR"))
+                //{
+                //    dtcol["WOW_FACTOR"].ColumnName = "Wow Factor or Negative Feedback";
+                //}
+            }
+            else if (dt.TableName == "QA_Report_AUD_Survey")
+            {
+                if (dtcol.Contains("ROW"))
+                {
+                    dtcol["ROW"].ColumnName = "Sr. #";
+                }
+                if (dtcol.Contains("NAME"))
+                {
+                    dtcol["NAME"].ColumnName = "Rep Name";
+                }
+                if (dtcol.Contains("CLIENT_EXPERIENCE_TOTAL"))
+                {
+                    dtcol["CLIENT_EXPERIENCE_TOTAL"].ColumnName = "Call Quality Selected / Average";
+                }
+                if (dtcol.Contains("SYSTEM_PROCESS_TOTAL"))
+                {
+                    dtcol["SYSTEM_PROCESS_TOTAL"].ColumnName = "System Usage Selected / Average";
+                }
+                if (dtcol.Contains("EVALUATIONS"))
+                {
+                    dtcol["EVALUATIONS"].ColumnName = "Evaluation Selected / Average";
+                }
+                if (dtcol.Contains("TOTAL_POINTS"))
+                {
+                    dtcol["TOTAL_POINTS"].ColumnName = "Average Total Score Selected / Average";
+                }
+                //if (dtcol.Contains("WOW_FACTOR"))
+                //{
+                //    dtcol["WOW_FACTOR"].ColumnName = "Wow Factor or Negative Feedback Selected / Average";
+                //}
             }
             else if (dt.TableName == "Advanced_region")
             {
