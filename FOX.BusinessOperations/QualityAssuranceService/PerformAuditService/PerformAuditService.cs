@@ -387,9 +387,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                 {
                     callDate = temp.CREATED_DATE;
                 }
-
-
-
+            }
                 //callDate = req.CREATED_DATE;
                 req.AUDITOR_NAME = profile.FirstName + ' ' + profile.LastName;
                 req.AGENT_EMAIL = req.AGENT_EMAIL;
@@ -424,7 +422,6 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                 _body += req.HTML_TEMPLETE;
                 _subject = req.CALL_TYPE.ToUpper() + " audit summary-" + (string.IsNullOrEmpty(req.AUDITOR_NAME) ? "" : req.AUDITOR_NAME + ".") + (string.IsNullOrEmpty(req.CALL_SCANARIO) ? "" : req.CALL_SCANARIO);
                 Helper.Email(req.AGENT_EMAIL, _subject, _body, profile, null, null, cc, null);
-            }
         }
         public List<SurveyAuditScores> ListAuditedCalls(RequestCallFromQA req, UserProfile profile)
         {
