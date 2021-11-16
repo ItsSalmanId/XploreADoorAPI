@@ -473,7 +473,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                         var cats = searchReq.STATES.Where(e => e.Selected).Select(e => e.STATE.Trim().ToLower()).ToList();
                         if (cats.Count > 0)
                         {
-                            result = result.FindAll(e => cats.Contains(e.STATE.Trim().ToLower()));
+                            result = result.FindAll(e => cats.Contains(e.STATE?.Trim().ToLower()));
                         }
                     }
                     if (searchReq.DEPOSIT_TYPES?.Count > 0)

@@ -73,24 +73,75 @@ namespace FOX.BusinessOperations.QualityAssuranceService.EvaluationSetupService
             var clientID = _evaluationCriteriaRepository.GetFirst(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode && t.CRITERIA_NAME == "Client Experience" && t.CALL_TYPE == obj.CALL_TYPE);
             if (clientID != null && clientID.EVALUATION_CRITERIA_ID != null)
             {
-                 tempObj = _evaluationCriteriaCategoriesRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode && t.EVALUATION_CRITERIA_ID == clientID.EVALUATION_CRITERIA_ID && t.CALL_TYPE == obj.CALL_TYPE).ToList();
+                tempObj = _evaluationCriteriaCategoriesRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode && t.EVALUATION_CRITERIA_ID == clientID.EVALUATION_CRITERIA_ID && t.CALL_TYPE == obj.CALL_TYPE).ToList();
 
             }
 
             if (tempObj.Count > 0)
             {
-                tempObj[0].CATEGORIES_POINTS = obj.GREETINGS;
-                tempObj[0].MODIFIED_BY = profile.UserName;
-                tempObj[0].MODIFIED_DATE = Helper.GetCurrentDate();
+                if (obj.CALL_TYPE.ToLower() == "phd")
+                {
+                    tempObj[0].CATEGORIES_POINTS = obj.GREETINGS;
+                    tempObj[0].MODIFIED_BY = profile.UserName;
+                    tempObj[0].MODIFIED_DATE = Helper.GetCurrentDate();
 
-                tempObj[1].CATEGORIES_POINTS = obj.CALL_HANDLING_SKILLS;
-                tempObj[1].MODIFIED_BY = profile.UserName;
-                tempObj[1].MODIFIED_DATE = Helper.GetCurrentDate();
+                    tempObj[1].CATEGORIES_POINTS = obj.CALL_HANDLING_SKILLS;
+                    tempObj[1].MODIFIED_BY = profile.UserName;
+                    tempObj[1].MODIFIED_DATE = Helper.GetCurrentDate();
 
-                tempObj[2].CATEGORIES_POINTS = obj.GRAMMER_PRONOUNCIATION_VOCABULARY;
-                tempObj[2].MODIFIED_BY = profile.UserName;
-                tempObj[2].MODIFIED_DATE = Helper.GetCurrentDate();
-
+                    tempObj[2].CATEGORIES_POINTS = obj.GRAMMER_PRONOUNCIATION_VOCABULARY;
+                    tempObj[2].MODIFIED_BY = profile.UserName;
+                    tempObj[2].MODIFIED_DATE = Helper.GetCurrentDate();
+                }
+                else
+                {
+                    var index1 = -1;
+                    if (tempObj != null && tempObj.Count > 0)
+                    {
+                        index1 = tempObj.FindIndex(x => x.CATEGORIES_NAME.ToLower() == "greeting");
+                        if (index1 >= 0)
+                        {
+                            tempObj[index1].CATEGORIES_POINTS = obj.GREETINGS;
+                            tempObj[index1].MODIFIED_BY = profile.UserName;
+                            tempObj[index1].MODIFIED_DATE = Helper.GetCurrentDate();
+                        }
+                        index1 = tempObj.FindIndex(x => x.CATEGORIES_NAME.ToLower() == "call handling skills");
+                        if (index1 >= 0)
+                        {
+                            tempObj[index1].CATEGORIES_POINTS = obj.CALL_HANDLING_SKILLS;
+                            tempObj[index1].MODIFIED_BY = profile.UserName;
+                            tempObj[index1].MODIFIED_DATE = Helper.GetCurrentDate();
+                        }
+                        index1 = tempObj.FindIndex(x => x.CATEGORIES_NAME.ToLower() == "verified the patient account");
+                        if (index1 >= 0)
+                        {
+                            tempObj[index1].CATEGORIES_POINTS = obj.VERIFIED_PATIENT_ACCOUNT;
+                            tempObj[index1].MODIFIED_BY = profile.UserName;
+                            tempObj[index1].MODIFIED_DATE = Helper.GetCurrentDate();
+                        }
+                        index1 = tempObj.FindIndex(x => x.CATEGORIES_NAME.ToLower() == "followed scripted survey questions");
+                        if (index1 >= 0)
+                        {
+                            tempObj[index1].CATEGORIES_POINTS = obj.FOLLOWED_SCRIPTED_SURVEY;
+                            tempObj[index1].MODIFIED_BY = profile.UserName;
+                            tempObj[index1].MODIFIED_DATE = Helper.GetCurrentDate();
+                        }
+                        index1 = tempObj.FindIndex(x => x.CATEGORIES_NAME.ToLower() == "followed closing script");
+                        if (index1 >= 0)
+                        {
+                            tempObj[index1].CATEGORIES_POINTS = obj.FOLLOWED_CLOSING_SCRIPT;
+                            tempObj[index1].MODIFIED_BY = profile.UserName;
+                            tempObj[index1].MODIFIED_DATE = Helper.GetCurrentDate();
+                        }
+                        index1 = tempObj.FindIndex(x => x.CATEGORIES_NAME.ToLower() == "grammar/ pronunciation/ vocabulary");
+                        if (index1 >= 0)
+                        {
+                            tempObj[index1].CATEGORIES_POINTS = obj.GRAMMER_PRONOUNCIATION_VOCABULARY;
+                            tempObj[index1].MODIFIED_BY = profile.UserName;
+                            tempObj[index1].MODIFIED_DATE = Helper.GetCurrentDate();
+                        }
+                    }
+                }
                 foreach (var i in tempObj)
                 {
                     _evaluationCriteriaCategoriesRepository.Update(i);
@@ -109,6 +160,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.EvaluationSetupService
         {
             var tempObj = new List<EvaluationCriteriaCategories>();
             var clientID = _evaluationCriteriaRepository.GetFirst(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode && t.CRITERIA_NAME == "System Product and Process" && t.CALL_TYPE == obj.CALL_TYPE);
+            var index1 = -1;
             if (clientID != null && clientID.EVALUATION_CRITERIA_ID != null)
             {
                 tempObj = _evaluationCriteriaCategoriesRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode && t.EVALUATION_CRITERIA_ID == clientID.EVALUATION_CRITERIA_ID && t.CALL_TYPE == obj.CALL_TYPE).ToList();
@@ -137,27 +189,74 @@ namespace FOX.BusinessOperations.QualityAssuranceService.EvaluationSetupService
                 }
                 else
                 {
-                    tempObj[0].CATEGORIES_POINTS = obj.VERIFIED_PATIENT_ACCOUNT;
-                    tempObj[0].MODIFIED_BY = profile.UserName;
-                    tempObj[0].MODIFIED_DATE = Helper.GetCurrentDate();
 
-                    tempObj[1].CATEGORIES_POINTS = obj.ACCOUNT_AND_SCRIPT_READINESS;
-                    tempObj[1].MODIFIED_BY = profile.UserName;
-                    tempObj[1].MODIFIED_DATE = Helper.GetCurrentDate();
+                    if (tempObj != null && tempObj.Count > 0)
+                    {
+                        index1 = tempObj.FindIndex(x => x.CATEGORIES_NAME.ToLower() == "documented date and time to each call in free text");
+                        if (index1 >= 0)
+                        {
+                            tempObj[index1].CATEGORIES_POINTS = obj.DOCUMENTED_DATE_TIME;
+                            tempObj[index1].MODIFIED_BY = profile.UserName;
+                            tempObj[index1].MODIFIED_DATE = Helper.GetCurrentDate();
+                        }
+                        index1 = tempObj.FindIndex(x => x.CATEGORIES_NAME.ToLower() == "documented relevant details in free text");
+                        if (index1 >= 0)
+                        {
+                            tempObj[index1].CATEGORIES_POINTS = obj.DOCUMENTED_RELEVANT_DETAILS;
+                            tempObj[index1].MODIFIED_BY = profile.UserName;
+                            tempObj[index1].MODIFIED_DATE = Helper.GetCurrentDate();
+                        }
+                        index1 = tempObj.FindIndex(x => x.CATEGORIES_NAME.ToLower() == "marked questions correctly based on feedback");
+                        if (index1 >= 0)
+                        {
+                            tempObj[index1].CATEGORIES_POINTS = obj.MARKED_QUSTIONS_CORRECTLY;
+                            tempObj[index1].MODIFIED_BY = profile.UserName;
+                            tempObj[index1].MODIFIED_DATE = Helper.GetCurrentDate();
+                        }
+                        index1 = tempObj.FindIndex(x => x.CATEGORIES_NAME.ToLower() == "marked survey status based on call");
+                        if (index1 >= 0)
+                        {
+                            tempObj[index1].CATEGORIES_POINTS = obj.MARKED_SURVEY_STATUS;
+                            tempObj[index1].MODIFIED_BY = profile.UserName;
+                            tempObj[index1].MODIFIED_DATE = Helper.GetCurrentDate();
+                        }
+                        index1 = tempObj.FindIndex(x => x.CATEGORIES_NAME.ToLower() == "correctly identifed red or green flags");
+                        if (index1 >= 0)
+                        {
+                            tempObj[index1].CATEGORIES_POINTS = obj.CORRECTLY_IDENTIFY_FLAG;
+                            tempObj[index1].MODIFIED_BY = profile.UserName;
+                            tempObj[index1].MODIFIED_DATE = Helper.GetCurrentDate();
+                        }
+                        index1 = tempObj.FindIndex(x => x.CATEGORIES_NAME.ToLower() == "correctly separated survey questions for each discipline");
+                        if (index1 >= 0)
+                        {
+                            tempObj[index1].CATEGORIES_POINTS = obj.CORRECTLY_SEPARATE_QUESTION;
+                            tempObj[index1].MODIFIED_BY = profile.UserName;
+                            tempObj[index1].MODIFIED_DATE = Helper.GetCurrentDate();
+                        }
+                    }
 
-                    tempObj[2].CATEGORIES_POINTS = obj.CASE_HANDLING;
-                    tempObj[2].MODIFIED_BY = profile.UserName;
-                    tempObj[2].MODIFIED_DATE = Helper.GetCurrentDate();
+                    //tempObj[0].CATEGORIES_POINTS = obj.VERIFIED_PATIENT_ACCOUNT;
+                    //tempObj[0].MODIFIED_BY = profile.UserName;
+                    //tempObj[0].MODIFIED_DATE = Helper.GetCurrentDate();
 
-                    tempObj[3].CATEGORIES_POINTS = obj.EMAIL_TO_STAKE_HOLDERS;
-                    tempObj[3].MODIFIED_BY = profile.UserName;
-                    tempObj[3].MODIFIED_DATE = Helper.GetCurrentDate();
+                    //tempObj[1].CATEGORIES_POINTS = obj.ACCOUNT_AND_SCRIPT_READINESS;
+                    //tempObj[1].MODIFIED_BY = profile.UserName;
+                    //tempObj[1].MODIFIED_DATE = Helper.GetCurrentDate();
 
-                    tempObj[4].CATEGORIES_POINTS = obj.ESCALATION;
-                    tempObj[4].MODIFIED_BY = profile.UserName;
-                    tempObj[4].MODIFIED_DATE = Helper.GetCurrentDate();
+                    //tempObj[2].CATEGORIES_POINTS = obj.CASE_HANDLING;
+                    //tempObj[2].MODIFIED_BY = profile.UserName;
+                    //tempObj[2].MODIFIED_DATE = Helper.GetCurrentDate();
+
+                    //tempObj[3].CATEGORIES_POINTS = obj.EMAIL_TO_STAKE_HOLDERS;
+                    //tempObj[3].MODIFIED_BY = profile.UserName;
+                    //tempObj[3].MODIFIED_DATE = Helper.GetCurrentDate();
+
+                    //tempObj[4].CATEGORIES_POINTS = obj.ESCALATION;
+                    //tempObj[4].MODIFIED_BY = profile.UserName;
+                    //tempObj[4].MODIFIED_DATE = Helper.GetCurrentDate();
                 }
-               
+
                 //tempObj[5].CATEGORIES_POINTS = obj.ESCALATION;
                 //tempObj[5].MODIFIED_BY = profile.UserName;
                 //tempObj[5].MODIFIED_DATE = Helper.GetCurrentDate();

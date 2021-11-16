@@ -139,7 +139,14 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QAReportService
                     obj.NAME = tempList[i].NAME;
                     obj.AGENT_NAME = tempList[i].AGENT_NAME;
                     obj.ROW = tempList[i].ROW;
-                    obj.TOTAL_POINTS = tempList[i].TOTAL_POINTS + "%    " + getGrade(tempList[i].TOTAL_POINTS) + " /  " + tempList[i].TOTAL_AVG + "%    " + getGrade(tempList[i].TOTAL_AVG);
+                    if (reg.CALL_TYPE == "survey")
+                    {
+                        obj.TOTAL_POINTS = tempList[i].TOTAL_POINTS + " /  " + tempList[i].TOTAL_AVG;
+                    }
+                    else
+                    {
+                        obj.TOTAL_POINTS = tempList[i].TOTAL_POINTS + "%    " + getGrade(tempList[i].TOTAL_POINTS) + " /  " + tempList[i].TOTAL_AVG + "%    " + getGrade(tempList[i].TOTAL_AVG);
+                    }
                     obj.CLIENT_EXPERIENCE_TOTAL = tempList[i].CLIENT_EXPERIENCE_TOTAL + " /  " + tempList[i].CLIENT_EXPERIENCE_AVG_TOTAL;
                     obj.SYSTEM_PROCESS_TOTAL = tempList[i].SYSTEM_PROCESS_TOTAL + " /  " + tempList[i].SYSTEM_PROCESS_AVG_TOTAL;
                     obj.WOW_FACTOR = tempList[i].WOW_FACTOR + " /  " + tempList[i].AVG_WOW_FACTOR;
@@ -158,7 +165,14 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QAReportService
                     obj.NAME = tempList[i].NAME;
                     obj.AGENT_NAME = tempList[i].AGENT_NAME;
                     obj.ROW = tempList[i].ROW;
-                    obj.TOTAL_POINTS = tempList[i].TOTAL_POINTS + "%   " + "  "+ getGrade(tempList[i].TOTAL_POINTS);
+                    if (reg.CALL_TYPE == "survey")
+                    {
+                        obj.TOTAL_POINTS = tempList[i].TOTAL_POINTS + "";
+                    }
+                    else
+                    {
+                        obj.TOTAL_POINTS = tempList[i].TOTAL_POINTS + "%   " + "  " + getGrade(tempList[i].TOTAL_POINTS);
+                    }
                     obj.CLIENT_EXPERIENCE_TOTAL = tempList[i].CLIENT_EXPERIENCE_TOTAL.ToString();
                     obj.SYSTEM_PROCESS_TOTAL = tempList[i].SYSTEM_PROCESS_TOTAL.ToString();
                     obj.WOW_FACTOR = tempList[i].WOW_FACTOR.ToString();
