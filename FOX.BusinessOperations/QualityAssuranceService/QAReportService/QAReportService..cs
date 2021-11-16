@@ -49,7 +49,10 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QAReportService
 
                         var  lst = SpRepository<FeedBackCaller>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_AUDITOR_NAME_LIST
                          @PRACTICE_CODE, @USER_NAME", PracticeCode, _userName);
-                        result.Add(lst);
+                        if(lst != null)
+                        {
+                            result.Add(lst);
+                        }
                     }
                     return result;
                 }
@@ -211,13 +214,27 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QAReportService
                 req.CURRENT_PAGE = 1;
                 req.RECORD_PER_PAGE = 0;
                 var CalledFrom = "";
-                if (req.AUDITOR_NAME == "")
+                if (req.CALL_TYPE.ToLower() == "phd")
                 {
-                    CalledFrom = "QA_Report";
+                    if (req.AUDITOR_NAME == "")
+                    {
+                        CalledFrom = "QA_Report";
+                    }
+                    else
+                    {
+                        CalledFrom = "QA_Report_AUD";
+                    }
                 }
                 else
                 {
-                    CalledFrom = "QA_Report_AUD";
+                    if (req.AUDITOR_NAME == "")
+                    {
+                        CalledFrom = "QA_Report_Survey";
+                    }
+                    else
+                    {
+                        CalledFrom = "QA_Report_AUD_Survey";
+                    }
                 }
 
                 string virtualPath = @"/" + profile.PracticeDocumentDirectory + "/" + "Fox/ExportedFiles/";

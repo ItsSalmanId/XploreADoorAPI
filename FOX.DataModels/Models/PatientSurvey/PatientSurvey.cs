@@ -130,7 +130,8 @@ namespace FOX.DataModels.Models.PatientSurvey
         [NotMapped]
         public string Is_protective_equipment_Str { get; set; }
         public DateTime? SURVEY_COMPLETED_DATE { get; set; }
-        
+        [NotMapped]
+        public int? HAS_CALL_PATH { get; set; }
     }
 
     [Table("FOX_TBL_PATIENT_SURVEY_HISTORY")]

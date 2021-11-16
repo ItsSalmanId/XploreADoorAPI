@@ -166,6 +166,7 @@ namespace FOX.DataModels.Models.Reconciliation
         }
         [NotMapped]
         public bool Selected { get; set; }
+        public string STATE { get; set; }
     }
 
     public class ReconciliationCPExportModel
@@ -178,6 +179,8 @@ namespace FOX.DataModels.Models.Reconciliation
         public string DEPOSIT_DATE { get; set; }
         [DisplayName("Deposit Type")]
         public string DEPOSIT_TYPE_NAME { get; set; }
+        [DisplayName("State")]
+        public string STATE { get; set; }
         [DisplayName("Category/Account")]
         public string CATEGORY_NAME { get; set; }
         [DisplayName("Insurance")]
@@ -219,6 +222,7 @@ namespace FOX.DataModels.Models.Reconciliation
         public string INSURANCE_NAME { get; set; }
         public List<ReconciliationCategory> CATEGORIES { get; set; }
         public List<ReconciliationCP> FOX_TBL_INSURANCE_NAME { get; set; }
+        public List<ReconciliationCP> STATES { get; set; }
         public string STATUS_ID { get; set; }
         public List<ReconciliationStatus> Statuses { get; set; }
         public List<ReconciliationDepositType> DEPOSIT_TYPES { get; set; }
@@ -234,6 +238,7 @@ namespace FOX.DataModels.Models.Reconciliation
         public string SORT_ORDER { get; set; }
         public int CP_Type { get; set; }
         public int TIME_FRAME { get; set; }
+        public string STATE { get; set; }
     }
 
     [Table("FOX_TBL_RECONCILIATION_CP_LOGS")]
@@ -402,6 +407,7 @@ namespace FOX.DataModels.Models.Reconciliation
         public string NotPosted { get; set; }  
         public string CheckNo { get; set; }
         public string BatchNo { get; set; }
+        public string State { get; set; }
     }
 
     public class ReconsiliationTemp
