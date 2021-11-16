@@ -96,6 +96,7 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public int Client_Experience { get; set; }
         public int System_Process { get; set; }
         public string CALL_TYPE { get; set; }
+       
     }
 
     public class RequestModelClientExperience
@@ -104,7 +105,11 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public int CALL_HANDLING_SKILLS { get; set; }
         public int GRAMMER_PRONOUNCIATION_VOCABULARY { get; set; }
         public string CALL_TYPE { get; set; }
+        public int FOLLOWED_SCRIPTED_SURVEY { get; set; }
+        public int FOLLOWED_CLOSING_SCRIPT { get; set; }
+        public int VERIFIED_PATIENT_ACCOUNT { get; set; }
     }
+
 
     public class RequestModelSystemProcess
     {
@@ -117,9 +122,14 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public int PRODUCT_KNOWLEDGE { get; set; }
         public int CORRECT_NOTES_AND_TRACKING { get; set; }
         public string CALL_TYPE { get; set; }
+        public int DOCUMENTED_DATE_TIME { get; set; }
+        public int DOCUMENTED_RELEVANT_DETAILS { get; set; }
+        public int MARKED_QUSTIONS_CORRECTLY { get; set; }
+        public int MARKED_SURVEY_STATUS { get; set; }
+        public int CORRECTLY_IDENTIFY_FLAG { get; set; }
+        public int CORRECTLY_SEPARATE_QUESTION { get; set; }
     }
-
-    public class RequestModelWowfactor
+        public class RequestModelWowfactor
     {
         public bool STATUS { get; set; }
         public int BONUS_POINTS { get; set; }
