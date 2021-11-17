@@ -125,6 +125,43 @@ namespace FOX.BusinessOperations.ReconciliationService
             }
             catch (Exception ex) { throw ex; }
         }
+        public List<ReconciliationCP> GetReconciliationStates(ReconciliationCPSearchReq searchReq, UserProfile profile)
+        {
+            try
+            {
+                searchReq.DATE_TO = Helper.GetCurrentDate();
+                switch (searchReq.TIME_FRAME)
+                {
+                    case 1:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-7);
+                        break;
+                    case 2:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-15);
+                        break;
+                    case 3:
+                        searchReq.DATE_FROM = Helper.GetCurrentDate().AddDays(-30);
+                        break;
+                    case 4:
+                        if (!string.IsNullOrEmpty(searchReq.DATE_FROM_Str))
+                            searchReq.DATE_FROM = Convert.ToDateTime(searchReq.DATE_FROM_Str);
+                        else
+                            searchReq.DATE_FROM = Helper.GetCurrentDate().AddYears(-100);
+                        if (!string.IsNullOrEmpty(searchReq.DATE_TO_Str))
+                            searchReq.DATE_TO = Convert.ToDateTime(searchReq.DATE_TO_Str);
+                        break;
+                    default:
+                        break;
+                }
+                return SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATION_STATE @PRACTICE_CODE, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO"
+                       , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
+                       , new SqlParameter { ParameterName = "IS_DEPOSIT_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_DEPOSIT_DATE_SEARCH }
+                       , new SqlParameter { ParameterName = "IS_ASSIGNED_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_ASSIGNED_DATE_SEARCH }
+                       , Helper.getDBNullOrValue("DATE_FROM", searchReq.DATE_FROM.Value.ToString("MM/dd/yyyy") ?? "")
+                       , Helper.getDBNullOrValue("DATE_TO", searchReq.DATE_TO.Value.ToString("MM/dd/yyyy") ?? ""));
+
+            }
+            catch (Exception ex) { throw ex; }
+        }
 
         public ReconsiliationCategoryDepositType GetReconsiliationCategoryDepositTypes(UserProfile profile)
         {
@@ -363,7 +400,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                 //    @STATUS_ID, @DEPOSIT_TYPE_IDS, @CHECK_NOS, @AMOUNT, @AMOUNT_POSTED, @AMOUNT_NOT_POSTED, @CURRENT_USER, @SEARCH_TEXT, @CURRENT_PAGE, @RECORD_PER_PAGE"
                 var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATIONS_CP 
                     @PRACTICE_CODE, @IS_FOR_REPORT, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO, @FOX_TBL_INSURANCE_NAME, 
-                    @STATUS_ID, @CURRENT_USER, @SEARCH_TEXT, @CURRENT_PAGE, @RECORD_PER_PAGE,@SORT_BY ,@SORT_ORDER, @CP_TYPE"
+                    @STATUS_ID, @CURRENT_USER, @SEARCH_TEXT, @CURRENT_PAGE, @RECORD_PER_PAGE,@SORT_BY ,@SORT_ORDER, @CP_TYPE, @STATE"
                     , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
                     , new SqlParameter { ParameterName = "IS_FOR_REPORT", SqlDbType = SqlDbType.Bit, Value = searchReq.IsForReport }
                     , new SqlParameter { ParameterName = "IS_DEPOSIT_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_DEPOSIT_DATE_SEARCH }
@@ -385,6 +422,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                     , new SqlParameter("SORT_BY", SqlDbType.VarChar) { Value = searchReq.SORT_BY }
                     , new SqlParameter("SORT_ORDER", SqlDbType.VarChar) { Value = searchReq.SORT_ORDER }
                     , new SqlParameter("CP_TYPE", SqlDbType.VarChar) { Value = searchReq.CP_Type }
+                     , new SqlParameter("STATE", SqlDbType.VarChar) { Value = string.IsNullOrWhiteSpace(searchReq.STATE) ? "" : searchReq.STATE }
                     );
 
                 if (result != null && result.Count > 0)
@@ -428,6 +466,14 @@ namespace FOX.BusinessOperations.ReconciliationService
                         if (cats.Count > 0)
                         {
                             result = result.FindAll(e => cats.Contains(e.INSURANCE_NAME.Trim().ToLower()));
+                        }
+                    }
+                    if (searchReq.STATES?.Count > 0)
+                    {
+                        var cats = searchReq.STATES.Where(e => e.Selected).Select(e => e.STATE.Trim().ToLower()).ToList();
+                        if (cats.Count > 0)
+                        {
+                            result = result.FindAll(e => cats.Contains(e.STATE?.Trim().ToLower()));
                         }
                     }
                     if (searchReq.DEPOSIT_TYPES?.Count > 0)
@@ -1580,7 +1626,7 @@ namespace FOX.BusinessOperations.ReconciliationService
 
                 var result = SpRepository<ReconciliationCP>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECONCILIATIONS_CP 
                     @PRACTICE_CODE, @IS_FOR_REPORT, @IS_DEPOSIT_DATE_SEARCH, @IS_ASSIGNED_DATE_SEARCH, @DATE_FROM, @DATE_TO, @FOX_TBL_INSURANCE_NAME, 
-                    @STATUS_ID, @CURRENT_USER, @SEARCH_TEXT, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER, @CP_TYPE"
+                    @STATUS_ID, @CURRENT_USER, @SEARCH_TEXT, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER, @CP_TYPE, @STATE"
                     , new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }
                     , new SqlParameter { ParameterName = "IS_FOR_REPORT", SqlDbType = SqlDbType.Bit, Value = searchReq.IsForReport }
                     , new SqlParameter { ParameterName = "IS_DEPOSIT_DATE_SEARCH", SqlDbType = SqlDbType.Bit, Value = searchReq.IS_DEPOSIT_DATE_SEARCH }
@@ -1597,6 +1643,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                        , new SqlParameter("SORT_BY", SqlDbType.VarChar) { Value = searchReq.SORT_BY }
                     , new SqlParameter("SORT_ORDER", SqlDbType.VarChar) { Value = searchReq.SORT_ORDER }
                     , new SqlParameter("CP_TYPE", SqlDbType.Int) { Value = searchReq.CP_Type }
+                      , new SqlParameter("STATE", SqlDbType.VarChar) { Value = searchReq.STATE ?? "" }
                     );
 
                 if (result != null && result.Count > 0)
@@ -1762,6 +1809,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                 exportModel.STATUS_NAME = !string.IsNullOrWhiteSpace(item.STATUS_NAME) ? item.STATUS_NAME : "";
                 exportModel.DEPOSIT_DATE = item.DEPOSIT_DATE.HasValue ? item.DEPOSIT_DATE.Value.ToString("MM/dd/yyyy") : "";
                 exportModel.DEPOSIT_TYPE_NAME = !string.IsNullOrWhiteSpace(item.DEPOSIT_TYPE_NAME) ? item.DEPOSIT_TYPE_NAME : "";
+                exportModel.STATE = !string.IsNullOrWhiteSpace(item.STATE) ? item.STATE : "";
                 exportModel.CATEGORY_NAME = !string.IsNullOrWhiteSpace(item.CATEGORY_NAME) ? item.CATEGORY_NAME : "";
                 exportModel.INSURANCE_NAME = !string.IsNullOrWhiteSpace(item.INSURANCE_NAME) ? item.INSURANCE_NAME : "";
                 exportModel.CHECK_NO = !string.IsNullOrWhiteSpace(item.CHECK_NO) ? item.CHECK_NO : "";
@@ -2654,6 +2702,8 @@ namespace FOX.BusinessOperations.ReconciliationService
                             temp.DepositType = row["Deposit Type"].ToString();
                         if (row.Table.Columns.Contains("Category / Account") && !string.IsNullOrEmpty(row["Category / Account"].ToString()))
                             temp.CategoryAccount = row["Category / Account"].ToString();
+                        if (row.Table.Columns.Contains("State") && !string.IsNullOrEmpty(row["State"].ToString()))
+                            temp.State = row["State"].ToString();
                         if (row.Table.Columns.Contains("Category/Acct") && !string.IsNullOrEmpty(row["Category/Acct"].ToString()))
                             temp.CategoryAccount = row["Category/Acct"].ToString();
                         if (row.Table.Columns.Contains("Payer Name") && !string.IsNullOrEmpty(row["Payer Name"].ToString()))
@@ -2781,13 +2831,14 @@ namespace FOX.BusinessOperations.ReconciliationService
                 SqlParameter userName = new SqlParameter("USER_NAME", profile.UserName ?? "");
                 SqlParameter deposutType = new SqlParameter("DEPOSIT_TYPE", obj.DepositType ?? "");
                 SqlParameter categoryAccount = new SqlParameter("CATEGORY_ACCOUNT", obj.CategoryAccount ?? "");
+                SqlParameter state = new SqlParameter("STATE", obj.State ?? "");
 
 
                 return SpRepository<string>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_INSERT_RECONCILIATION_EXCEL_DATA_NEW 
             @RECONCILIATION_CP_ID, @PRACTICE_CODE, @DEPOSIT_DATE, @FOX_TBL_INSURANCE_NAME, @CHECK_NO, @AMOUNT, @AMOUNT_POSTED, @AMOUNT_NOT_POSTED,
-            @ASSIGNED_TO, @ASSIGNED_DATE, @DATE_POSTED, @BATCH_NO, @USER_NAME, @DEPOSIT_TYPE, @CATEGORY_ACCOUNT"
+            @ASSIGNED_TO, @ASSIGNED_DATE, @DATE_POSTED, @BATCH_NO, @USER_NAME, @DEPOSIT_TYPE, @CATEGORY_ACCOUNT, @STATE"
                 , reconciliationId, practiceCode, depsoitDate, insuranceName, checkNo, amount, amountPosted, amountNotPosted, assignedTo, assignedDate
-                , datePosted, batchNo, userName, deposutType, categoryAccount);
+                , datePosted, batchNo, userName, deposutType, categoryAccount, state);
             }
             else
             {
@@ -2887,6 +2938,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                     lst.DepositDate = string.IsNullOrEmpty(lst.DepositDate) ? string.Empty : lst.DepositDate;
                     lst.DepositType = string.IsNullOrEmpty(lst.DepositType) ? string.Empty : lst.DepositType;
                     lst.CategoryAccount = string.IsNullOrEmpty(lst.CategoryAccount) ? string.Empty : lst.CategoryAccount;
+                    lst.State = string.IsNullOrEmpty(lst.State) ? string.Empty : lst.State;
                     lst.PayerName = string.IsNullOrEmpty(lst.PayerName) ? string.Empty : lst.PayerName;
                     lst.CheckNo = checkNo.Length > 50 ? checkNo.Substring(0, 50) : checkNo;// recon.CheckNoBatchNo.Substring(0,45);
                     lst.BatchNo = string.IsNullOrEmpty(lst.CheckNoBatchNo) ? string.Empty : lst.CheckNoBatchNo.Length > 500 ? lst.CheckNoBatchNo.Substring(0, 499) : lst.CheckNoBatchNo;

@@ -49,7 +49,10 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QAReportService
 
                         var  lst = SpRepository<FeedBackCaller>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_AUDITOR_NAME_LIST
                          @PRACTICE_CODE, @USER_NAME", PracticeCode, _userName);
-                        result.Add(lst);
+                        if(lst != null)
+                        {
+                            result.Add(lst);
+                        }
                     }
                     return result;
                 }
@@ -136,7 +139,14 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QAReportService
                     obj.NAME = tempList[i].NAME;
                     obj.AGENT_NAME = tempList[i].AGENT_NAME;
                     obj.ROW = tempList[i].ROW;
-                    obj.TOTAL_POINTS = tempList[i].TOTAL_POINTS + "%    " + getGrade(tempList[i].TOTAL_POINTS) + " /  " + tempList[i].TOTAL_AVG + "%    " + getGrade(tempList[i].TOTAL_AVG);
+                    if (reg.CALL_TYPE == "survey")
+                    {
+                        obj.TOTAL_POINTS = tempList[i].TOTAL_POINTS + " /  " + tempList[i].TOTAL_AVG;
+                    }
+                    else
+                    {
+                        obj.TOTAL_POINTS = tempList[i].TOTAL_POINTS + "%    " + getGrade(tempList[i].TOTAL_POINTS) + " /  " + tempList[i].TOTAL_AVG + "%    " + getGrade(tempList[i].TOTAL_AVG);
+                    }
                     obj.CLIENT_EXPERIENCE_TOTAL = tempList[i].CLIENT_EXPERIENCE_TOTAL + " /  " + tempList[i].CLIENT_EXPERIENCE_AVG_TOTAL;
                     obj.SYSTEM_PROCESS_TOTAL = tempList[i].SYSTEM_PROCESS_TOTAL + " /  " + tempList[i].SYSTEM_PROCESS_AVG_TOTAL;
                     obj.WOW_FACTOR = tempList[i].WOW_FACTOR + " /  " + tempList[i].AVG_WOW_FACTOR;
@@ -155,7 +165,14 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QAReportService
                     obj.NAME = tempList[i].NAME;
                     obj.AGENT_NAME = tempList[i].AGENT_NAME;
                     obj.ROW = tempList[i].ROW;
-                    obj.TOTAL_POINTS = tempList[i].TOTAL_POINTS + "%   " + "  "+ getGrade(tempList[i].TOTAL_POINTS);
+                    if (reg.CALL_TYPE == "survey")
+                    {
+                        obj.TOTAL_POINTS = tempList[i].TOTAL_POINTS + "";
+                    }
+                    else
+                    {
+                        obj.TOTAL_POINTS = tempList[i].TOTAL_POINTS + "%   " + "  " + getGrade(tempList[i].TOTAL_POINTS);
+                    }
                     obj.CLIENT_EXPERIENCE_TOTAL = tempList[i].CLIENT_EXPERIENCE_TOTAL.ToString();
                     obj.SYSTEM_PROCESS_TOTAL = tempList[i].SYSTEM_PROCESS_TOTAL.ToString();
                     obj.WOW_FACTOR = tempList[i].WOW_FACTOR.ToString();
@@ -211,13 +228,27 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QAReportService
                 req.CURRENT_PAGE = 1;
                 req.RECORD_PER_PAGE = 0;
                 var CalledFrom = "";
-                if (req.AUDITOR_NAME == "")
+                if (req.CALL_TYPE.ToLower() == "phd")
                 {
-                    CalledFrom = "QA_Report";
+                    if (req.AUDITOR_NAME == "")
+                    {
+                        CalledFrom = "QA_Report";
+                    }
+                    else
+                    {
+                        CalledFrom = "QA_Report_AUD";
+                    }
                 }
                 else
                 {
-                    CalledFrom = "QA_Report_AUD";
+                    if (req.AUDITOR_NAME == "")
+                    {
+                        CalledFrom = "QA_Report_Survey";
+                    }
+                    else
+                    {
+                        CalledFrom = "QA_Report_AUD_Survey";
+                    }
                 }
 
                 string virtualPath = @"/" + profile.PracticeDocumentDirectory + "/" + "Fox/ExportedFiles/";

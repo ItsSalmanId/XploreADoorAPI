@@ -83,6 +83,23 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public bool EDIT_AUDIT_REPORT { get; set; }
         [NotMapped]
         public string CALL_RECORDING_URL { get; set; }
+        public long? DOCUMENTED_DATE_TIME { get; set; }
+        public long? DOCUMENTED_RELEVANT_DETAILS { get; set; }
+        public long? MARKED_QUSTIONS_CORRECTLY { get; set; }
+        public long? MARKED_SURVEY_STATUS { get; set; }
+        public long? CORRECTLY_IDENTIFY_FLAG { get; set; }
+        public long? CORRECTLY_SEPARATE_QUESTION { get; set; }
+        public long? FOLLOWED_SCRIPTED_SURVEY { get; set; }
+        public long? FOLLOWED_CLOSING_SCRIPT { get; set; }
+        public long? DOCUMENTED_DATE_TIME_TOTAL { get; set; }
+        public long? DOCUMENTED_RELEVANT_DETAILS_TOTAL { get; set; }
+        public long? MARKED_QUSTIONS_CORRECTLY_TOTAL { get; set; }
+        public long? MARKED_SURVEY_STATUS_TOTAL { get; set; }
+        public long? CORRECTLY_IDENTIFY_FLAG_TOTAL { get; set; }
+        public long? CORRECTLY_SEPARATE_QUESTION_TOTAL { get; set; }
+        public long? FOLLOWED_SCRIPTED_SURVEY_TOTAL { get; set; }
+        public long? FOLLOWED_CLOSING_SCRIPT_TOTAL { get; set; }
+        public string SCORING_CRITERIA { get; set; }
     }
 
     //public class CallLogModel : BaseModel
@@ -198,6 +215,7 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public string MRN { get; set; }
         public int? PHD_CALL_SCENARIO_ID { get; set; }
         public string CALL_SCANARIO { get; set; }
+        public string SCORING_CRITERIA { get; set; }
 
 
     }
