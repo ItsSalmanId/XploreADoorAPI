@@ -152,7 +152,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                x.PHD_CALL_ID.ToString().EndsWith("0000") &&/* x.PATIENT_ACCOUNT != null &&*/
                (request.PHD_CALL_SCENARIO_ID != 0 ? (x.PHD_CALL_SCENARIO_ID == request.PHD_CALL_SCENARIO_ID) : true));
 
-                List = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode /* && x.AUDITOR_NAME == profile.UserName*/).Select(x => new SurveyAuditScores() { SURVEY_CALL_ID = x.SURVEY_CALL_ID, PHD_CALL_ID = x.PHD_CALL_ID }).ToList();
+                List = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.CALL_TYPE == request.CALL_TYPE/* && x.AUDITOR_NAME == profile.UserName*/).Select(x => new SurveyAuditScores() { SURVEY_CALL_ID = x.SURVEY_CALL_ID, PHD_CALL_ID = x.PHD_CALL_ID }).ToList();
             }
             else
             {
@@ -160,7 +160,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                x.PHD_CALL_ID.ToString().EndsWith("0000") &&/* x.PATIENT_ACCOUNT != null &&*/
                (request.PHD_CALL_SCENARIO_ID != 0 ? (x.PHD_CALL_SCENARIO_ID == request.PHD_CALL_SCENARIO_ID) : true));
 
-                List = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode /* && x.AUDITOR_NAME == profile.UserName*/).Select(x => new SurveyAuditScores() { SURVEY_CALL_ID = x.SURVEY_CALL_ID, PHD_CALL_ID = x.PHD_CALL_ID }).ToList();
+                List = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.CALL_TYPE == request.CALL_TYPE /* && x.AUDITOR_NAME == profile.UserName*/).Select(x => new SurveyAuditScores() { SURVEY_CALL_ID = x.SURVEY_CALL_ID, PHD_CALL_ID = x.PHD_CALL_ID }).ToList();
             }
 
             if (lst.Count > 0)
