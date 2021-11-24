@@ -891,7 +891,8 @@ namespace FOX.BusinessOperations.PatientSurveyService
         public PSSearchData GetPSSearchData(long practiceCode) // Dropdown data from patient survey.
         {
             PSSearchData _psSSearchData = new PSSearchData();
-            _psSSearchData.Providers = _patientSurveyRepository.GetMany(x => x.PRACTICE_CODE == practiceCode && x.PROVIDER != null && !string.IsNullOrEmpty(x.PROVIDER)).OrderBy(x => x.PROVIDER).Select(x => x.PROVIDER).Distinct().ToList();
+            //_psSSearchData.Providers = _patientSurveyRepository.GetMany(x => x.PRACTICE_CODE == practiceCode && x.PROVIDER != null && !string.IsNullOrEmpty(x.PROVIDER)).OrderBy(x => x.PROVIDER).Select(x => x.PROVIDER).Distinct().ToList();
+            _psSSearchData.Providers = GetPSProvidersList(practiceCode, string.Empty);
             _psSSearchData.States = GetPSStatesList(practiceCode, string.Empty);
             _psSSearchData.Regions = GetPSRegionsList(practiceCode, string.Empty);
             //_psSSearchData.States = SpRepository<string>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PS_STATES_LIST");
@@ -1008,18 +1009,38 @@ namespace FOX.BusinessOperations.PatientSurveyService
                          @PRACTICE_CODE, @SURVEY_ID, @PATIENT_ACCOUNT", PracticeCode, _surveyId, _patientAccount);
             return result;
         }
-
+        public List<string> GetPSProvidersList(long practiceCode, string provider)
+        {
+            List<string> result = new List<string>();
+            if (string.IsNullOrEmpty(provider))
+            {
+                var practice_code = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
+                result = SpRepository<string>.GetListWithStoreProcedure(@"FOX_PROC_GET_PATIENT_SURVEY_PROVIDERS @PRACTICE_CODE", practice_code);
+                return result.ToList();
+            }
+            return result;
+        }
         public List<string> GetPSStatesList(long practiceCode, string region)
         {
             if (string.IsNullOrEmpty(region))
-                return _patientSurveyRepository.GetMany(x => x.PRACTICE_CODE == practiceCode && x.PATIENT_STATE != null && !string.IsNullOrEmpty(x.PATIENT_STATE)).OrderBy(x => x.PATIENT_STATE).Select(x => x.PATIENT_STATE).Distinct().ToList();
+            {
+                var practice_code = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
+                var result = SpRepository<string>.GetListWithStoreProcedure(@"FOX_PROC_GET_PATIENT_SURVEY_STATES @PRACTICE_CODE", practice_code);
+                return result.ToList();
+                //return _patientSurveyRepository.GetMany(x => x.PRACTICE_CODE == practiceCode && x.PATIENT_STATE != null && !string.IsNullOrEmpty(x.PATIENT_STATE)).OrderBy(x => x.PATIENT_STATE).Select(x => x.PATIENT_STATE).Distinct().ToList();
+            }
             return _patientSurveyRepository.GetMany(x => x.PRACTICE_CODE == practiceCode && x.PATIENT_STATE != null && !string.IsNullOrEmpty(x.PATIENT_STATE) && x.REGION == region).OrderBy(x => x.PATIENT_STATE).Select(x => x.PATIENT_STATE).Distinct().ToList();
         }
 
         public List<string> GetPSRegionsList(long practiceCode, string state)
         {
             if (string.IsNullOrEmpty(state))
-                return _patientSurveyRepository.GetMany(x => x.PRACTICE_CODE == practiceCode && x.REGION != null && !string.IsNullOrEmpty(x.REGION)).OrderBy(x => x.REGION).Select(x => x.REGION).Distinct().ToList();
+            {
+                var practice_code = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
+                var result = SpRepository<string>.GetListWithStoreProcedure(@"FOX_PROC_GET_PATIENT_SURVEY_REGIONS @PRACTICE_CODE", practice_code);
+                return result.ToList();
+            }
+                //return _patientSurveyRepository.GetMany(x => x.PRACTICE_CODE == practiceCode && x.REGION != null && !string.IsNullOrEmpty(x.REGION)).OrderBy(x => x.REGION).Select(x => x.REGION).Distinct().ToList();
             return _patientSurveyRepository.GetMany(x => x.PRACTICE_CODE == practiceCode && x.PATIENT_STATE == state && x.REGION != null && !string.IsNullOrEmpty(x.REGION)).OrderBy(x => x.REGION).Select(x => x.REGION).Distinct().ToList();
         }
 
