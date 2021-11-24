@@ -791,6 +791,22 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 }
 
 
+                if(obj.IS_POST_ACUTE == true && sourceAddDetail.IS_EMERGENCY_ORDER == true)
+                {
+                    sourceAddDetail.IS_POST_ACUTE = obj.IS_POST_ACUTE;
+                    sourceAddDetail.REASON_FOR_THE_URGENCY = obj.REASON_FOR_THE_URGENCY;
+                    if (!string.IsNullOrEmpty(obj.EXPECTED_DISCHARGE_DATE_STR))
+                    {
+                        sourceAddDetail.EXPECTED_DISCHARGE_DATE = Helper.ConvertStingToDateTime(obj.EXPECTED_DISCHARGE_DATE_STR);
+                    }
+                }
+                else
+                {
+                    sourceAddDetail.IS_POST_ACUTE = false;
+                    sourceAddDetail.EXPECTED_DISCHARGE_DATE = null;
+                    sourceAddDetail.IS_EMERGENCY_ORDER = false;
+                    sourceAddDetail.REASON_FOR_THE_URGENCY = null;
+                }
 
 
 
@@ -4521,9 +4537,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
             SqlParameter pVoOnBehalfOf = new SqlParameter("VO_ON_BEHALF_OF", sourceAddDetail.VO_ON_BEHALF_OF ?? 0);
             SqlParameter pVoReceivedBy = new SqlParameter("VO_RECIEVED_BY", string.IsNullOrEmpty(sourceAddDetail.VO_RECIEVED_BY) ? string.Empty : sourceAddDetail.VO_RECIEVED_BY);
             SqlParameter pVoDateTime = new SqlParameter("VO_DATE_TIME", sourceAddDetail.VO_DATE_TIME ?? (object)DBNull.Value);
+            SqlParameter dischargedDate = new SqlParameter("EXPECTED_DISCHARGE_DATE", sourceAddDetail.EXPECTED_DISCHARGE_DATE ?? (object)DBNull.Value);
             SqlParameter selectedSource = new SqlParameter("@FOX_SOURCE_CATEGORY_ID", sourceAddDetail?.FOX_SOURCE_CATEGORY_ID ?? 0);
-            SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_INSERT_ORIGNAL_QUEUE_ADDITIONAL_INFO @WORK_ID,@DEPARTMENT_ID,@DOCUMENT_TYPE,@SENDER_ID,@FACILITY_NAME,@INDEXED_BY,@INDEXED_DATE,@COMPLETED_BY,@COMPLETED_DATE,@WORK_STATUS,@PATIENT_ACCOUNT,@ACCOUNT_NUMBER,@FACILITY_ID,@IS_EMERGENCY_ORDER,@REASON_FOR_VISIT,@UNIT_CASE_NO,@DELETED,@MODIFIED_BY,@RFO_Type,@IsSigned,@SignedBy,@FOX_TBL_SENDER_TYPE_ID,@FOX_TBL_SENDER_NAME_ID,@REASON_FOR_THE_URGENCY,@IS_POST_ACUTE,@ASSIGNED_TO,@ASSIGNED_BY,@ASSIGNED_DATE,@IS_EVALUATE_TREAT,@HEALTH_NAME,@HEALTH_NUMBER,@IS_VERBAL_ORDER,@VO_ON_BEHALF_OF,@VO_RECIEVED_BY,@VO_DATE_TIME,@FOX_SOURCE_CATEGORY_ID",
-                                                                                                                                pWorkId, pDepartmentID, pDocumentType, pSenderId, pFacilityName, pIndexedBy, pIndexedDate, pCompletedBy, pCompletedDate, pWorkStatus, pPatAccount23, pAccountNumber, pFacilityId, pIsEmergencyOrder, pReasonForVisit, pUnitCaseNo, pDeleted, pModifiedBy, pRFOType, pIsSigned, pSignedBy, pSenderTypeId, pSenderTypeNameId, pReasonForUrgency, pIsPostAcute, pAssignedTo, pAssignedBy, pAssignedDate, pIsEvaluateTreat, pHealthName, pHealthNumber, pIsVerbalOrder, pVoOnBehalfOf, pVoReceivedBy, pVoDateTime, selectedSource);
+            SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_INSERT_ORIGNAL_QUEUE_ADDITIONAL_INFO @WORK_ID,@DEPARTMENT_ID,@DOCUMENT_TYPE,@SENDER_ID,@FACILITY_NAME,@INDEXED_BY,@INDEXED_DATE,@COMPLETED_BY,@COMPLETED_DATE,@WORK_STATUS,@PATIENT_ACCOUNT,@ACCOUNT_NUMBER,@FACILITY_ID,@IS_EMERGENCY_ORDER,@REASON_FOR_VISIT,@UNIT_CASE_NO,@DELETED,@MODIFIED_BY,@RFO_Type,@IsSigned,@SignedBy,@FOX_TBL_SENDER_TYPE_ID,@FOX_TBL_SENDER_NAME_ID,@REASON_FOR_THE_URGENCY,@IS_POST_ACUTE,@ASSIGNED_TO,@ASSIGNED_BY,@ASSIGNED_DATE,@IS_EVALUATE_TREAT,@HEALTH_NAME,@HEALTH_NUMBER,@IS_VERBAL_ORDER,@VO_ON_BEHALF_OF,@VO_RECIEVED_BY,@VO_DATE_TIME,@EXPECTED_DISCHARGE_DATE ,@FOX_SOURCE_CATEGORY_ID",
+                                                                                                                                pWorkId, pDepartmentID, pDocumentType, pSenderId, pFacilityName, pIndexedBy, pIndexedDate, pCompletedBy, pCompletedDate, pWorkStatus, pPatAccount23, pAccountNumber, pFacilityId, pIsEmergencyOrder, pReasonForVisit, pUnitCaseNo, pDeleted, pModifiedBy, pRFOType, pIsSigned, pSignedBy, pSenderTypeId, pSenderTypeNameId, pReasonForUrgency, pIsPostAcute, pAssignedTo, pAssignedBy, pAssignedDate, pIsEvaluateTreat, pHealthName, pHealthNumber, pIsVerbalOrder, pVoOnBehalfOf, pVoReceivedBy, pVoDateTime, dischargedDate, selectedSource);
         }
 
         private Patient UpdatePatientStatus(UserProfile profile, OriginalQueue sourceAddDetail, long? pat_account)//PATIENT ZERO CHECK

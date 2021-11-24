@@ -472,6 +472,7 @@ namespace FOX.DataModels.Models.IndexInfo
         public GuestLogin Guest_Login { get; set; }
         public string REASON_FOR_THE_URGENCY { get; set; }
         public bool? IS_POST_ACUTE { get; set; }
+        public string EXPECTED_DISCHARGE_DATE { get; set; }
         public bool? IS_EVALUATE_TREAT { get; set; }
         public string HEALTH_NAME { get; set; }
         public string HEALTH_NUMBER { get; set; }
