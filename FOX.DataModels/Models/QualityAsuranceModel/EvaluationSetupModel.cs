@@ -108,6 +108,7 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public int FOLLOWED_SCRIPTED_SURVEY { get; set; }
         public int FOLLOWED_CLOSING_SCRIPT { get; set; }
         public int VERIFIED_PATIENT_ACCOUNT { get; set; }
+        public int CORRECTLY_SEPARATE_QUESTION { get; set; }
     }
 
 
@@ -127,7 +128,7 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public int MARKED_QUSTIONS_CORRECTLY { get; set; }
         public int MARKED_SURVEY_STATUS { get; set; }
         public int CORRECTLY_IDENTIFY_FLAG { get; set; }
-        public int CORRECTLY_SEPARATE_QUESTION { get; set; }
+        //public int CORRECTLY_SEPARATE_QUESTION { get; set; }
     }
         public class RequestModelWowfactor
     {
