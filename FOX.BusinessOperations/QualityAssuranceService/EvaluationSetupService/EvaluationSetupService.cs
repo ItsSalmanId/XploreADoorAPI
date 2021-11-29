@@ -140,6 +140,13 @@ namespace FOX.BusinessOperations.QualityAssuranceService.EvaluationSetupService
                             tempObj[index1].MODIFIED_BY = profile.UserName;
                             tempObj[index1].MODIFIED_DATE = Helper.GetCurrentDate();
                         }
+                        index1 = tempObj.FindIndex(x => x.CATEGORIES_NAME.ToLower() == "correctly separated survey questions for each discipline");
+                        if (index1 >= 0)
+                        {
+                            tempObj[index1].CATEGORIES_POINTS = obj.CORRECTLY_SEPARATE_QUESTION;
+                            tempObj[index1].MODIFIED_BY = profile.UserName;
+                            tempObj[index1].MODIFIED_DATE = Helper.GetCurrentDate();
+                        }
                     }
                 }
                 foreach (var i in tempObj)
@@ -227,13 +234,13 @@ namespace FOX.BusinessOperations.QualityAssuranceService.EvaluationSetupService
                             tempObj[index1].MODIFIED_BY = profile.UserName;
                             tempObj[index1].MODIFIED_DATE = Helper.GetCurrentDate();
                         }
-                        index1 = tempObj.FindIndex(x => x.CATEGORIES_NAME.ToLower() == "correctly separated survey questions for each discipline");
-                        if (index1 >= 0)
-                        {
-                            tempObj[index1].CATEGORIES_POINTS = obj.CORRECTLY_SEPARATE_QUESTION;
-                            tempObj[index1].MODIFIED_BY = profile.UserName;
-                            tempObj[index1].MODIFIED_DATE = Helper.GetCurrentDate();
-                        }
+                        //index1 = tempObj.FindIndex(x => x.CATEGORIES_NAME.ToLower() == "correctly separated survey questions for each discipline");
+                        //if (index1 >= 0)
+                        //{
+                        //    tempObj[index1].CATEGORIES_POINTS = obj.CORRECTLY_SEPARATE_QUESTION;
+                        //    tempObj[index1].MODIFIED_BY = profile.UserName;
+                        //    tempObj[index1].MODIFIED_DATE = Helper.GetCurrentDate();
+                        //}
                     }
 
                     //tempObj[0].CATEGORIES_POINTS = obj.VERIFIED_PATIENT_ACCOUNT;
