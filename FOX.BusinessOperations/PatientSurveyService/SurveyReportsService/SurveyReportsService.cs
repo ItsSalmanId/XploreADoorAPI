@@ -174,6 +174,8 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
             list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.NEW_CASE_SAME_DISCIPLINE = list.Count;
 
+            obj.DISCHARGE_TO_SURVEY_TIME_DAYS_AVERAGE = DischargeToSurveyTimeDaysAverage(patientSurveySearchRequest, profile);
+
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Pending";
             patientSurveySearchRequest.TIME_FRAME = 4;
             patientSurveySearchRequest.DATE_FROM_STR = "";
@@ -189,7 +191,6 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
             list = GetAllPendingDetailedReport(patientSurveySearchRequest, profile);
             obj.PENDING_30 = list.Count;
 
-            obj.DISCHARGE_TO_SURVEY_TIME_DAYS_AVERAGE = DischargeToSurveyTimeDaysAverage(patientSurveySearchRequest, profile); ;
             return obj;
         }
         public string ExportToExcelPSRDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile)
@@ -607,8 +608,32 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
         public int DischargeToSurveyTimeDaysAverage(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile)
         {
             AverageDaysSurveyCompleted Obj = new AverageDaysSurveyCompleted();
+            switch (patientSurveySearchRequest.TIME_FRAME)
+            {
+                case 1:
+                    patientSurveySearchRequest.DATE_FROM = Helper.GetCurrentDate().AddDays(-7);
+                    break;
+                case 2:
+                    patientSurveySearchRequest.DATE_FROM = Helper.GetCurrentDate().AddDays(-15);
+                    break;
+                case 3:
+                    patientSurveySearchRequest.DATE_FROM = Helper.GetCurrentDate().AddDays(-30);
+                    break;
+                case 4:
+                    if (!string.IsNullOrEmpty(patientSurveySearchRequest.DATE_FROM_STR))
+                        patientSurveySearchRequest.DATE_FROM = Convert.ToDateTime(patientSurveySearchRequest.DATE_FROM_STR);
+                    else
+                        patientSurveySearchRequest.DATE_FROM = Helper.GetCurrentDate().AddYears(-100);
+                    if (!string.IsNullOrEmpty(patientSurveySearchRequest.DATE_TO_STR))
+                        patientSurveySearchRequest.DATE_TO = Convert.ToDateTime(patientSurveySearchRequest.DATE_TO_STR);
+                    break;
+                default:
+                    break;
+            }
             var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
-            Obj = SpRepository<AverageDaysSurveyCompleted>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_DISCHARGE_SURVEY_LAST_14_DAYS_AVERAGE @PRACTICE_CODE", PracticeCode);
+            var dateFrom = Helper.getDBNullOrValue("DATE_FROM", patientSurveySearchRequest.DATE_FROM.ToString());
+            var dateTo = Helper.getDBNullOrValue("@DATE_TO", patientSurveySearchRequest.DATE_TO.ToString());
+            Obj = SpRepository<AverageDaysSurveyCompleted>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_DISCHARGE_SURVEY_LAST_14_DAYS_AVERAGE @PRACTICE_CODE, @DATE_FROM, @DATE_TO", PracticeCode, dateFrom, dateTo);
             if(Obj != null)
             {
                 return Obj.AVERAGE_DAY;
