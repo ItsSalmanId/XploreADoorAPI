@@ -4204,7 +4204,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     body = body.Replace("[[QRCode]]", qrCode.ENCODED_IMAGE_BYTES ?? "");
                 }
                 body = body.Replace("[[DOCUMENT_TYPE]]", documentType ?? "");
-                body = body.Replace("[[ORS]]", ORS.LAST_NAME + ", " + ORS.FIRST_NAME ?? "");
+                if(ORS != null)
+                {
+                    body = body.Replace("[[ORS]]", ORS.LAST_NAME + ", " + ORS.FIRST_NAME ?? "");
+                }
                 body = body.Replace("[[SENDER]]", Sender == null ? "" : Sender.LAST_NAME + ", " + Sender.FIRST_NAME ?? "");
                 body = body.Replace("[[TREATMENT_LOCATION]]", sourceDetail.FACILITY_NAME ?? "");
                 if (fClass != null && !string.IsNullOrEmpty(fClass.NAME) && fClass.NAME.ToLower().Equals("sa- special account"))
