@@ -2575,7 +2575,9 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 {
                     thread.Abort();
                 }
-                noOfPages = noOfPages + 1;
+                //noOfPages = noOfPages + 1;
+                long ConvertedWorkID = Convert.ToInt64(workId);
+                noOfPages = _OriginalQueueFiles.GetMany(t => t.WORK_ID == ConvertedWorkID && !t.deleted)?.Count() ?? 0;
                 AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, approval, config.PRACTICE_CODE);
             }
         }
