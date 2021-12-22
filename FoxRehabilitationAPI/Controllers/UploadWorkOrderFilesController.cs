@@ -27,5 +27,12 @@ namespace FoxRehabilitationAPI.Controllers
             var response = Request.CreateResponse(HttpStatusCode.OK, responseModel);
             return response;
         }
+        [HttpPost]
+        public HttpResponseMessage SaveUploadAdditionalWorkOrderFiles(ReqSaveUploadWorkOrderFiles reqSaveUploadWorkOrderFiles)
+        {
+            var responseModel = _IUploadWorkOrderFilesService.saveUploadAdditionalWorkOrderFiles(reqSaveUploadWorkOrderFiles, GetProfile());
+            var response = Request.CreateResponse(HttpStatusCode.OK, responseModel);
+            return response;
+        }
     }
 }

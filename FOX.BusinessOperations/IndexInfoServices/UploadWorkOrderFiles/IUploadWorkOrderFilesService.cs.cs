@@ -11,5 +11,6 @@ namespace FOX.BusinessOperations.IndexInfoServices.UploadWorkOrderFiles
     public interface IUploadWorkOrderFilesService
     {
         ResSaveUploadWorkOrderFiles SaveUploadWorkOrderFiles(ReqSaveUploadWorkOrderFiles reqSaveUploadWorkOrderFiles, UserProfile Profile);
+        ResSaveUploadWorkOrderFiles saveUploadAdditionalWorkOrderFiles(ReqSaveUploadWorkOrderFiles reqSaveUploadWorkOrderFiles, UserProfile Profile);
     }
 }

@@ -109,6 +109,9 @@ namespace FOX.DataModels.Models.OriginalQueueModel
         public string GuestID { get; set; }
         public string REASON_FOR_THE_URGENCY { get; set; }
         public bool? IS_POST_ACUTE { get; set; }
+        public DateTime? EXPECTED_DISCHARGE_DATE { get; set; }
+        [NotMapped]
+        public string EXPECTED_DISCHARGE_DATE_STR { get; set; }
         [NotMapped]
         public bool IsRequestForOrder { get; set; }
         [NotMapped]
