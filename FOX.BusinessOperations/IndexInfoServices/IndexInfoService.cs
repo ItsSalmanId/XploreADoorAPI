@@ -804,8 +804,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 {
                     sourceAddDetail.IS_POST_ACUTE = false;
                     sourceAddDetail.EXPECTED_DISCHARGE_DATE = null;
-                    sourceAddDetail.IS_EMERGENCY_ORDER = false;
-                    sourceAddDetail.REASON_FOR_THE_URGENCY = null;
                 }
 
 
