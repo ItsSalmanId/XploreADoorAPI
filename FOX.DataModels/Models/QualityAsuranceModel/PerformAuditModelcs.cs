@@ -216,7 +216,7 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public int? PHD_CALL_SCENARIO_ID { get; set; }
         public string CALL_SCANARIO { get; set; }
         public string SCORING_CRITERIA { get; set; }
-
+        public string SURVEY_FLAG { get; set; }
 
     }
 }
