@@ -4163,7 +4163,12 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 body = File.ReadAllText(templatePathOfSenderEmail);
                 HtmlDocument htmldoc = new HtmlDocument();
                 htmldoc.LoadHtml(body);
-
+                
+                if (work_order.IS_VERBAL_ORDER == false && work_order.is_strategic_account == true)
+                {
+                    var VerbalOrder = htmldoc.DocumentNode.SelectSingleNode("//span[@id='VerbalOrder']");
+                    VerbalOrder.Remove();
+                }
                 if (work_order.IS_VERBAL_ORDER == null || work_order.IS_VERBAL_ORDER == false)
                 {
                     var Verbal = htmldoc.DocumentNode.SelectSingleNode("//span[@id='VERBAL']");
@@ -4260,7 +4265,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     body = body.Replace("[[is_verbal_order]]", "Yes");
                     body = body.Replace("[[on_behalf_of]]", work_order.VO_ON_BEHALF_OF.ToString());
                     body = body.Replace("[[received_by]]", work_order.VO_RECIEVED_BY ?? "");
-                    body = body.Replace("[[verbal_date]]", work_order.VO_DATE_TIME.Value.ToString("hh:mm tt") ?? "");
+                    body = body.Replace("[[verbal_date]]", work_order.VO_DATE_TIME.Value.ToString("MM/dd/yyyy") ?? "");
                     body = body.Replace("[[verbal_time]]", work_order.VO_DATE_TIME.Value.ToString("hh:mm tt") ?? "");
                 }
                 else
