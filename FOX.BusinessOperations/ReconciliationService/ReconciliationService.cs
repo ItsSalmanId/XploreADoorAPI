@@ -2702,8 +2702,8 @@ namespace FOX.BusinessOperations.ReconciliationService
                             temp.DepositType = row["Deposit Type"].ToString();
                         if (row.Table.Columns.Contains("Category / Account") && !string.IsNullOrEmpty(row["Category / Account"].ToString()))
                             temp.CategoryAccount = row["Category / Account"].ToString();
-                        if (row.Table.Columns.Contains("State") && !string.IsNullOrEmpty(row["State"].ToString()))
-                            temp.State = row["State"].ToString();
+                        if (row.Table.Columns.Contains("Carrier State") && !string.IsNullOrEmpty(row["Carrier State"].ToString()))
+                            temp.State = row["Carrier State"].ToString();
                         if (row.Table.Columns.Contains("Category/Acct") && !string.IsNullOrEmpty(row["Category/Acct"].ToString()))
                             temp.CategoryAccount = row["Category/Acct"].ToString();
                         if (row.Table.Columns.Contains("Payer Name") && !string.IsNullOrEmpty(row["Payer Name"].ToString()))
@@ -2901,9 +2901,14 @@ namespace FOX.BusinessOperations.ReconciliationService
 
         public List<SOFT_RECONCILIATION_PAYMENT> GetWebsoftPayment(SOFT_RECONCILIATION_SERACH_REQUEST softRequest, UserProfile profile)
         {
+            if (!string.IsNullOrEmpty(softRequest.DEPOSIT_DATE_STR))
+            {
+                softRequest.DEPOSIT_DATE = Convert.ToDateTime(softRequest.DEPOSIT_DATE_STR);
+            }
             SqlParameter practiceCode = new SqlParameter("STRPRACTICECODE", profile.PracticeCode);
             SqlParameter checkNo = new SqlParameter("CHECK_NO", softRequest.CHECK_NO);
-            var result = SpRepository<SOFT_RECONCILIATION_PAYMENT>.GetListWithStoreProcedure(@" FOX_PROC_GET_DEPOSITSLIP_CLAIMS_AMOUNT @STRPRACTICECODE,@CHECK_NO", practiceCode, checkNo);
+            SqlParameter depositDate = new SqlParameter("DEPOSIT_DATE", softRequest.DEPOSIT_DATE.ToString());
+            var result = SpRepository<SOFT_RECONCILIATION_PAYMENT>.GetListWithStoreProcedure(@" FOX_PROC_GET_DEPOSITSLIP_CLAIMS_AMOUNT @STRPRACTICECODE,@CHECK_NO,@DEPOSIT_DATE", practiceCode, checkNo, depositDate);
             if (result != null)
             {
                 return result;
@@ -2912,7 +2917,6 @@ namespace FOX.BusinessOperations.ReconciliationService
             {
                 return new List<SOFT_RECONCILIATION_PAYMENT>();
             }
-
         }
 
         /// <summary>Get Serail Numbers </summary>
