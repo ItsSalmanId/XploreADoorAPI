@@ -4174,6 +4174,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     var Verbal = htmldoc.DocumentNode.SelectSingleNode("//span[@id='VERBAL']");
                     Verbal.Remove();
                 }
+                if (work_order.is_strategic_account)
+                {
+                    var Insurance = htmldoc.DocumentNode.SelectSingleNode("//span[@id='PRIMARY_INSURANCE']");
+                    Insurance.Remove();
+                }
                 if (work_order.IS_EVALUATE_TREAT == null || work_order.IS_EVALUATE_TREAT == false)
                 {
                     var evaluate = htmldoc.DocumentNode.SelectSingleNode("//span[@id='EVALUATE_TREAT']");
