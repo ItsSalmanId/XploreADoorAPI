@@ -18,5 +18,7 @@ namespace FOX.BusinessOperations.ReportingServices.ReferralReportServices
         string ExportToExcelInterfaceLogReport(InterfaceLogReportReq obj, UserProfile profile);
         List<PHRReportRes> getPHRReportList(PHRReportReq obj, UserProfile profile);
         string ExportToExcelRequestToPHRReport(PHRReportReq obj, UserProfile profile);
+        List<PHRUserLastLoginReponse> GetPHRUsersLoginList(PHRUserLastLoginRequest request, UserProfile profile);
+        string ExportPHRUserLastLoginReport(PHRUserLastLoginRequest request, UserProfile profile);
     }
 }

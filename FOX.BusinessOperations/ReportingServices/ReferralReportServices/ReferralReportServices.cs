@@ -476,5 +476,84 @@ namespace FOX.BusinessOperations.ReportingServices.ReferralReportServices
             }
         }
 
+        public List<PHRUserLastLoginReponse> GetPHRUsersLoginList(PHRUserLastLoginRequest request, UserProfile profile)
+        {
+            try
+            {
+                request.DATE_TO = Helper.GetCurrentDate();
+
+                switch(request.TIME_FRAME)
+                {
+                    case 1:
+                        request.DATE_FROM = Helper.GetCurrentDate().AddDays(-7);
+                        break;
+                    case 2:
+                        request.DATE_FROM = Helper.GetCurrentDate().AddDays(-15);
+                        break;
+                    case 3:
+                        request.DATE_FROM = Helper.GetCurrentDate().AddDays(-30);
+                        break;
+                    case 4:
+                        if (!string.IsNullOrEmpty(request.DATE_FROM_STR))
+                            request.DATE_FROM = Convert.ToDateTime(request.DATE_FROM_STR);
+                        else
+                            request.DATE_FROM = Helper.GetCurrentDate().AddYears(-100);
+                        if (!string.IsNullOrEmpty(request.DATE_TO_STR))
+                            request.DATE_TO = Convert.ToDateTime(request.DATE_TO_STR);
+                        break;
+                    default:
+                        break;
+                }
+
+                var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                var dateFrom = Helper.getDBNullOrValue("DATE_FROM", request.DATE_FROM.ToString());
+                var dateTo= Helper.getDBNullOrValue("DATE_TO", request.DATE_TO.ToString());
+                var currentPage = new SqlParameter { ParameterName = "CURRENT_PAGE", SqlDbType = SqlDbType.Int, Value = request.CURRENT_PAGE };
+                var recordPerPage = new SqlParameter { ParameterName = "RECORD_PER_PAGE", SqlDbType = SqlDbType.Int, Value = request.RECORD_PER_PAGE };
+                var searchText = new SqlParameter { ParameterName = "SEARCH_TEXT", SqlDbType = SqlDbType.VarChar, Value = request.SEARCH_TEXT };
+                var sortBy = new SqlParameter { ParameterName = "SORT_BY", Value = request.SORT_BY };
+                var sortOrder = new SqlParameter { ParameterName = "SORT_ORDER", Value = request.SORT_ORDER };
+                var result = SpRepository<PHRUserLastLoginReponse>.GetListWithStoreProcedure(@"EXEC FOX_PROC_GET_PHR_LAST_LOGIN_USER_REPORT  @PRACTICE_CODE, @DATE_FROM, @DATE_TO, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORT_BY, @SORT_ORDER", practiceCode, dateFrom, dateTo, currentPage, recordPerPage, searchText, sortBy, sortOrder);
+                return result;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public string ExportPHRUserLastLoginReport(PHRUserLastLoginRequest request, UserProfile profile)
+        {
+            try
+            {
+                string fileName = "PHR_Users_Last_Login_Report";
+                string exportPath = "";
+                string path = string.Empty;
+                bool exported;
+                var CalledFrom = "PHR_Users_Last_Login_Report";
+                string virtualPath = @"/" + profile.PracticeDocumentDirectory + "/" + "Fox/ExportedFiles/";
+                exportPath = HttpContext.Current.Server.MapPath("~" + virtualPath);
+                fileName = DocumentHelper.GenerateSignatureFileName(fileName) + ".xlsx";
+                if (!Directory.Exists(exportPath))
+                {
+                    Directory.CreateDirectory(exportPath);
+                }
+                List<PHRUserLastLoginReponse> result = new List<PHRUserLastLoginReponse>();
+                var pathtowriteFile = exportPath + "\\" + fileName;
+                result = GetPHRUsersLoginList(request, profile);
+                for (int i = 0; i < result.Count(); i++)
+                {
+                    result[i].ROW = i + 1;
+                }
+                exported = ExportToExcel.CreateExcelDocument<PHRUserLastLoginReponse>(result, pathtowriteFile, CalledFrom.Replace(' ', '_'));
+                return virtualPath + fileName;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
     }
 }
