@@ -1048,7 +1048,7 @@ namespace FOX.BusinessOperations.CommonServices
                 }
 
             }
-            if (CalledFrom.Equals("PHR_User_Last_Login_Report"))
+            if (CalledFrom.Equals("PHR_Users_Last_Login_Report"))
             {
                 if (dc.Contains("TOTAL_RECORD_PAGES"))
                 {
@@ -7791,7 +7791,7 @@ namespace FOX.BusinessOperations.CommonServices
                     dtcol["CREATED_DATE_STR"].ColumnName = "Date";
                 }
             }
-            else if (dt.TableName == "PHR_User_Last_Login_Report")
+            else if (dt.TableName == "PHR_Users_Last_Login_Report")
             {
                 if (dtcol.Contains("ROW"))
                 {
