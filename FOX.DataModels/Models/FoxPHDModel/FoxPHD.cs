@@ -24,6 +24,13 @@ namespace FOX.DataModels.Models.FoxPHD
         public int RECORD_PER_PAGE { get; set; }
         public string SORT_BY { get; set; }
         public string SORT_ORDER { get; set; }
+        public string PHONE_NUMBER { get; set; }
+        public string PATIENT_LAST_NAME  { get; set; }
+        public string PATIENT_FIRST_NAME { get; set; }
+        public DateTime? CALL_TIME_FROM { get; set; }
+        public string CALL_TIME_FROM_STR { get; set; }
+        public DateTime? CALL_TIME_TO { get; set; }
+        public string CALL_TIME_TO_STR { get; set; }
     }
     public class PatientsSearchRequest
     {
@@ -133,6 +140,10 @@ namespace FOX.DataModels.Models.FoxPHD
         public HttpFileCollection ATTACHMENT { get; set; }
         [NotMapped]
         public string ATTACHMENT_PATH { get; set; }
+        [NotMapped]
+        public string First_Name { get; set; }
+        [NotMapped]
+        public string Last_Name { get; set; }
         [NotMapped]
         public string firstName { get; set; }
         [NotMapped]

@@ -121,6 +121,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
         {
             List<PatientSurvey> list = new List<PatientSurvey>();
             PSDRChartData obj = new PSDRChartData();
+            string surveyedStatusChild = patientSurveySearchRequest.SURVEYED_STATUS_CHILD;
 
             patientSurveySearchRequest.RECORD_PER_PAGE = 0;
 
@@ -174,6 +175,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
             list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.NEW_CASE_SAME_DISCIPLINE = list.Count;
 
+            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = surveyedStatusChild;
             obj.DISCHARGE_TO_SURVEY_TIME_DAYS_AVERAGE = DischargeToSurveyTimeDaysAverage(patientSurveySearchRequest, profile);
 
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Pending";
@@ -633,7 +635,13 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
             var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
             var dateFrom = Helper.getDBNullOrValue("DATE_FROM", patientSurveySearchRequest.DATE_FROM.ToString());
             var dateTo = Helper.getDBNullOrValue("@DATE_TO", patientSurveySearchRequest.DATE_TO.ToString());
-            Obj = SpRepository<AverageDaysSurveyCompleted>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_DISCHARGE_SURVEY_LAST_14_DAYS_AVERAGE @PRACTICE_CODE, @DATE_FROM, @DATE_TO", PracticeCode, dateFrom, dateTo);
+            var state = new SqlParameter { ParameterName = "@STATE", SqlDbType = SqlDbType.VarChar, Value = patientSurveySearchRequest.STATE };
+            var region = new SqlParameter { ParameterName = "@REGION", SqlDbType = SqlDbType.VarChar, Value = patientSurveySearchRequest.REGION };
+            var provider = new SqlParameter { ParameterName = "@PROVIDER", SqlDbType = SqlDbType.VarChar, Value = patientSurveySearchRequest.PROVIDER };
+            var surveyBy = new SqlParameter { ParameterName = "@SURVEYED_BY", SqlDbType = SqlDbType.VarChar, Value = patientSurveySearchRequest.SURVEYED_BY };
+            var surveyStatus = new SqlParameter { ParameterName = "@SURVEYED_STATUS", SqlDbType = SqlDbType.VarChar, Value = patientSurveySearchRequest.SURVEYED_STATUS_CHILD };
+            var flag = new SqlParameter { ParameterName = "@FLAG", SqlDbType = SqlDbType.VarChar, Value = patientSurveySearchRequest.FLAG };
+            Obj = SpRepository<AverageDaysSurveyCompleted>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_DISCHARGE_SURVEY_LAST_14_DAYS_AVERAGE @PRACTICE_CODE, @DATE_FROM, @DATE_TO, @STATE, @REGION, @PROVIDER, @SURVEYED_BY, @SURVEYED_STATUS, @FLAG", PracticeCode, dateFrom, dateTo, state, region, provider, surveyBy, surveyStatus, flag);
             if(Obj != null)
             {
                 return Obj.AVERAGE_DAY;

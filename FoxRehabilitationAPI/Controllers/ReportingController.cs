@@ -85,5 +85,29 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _reportServices.ExportToExcelRequestToPHRReport(obj, GetProfile()));
         }
+        [HttpPost]
+        public HttpResponseMessage GetPHRUserLastLoginReport(PHRUserLastLoginRequest request)
+        {
+            if(request != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _reportServices.GetPHRUsersLoginList(request, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Request is empty");
+            }
+        }
+        [HttpPost]
+        public HttpResponseMessage ExportPHRUserLastLoginReport(PHRUserLastLoginRequest request)
+        {
+            if(request != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _reportServices.ExportPHRUserLastLoginReport(request, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Request is empty");
+            }
+        }
     }
 }

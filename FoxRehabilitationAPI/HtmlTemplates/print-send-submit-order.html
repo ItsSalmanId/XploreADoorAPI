@@ -52,7 +52,7 @@
                                             <b>MRN:</b>  [[PATIENT_MRN]]<br />
                                             <b>Home Address:</b>  [[PATIENT_HOME_ADDRESS]]<br />
                                             [[PATIENT_HOME_ADDRESS_2]]<br />
-                                            <b>Pri. Ins:</b>  [[PATIENT_PRI_INS]] <br />
+                                            <span id="PRIMARY_INSURANCE"><b>Pri. Ins:</b>  [[PATIENT_PRI_INS]] </span><br />
                                         </td>
                                     </tr>
                                     <tr>
@@ -122,9 +122,11 @@
                                                 Home Health & Hospice Name (where patient id to be treated/evaluated):  [[HHH_NAME]] <br />
                                                 Home Health & Hospice Contact Number:  [[HHH_NUMBER]] <br />
                                             </span>
-                                            Verbal Order:  [[is_verbal_order]]<br />
+                                            <span id="VerbalOrder"> 
+						                        Verbal Order:  [[is_verbal_order]]<br />
+					                        </span>
                                             <span id="VERBAL">
-                                                Verbal Order Details: On Behalf Of:  [[on_behalf_of]]. Received By:  [[received_by]]. Date:  [[verbal_date]] <span>Time:  [[verbal_time]] PM</span>
+                                                Verbal Order Details: On Behalf Of:  [[on_behalf_of]]. Received By:  [[received_by]]. Date:  [[verbal_date]] <span>Time:  [[verbal_time]] </span>
                                             </span>
                                         </td>
                                     </tr>

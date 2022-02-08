@@ -1048,6 +1048,25 @@ namespace FOX.BusinessOperations.CommonServices
                 }
 
             }
+            if (CalledFrom.Equals("PHR_Users_Last_Login_Report"))
+            {
+                if (dc.Contains("TOTAL_RECORD_PAGES"))
+                {
+                    dc.Remove("TOTAL_RECORD_PAGES");
+                }
+                if (dc.Contains("USER_ID"))
+                {
+                    dc.Remove("USER_ID");
+                }
+                if (dc.Contains("PRACTICE_CODE"))
+                {
+                    dc.Remove("PRACTICE_CODE");
+                }
+                if (dc.Contains("TOTAL_RECORDS"))
+                {
+                    dc.Remove("TOTAL_RECORDS");
+                }
+            }
             if (CalledFrom.Equals("Practice_Organization"))
             {
                 if (dc.Contains("PRACTICE_ORGANIZATION_ID"))
@@ -7770,6 +7789,33 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dtcol.Contains("CREATED_DATE_STR"))
                 {
                     dtcol["CREATED_DATE_STR"].ColumnName = "Date";
+                }
+            }
+            else if (dt.TableName == "PHR_Users_Last_Login_Report")
+            {
+                if (dtcol.Contains("ROW"))
+                {
+                    dtcol["ROW"].ColumnName = "Sr. #";
+                }
+                if (dtcol.Contains("Patient_Account"))
+                {
+                    dtcol["Patient_Account"].ColumnName = "Account #";
+                }
+                if (dtcol.Contains("FIRST_NAME"))
+                {
+                    dtcol["FIRST_NAME"].ColumnName = "First Name";
+                }
+                if (dtcol.Contains("LAST_NAME"))
+                {
+                    dtcol["LAST_NAME"].ColumnName = "Last Name";
+                }
+                if (dtcol.Contains("EMAIL"))
+                {
+                    dtcol["EMAIL"].ColumnName = "Email";
+                }
+                if (dtcol.Contains("LAST_LOGIN_DATE"))
+                {
+                    dtcol["LAST_LOGIN_DATE"].ColumnName = "Last Login Date & Time";
                 }
             }
             else

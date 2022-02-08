@@ -21,6 +21,8 @@ namespace FOX.DataModels.Models.SearchOrderModel
         public string SENDER_LAST_NAME { get; set; }
         public string SOURCE_NAME { get; set; }
         public string DOCUMENT_TYPE { get; set; }
+        [NotMapped]
+        public string DOCUMENT_TYPE_NAME { get; set; }
         public string REGION_NAME { get; set; }
         public DateTime? RECEIVE_DATE { get; set; }
         [NotMapped]
