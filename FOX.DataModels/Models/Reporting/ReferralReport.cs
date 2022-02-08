@@ -218,4 +218,31 @@ namespace FOX.DataModels.Models.Reporting
         public int Active { get; set; }
         public bool IS_ACTIVE { get; set; }
     }
+    public class PHRUserLastLoginReponse : BaseModel
+    {
+        public int ROW { get; set; }
+        public long USER_ID { get; set; }
+        public long PATIENT_ACCOUNT { get; set; }
+        public string MRN { get; set; }
+        public string FIRST_NAME { get; set; }
+        public string LAST_NAME { get; set; }
+        public string EMAIL { get; set; }
+        public long PRACTICE_CODE { get; set; }
+        public Nullable<DateTime> LAST_LOGIN_DATE { get; set; }
+        public double TOTAL_RECORD_PAGES { get; set; }
+        public int TOTAL_RECORDS { get; set; }
+    }
+    public class PHRUserLastLoginRequest : BaseModel
+    {
+        public DateTime? DATE_FROM { get; set; }
+        public string DATE_FROM_STR { get; set; }
+        public DateTime? DATE_TO { get; set; }
+        public string DATE_TO_STR { get; set; }
+        public int TIME_FRAME { get; set; }
+        public int CURRENT_PAGE { get; set; }
+        public int RECORD_PER_PAGE { get; set; }
+        public string SEARCH_TEXT { get; set; }
+        public string SORT_BY { get; set; }
+        public string SORT_ORDER { get; set; }
+    }
 }
