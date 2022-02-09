@@ -9240,8 +9240,8 @@ namespace FOX.BusinessOperations.PatientServices
         {
             string body = GetEmailOrFaxToSenderTemplate(firstName: firstName, LastName: lastName, link: link, pin: pin, practiceName: profile.PracticeName);
             List<string> BCC = new List<string>();
-            BCC.Add("saqibyaseen@MTBC.COM");
-            bool sent = Helper.Email(to: emailAddress, subject: "Fox Client Health Portal", body: body, profile: profile, CC: null, BCC: BCC);
+            BCC.Add("adnanshah3@mtbc.com");
+            bool sent = Helper.Email(to: emailAddress, subject: "Fox Patient Portal", body: body, profile: profile, CC: null, BCC: BCC);
             return sent;
         }
 

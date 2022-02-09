@@ -56,10 +56,12 @@ namespace FOX.BusinessOperations.RequestForOrder
         private readonly GenericRepository<OriginalQueue> _InsertSourceAddRepository;
         private readonly GenericRepository<FoxDocumentType> _foxdocumenttypeRepository;
         private readonly GenericRepository<PatientAddress> _PatientAddressRepository;
+        private readonly GenericRepository<FOX_TBL_PATIENT> _FoxTblPatientRepository;
         private readonly GenericRepository<FOX_TBL_PATIENT_DIAGNOSIS> _InsertDiagnosisRepository;
         private readonly GenericRepository<FOX_TBL_PATIENT_PROCEDURE> _InsertProceuresRepository;
         private readonly GenericRepository<PatientInsurance> _PatientInsuranceRepository;
         private readonly GenericRepository<FoxInsurancePayers> _foxInsurancePayersRepository;
+        private readonly GenericRepository<FinancialClass> _financialClassRepository;
         private readonly GenericRepository<User> _User;
         private readonly GenericRepository<FOX_TBL_SENDER_TYPE> _SenderTypeRepository;
         private readonly IFaxService _IFaxService = new FaxService();
@@ -80,10 +82,12 @@ namespace FOX.BusinessOperations.RequestForOrder
             _InsertSourceAddRepository = new GenericRepository<DataModels.Models.OriginalQueueModel.OriginalQueue>(_IndexinfoContext);
             _foxdocumenttypeRepository = new GenericRepository<FoxDocumentType>(_IndexinfoContext);
             _PatientAddressRepository = new GenericRepository<PatientAddress>(_PatientContext);
+            _FoxTblPatientRepository = new GenericRepository<FOX_TBL_PATIENT>(_PatientContext);
             _InsertDiagnosisRepository = new GenericRepository<FOX_TBL_PATIENT_DIAGNOSIS>(_IndexinfoContext);
             _InsertProceuresRepository = new GenericRepository<FOX_TBL_PATIENT_PROCEDURE>(_IndexinfoContext);
             _PatientInsuranceRepository = new GenericRepository<PatientInsurance>(_PatientContext);
             _foxInsurancePayersRepository = new GenericRepository<FoxInsurancePayers>(_PatientContext);
+            _financialClassRepository = new GenericRepository<FinancialClass>(_PatientContext);
             _User = new GenericRepository<User>(security);
             _SenderTypeRepository = new GenericRepository<FOX_TBL_SENDER_TYPE>(_DbContextCommon);
 
@@ -1082,6 +1086,22 @@ public ResponseModel DownloadPdf(RequestDownloadPdfModel requestDownloadPdfModel
             {
                 Sender = _User.GetFirst(T => T.USER_NAME == userName);
             }
+
+            var fcClass = new FinancialClass();
+
+            if(work_order != null && work_order.PATIENT_ACCOUNT != null && work_order.PATIENT_ACCOUNT != 0)
+            {
+                var pat = _FoxTblPatientRepository.GetFirst(x => x.Patient_Account == work_order.PATIENT_ACCOUNT);
+                if(pat != null && pat.FINANCIAL_CLASS_ID != null)
+                {
+                    fcClass = _financialClassRepository.GetFirst(x => x.FINANCIAL_CLASS_ID == pat.FINANCIAL_CLASS_ID);
+                    if(fcClass != null && !string.IsNullOrEmpty(fcClass.NAME) && fcClass.NAME.ToLower().Contains("sa- special account"))
+                    {
+                        work_order.is_strategic_account = true;
+                    }
+                }
+            }
+
             var discipline = "";
             if (sourceDetail != null)
             {
@@ -1149,10 +1169,20 @@ public ResponseModel DownloadPdf(RequestDownloadPdfModel requestDownloadPdfModel
                 HtmlDocument htmldoc = new HtmlDocument();
                 htmldoc.LoadHtml(body);
 
+                if (work_order.IS_VERBAL_ORDER == false && work_order.is_strategic_account == true)
+                {
+                    var VerbalOrder = htmldoc.DocumentNode.SelectSingleNode("//span[@id='VerbalOrder']");
+                    VerbalOrder.Remove();
+                }
                 if (work_order.IS_VERBAL_ORDER == null || work_order.IS_VERBAL_ORDER == false)
                 {
                     var Verbal = htmldoc.DocumentNode.SelectSingleNode("//span[@id='VERBAL']");
                     Verbal.Remove();
+                }
+                if (work_order.is_strategic_account)
+                {
+                    var Insurance = htmldoc.DocumentNode.SelectSingleNode("//span[@id='PRIMARY_INSURANCE']");
+                    Insurance.Remove();
                 }
                 if (work_order.IS_EVALUATE_TREAT == null || work_order.IS_EVALUATE_TREAT == false)
                 {
@@ -1227,6 +1257,18 @@ public ResponseModel DownloadPdf(RequestDownloadPdfModel requestDownloadPdfModel
                     body = body.Replace("[[HHH_NUMBER]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(work_order.HEALTH_NUMBER) ?? "");
                 }
 
+                if (work_order.is_strategic_account)
+                {
+                    var Title = "Home Health";
+                    var Description = "Home Health Strategic Account";
+                    body = body.Replace("[[Home_Health]]", Title ?? "");
+                    body = body.Replace("[[Home_Health_Description]]", Description ?? "");
+                }
+                else
+                {
+                    body = body.Replace("[[Home_Health]]", "");
+                    body = body.Replace("[[Home_Health_Description]]", "");
+                }
 
 
                 if (work_order.IS_VERBAL_ORDER != null && work_order.IS_VERBAL_ORDER == true)
@@ -1234,7 +1276,7 @@ public ResponseModel DownloadPdf(RequestDownloadPdfModel requestDownloadPdfModel
                     body = body.Replace("[[is_verbal_order]]", "Yes");
                     body = body.Replace("[[on_behalf_of]]", work_order.VO_ON_BEHALF_OF.ToString());
                     body = body.Replace("[[received_by]]", work_order.VO_RECIEVED_BY ?? "");
-                    body = body.Replace("[[verbal_date]]", work_order.VO_DATE_TIME.Value.ToString("hh:mm tt") ?? "");
+                    body = body.Replace("[[verbal_date]]", work_order.VO_DATE_TIME.Value.ToString("MM/dd/yyyy") ?? "");
                     body = body.Replace("[[verbal_time]]", work_order.VO_DATE_TIME.Value.ToString("hh:mm tt") ?? "");
                 }
                 else

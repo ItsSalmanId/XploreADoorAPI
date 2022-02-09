@@ -200,6 +200,28 @@ namespace FOX.BusinessOperations.FoxPHDService
                 {
                     ObjCallDetailsSearchRequest.CALL_DATE_TO = null;
                 }
+
+                //Modified BY Aftab 
+
+                if (!string.IsNullOrEmpty(ObjCallDetailsSearchRequest.CALL_TIME_FROM_STR))
+                {
+                    var timestr = ObjCallDetailsSearchRequest.CALL_TIME_FROM_STR.Split(' ')[0];
+                    ObjCallDetailsSearchRequest.CALL_TIME_FROM = DateTime.ParseExact(timestr, "H:mm:ss", null, System.Globalization.DateTimeStyles.None);
+
+                    ObjCallDetailsSearchRequest.CALL_DATE_FROM = ObjCallDetailsSearchRequest.CALL_DATE_FROM + ObjCallDetailsSearchRequest.CALL_TIME_FROM.Value.TimeOfDay;
+                }
+
+                if (!string.IsNullOrEmpty(ObjCallDetailsSearchRequest.CALL_TIME_TO_STR))
+                {
+                    var timestr = ObjCallDetailsSearchRequest.CALL_TIME_TO_STR.Split(' ')[0];
+                    ObjCallDetailsSearchRequest.CALL_TIME_TO = DateTime.ParseExact(timestr, "H:mm:ss", null, System.Globalization.DateTimeStyles.None);
+
+                    ObjCallDetailsSearchRequest.CALL_DATE_TO = ObjCallDetailsSearchRequest.CALL_DATE_TO + ObjCallDetailsSearchRequest.CALL_TIME_TO.Value.TimeOfDay;
+                }
+
+                //Close Modification
+
+
                 if (ObjCallDetailsSearchRequest.CALL_DATE_FROM.HasValue)
                     if (ObjCallDetailsSearchRequest.CALL_DATE_TO.HasValue)
                         if (String.Equals(ObjCallDetailsSearchRequest.CALL_DATE_TO.Value.ToString("t"), "12:00 AM", StringComparison.Ordinal))
@@ -223,14 +245,17 @@ namespace FOX.BusinessOperations.FoxPHDService
                 var CsCaseStatus = Helper.getDBNullOrValue("@CS_CASE_STATUS", ObjCallDetailsSearchRequest.CS_CASE_STATUS.Trim());
                 var followUpCalls = Helper.getDBNullOrValue("@FOLLOW_UP_CALLS", ObjCallDetailsSearchRequest.FOLLOW_UP_CALLS.ToString());
                 var MRN = Helper.getDBNullOrValue("@CHART_ID", ObjCallDetailsSearchRequest.MRN);
+                var Patientfirstname = Helper.getDBNullOrValue("@PATIENT_FIRST_NAME", ObjCallDetailsSearchRequest.PATIENT_FIRST_NAME);
+                var Patientlastname = Helper.getDBNullOrValue("@PATIENT_LAST_NAME", ObjCallDetailsSearchRequest.PATIENT_LAST_NAME);
+                var PhoneNumber = Helper.getDBNullOrValue("@PHONE_NUMBER", ObjCallDetailsSearchRequest.PHONE_NUMBER.ToString());
                 var PracticeCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
                 var SearchText = new SqlParameter { ParameterName = "@SEARCH_TEXT", SqlDbType = SqlDbType.VarChar, Value = string.IsNullOrEmpty(ObjCallDetailsSearchRequest.SEARCH_TEXT) ? "" : ObjCallDetailsSearchRequest.SEARCH_TEXT };
                 var CurrentPage = new SqlParameter { ParameterName = "@CURRENT_PAGE", SqlDbType = SqlDbType.Int, Value = ObjCallDetailsSearchRequest.CURRENT_PAGE };
                 var RecordPerPage = new SqlParameter { ParameterName = "@RECORD_PER_PAGE", SqlDbType = SqlDbType.Int, Value = ObjCallDetailsSearchRequest.RECORD_PER_PAGE };
                 var SortBy = Helper.getDBNullOrValue("@SORT_BY", ObjCallDetailsSearchRequest.SORT_BY);
                 var SortOrder = Helper.getDBNullOrValue("@SORT_ORDER", ObjCallDetailsSearchRequest.SORT_ORDER);
-                var PHDDetailsList = SpRepository<PHDCallDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_CALL_DETAILS @CALL_DATE_FROM, @CALL_DATE_TO, @CALL_ATTENDED_BY, @CALL_REASON, @CALL_HANDLING, @CS_CASE_STATUS, @FOLLOW_UP_CALLS, @CHART_ID, @PRACTICE_CODE, @SEARCH_TEXT, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER",
-                   CallDateFrom, CallDateTo, CallAttendedBy, CallReason, CallHandling, CsCaseStatus, followUpCalls, MRN, PracticeCode, SearchText, CurrentPage, RecordPerPage, SortBy, SortOrder);
+                var PHDDetailsList = SpRepository<PHDCallDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_CALL_DETAILS @CALL_DATE_FROM, @CALL_DATE_TO, @CALL_ATTENDED_BY, @CALL_REASON, @CALL_HANDLING, @CS_CASE_STATUS, @FOLLOW_UP_CALLS, @CHART_ID, @PATIENT_FIRST_NAME, @PATIENT_LAST_NAME, @PHONE_NUMBER, @PRACTICE_CODE, @SEARCH_TEXT, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER",
+                   CallDateFrom, CallDateTo, CallAttendedBy, CallReason, CallHandling, CsCaseStatus, followUpCalls, MRN, Patientfirstname, Patientlastname, PhoneNumber, PracticeCode, SearchText, CurrentPage, RecordPerPage, SortBy, SortOrder);
 
 
                 foreach (var item in PHDDetailsList)

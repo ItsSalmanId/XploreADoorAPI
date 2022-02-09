@@ -179,10 +179,10 @@ namespace FOX.DataModels.Models.Reconciliation
         public string DEPOSIT_DATE { get; set; }
         [DisplayName("Deposit Type")]
         public string DEPOSIT_TYPE_NAME { get; set; }
-        [DisplayName("State")]
-        public string STATE { get; set; }
         [DisplayName("Category/Account")]
         public string CATEGORY_NAME { get; set; }
+        [DisplayName("State")]
+        public string STATE { get; set; }
         [DisplayName("Insurance")]
         public string INSURANCE_NAME { get; set; }
         [DisplayName("Check #/Batch #")]
@@ -495,7 +495,8 @@ namespace FOX.DataModels.Models.Reconciliation
         public string SortBy { get; set; }
         public string SortOrder { get; set; }
         public int AMOUNT_POSTED { get; set; }
-
+        public string DEPOSIT_DATE_STR { get; set; }
+        public DateTime DEPOSIT_DATE { get; set; }
     }
 
     public class FOX_TBL_RECONCILIATION_REASON
