@@ -243,8 +243,8 @@ namespace FOX.BusinessOperations.CommonServices
             try
             {
                 var senderTypeList = _FOX_TBL_SENDER_TYPE.GetMany(t => t.PRACTICE_CODE == practiceCode && !t.DELETED && t.DISPLAY_ORDER != null)
-                    .OrderBy(t => t.DISPLAY_ORDER)
-                    //.OrderBy(t => t.SENDER_TYPE_NAME)
+                    //.OrderBy(t => t.DISPLAY_ORDER)
+                    .OrderBy(t => t.SENDER_TYPE_NAME)
                     .ToList();
                 return new ResponseGetSenderTypesModel() { SenderTypeList = senderTypeList, ErrorMessage = "", Message = "Get Sender Types List Successfully.", Success = true };
             }

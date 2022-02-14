@@ -5118,7 +5118,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         public ReferralSourceAndGroups getAllReferralSourceAndGroups(UserProfile profile)
         {
             ReferralSourceAndGroups response = new ReferralSourceAndGroups();
-            response.ReferralSource = _referralSourceTableRepository.GetMany(x => !(x.DELETED) && (x.PRACTICE_CODE == profile.PracticeCode));
+            response.ReferralSource = _referralSourceTableRepository.GetMany(x => !(x.DELETED) && (x.PRACTICE_CODE == profile.PracticeCode)).OrderBy(x => x.DESCRIPTION).ToList();
             response.Groups = _groupRepository.GetMany(x => !(x.DELETED) && (x.PRACTICE_CODE == profile.PracticeCode));
             return response;
         }
