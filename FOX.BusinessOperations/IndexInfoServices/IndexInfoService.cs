@@ -726,10 +726,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     sourceAddDetail.FOX_TBL_SENDER_NAME_ID = obj?.FOX_TBL_SENDER_NAME_ID;
                     sourceAddDetail.REASON_FOR_THE_URGENCY = obj?.REASON_FOR_THE_URGENCY;
                     sourceAddDetail.IS_POST_ACUTE = obj.IS_POST_ACUTE;
-                    if (obj?.IS_POST_ACUTE ?? false)
-                    {
-                        sourceAddDetail.IS_EMERGENCY_ORDER = true;
-                    }
+                    //if (obj?.IS_POST_ACUTE ?? false)
+                    //{
+                    //    sourceAddDetail.IS_EMERGENCY_ORDER = true;
+                    //}
                     //SPECIALITY_PROGRAM
                     if (!string.IsNullOrWhiteSpace(obj?.SPECIALITY_PROGRAM) && obj.SPECIALITY_PROGRAM != "0" && obj.SPECIALITY_PROGRAM.Contains("Home Health, Part A Services"))//SPECIALITY_PROGRAM ZERO CHECK
                     {
@@ -791,7 +791,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 }
 
 
-                if(obj.IS_POST_ACUTE == true && sourceAddDetail.IS_EMERGENCY_ORDER == true)
+                if(obj.IS_POST_ACUTE == true)
                 {
                     sourceAddDetail.IS_POST_ACUTE = obj.IS_POST_ACUTE;
                     sourceAddDetail.REASON_FOR_THE_URGENCY = obj.REASON_FOR_THE_URGENCY;
