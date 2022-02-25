@@ -94,7 +94,10 @@ namespace FOX.DataModels.Models.Security
         public List<FOX_TBL_DASHBOARD_ACCESS> Dashboard_AccessTemp { get; set; }
         [NotMapped]
         public string REGIONAL_DIRECTOR_NAME { get; set; }
-
+        [NotMapped]
+        public bool? IS_FAX_COVER_LETTER { get; set; }
+        [NotMapped]
+        public string FILE_PATH { get; set; }
     }
 
     public class ReferralRegionSearch : BaseModel
@@ -154,32 +157,45 @@ namespace FOX.DataModels.Models.Security
         public bool ZIP_CODE { get; set; }
         public AdvanceRegionSearchRequest ObjAdvanceRegionSearchRequest { get; set; }
     }
-[Table("FOX_TBL_DASHBOARD_ACCESS")]
-public class FOX_TBL_DASHBOARD_ACCESS : BaseModel
-{
-    [Key]
-    public long DASHBOARD_ACCESS_ID { get; set; }
-    public string USER_NAME { get; set; }
-    public long? SHOW_AS_ROLE { get; set; }
-    public long? REFERRAL_REGION_ID { get; set; }
-    public bool? IS_WRITE_ALLOWDED { get; set; }
-    public bool? DELETED { get; set; }
-    public string CREATED_BY { get; set; }
-    public DateTime? CREATED_ON { get; set; }
-    public string MODIFIED_BY { get; set; }
-    public DateTime? MODIFIED_DATE { get; set; }
-    [NotMapped]
-    public string LAST_NAME { get; set; }
-    [NotMapped]
-    public string ROLE_NAME { get; set; }
-    [NotMapped]
-    public string FIRST_NAME { get; set; }
-}
-
-public class DashBoardUserModal
-{
-    public List<FOX_TBL_DASHBOARD_ACCESS> RegionDashBoardUser { get; set; }
-    public List<User> DashBoardUsers { get; set; }
-}
-
+    [Table("FOX_TBL_REGION_COVER_SHEET")]
+    public class RegionCoverLetter : BaseModel
+    {
+        [Key]
+        public long REGION_COVER_SHEET_ID { get; set; }
+        public long REFERRAL_REGION_ID { get; set; }
+        public string REFERRAL_REGION_CODE { get; set; }
+        public bool IS_FAX_COVER_LETTER { get; set; }
+        public string FILE_PATH { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime CREATED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public DateTime MODIFIED_DATE { get; set; }
+        public bool DELETED { get; set; }
+    }
+    [Table("FOX_TBL_DASHBOARD_ACCESS")]
+    public class FOX_TBL_DASHBOARD_ACCESS : BaseModel
+    {
+        [Key]
+        public long DASHBOARD_ACCESS_ID { get; set; }
+        public string USER_NAME { get; set; }
+        public long? SHOW_AS_ROLE { get; set; }
+        public long? REFERRAL_REGION_ID { get; set; }
+        public bool? IS_WRITE_ALLOWDED { get; set; }
+        public bool? DELETED { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime? CREATED_ON { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public DateTime? MODIFIED_DATE { get; set; }
+        [NotMapped]
+        public string LAST_NAME { get; set; }
+        [NotMapped]
+        public string ROLE_NAME { get; set; }
+        [NotMapped]
+        public string FIRST_NAME { get; set; }
+    }
+    public class DashBoardUserModal
+    {
+        public List<FOX_TBL_DASHBOARD_ACCESS> RegionDashBoardUser { get; set; }
+        public List<User> DashBoardUsers { get; set; }
+    }
 }

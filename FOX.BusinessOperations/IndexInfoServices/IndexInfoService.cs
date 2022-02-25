@@ -109,6 +109,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private readonly GenericRepository<FOX_TBL_REFERRAL_SOURCE> _referralSourceTableRepository;
         private readonly GenericRepository<GROUP> _UserGroupseRepository;
         private readonly GenericRepository<FOX_TBL_ZIP_STATE_COUNTY> _zipStateCountyRepository;
+        private readonly GenericRepository<RegionCoverLetter> _RegionCoverLetterRepository;
         private static List<Thread> threadsList = new List<Thread>();
         public IndexInfoService()
         {
@@ -162,6 +163,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             _referralSourceTableRepository = new GenericRepository<FOX_TBL_REFERRAL_SOURCE>(_QueueContext);
             _UserGroupseRepository = new GenericRepository<GROUP>(_QueueContext);
             _zipStateCountyRepository = new GenericRepository<FOX_TBL_ZIP_STATE_COUNTY>(_settings);
+            _RegionCoverLetterRepository = new GenericRepository<RegionCoverLetter>(security);
         }
         public void InsertUpdateDocuments(FOX_TBL_PATIENT_DOCUMENTS obj, UserProfile profile)
         {
@@ -5306,6 +5308,31 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
             return SpRepository<PatLastORS>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ORS_BY_PATIENT_ACCOUNT @PATIENT_ACCOUNT, @PRACTICE_CODE ", _patientAccount, _practice_Code);
 
+        }
+        /// <summary>
+        /// This Function is used to get Cover Letter File Name
+        /// </summary>
+        /// <param name="regionCode"></param>
+        /// <returns></returns>
+        public string GetRegionCoverLetterAttachment(string regionCode)
+        {
+            try
+            {
+                string result = string.Empty;
+                if (!string.IsNullOrEmpty(regionCode))
+                {
+                    var response = _RegionCoverLetterRepository.Get(x => x.REFERRAL_REGION_CODE == regionCode && x.IS_FAX_COVER_LETTER == true);
+                    if(response != null && !string.IsNullOrEmpty(response.FILE_PATH))
+                    {
+                        result = response.FILE_PATH;
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }
