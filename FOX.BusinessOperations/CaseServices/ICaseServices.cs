@@ -16,6 +16,7 @@ namespace FOX.BusinessOperations.CaseServices
         ResponseAddEditCase AddEditCase(FOX_TBL_CASE caseObj, UserProfile profile); //Get Case data
         //ResponseGetCasesDDL GetCasesDDL(UserProfile profile); //Get Cases drop down lists
         ResponseGetCasesDDL GetCasesDDL(string patient_Account, long practiceCode); //Get Cases drop down lists
+        ResponseGetCasesDDL GetCasesDDLTalkrehab(CasesSearchRequest casesmodel);
         List<FOX_TBL_IDENTIFIER> GetIdentifierList(long practiceCode);
         List<SmartIdentifierRes> GetSmartIdentifier(SmartIdentifierReq obj, UserProfile profile);
         List<FOX_TBL_SOURCE_OF_REFERRAL> GetSourceofReferral(long practiceCode);

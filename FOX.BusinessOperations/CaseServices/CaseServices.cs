@@ -952,7 +952,7 @@ namespace FOX.BusinessOperations.CaseServices
                 {
                     CaseTreatmentTeamList.ForEach(t=> {
                         var TreatingProvider = _FoxProviderClassRepository.GetFirst(e => e.FOX_PROVIDER_ID == t.TREATING_PROVIDER_ID && !t.DELETED && t.PRACTICE_CODE == practiceCode) ;
-                        if(TreatingProvider != null && TreatingProvider.FIRST_NAME != null && TreatingProvider.LAST_NAME != null) 
+                        if(TreatingProvider != null && TreatingProvider.FIRST_NAME != null && TreatingProvider.LAST_NAME != null)
                         {
                             t.TREATING_PROVIDER = TreatingProvider.LAST_NAME +  ", " + TreatingProvider.FIRST_NAME;
                         }
@@ -1031,6 +1031,167 @@ namespace FOX.BusinessOperations.CaseServices
             }
         }
 
+        public ResponseGetCasesDDL GetCasesDDLTalkrehab(CasesSearchRequest casesModel)
+        {
+            try
+            {
+                List<Patient> patientsInfo = new List<Patient>();
+                long practiceCode = casesModel.PracticeCode;
+                long locationCode = casesModel.LocationCode;
+                int caseStatusId= casesModel.StatusId;
+                long providerId = casesModel.ProviderCode;
+                List<GetTotalDisciplineRes> discpilineList = new List<GetTotalDisciplineRes>();
+                List<FOX_VW_CASE> foxVWCaseList = _vwCaseRepository.GetMany(cases => !cases.DELETED && cases.PRACTICE_CODE == practiceCode
+                && ((locationCode != 0)? locationCode.ToString() == cases.PosLocation: true ) 
+                && ((caseStatusId != 0 ) ? caseStatusId == cases.CASE_STATUS_ID : true ) 
+                && ((providerId != 0)? providerId == cases.TREATING_PROVIDER_ID : true)).OrderByDescending(cases => cases.CREATED_DATE).ToList();
+
+                if (foxVWCaseList.Count() > 0)
+                {
+                    foreach (var record in foxVWCaseList)
+                    {
+                        if (record.ORDERING_REF_SOURCE_ID != null)
+                        {
+                            if (record.CERTIFYING_REF_SOURCE_ID == 0 || string.IsNullOrEmpty(record.CERTIFYING_REF_SOURCE_ID.ToString()))
+                            {
+                                ReferralSource referralSource = _SourceRepository.GetFirst(referealSource => referealSource.SOURCE_ID == record.ORDERING_REF_SOURCE_ID 
+                                && referealSource.DELETED == false);
+                                record.ObjReferralSource = referralSource;
+                            }
+                            patientsInfo = _PatientRepository.GetMany(pat => !(pat.DELETED ?? false)
+                            && pat.Practice_Code == practiceCode 
+                            && pat.Patient_Account == record.PATIENT_ACCOUNT);
+                        }
+                    }
+                }
+                List<FOX_TBL_CASE_TYPE> caseTypeResult = _CaseTypeRepository.GetMany(caseType => !caseType.DELETED 
+                && caseType.PRACTICE_CODE == practiceCode 
+                && caseType.CASE_TYPE_ID == caseStatusId);
+
+                List<FOX_TBL_DISCIPLINE> caseDescplineResult = _CaseDesciplineRepository.GetMany(displine => !displine.DELETED 
+                && displine.PRACTICE_CODE == practiceCode);
+
+                List<FOX_TBL_CASE_STATUS> caseStatusResult = _CaseStatusRepository.GetMany(caseStatus => !caseStatus.DELETED 
+                && caseStatus.PRACTICE_CODE == practiceCode 
+                && ((caseStatusId != 0) ? caseStatusId == caseStatus.CASE_STATUS_ID : true));
+
+                List<FOX_TBL_CASE_SUFFIX> caseSuffixResult = _CaseSuffixRepository.GetMany(caseSuffix => !caseSuffix.DELETED 
+                && caseSuffix.PRACTICE_CODE == practiceCode);
+
+                List<FOX_TBL_GROUP_IDENTIFIER> caseGrpIdentifierResult = _CaseGrpIdentifierRepository.GetMany(groupIdentifier => !groupIdentifier.DELETED 
+                && (groupIdentifier.IS_ACTIVE ?? true) 
+                && groupIdentifier.PRACTICE_CODE == practiceCode);
+
+                List<FOX_TBL_SOURCE_OF_REFERRAL> caseRefSourceResult = _CaseSourceofRefRepository.GetMany(sourceRefferal => !sourceRefferal.DELETED 
+                && sourceRefferal.PRACTICE_CODE == practiceCode);
+
+                List<FOX_TBL_ORDER_STATUS> orderStatusREsult = _OrderStatusRepository.GetMany(orderStatus => !orderStatus.DELETED 
+                && (orderStatus.IS_ACTIVE ?? true) 
+                && orderStatus.PRACTICE_CODE == practiceCode);
+
+                List<OriginalQueue> workOrderResult = _WorkOrderQueueRepository.GetMany(queue => !queue.DELETED 
+                && queue.PRACTICE_CODE == practiceCode );
+
+                List<COMMUNICATION_CALL_STATUS> statusOfCall = _CallStatusRepository.GetMany(callStatus => !callStatus.DELETED 
+                && callStatus.PRACTICE_CODE == practiceCode);
+
+                List<COMMUNICATION_STATUS_OF_CARE> statusOfCare = _StatusofCareRepository.GetMany(careStatus => !careStatus.DELETED 
+                && careStatus.PRACTICE_CODE == practiceCode);
+
+                List<FOX_TBL_COMMUNICATION_CALL_RESULT> callResult = _CallResultRepository.GetMany(callRe => !callRe.DELETED 
+                && callRe.PRACTICE_CODE == practiceCode);
+
+                List<FOX_TBL_COMMUNICATION_CALL_TYPE> callType = _CallTypeRepository.GetMany(callsType => !callsType.DELETED 
+                && callsType.PRACTICE_CODE == practiceCode );
+
+                List<FOX_TBL_CASE_TREATMENT_TEAM> caseTreatmentTeamList = _CaseTreatmentTeamRepository.GetMany(treatmentTeam => !treatmentTeam.DELETED 
+                && treatmentTeam.PRACTICE_CODE == practiceCode 
+                && treatmentTeam.CASE_PROVIDER_ID == providerId);
+
+                if (caseTreatmentTeamList != null && caseTreatmentTeamList?.Count > 0)
+                {
+                    caseTreatmentTeamList.ForEach(caseTreatment => {
+                        FoxProviderClass TreatingProvider = _FoxProviderClassRepository.GetFirst(providerClass => providerClass.FOX_PROVIDER_ID == caseTreatment.TREATING_PROVIDER_ID 
+                        && !caseTreatment.DELETED 
+                        && caseTreatment.PRACTICE_CODE == practiceCode 
+                        && caseTreatment.CASE_PROVIDER_ID == providerId);
+                        if (TreatingProvider != null && TreatingProvider.FIRST_NAME != null && TreatingProvider.LAST_NAME != null)
+                        {
+                            caseTreatment.TREATING_PROVIDER = TreatingProvider.LAST_NAME + ", " + TreatingProvider.FIRST_NAME;
+                        }
+                        FoxProviderClass caseProvider = _FoxProviderClassRepository.GetFirst(e => e.FOX_PROVIDER_ID == caseTreatment.CASE_PROVIDER_ID 
+                        && !caseTreatment.DELETED 
+                        && caseTreatment.PRACTICE_CODE == practiceCode);
+                        if (caseProvider != null && caseProvider.FIRST_NAME != null && caseProvider.LAST_NAME != null)
+                        {
+                            caseTreatment.CASE_PROVIDER = caseProvider.LAST_NAME + ", " + caseProvider.FIRST_NAME;
+                        }
+
+                    });
+                }
+                discpilineList = GetTotalDisciplineTalkrehab(practiceCode);
+
+                List<PatientInsurance> insuranceHistory = _PatientInsuranceRepository.GetMany(patientIns => (patientIns.Deleted ?? false) == false 
+                && patientIns.ELIG_LOADED_ON.HasValue);
+
+                if (insuranceHistory != null && insuranceHistory.Count > 0)
+                {
+                    for (int i = 0; i < insuranceHistory.Count; i++)
+                    {
+                        if (insuranceHistory[i].CASE_ID != null && insuranceHistory[i].CASE_ID != 0)
+                        {
+                            insuranceHistory[i].CASE_NO = _vwCaseRepository.GetByID(insuranceHistory[i].CASE_ID).CASE_NO;
+                            insuranceHistory[i].RT_CASE_NO = _vwCaseRepository.GetByID(insuranceHistory[i].CASE_ID).RT_CASE_NO;
+
+
+                        }
+                        insuranceHistory[i].InsPayer_Description = _foxInsurancePayersRepository.GetByID(insuranceHistory[i].FOX_TBL_INSURANCE_ID)?.INSURANCE_NAME ?? "";
+                    }
+                }
+                List<PatientInsurance> insuranceList = _PatientInsuranceRepository.GetMany(patientIns => (patientIns.Deleted ?? false) == false);
+                if (insuranceList != null && insuranceList.Count > 0)
+                {
+                    for (int i = 0; i < insuranceList.Count; i++)
+                    {
+                        insuranceList[i].InsPayer_Description = _foxInsurancePayersRepository.GetByID(insuranceList[i].FOX_TBL_INSURANCE_ID)?.INSURANCE_NAME ?? "";
+                    }
+                }
+                return new ResponseGetCasesDDL()
+                {
+                    Message = "Get all drop down list values successfully.",
+                    Success = true,
+                    ErrorMessage = "",
+                    FOX_TBL_CASE_TYPEList = caseTypeResult,
+                    FOX_TBL_DISCIPLINEList = caseDescplineResult,
+                    FOX_TBL_CASE_STATUSList = caseStatusResult,
+                    FOX_TBL_CASE_SUFFIXList = caseSuffixResult,
+                    FOX_TBL_GROUP_IDENTIFIERList = caseGrpIdentifierResult,
+                    FOX_TBL_SOURCE_OF_REFList = caseRefSourceResult,
+                    FOX_VW_CASEList = foxVWCaseList,
+                    FOX_TBL_ORDER_STATUSList = orderStatusREsult,
+                    GET_TOTAL_DISCIPLINEList = discpilineList,
+                    InsuranceEligibilityHistoryList = insuranceHistory,
+                    WorkOrderQueueList = workOrderResult,
+                    CallStatusList = statusOfCall,
+                    StatusofCareList = statusOfCare,
+                    PatientTalkrehab = patientsInfo,
+                    ResultCallList = callResult,
+                    CallTypeList = callType,
+                    InsuranceList = insuranceList,
+                    CaseTreatmentTeamList = caseTreatmentTeamList
+
+                };
+            }
+            catch (Exception exception)
+            {
+                return new ResponseGetCasesDDL()
+                {
+                    Message = exception.Message,
+                    Success = false,
+                    ErrorMessage = exception.ToString()
+                };
+            }
+        }
         public List<DataModels.Models.CasesModel.FOX_TBL_IDENTIFIER> GetIdentifierList(long practiceCode)
         {
 
@@ -1283,6 +1444,22 @@ namespace FOX.BusinessOperations.CaseServices
                 var pATIENT_ACCOUNT = new SqlParameter("PATIENT_ACCOUNT", SqlDbType.BigInt) { Value = Patient_Account };
                 var pRACTICE_CODE = new SqlParameter("PRACTICE_CODE", SqlDbType.VarChar) { Value = PracticeCode };
                 var result = SpRepository<GetTotalDisciplineRes>.GetListWithStoreProcedure(@"exec [FOX_GET_TOTAL_DISCIPLINE] @PATIENT_ACCOUNT,@PRACTICE_CODE", pATIENT_ACCOUNT, pRACTICE_CODE).ToList();
+                if (result.Any())
+                    return result;
+                else
+                    return new List<GetTotalDisciplineRes>();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public List<GetTotalDisciplineRes> GetTotalDisciplineTalkrehab(long practiceCode)
+        {
+            try
+            {
+                SqlParameter pracCode = new SqlParameter("PRACTICE_CODE", SqlDbType.VarChar) { Value = practiceCode };
+                List<GetTotalDisciplineRes> result = SpRepository<GetTotalDisciplineRes>.GetListWithStoreProcedure(@"exec [FOX_GET_TOTAL_DISCIPLINE_talkrehab] @PRACTICE_CODE", pracCode).ToList();
                 if (result.Any())
                     return result;
                 else

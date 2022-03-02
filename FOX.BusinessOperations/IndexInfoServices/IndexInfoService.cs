@@ -2991,6 +2991,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         {
             try
             {
+                bool isSync = false;
                 InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
 
                 if (obj.PATIENT_ACCOUNT == null && obj.CASE_ID == null && obj.TASK_ID == null)
@@ -3009,6 +3010,16 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     obj.APPLICATION = "PORTAL";
                     //   @IS_SYNCED BIT
 
+                    SqlParameter pracCode = new SqlParameter("@Practice_code", Profile.PracticeCode);
+                    var response = SpRepository<string>.GetSingleObjectWithStoreProcedure(@"Exec Af_proc_is_talkrehab_practice @Practice_code", pracCode);
+                    if (response == null)
+                    {
+                        isSync =  false;
+                    }
+                    else
+                    {
+                        isSync = true;
+                    }
                     long Pid = Helper.getMaximumId("FOX_INTERFACE_SYNCH_ID");
                     SqlParameter id = new SqlParameter("ID", Pid);
 
@@ -3018,7 +3029,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     SqlParameter taskId = new SqlParameter("TASK_ID", obj.TASK_ID ?? (object)DBNull.Value);
                     SqlParameter patientAccount = new SqlParameter("PATIENT_ACCOUNT", obj.PATIENT_ACCOUNT);
                     SqlParameter userName = new SqlParameter("USER_NAME", Profile.UserName);
-                    SqlParameter isSynced = new SqlParameter("IS_SYNCED", false);
+                    SqlParameter isSynced = new SqlParameter("IS_SYNCED", isSync);
                     SqlParameter application = new SqlParameter("APPLICATION", string.IsNullOrEmpty(obj.APPLICATION) ? string.Empty : obj.APPLICATION);
                     var result = SpRepository<InterfaceSynchModel>.GetListWithStoreProcedure(@"FOX_PROC_INSERT_INTERFACE_DATA @ID, @PRACTICE_CODE,@CASE_ID,@Work_ID,@TASK_ID,@PATIENT_ACCOUNT,@USER_NAME,@IS_SYNCED,@APPLICATION",
                                                                                                            id, practiceCode, caseId, workId, taskId, patientAccount, userName, isSynced, application);

@@ -38,6 +38,23 @@ namespace FoxRehabilitationAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
+        public HttpResponseMessage GetCasesDDLTalkrehab(string patientAccount, string practiceCode)
+        {
+            ResponseGetCasesDDL result = _CaseServices.GetCasesDDL(patientAccount, Convert.ToInt64(practiceCode));
+            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, result);
+            return response;
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public HttpResponseMessage GetCasesDDLTalkrehab(CasesSearchRequest casesmodel)
+        {
+            ResponseGetCasesDDL result = _CaseServices.GetCasesDDLTalkrehab(casesmodel);
+            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, result);
+            return response;
+        }
+        [HttpGet]
         public HttpResponseMessage GetIdentifierList()
         {
             var profile = GetProfile();
