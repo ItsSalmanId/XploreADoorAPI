@@ -2503,9 +2503,14 @@ namespace FOX.BusinessOperations.IndexInfoServices
             }
         }
         //New Thread Implementation
-        public void SavePdfToImages(string PdfPath, ServiceConfiguration config, string workId, long lworkid, int noOfPages, string sorcetype, string sorceName, string userName, bool approval = true)
+        public void SavePdfToImages(string PdfPath, ServiceConfiguration config, string workId, long lworkid, int noOfPages, string sorcetype, string sorceName, string userName, bool approval)
         {
+            approval = false;
             List<int> threadCounter = new List<int>();
+            if (PdfPath.Contains("Signed"))
+            {
+                approval = true;
+            }
             if (!Directory.Exists(config.IMAGES_PATH_SERVER))
             {
                 Directory.CreateDirectory(config.IMAGES_PATH_SERVER);
