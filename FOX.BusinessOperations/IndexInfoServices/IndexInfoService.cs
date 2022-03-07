@@ -2531,10 +2531,13 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
                     if (sorcetype.Split(':')?[0] == "DR")
                     {
-                        imgPath = config.IMAGES_PATH_DB + "\\" + deliveryReportId + "_" + i + ".jpg";
-                        logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + deliveryReportId + "_" + i + ".jpg"; 
-                        imgPathServer = config.IMAGES_PATH_SERVER + "\\" + deliveryReportId + "_" + i + ".jpg";
-                        logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + deliveryReportId + "_" + i + ".jpg";
+                        var randomString = random.Next();
+                        imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
+                        imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
+
+                        randomString = random.Next();
+                        logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + "_" + randomString + ".jpg";
+                        logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + "_" + randomString + ".jpg";
                     }
                     else
                     {
@@ -2823,7 +2826,14 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 body = body.Replace("[[RECEIVED_TIME]]", receivedTime);
                 body = body.Replace("[[BODY]]", data.BODY);
                 body = body.Replace("[[SENDING_DATE]]", sendingDate);
-                body = body.Replace("[[EMAIL]]", data.EMAIL);
+                if (data != null && !string.IsNullOrEmpty(data.EMAIL))
+                {
+                    body = body.Replace("[[EMAIL]]", data.EMAIL);
+                }
+                else
+                {
+                    body = body.Replace("[[EMAIL]]", data.FAX);
+                }
             }
             return body;
         }
