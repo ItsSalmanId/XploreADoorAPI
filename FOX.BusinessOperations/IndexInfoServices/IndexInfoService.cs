@@ -2506,10 +2506,15 @@ namespace FOX.BusinessOperations.IndexInfoServices
         public void SavePdfToImages(string PdfPath, ServiceConfiguration config, string workId, long lworkid, int noOfPages, string sorcetype, string sorceName, string userName, bool approval = true)
         {
             approval = false;
+            var decline = false;
             List<int> threadCounter = new List<int>();
             if (!string.IsNullOrEmpty(PdfPath) && PdfPath.Contains("Signed"))
             {
                 approval = true;
+            }
+            if (!string.IsNullOrEmpty(PdfPath) && PdfPath.Contains("Unsigned"))
+            {
+                decline = true;
             }
             if (!Directory.Exists(config.IMAGES_PATH_SERVER))
             {
@@ -2586,7 +2591,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 //noOfPages = noOfPages + 1;
                 long ConvertedWorkID = Convert.ToInt64(workId);
                 noOfPages = _OriginalQueueFiles.GetMany(t => t.WORK_ID == ConvertedWorkID && !t.deleted)?.Count() ?? 0;
-                AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, approval, config.PRACTICE_CODE);
+                AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, approval, config.PRACTICE_CODE, decline);
             }
         }
         public void newThreadImplementaion(ref List<int> threadCounter, string PdfPath, int i, string imgPath, string logoImgPath)
@@ -2676,7 +2681,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             }
         }
 
-        public void AddToDatabase(string filePath, int noOfPages, string workId, string sorcetype, string sorceName, string userName, bool approval, long? practice_code)
+        public void AddToDatabase(string filePath, int noOfPages, string workId, string sorcetype, string sorceName, string userName, bool approval, long? practice_code, bool decline)
         {
             try
             {
@@ -2712,8 +2717,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 var username = new SqlParameter { ParameterName = "@USER_NAME", SqlDbType = SqlDbType.VarChar, Value = userName };
                 var noofpages = new SqlParameter { ParameterName = "@NO_OF_PAGES", SqlDbType = SqlDbType.Int, Value = noOfPages };
                 var approve = new SqlParameter { ParameterName = "@APPROVAL", SqlDbType = SqlDbType.Bit, Value = approval };
-                var result = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_ADD_TODB_FROM_INDEXINFO @PRACTICE_CODE,@WORK_ID,@USER_NAME,@NO_OF_PAGES,@APPROVAL",
-                    PracticeCode, workid, username, noofpages, approve);
+                var declined = new SqlParameter { ParameterName = "@DECLINE", SqlDbType = SqlDbType.Bit, Value = decline };
+
+                var result = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_ADD_TODB_FROM_INDEXINFO @PRACTICE_CODE,@WORK_ID,@USER_NAME,@NO_OF_PAGES,@APPROVAL,@DECLINE",
+                    PracticeCode, workid, username, noofpages, approve, declined);
             }
             catch (Exception exception)
             {
