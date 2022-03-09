@@ -2072,7 +2072,7 @@ namespace FOX.BusinessOperations.PatientServices
                                     }
                                 }
 
-                                loc.FACILITY_TYPE_NAME = !string.IsNullOrWhiteSpace(facilityType.DISPLAY_NAME) ? facilityType.DISPLAY_NAME : "";
+                                loc.FACILITY_TYPE_NAME = !string.IsNullOrWhiteSpace(facilityType?.DISPLAY_NAME) ? facilityType?.DISPLAY_NAME : "";
 
                                 if (string.IsNullOrWhiteSpace(loc.REGION))
                                 {
