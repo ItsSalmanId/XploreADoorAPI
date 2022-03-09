@@ -412,7 +412,7 @@ namespace FOX.BusinessOperations.TaskServices
                 }
                 if (task.CASE_ID != null)
                 {
-                    var _case = _vwCaseRepository.GetByID(task.CASE_ID);
+                    var _case = _vwCaseRepository.GetFirst(x=>x.CASE_ID==task.CASE_ID);
                     taskLoglist.Add(new TaskLog() { ACTION = "Case marked", ACTION_DETAIL = "Case marked: " + _case.CASE_NO });
                 }
                 if (task.TASK_TYPE_ID != null)

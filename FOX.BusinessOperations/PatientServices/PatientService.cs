@@ -1446,6 +1446,7 @@ namespace FOX.BusinessOperations.PatientServices
 
         public List<Patient> GetPatientList(PatientSearchRequest patientSearchRequest, UserProfile profile)
         {
+            string spName = string.Empty;
             if (!string.IsNullOrEmpty(patientSearchRequest.DOBInString))
             {
                 patientSearchRequest.DOB = Convert.ToDateTime(patientSearchRequest.DOBInString);
@@ -1475,7 +1476,9 @@ namespace FOX.BusinessOperations.PatientServices
             var SortOrder = Helper.getDBNullOrValue("SORT_ORDER", patientSearchRequest.SortOrder);
             var Patient_Alias = new SqlParameter { ParameterName = "Patient_Alias", SqlDbType = SqlDbType.Bit, Value = patientSearchRequest.INCLUDE_ALIAS };
 
-            var PatientList = SpRepository<Patient>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_LIST @Patient_Account, @First_Name, @Last_Name, @Middle_Name, @CHART_ID, @SSN, @Gender, @Created_Date, @CreatedBy, @ModifiedBy, @PRACTICE_CODE, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORT_BY, @SORT_ORDER,@DOB, @Patient_Alias",
+            spName = patientSearchRequest.ISTALKREHAB ? "FOX_PROC_GET_PATIENT_LIST_TALKREHAB" : "FOX_PROC_GET_PATIENT_LIST";
+
+            var PatientList = SpRepository<Patient>.GetListWithStoreProcedure(@"exec "+ spName + " @Patient_Account, @First_Name, @Last_Name, @Middle_Name, @CHART_ID, @SSN, @Gender, @Created_Date, @CreatedBy, @ModifiedBy, @PRACTICE_CODE, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORT_BY, @SORT_ORDER,@DOB, @Patient_Alias",
                 accountNo, FirstName, LastName, MiddleName, MRN, SSN, Gender, CreatedDate, CreatedBy, ModifiedBy, PracticeCode, CurrentPage, RecordPerPage, SearchText, SortBy, SortOrder, dob, Patient_Alias);
 
             return PatientList;
@@ -2071,8 +2074,14 @@ namespace FOX.BusinessOperations.PatientServices
                                         loc.Country = patientPrivateHomeAddress.POS_County;
                                     }
                                 }
-
-                                loc.FACILITY_TYPE_NAME = !string.IsNullOrWhiteSpace(facilityType?.DISPLAY_NAME) ? facilityType?.DISPLAY_NAME : "";
+                                if (facilityType!=null)
+                                {
+                                loc.FACILITY_TYPE_NAME = !string.IsNullOrWhiteSpace(facilityType.DISPLAY_NAME) ? facilityType.DISPLAY_NAME : "";
+                                }
+                                else
+                                {
+                                    loc.FACILITY_TYPE_NAME = "";
+                                }
 
                                 if (string.IsNullOrWhiteSpace(loc.REGION))
                                 {

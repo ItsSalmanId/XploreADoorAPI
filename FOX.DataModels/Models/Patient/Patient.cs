@@ -380,6 +380,7 @@ namespace FOX.DataModels.Models.Patient
         public string SortBy { get; set; }
         public string SortOrder { get; set; }
         public bool INCLUDE_ALIAS { get; set; }
+        public bool ISTALKREHAB { get; set; }
     }
 
     //public class ZipCityState
