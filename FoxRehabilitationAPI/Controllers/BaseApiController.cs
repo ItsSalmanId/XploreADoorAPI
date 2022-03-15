@@ -1,4 +1,5 @@
 ﻿using FOX.BusinessOperations.Security;
+using FOX.DataModels;
 using FOX.DataModels.Models.Security;
 using FoxRehabilitationAPI.Filters;
 using FoxRehabilitationAPI.Models;
@@ -20,7 +21,9 @@ namespace FoxRehabilitationAPI.Controllers
     {
         protected UserProfile GetProfile()
         {
-            return ClaimsModel.GetUserProfile(User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
+            UserProfile profile = ClaimsModel.GetUserProfile(User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
+            EntityHelper.isTalkRehab = profile.isTalkRehab;
+            return profile;
         }
 
         ApplicationUserManager _userManager;
