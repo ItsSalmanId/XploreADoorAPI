@@ -208,6 +208,10 @@ namespace FOX.DataModels.GenericRepository
         {
             return DbSet.Single(predicate);
         }
+        public TEntity GetSingleOrDefault(Expression<Func<TEntity, bool>> predicate)
+        {
+            return DbSet.FirstOrDefault(predicate);
+        }
 
         /// <summary>
         /// The first record matching the specified criteria
