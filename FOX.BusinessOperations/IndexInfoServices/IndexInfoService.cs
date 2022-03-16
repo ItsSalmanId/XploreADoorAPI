@@ -109,6 +109,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private readonly GenericRepository<FOX_TBL_REFERRAL_SOURCE> _referralSourceTableRepository;
         private readonly GenericRepository<GROUP> _UserGroupseRepository;
         private readonly GenericRepository<FOX_TBL_ZIP_STATE_COUNTY> _zipStateCountyRepository;
+        private readonly GenericRepository<RegionCoverLetter> _RegionCoverLetterRepository;
         private static List<Thread> threadsList = new List<Thread>();
         public IndexInfoService()
         {
@@ -162,6 +163,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             _referralSourceTableRepository = new GenericRepository<FOX_TBL_REFERRAL_SOURCE>(_QueueContext);
             _UserGroupseRepository = new GenericRepository<GROUP>(_QueueContext);
             _zipStateCountyRepository = new GenericRepository<FOX_TBL_ZIP_STATE_COUNTY>(_settings);
+            _RegionCoverLetterRepository = new GenericRepository<RegionCoverLetter>(security);
         }
         public void InsertUpdateDocuments(FOX_TBL_PATIENT_DOCUMENTS obj, UserProfile profile)
         {
@@ -726,10 +728,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     sourceAddDetail.FOX_TBL_SENDER_NAME_ID = obj?.FOX_TBL_SENDER_NAME_ID;
                     sourceAddDetail.REASON_FOR_THE_URGENCY = obj?.REASON_FOR_THE_URGENCY;
                     sourceAddDetail.IS_POST_ACUTE = obj.IS_POST_ACUTE;
-                    if (obj?.IS_POST_ACUTE ?? false)
-                    {
-                        sourceAddDetail.IS_EMERGENCY_ORDER = true;
-                    }
+                    //if (obj?.IS_POST_ACUTE ?? false)
+                    //{
+                    //    sourceAddDetail.IS_EMERGENCY_ORDER = true;
+                    //}
                     //SPECIALITY_PROGRAM
                     if (!string.IsNullOrWhiteSpace(obj?.SPECIALITY_PROGRAM) && obj.SPECIALITY_PROGRAM != "0" && obj.SPECIALITY_PROGRAM.Contains("Home Health, Part A Services"))//SPECIALITY_PROGRAM ZERO CHECK
                     {
@@ -791,7 +793,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 }
 
 
-                if(obj.IS_POST_ACUTE == true && sourceAddDetail.IS_EMERGENCY_ORDER == true)
+                if(obj.IS_POST_ACUTE == true)
                 {
                     sourceAddDetail.IS_POST_ACUTE = obj.IS_POST_ACUTE;
                     sourceAddDetail.REASON_FOR_THE_URGENCY = obj.REASON_FOR_THE_URGENCY;
@@ -2503,7 +2505,17 @@ namespace FOX.BusinessOperations.IndexInfoServices
         //New Thread Implementation
         public void SavePdfToImages(string PdfPath, ServiceConfiguration config, string workId, long lworkid, int noOfPages, string sorcetype, string sorceName, string userName, bool approval = true)
         {
+            approval = false;
+            var decline = false;
             List<int> threadCounter = new List<int>();
+            if (!string.IsNullOrEmpty(PdfPath) && PdfPath.Contains("Signed"))
+            {
+                approval = true;
+            }
+            if (!string.IsNullOrEmpty(PdfPath) && PdfPath.Contains("Unsigned"))
+            {
+                decline = true;
+            }
             if (!Directory.Exists(config.IMAGES_PATH_SERVER))
             {
                 Directory.CreateDirectory(config.IMAGES_PATH_SERVER);
@@ -2524,10 +2536,13 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
                     if (sorcetype.Split(':')?[0] == "DR")
                     {
-                        imgPath = config.IMAGES_PATH_DB + "\\" + deliveryReportId + "_" + i + ".jpg";
-                        logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + deliveryReportId + "_" + i + ".jpg";
-                        imgPathServer = config.IMAGES_PATH_SERVER + "\\" + deliveryReportId + "_" + i + ".jpg";
-                        logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + deliveryReportId + "_" + i + ".jpg";
+                        var randomString = random.Next();
+                        imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
+                        imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
+
+                        randomString = random.Next();
+                        logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + "_" + randomString + ".jpg";
+                        logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + "_" + randomString + ".jpg";
                     }
                     else
                     {
@@ -2576,7 +2591,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 //noOfPages = noOfPages + 1;
                 long ConvertedWorkID = Convert.ToInt64(workId);
                 noOfPages = _OriginalQueueFiles.GetMany(t => t.WORK_ID == ConvertedWorkID && !t.deleted)?.Count() ?? 0;
-                AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, approval, config.PRACTICE_CODE);
+                AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, approval, config.PRACTICE_CODE, decline);
             }
         }
         public void newThreadImplementaion(ref List<int> threadCounter, string PdfPath, int i, string imgPath, string logoImgPath)
@@ -2666,7 +2681,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             }
         }
 
-        public void AddToDatabase(string filePath, int noOfPages, string workId, string sorcetype, string sorceName, string userName, bool approval, long? practice_code)
+        public void AddToDatabase(string filePath, int noOfPages, string workId, string sorcetype, string sorceName, string userName, bool approval, long? practice_code, bool decline)
         {
             try
             {
@@ -2702,8 +2717,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 var username = new SqlParameter { ParameterName = "@USER_NAME", SqlDbType = SqlDbType.VarChar, Value = userName };
                 var noofpages = new SqlParameter { ParameterName = "@NO_OF_PAGES", SqlDbType = SqlDbType.Int, Value = noOfPages };
                 var approve = new SqlParameter { ParameterName = "@APPROVAL", SqlDbType = SqlDbType.Bit, Value = approval };
-                var result = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_ADD_TODB_FROM_INDEXINFO @PRACTICE_CODE,@WORK_ID,@USER_NAME,@NO_OF_PAGES,@APPROVAL",
-                    PracticeCode, workid, username, noofpages, approve);
+                var declined = new SqlParameter { ParameterName = "@DECLINE", SqlDbType = SqlDbType.Bit, Value = decline };
+
+                var result = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_ADD_TODB_FROM_INDEXINFO @PRACTICE_CODE,@WORK_ID,@USER_NAME,@NO_OF_PAGES,@APPROVAL,@DECLINE",
+                    PracticeCode, workid, username, noofpages, approve, declined);
             }
             catch (Exception exception)
             {
@@ -2816,7 +2833,14 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 body = body.Replace("[[RECEIVED_TIME]]", receivedTime);
                 body = body.Replace("[[BODY]]", data.BODY);
                 body = body.Replace("[[SENDING_DATE]]", sendingDate);
-                body = body.Replace("[[EMAIL]]", data.EMAIL);
+                if (data != null && !string.IsNullOrEmpty(data.EMAIL))
+                {
+                    body = body.Replace("[[EMAIL]]", data.EMAIL);
+                }
+                else
+                {
+                    body = body.Replace("[[EMAIL]]", data.FAX);
+                }
             }
             return body;
         }
@@ -5117,7 +5141,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         }
         public ReferralSourceAndGroups getAllReferralSourceAndGroups(UserProfile profile)
         {
-            ReferralSourceAndGroups response = new ReferralSourceAndGroups();
+            ReferralSourceAndGroups response = new ReferralSourceAndGroups();            
             response.ReferralSource = _referralSourceTableRepository.GetMany(x => !(x.DELETED) && (x.PRACTICE_CODE == profile.PracticeCode));
             response.Groups = _groupRepository.GetMany(x => !(x.DELETED) && (x.PRACTICE_CODE == profile.PracticeCode));
             return response;
@@ -5306,6 +5330,31 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
             return SpRepository<PatLastORS>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ORS_BY_PATIENT_ACCOUNT @PATIENT_ACCOUNT, @PRACTICE_CODE ", _patientAccount, _practice_Code);
 
+        }
+        /// <summary>
+        /// This Function is used to get Cover Letter File Name
+        /// </summary>
+        /// <param name="regionCode"></param>
+        /// <returns></returns>
+        public string GetRegionCoverLetterAttachment(string regionCode)
+        {
+            try
+            {
+                string result = string.Empty;
+                if (!string.IsNullOrEmpty(regionCode))
+                {
+                    var response = _RegionCoverLetterRepository.Get(x => x.REFERRAL_REGION_CODE == regionCode && x.IS_FAX_COVER_LETTER == true);
+                    if(response != null && !string.IsNullOrEmpty(response.FILE_PATH))
+                    {
+                        result = response.FILE_PATH;
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

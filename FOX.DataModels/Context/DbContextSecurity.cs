@@ -29,6 +29,7 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<FOX_TBL_PRACTICE_ROLE_RIGHTS>().Property(t => t.RIGHTS_OF_ROLE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<RoleToAdd>().Property(t => t.ROLE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<ReferralRegion>().Property(t => t.REFERRAL_REGION_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<RegionCoverLetter>().Property(t => t.REGION_COVER_SHEET_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<ReferralSource>().Property(t => t.SOURCE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<FOX_TBL_RIGHTS_OF_ROLE>().Property(t => t.ROLE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<InterFaxDetail>().Property(t => t.PRACTICE_CODE).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
@@ -54,6 +55,7 @@ namespace FOX.DataModels.Context
         public virtual DbSet<ProfileToken> Token { get; set; }
         public virtual DbSet<FOX_TBL_PRACTICE_ROLE_RIGHTS> FOX_TBL_PRACTICE_ROLE_RIGHTS { get; set; }
         public virtual DbSet<ReferralRegion> ReferralRegions { get; set; }
+        public virtual DbSet<RegionCoverLetter> RegionCoverLetters { get; set; }
         public virtual DbSet<ReferralSource> ReferralSource { get; set; }
         public virtual DbSet<FOX_TBL_RIGHTS_OF_ROLE> FOX_TBL_RIGHTS_OF_ROLE { get; set; }
         public virtual DbSet<EmailConfig> EmailConfig { get; set; }

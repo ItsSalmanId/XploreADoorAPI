@@ -359,5 +359,17 @@ namespace FoxRehabilitationAPI.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Work ID is Empty");
             }
         }
+        [HttpGet]
+        public HttpResponseMessage GetRegionCoverLetterAttachment(string regionCode)
+        {
+            if (!string.IsNullOrEmpty(regionCode))
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetRegionCoverLetterAttachment(regionCode));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Model is Empty");
+            }
+        }
     }
 }
