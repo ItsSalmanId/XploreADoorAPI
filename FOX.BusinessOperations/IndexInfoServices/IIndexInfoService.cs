@@ -37,6 +37,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         List<SmartLocationRes> GetSmartLocations(SmartReq obj, UserProfile profile);
         List<SmartLocationRes> GetSmartLocations(string searchText, UserProfile profile);
         List<SmartOrderSource> GetSmartOrderingSource(SmartReq obj, UserProfile profile);
+        string GetRegionCoverLetterAttachment(string regionCode);
         List<SmartRefRegion> GetSmartRefRegion(SmartReq obj, UserProfile profile);
         List<AnalaysisReportRes> GetAnalysisRPT(AnalaysisReportReq obj, UserProfile Profile);
         List<SlotAnalysisRes> GetSlotData(SlotAnalysisReq obj, UserProfile Profile);

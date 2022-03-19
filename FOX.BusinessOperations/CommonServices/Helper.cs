@@ -172,7 +172,7 @@ namespace FOX.BusinessOperations.CommonService
         }
 
         //public static bool Email(string from, string to, string subject, string body, List<string> CC = null, List<string> BCC = null, List<string> AttachmentFilePaths = null)
-        public static bool Email(string to, string subject, string body,UserProfile profile =null, long? WORK_ID=null, List<string> CC = null, List<string> BCC = null, List<string> AttachmentFilePaths = null, string from = "foxrehab@carecloud.com")
+        public static bool Email(string to, string subject, string body,UserProfile profile =null, long? WORK_ID=null, List<string> CC = null, List<string> BCC = null, List<string> AttachmentFilePaths = null, string from = "foxrehab@mtbc.com")
         {
             bool IsMailSent = false;
             try
