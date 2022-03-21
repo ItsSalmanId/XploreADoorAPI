@@ -82,6 +82,7 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<CountryResponse>().Property(t => t.FOX_TBL_COUNTRY_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<DsFoxOcr>().Property(t => t.DS_FOX_RFO_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<FoxOcrStatus>().Property(t => t.OCR_STATUS_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<PracticeAddressBook>().Property(t => t.ADDRESSBOOK_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
         }
         
         public virtual DbSet<Patient> Patient { get; set; }        
@@ -140,5 +141,6 @@ namespace FOX.DataModels.Context
         public virtual DbSet<CountryResponse> CountryResponse { get; set; }
         public virtual DbSet<DsFoxOcr> DsFoxOcr { get; set; }
         public virtual DbSet<FoxOcrStatus> FoxOcrStatus { get; set; }
+        public virtual DbSet<PracticeAddressBook> PracticeAddressBook { get; set; }
     }
 }

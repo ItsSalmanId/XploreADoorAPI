@@ -1,5 +1,6 @@
 ﻿using FOX.BusinessOperations.CommonService;
 using FOX.BusinessOperations.CommonServices;
+using FOX.DataModels;
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.Authorization;
@@ -231,7 +232,7 @@ namespace FOX.BusinessOperations.PatientServices
                 if (patient.Patient_POS_Location_List != null && patient.Patient_POS_Location_List.Count > 0 && patient.FROM_INDEXINFO)
                     AddPatientPOS(patient.Patient_POS_Location_List, profile, patient.Patient_Account);
                 //add Alias Patient
-                if (patient.Patient_Alias_List.Count > 0)
+                if (patient?.Patient_Alias_List?.Count > 0)
                 {
                     for (int i = 0; i < patient.Patient_Alias_List.Count; i++)
                     {
@@ -519,7 +520,7 @@ namespace FOX.BusinessOperations.PatientServices
                 if (patient.Patient_POS_Location_List != null && patient.Patient_POS_Location_List.Count > 0 && patient.FROM_INDEXINFO)
                     AddPatientPOS(patient.Patient_POS_Location_List, profile, patient.Patient_Account);
                 //edit Alias Patient
-                if (patient.Patient_Alias_List != null && patient.Patient_Alias_List.Count > 0)
+                if (patient?.Patient_Alias_List != null && patient?.Patient_Alias_List.Count > 0)
                 {
                     for (int i = 0; i < patient.Patient_Alias_List.Count; i++)
                     {
@@ -962,6 +963,10 @@ namespace FOX.BusinessOperations.PatientServices
                 patient.State = address.STATE;
                 patient.Modified_By = address.MODIFIED_BY;
                 patient.Modified_Date = address.MODIFIED_DATE;
+                if (EntityHelper.isTalkRehab)
+                {
+                    patient.Address_Type = "RESIDENTIAL ADDRESS";
+                }
                 _NewPatientRepository.Update(patient);
                 _NewPatientRepository.Save();
             }
@@ -1182,7 +1187,7 @@ namespace FOX.BusinessOperations.PatientServices
             //                        0,
             //                        0
             //  };
-            for (int i = 0; i < patientInsurance.Count; i++)
+            for (int i = 0; i < patientInsurance?.Count; i++)
             {
                 PatientInsuranceEligibilityDetail ObjPatientInsuranceEligibilityDetail = new PatientInsuranceEligibilityDetail();
                 ObjPatientInsuranceEligibilityDetail.InsuranceToCreateUpdate = new PatientInsurance();

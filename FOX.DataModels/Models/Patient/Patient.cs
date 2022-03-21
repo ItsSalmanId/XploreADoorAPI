@@ -230,6 +230,7 @@ namespace FOX.DataModels.Models.Patient
         [NotMapped]
         public string PATIENT_FINANCIAL_CLASS { get; set; }
         public bool? Address_To_Guarantor { get; set; }
+        public string Address_Type { get; set; }
 
     }
 
@@ -2011,4 +2012,36 @@ namespace FOX.DataModels.Models.Patient
         public int ROW { get; set; }
     }
 
+    [Table("AF_TBL_PRACTICE_ADDRESSBOOK")]
+    public class PracticeAddressBook
+    {
+        [Key]
+        public long ADDRESSBOOK_ID { get; set; }
+        public long PRACTICE_CODE { get; set; }
+        public string FIRST_NAME { get; set; }
+        public string LAST_NAME { get; set; }
+        public string FAX_NUMBER { get; set; }
+        public string PHONE_NUMBER { get; set; }
+        public string DIRECT_ADDRESS { get; set; }
+        public string EMAIL { get; set; }
+        public string SPECIALIZATION_CODE { get; set; }
+        public string SPECIALIZATION_NAME { get; set; }
+        public DateTime? CREATED_DATE { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime? MODIFIED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public bool? DELETED { get; set; }
+        public string NPI { get; set; }
+        public string REPRESENTING_ORGANIZATION { get; set; }
+        public string COMMENTS { get; set; }
+        public string ADDRESS { get; set; }
+        public string CITY { get; set; }
+        public string STATE { get; set; }
+        public string ZIP { get; set; }
+        public string PHONE_NUMBER_1_EXT { get; set; }
+        public string WORK_FOR_ORGINAZTION { get; set; }
+        public long? REFERRAL_CODE { get; set; }
+        [NotMapped]
+        public bool isIndividualProvider { get; set; }
+    }
 }
