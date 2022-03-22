@@ -392,10 +392,6 @@ namespace FOX.BusinessOperations.AccountService
                                            .Replace("[[COMMENTS]]", user.COMMENTS);
                     }
                     string subjectOfAdminEmail = "New signup request: " + user.LAST_NAME + ", " + user.FIRST_NAME + ", " + user.USER_TYPE;
-                    //string sendToOfAdminEmail = "support@foxrehab.org";
-                    //string sendToOfAdminEmail = "alihassan2@mtbc.com";
-                    //string sendToOfAdminEmail = "muhammadhassan5@mtbc.com";
-                    //string sendToOfAdminEmail = "yasiramin@mtbc.com";
                     string sendToOfAdminEmail = string.Empty;
                     string firstName = string.IsNullOrEmpty(user.FIRST_NAME) ? string.Empty : user.FIRST_NAME;
                     string lastName = string.IsNullOrEmpty(user.LAST_NAME) ? string.Empty : user.LAST_NAME;
@@ -407,9 +403,7 @@ namespace FOX.BusinessOperations.AccountService
                     {
                         sendToOfAdminEmail = AppConfiguration.SendEmailToQAOnExternalUserSignUp_To;
                     }
-                    //string sendToOfAdminEmail = "asimshah4@mtbc.com";
                     List<string> _bccListOfAdminEmail = new List<string>();
-                    //Helper.SendEmail(sendToOfAdminEmail, subjectOfAdminEmail, bodyOfAdminEmail, null, _bccListOfAdminEmail, "noreply@mtbc.com");
                     if (string.IsNullOrEmpty(sendToOfAdminEmail))
                     {
                         Helper.SendEmail(sendToOfAdminEmail, subjectOfAdminEmail, bodyOfAdminEmail, null, null, null, _bccListOfAdminEmail);
@@ -512,11 +506,7 @@ namespace FOX.BusinessOperations.AccountService
                     {
                      sendToOfAdminEmail = "support@foxrehab.org";
                     }
-
-                    //string sendToOfAdminEmail = "usmanfarooq@mtbc.com";
-                    //string sendToOfAdminEmail = "asimshah4@mtbc.com";
                     List<string> _bccListOfAdminEmail = new List<string>();
-                    //Helper.SendEmail(sendToOfAdminEmail, subjectOfAdminEmail, bodyOfAdminEmail, null, _bccListOfAdminEmail, "noreply@mtbc.com");
                     Helper.SendEmail(sendToOfAdminEmail, subjectOfAdminEmail, bodyOfAdminEmail, null,null,null, _bccListOfAdminEmail);
 
                     #endregion
@@ -669,13 +659,10 @@ namespace FOX.BusinessOperations.AccountService
             {
                 sendToOfAdminEmail = AppConfiguration.SendEmailToQAOnExternalUserSignUp_To;
             }
-
-            //Helper.SendEmail(sendToOfAdminEmail, subjectOfAdminEmail, bodyOfAdminEmail, null, _bccListOfAdminEmail, "noreply@mtbc.com");
             if (!string.IsNullOrEmpty(sendToOfAdminEmail))
             {
                 Helper.SendEmail(sendToOfAdminEmail, subjectOfAdminEmail, bodyOfAdminEmail, null, null, _ccListOfAdminEmail, _bccListOfAdminEmail);
             }
-
         }
 
         public void SavePasswordHistory(dynamic user)

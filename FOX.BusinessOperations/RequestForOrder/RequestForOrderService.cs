@@ -242,7 +242,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                         //string attachmentPath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
                         string attachmentPath = "";
                         //For Live
-                        List<string> _bccList = new List<string>() { "muhammadali9@mtbc.com" };
+                        List<string> _bccList = new List<string>() { "adnanshah3@carecloud.com" };
 
                         //For QA UAT
                         //List<string> _bccList = new List<string>() { "abdulsattar@mtbc.com" };
@@ -339,7 +339,6 @@ namespace FOX.BusinessOperations.RequestForOrder
 					</table>
                             ";
 
-                        //Helper.Email("noreply@mtbc.com", requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, null, _bccList, new List<string>() { attachmentPath });
                         bool emailStatus = Helper.Email(requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath });
                         Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || Start Time of Finding WORK ID " + Helper.GetCurrentDate().ToLocalTime());
                        

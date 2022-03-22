@@ -332,11 +332,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     }
                     string subject = "Signup declined for FOX Rehab portal";
                     string sendTo = user.EMAIL;
-                    //string sendTo = "muhammadhassan5@mtbc.com";
-                    //string sendTo = "yasiramin@mtbc.com";
-                    //string sendTo = "asimshah4@mtbc.com";
                     List<string> _bccList = new List<string>();
-                    //Helper.SendEmail(sendTo, subject, body, null, _bccList, "noreply@mtbc.com");
                     Helper.SendEmail(sendTo, subject, body, null, profile, _bccList);
 
                     #endregion
@@ -3102,19 +3098,15 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                             }
                             else
                             {
-                                sendTo = "Carey.sambogna@foxrehab.org,muhammadali9@mtbc.com";
-                                _ccList.Add("foxsupport@mtbc.com");
+                                sendTo = "Carey.sambogna@foxrehab.org,adnanshah3@carecloud.com";
+                                _ccList.Add("foxsupport@carecloud.com");
                             }
                         }
                         else
                         {
-                            sendTo = "muhammadali9@mtbc.com,muhammadarslan3@mtbc.com";
-                            _ccList.Add("foxdev@MTBC.COM");
+                            sendTo = "adnanshah3@carecloud.com,muhammadarslan3@carecloud.com";
+                            _ccList.Add("foxdev@carecloud.com");
                         }
-                        
-                        //sendTo = "abdurrafay@mtbc.com,Javedakhtar@MTBC.COM";
-                        //_ccList.Add("usmanfarooq@MTBC.COM");
-                        //Helper.SendEmail(sendTo, subject, body, null, _bccList, "noreply@mtbc.com");
                         Helper.SendEmail(sendTo, subject, body, null, profile, _ccList);
                         #endregion
                         return true;
