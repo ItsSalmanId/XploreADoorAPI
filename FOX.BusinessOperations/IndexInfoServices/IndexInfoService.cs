@@ -1526,7 +1526,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
                 if (!string.IsNullOrEmpty(sendTo))
                 {
-                    //Helper.SendEmail(sendTo, _subject, _body, null, _bccList, "noreply@mtbc.com");
                     Helper.SendEmail(sendTo, _subject, _body, wORK_ID, profile, null, _bccList);
                 }
             }
@@ -2518,7 +2517,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     string subject = string.Empty;
                     subject = (!string.IsNullOrWhiteSpace(WORK_ID) ? "Work Order ID " + WORK_ID.ToString() : "") + " - " + (!string.IsNullOrWhiteSpace(data.SUBJECT) ? data.SUBJECT : "Query on the attached referral order");
                     string sendTo = data.EMAIL;
-                    //bool sent = Helper.Email("noreply@mtbc.com", sendTo, subject, body, null, null, new List<string> { Path.Combine(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME) });
 
                     bool sent = Helper.Email(sendTo, subject, body, profile, data.work_id, null, null, new List<string> { Path.Combine(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME) });
                    

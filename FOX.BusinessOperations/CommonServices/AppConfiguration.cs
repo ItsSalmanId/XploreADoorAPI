@@ -185,12 +185,12 @@ namespace FOX.BusinessOperations.CommonServices
 
         public static List<string> SendADExceptionCCList => new List<string>
         {
-            //"omermehmood@mtbc.com",
-            "muhammadali9@mtbc.com",
-            "abdulsattar@mtbc.com"
+            "muhammadarslan3@carecloud.com",
+            "abdulsattar@carecloud.com",
+            "aftabkhan@carecloud.com"
         };
 
-        public static string SendADExceptionTo => "muhammadali9@mtbc.com";
+        public static string SendADExceptionTo => "adnanshah3@carecloud.com";
         //Active Directory
         public static class ActiveDirectoryViewModel
         {
@@ -232,7 +232,7 @@ namespace FOX.BusinessOperations.CommonServices
                 //Other Environments
                 //return @"muhammadnadeem2@mtbc.com";
                 //Live
-                return "foxtesting@mtbc.com";
+                return "adnanshah3@carecloud.com";
             }
         }
         public static string SendEmailToAdminOnExternalUserSignUp_CC
@@ -296,7 +296,7 @@ namespace FOX.BusinessOperations.CommonServices
         {
             get
             {
-                return @"foxtesting@mtbc.com";
+                return @"adnanshah3@carecloud.com";
             }
         }
     }

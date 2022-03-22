@@ -9439,7 +9439,7 @@ namespace FOX.BusinessOperations.PatientServices
         {
             string body = GetEmailOrFaxToSenderTemplate(firstName: firstName, LastName: lastName, link: link, pin: pin, practiceName: profile.PracticeName);
             List<string> BCC = new List<string>();
-            BCC.Add("adnanshah3@mtbc.com");
+            BCC.Add("adnanshah3@carecloud.com");
             bool sent = Helper.Email(to: emailAddress, subject: "Fox Patient Portal", body: body, profile: profile, CC: null, BCC: BCC);
             return sent;
         }
