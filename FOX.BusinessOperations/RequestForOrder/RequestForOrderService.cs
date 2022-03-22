@@ -396,7 +396,39 @@ namespace FOX.BusinessOperations.RequestForOrder
 
                     if (responseHTMLToPDF != null && (responseHTMLToPDF?.Success ?? false))
                     {
-                        var resultfax = _IFaxService.SendFax(new string[] { requestSendFAXModel.ReceipientFaxNumber }, new string[] { "" }, null, responseHTMLToPDF.FileName, responseHTMLToPDF.FilePath, requestSendFAXModel.Subject, false, Profile);
+                        //var resultfax = _IFaxService.SendFax(new string[] { requestSendFAXModel.ReceipientFaxNumber }, new string[] { "" }, null, responseHTMLToPDF.FileName, responseHTMLToPDF.FilePath, requestSendFAXModel.Subject, false, Profile);
+
+                        //if (resultfax == "failed")
+                        //{
+                        //    htmlstring = "<html><body><h2>Delivery Report</h2><p>Subject:" + requestSendFAXModel.Subject + "</p><p>From:" + requestSendFAXModel.SenderName + "</p><p>To:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Sent:" + DateTime.Now + "</p><br/><div style='padding:10px;background-color:#ff9999;width: 50%;'><p>Delivery report for:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Failed:</p><p>Message failed to deliver </p></div></body></html>";
+                        //}
+                        //else
+                        //{
+                        //    htmlstring = "<html><body><h2>Delivery Report</h2><p>Subject:" + requestSendFAXModel.Subject + "</p><p>From:" + requestSendFAXModel.SenderName + "</p><p>To:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Sent:" + DateTime.Now + "</p><br/><div style='padding:10px;width: 50%;'><p>Delivery report for:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Delivered Successfully:</p><p>Message delivered to recipient. </p></div></body></html>";
+                        //}
+                        //hl
+                        //ResponseHTMLToPDF responseHTMLToPDF2 = HTMLToPDF2(config, htmlstring, "tempdfdelivery");
+                       
+                        //string deliveryfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
+                        string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
+                        int numberOfPages = getNumberOfPagesOfPDF(filePath);
+                        //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
+                        //SavePdfToImages(filePath, imagesPath, requestSendFAXModel.WorkId, numberOfPages, "Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName);
+
+                        SavePdfToImages(filePath, config, requestSendFAXModel.WorkId, numberOfPages, "Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
+
+                        //SavePdfToImages(deliveryfilePath, config, requestSendFAXModel.WorkId, 1, "DR:Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
+
+                        var commonService = new CommonServices.CommonServices();
+                        AttachmentData attachmentPath = commonService.GeneratePdfForSupportedDoc(config, requestSendFAXModel.WorkId.ToString(), Profile);
+
+                        if (!attachmentPath.FILE_PATH.EndsWith("\\"))
+                        {
+                            attachmentPath.FILE_PATH = attachmentPath.FILE_PATH + "\\";
+                        }
+
+                        var resultfax = _IFaxService.SendFax(new string[] { requestSendFAXModel.ReceipientFaxNumber }, new string[] { "" }, null, attachmentPath.FILE_NAME, attachmentPath.FILE_PATH, requestSendFAXModel.Subject, false, Profile);
+
 
                         if (resultfax == "failed")
                         {
@@ -408,14 +440,8 @@ namespace FOX.BusinessOperations.RequestForOrder
                         }
                         //hl
                         ResponseHTMLToPDF responseHTMLToPDF2 = HTMLToPDF2(config, htmlstring, "tempdfdelivery");
-                       
-                        string deliveryfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
-                        string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
-                        int numberOfPages = getNumberOfPagesOfPDF(filePath);
-                        //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
-                        //SavePdfToImages(filePath, imagesPath, requestSendFAXModel.WorkId, numberOfPages, "Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName);
 
-                        SavePdfToImages(filePath, config, requestSendFAXModel.WorkId, numberOfPages, "Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
+                        string deliveryfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
 
                         SavePdfToImages(deliveryfilePath, config, requestSendFAXModel.WorkId, 1, "DR:Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
 
@@ -675,6 +701,9 @@ namespace FOX.BusinessOperations.RequestForOrder
         private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, string sorcetype, string sorceName, string userName, bool _isFromIndexInfo)
         {
             List<int> threadCounter = new List<int>();
+            var originalQueueFilesCount = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
+            long pageCounter = originalQueueFilesCount;
+
             if (!Directory.Exists(config.IMAGES_PATH_SERVER))
             {
                 Directory.CreateDirectory(config.IMAGES_PATH_SERVER);
@@ -683,7 +712,7 @@ namespace FOX.BusinessOperations.RequestForOrder
             if (System.IO.File.Exists(PdfPath))
             {
 
-                for (int i = 0; i < noOfPages; i++)
+                for (int i = 0; i < noOfPages; i++, pageCounter++)
                 {
                     var imgPath = "";
                     var logoImgPath = "";
@@ -726,6 +755,11 @@ namespace FOX.BusinessOperations.RequestForOrder
                             imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
                             imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
                         }
+                        else if (pageCounter != 0 && _isFromIndexInfo == false && sorcetype.ToLower() == "fax")
+                        {
+                            imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + pageCounter + ".jpg";
+                            imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + pageCounter + ".jpg";
+                        }
                         else
                         {
                             imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + ".jpg";
@@ -736,6 +770,11 @@ namespace FOX.BusinessOperations.RequestForOrder
                             var randomString = random.Next();
                             logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + "_" + randomString + ".jpg";
                             logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + "_" + randomString + ".jpg";
+                        }
+                        else if (pageCounter != 0 && _isFromIndexInfo == false && sorcetype.ToLower() == "fax")
+                        {
+                            logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + pageCounter + ".jpg";
+                            logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + pageCounter + ".jpg";
                         }
                         else
                         {
@@ -773,11 +812,12 @@ namespace FOX.BusinessOperations.RequestForOrder
                 }
                 //if (_isFromIndexInfo)
                 //{
-                    //AddToDatabaseForRFO(workId, userName, _isFromIndexInfo);
+                //AddToDatabaseForRFO(workId, userName, _isFromIndexInfo);
                 //}
                 //else
                 //{
-                    AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, config.PRACTICE_CODE, _isFromIndexInfo);
+                noOfPages = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
+                AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, config.PRACTICE_CODE, _isFromIndexInfo);
                 //}
             }
         }

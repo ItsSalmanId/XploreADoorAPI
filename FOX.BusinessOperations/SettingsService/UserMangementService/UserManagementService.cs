@@ -44,6 +44,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         private readonly GenericRepository<FOX_TBL_RIGHTS_OF_ROLE> _RightsOfRoleRepository;
         private readonly GenericRepository<RoleToAdd> _RoleRepository;
         private readonly GenericRepository<ReferralRegion> _ReferralRegionRepository;
+        private readonly GenericRepository<RegionCoverLetter> _RegionCoverLetterRepository;
         private readonly DbContextCommon _DbContextCommon = new DbContextCommon();
         private readonly GenericRepository<FOX_TBL_SENDER_NAME> _FOX_TBL_SENDER_NAME;
         private readonly GenericRepository<FOX_TBL_SENDER_TYPE> _FOX_TBL_SENDER_TYPE;
@@ -75,6 +76,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             _RoleRepository = new GenericRepository<RoleToAdd>(security);
             _RightsOfRoleRepository = new GenericRepository<FOX_TBL_RIGHTS_OF_ROLE>(security);
             _ReferralRegionRepository = new GenericRepository<ReferralRegion>(security);
+            _RegionCoverLetterRepository = new GenericRepository<RegionCoverLetter>(security);
             _speciality = new GenericRepository<Speciality>(_DbContextCases);
             _FOX_TBL_SENDER_NAME = new GenericRepository<FOX_TBL_SENDER_NAME>(_DbContextCommon);
             _FOX_TBL_SENDER_TYPE = new GenericRepository<FOX_TBL_SENDER_TYPE>(_DbContextCommon);
@@ -1582,6 +1584,35 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     referralRegion.Dashboard_Access.AddRange(referralRegion.Dashboard_AccessTemp);
                 }
                 InsertReferralRegionDashBoardAccess(referralRegion.REFERRAL_REGION_ID, referralRegion.Dashboard_Access, profile);
+            }
+            if (referralRegion != null && referralRegion.IS_FAX_COVER_LETTER.HasValue)
+            {
+                var regionCoverLetterResponse = _RegionCoverLetterRepository.GetFirst(x => x.REFERRAL_REGION_ID == referralRegion.REFERRAL_REGION_ID && !x.DELETED);
+                if(regionCoverLetterResponse == null)
+                {
+                    //Insert
+                    RegionCoverLetter regionCover = new RegionCoverLetter();
+                    regionCover.REGION_COVER_SHEET_ID = Helper.getMaximumId("REGION_COVER_SHEET_ID");
+                    regionCover.REFERRAL_REGION_ID = referralRegion.REFERRAL_REGION_ID;
+                    regionCover.REFERRAL_REGION_CODE = referralRegion.REFERRAL_REGION_CODE;
+                    regionCover.IS_FAX_COVER_LETTER = referralRegion.IS_FAX_COVER_LETTER ?? false;
+                    regionCover.CREATED_DATE = regionCover.MODIFIED_DATE = Helper.GetCurrentDate();
+                    regionCover.CREATED_BY = profile.UserName;
+                    regionCover.MODIFIED_BY = profile.UserName;
+                    regionCover.FILE_PATH = referralRegion.FILE_PATH;
+                    _RegionCoverLetterRepository.Insert(regionCover);
+                    _RegionCoverLetterRepository.Save();
+                }
+                else
+                {
+                    //Update
+                    regionCoverLetterResponse.IS_FAX_COVER_LETTER = referralRegion.IS_FAX_COVER_LETTER ?? false;
+                    regionCoverLetterResponse.FILE_PATH = referralRegion.FILE_PATH;
+                    regionCoverLetterResponse.MODIFIED_DATE = Helper.GetCurrentDate();
+                    regionCoverLetterResponse.MODIFIED_BY = profile.UserName;
+                    _RegionCoverLetterRepository.Update(regionCoverLetterResponse);
+                    _RegionCoverLetterRepository.Save();
+                }
             }
         }
         public ReferralRegion GetReferralRegion(ReferralRegionSearch referralRegionSearch, UserProfile profile)

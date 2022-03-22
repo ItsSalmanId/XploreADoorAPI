@@ -22,6 +22,7 @@ using FOX.DataModels.Models.ExternalUserModel;
 using FOX.DataModels.Models.CasesModel;
 using FOX.BusinessOperations.CommonService;
 using FOX.DataModels.Models.StatesModel;
+using FOX.DataModels.Models.ServiceConfiguration;
 
 namespace FOX.BusinessOperations.CommonServices
 {
@@ -137,7 +138,42 @@ namespace FOX.BusinessOperations.CommonServices
                 throw ex;
             }
         }
+        public AttachmentData GeneratePdfForSupportedDoc(ServiceConfiguration config, string unique_Id, UserProfile profile)
+        {
+            try
+            {
+                var queue = _QueueRepository.GetFirst(e => e.UNIQUE_ID == unique_Id);
+                if (queue != null)
+                {
+                    string file_Name = queue.UNIQUE_ID + " __" + DateTime.Now.Ticks + ".pdf";
+                    string folder = config.ORIGINAL_FILES_PATH_SERVER;
 
+                    if (!Directory.Exists(config.ORIGINAL_FILES_PATH_SERVER))
+                    {
+                        Directory.CreateDirectory(config.ORIGINAL_FILES_PATH_SERVER);
+                    }
+
+                    var localPath = config.ORIGINAL_FILES_PATH_DB + file_Name;
+                    var pathForPDF = Path.Combine(config.ORIGINAL_FILES_PATH_SERVER, file_Name);
+                    ImageHandler imgHandler = new ImageHandler();
+                    var imges = _OriginalQueueFilesRepository.GetMany(x => x.UNIQUE_ID == unique_Id);
+                    if (imges != null && imges.Count > 0)
+                    {
+                        var imgPaths = (from x in imges select x.FILE_PATH1).ToArray();
+                        imgHandler.ImagesToPdf(imgPaths, pathForPDF);
+                        AttachmentData attachmentData = new AttachmentData();
+                        attachmentData.FILE_PATH = folder;
+                        attachmentData.FILE_NAME = file_Name;
+                        return attachmentData;
+                    }
+                }
+                return new AttachmentData();
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
         public AttachmentData GeneratePdfForEmailToSender(string unique_Id, UserProfile profile)
         {
             try
