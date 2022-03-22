@@ -26,8 +26,7 @@ namespace FOX.BusinessOperations.CaseServices
         List<GetTotalDisciplineRes> GetTotalDiscipline(long? Patient_Account, long PracticeCode);
         OrderInformationAndNotes GetOrderInformationAndNotes(getOrderInfoReq obj, UserProfile profile);
         ResponseModel DeleteOrderInformation(FOX_TBL_ORDER_INFORMATION obj, UserProfile profile);
-        //List<FOX_VW_CASE> GetAllCases(string patient_Account, long practiceCode);
-        List<FOX_TBL_CASE> GetAllCases(string patient_Account, long practiceCode);
+        List<FOX_VW_CASE> GetAllCases(string patient_Account, long practiceCode);
         List<FOX_VW_CALLS_LOG> GetCallInformation(CallReq obj, UserProfile profile);
         List<WORK_ORDER_INFO_RES> GetWorkOrderInfo(WORK_ORDER_INFO_REQ obj, UserProfile profile);
         GetOrderingRefSourceinfoRes GetOrdering_Ref_Source_info(GetOrderingRefSourceinfoReq obj, UserProfile profile);

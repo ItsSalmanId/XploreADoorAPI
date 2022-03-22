@@ -1548,28 +1548,34 @@ namespace FOX.BusinessOperations.CaseServices
             }
         }
 
-        public List<FOX_TBL_CASE> GetAllCases(string patient_Account, long practiceCode)
+        public List<FOX_VW_CASE> GetAllCases(string patient_Account, long practiceCode)
         {
 
             try
             {
-                long patientAccount = Convert.ToInt64(patient_Account);
-                List<FOX_TBL_CASE> result = _CaseRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode && t.PATIENT_ACCOUNT == patientAccount);
-                if (result.Count() > 0)
+                var _patient_Account = Convert.ToInt64(patient_Account);
+                var Result = _vwCaseRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode && t.PATIENT_ACCOUNT == _patient_Account);
+                if (Result.Count() > 0)
                 {
-                    foreach (var rec in result)
+                    foreach (var rec in Result)
                     {
-                        var caseTypeName = _CaseStatusRepository.GetFirst(row => row.CASE_STATUS_ID == rec.CASE_STATUS_ID).NAME;
-                        rec.CASE_TYPE_NAME = caseTypeName;
+                        if (rec.ORDERING_REF_SOURCE_ID != null)
+                        {
+                            if (rec.CERTIFYING_REF_SOURCE_ID == 0 || string.IsNullOrEmpty(rec.CERTIFYING_REF_SOURCE_ID.ToString()))
+                            {
+                                var referralsource = _SourceRepository.GetFirst(r => r.SOURCE_ID == rec.ORDERING_REF_SOURCE_ID && r.DELETED == false);
+                                rec.ObjReferralSource = referralsource;
+                            }
+                        }
                     }
                 }
-                if (result.Any())
+                if (Result.Any())
                 {
-                    return result;
+                    return Result;
                 }
                 else
                 {
-                    return new List<FOX_TBL_CASE>();
+                    return new List<FOX_VW_CASE>();
                 }
             }
             catch (Exception ex)
