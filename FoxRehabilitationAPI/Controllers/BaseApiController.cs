@@ -36,6 +36,16 @@ namespace FoxRehabilitationAPI.Controllers
             }
         }
 
+        ApplicationUserManager _talkRehabUserManager;
+        protected ApplicationUserManager TalkRehabUserManager
+        {
+            get
+            {
+                _talkRehabUserManager = new ApplicationUserManager(new UserStore<ApplicationUser>(new TalkRehabDBContext()));
+                return _talkRehabUserManager ?? Request?.GetOwinContext()?.GetUserManager<ApplicationUserManager>() ?? null;
+            }
+        }
+
         protected async System.Threading.Tasks.Task<ApplicationUser> FindProfileAsync(string userName, string password)
         {
             ApplicationUser user = new ApplicationUser();
@@ -48,7 +58,7 @@ namespace FoxRehabilitationAPI.Controllers
                     userProfile = userService.GetUserProfileByName(userName);
                     if (userProfile != null)
                     {
-                        user = await UserManager.FindAsync(userProfile.UserName, password);
+                        user = await TalkRehabUserManager.FindAsync(userProfile.UserName, password);
                         if (user == null)
                         {
                             string encryptedPass = Encrypt.getEncryptedCode(password);
