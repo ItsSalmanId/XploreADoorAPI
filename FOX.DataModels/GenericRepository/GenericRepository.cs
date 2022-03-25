@@ -130,6 +130,10 @@ namespace FOX.DataModels.GenericRepository
         /// <returns></returns>
         public virtual List<TEntity> GetMany(Expression<Func<TEntity, bool>> where)
         {
+            if (EntityHelper.isTalkRehab)
+            {
+                Context.Database.CommandTimeout = 300;
+            }
             return DbSet.Where(where).ToList();
         }
 
