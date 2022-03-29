@@ -169,6 +169,8 @@ namespace FOX.DataModels.Models.OriginalQueueModel
         public string guesttextarea { get; set; }
         [NotMapped]
         public string STATUS_TEXT { get; set; }
+        [NotMapped]
+        public long talkRehabWorkID { get; set; }
     }
 
     public class OriginalQueueRequest : BaseModel

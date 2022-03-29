@@ -638,4 +638,27 @@ namespace FOX.DataModels.Models.TasksModel
         public List<string> DATE { get; set; }
         public List<List<FOX_TBL_NOTIFICATIONS>> NotificationList { get; set; }
     }
+    [Table("Fox_TBL_TASK_WORK_INTERFACE_MAPPING")]
+    public class TaskWorkInterfaceMapping
+    {
+        [Key]
+        [Column("TWM_ID")]
+        public long TwmID { set; get; }
+        [Column("Task_Id")]
+        public long TaskId { set; get; }
+        [Column("Work_Id")]
+        public long WorkId { set; get; }
+        [Column("Interface_Id")]
+        public long InterfaceId { set; get; }
+        [Column("Created_By")]
+        public string CreatedBy { set; get; }
+        [Column("Created_Date")]
+        public DateTime CreatedDate { set; get; }
+        [Column("Modified_By")]
+        public string ModifiedBy { set; get; }
+        [Column("Modified_Date")]
+        public DateTime ModifiedDate { set; get; }
+        [Column("Deleted")]
+        public bool Deleted { set; get; }
+    }
 }

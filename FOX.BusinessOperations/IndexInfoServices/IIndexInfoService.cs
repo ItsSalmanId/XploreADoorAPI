@@ -70,5 +70,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         List<DuplicateReferralInfo> GetDuplicateReferralInformation(checkDuplicateReferralRequest checkDuplicateReferral, UserProfile userProfile);
         List<WorkOrderDocs> GetWorkOrderDocs(string patientAccountStr, UserProfile userProfile);
         void SaveLogMessage(Index_infoReq workId, UserProfile userProfile);
+        long GetTalkRehabTaskWorkID(long taskId, UserProfile profile);
+        long MarkTaskAsComplete(long taskId, UserProfile profile);
     }
 }

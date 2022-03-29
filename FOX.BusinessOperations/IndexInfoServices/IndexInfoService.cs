@@ -44,6 +44,7 @@ using System.Timers;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using FOX.BusinessOperations.GroupServices;
 
 namespace FOX.BusinessOperations.IndexInfoServices
 {
@@ -110,7 +111,12 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private readonly GenericRepository<GROUP> _UserGroupseRepository;
         private readonly GenericRepository<FOX_TBL_ZIP_STATE_COUNTY> _zipStateCountyRepository;
         private readonly GenericRepository<RegionCoverLetter> _RegionCoverLetterRepository;
+        private readonly GenericRepository<TaskWorkInterfaceMapping> _TaskWorkInterfaceMapping;
         private static List<Thread> threadsList = new List<Thread>();
+        private readonly GroupService _groupService;
+        private long talkRehabWorkID = 0;
+        private long talkRehabInterfaceID = 0;
+        private long talkRehabTaskID = 0;
         public IndexInfoService()
         {
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
@@ -164,6 +170,8 @@ namespace FOX.BusinessOperations.IndexInfoServices
             _UserGroupseRepository = new GenericRepository<GROUP>(_QueueContext);
             _zipStateCountyRepository = new GenericRepository<FOX_TBL_ZIP_STATE_COUNTY>(_settings);
             _RegionCoverLetterRepository = new GenericRepository<RegionCoverLetter>(security);
+            _groupService = new GroupService();
+            _TaskWorkInterfaceMapping = new GenericRepository<TaskWorkInterfaceMapping>(_TaskContext);
         }
         public void InsertUpdateDocuments(FOX_TBL_PATIENT_DOCUMENTS obj, UserProfile profile)
         {
@@ -522,7 +530,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             SqlParameter selectedSource = new SqlParameter("FOX_SOURCE_CATEGORY_ID", obj?.FOX_SOURCE_CATEGORY_ID ?? 0);
             sourceAddDetail = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_INSERT_ORIGNAL_QUEUE @ID, @WORK_ID, @PRACTICE_CODE, @CREATED_BY,@IS_EMERGENGENCY_ORDER,@SUPERVISOR_STATUS,@SORCE_NAME,@SORCE_TYPE, @WORK_STATUS,@IS_VERIFIED_BY_RECEPIENT,@FOX_SOURCE_CATEGORY_ID",
                                                                                                                                 ID, workID, practiceCode, createdBy, isEmergencyOrder, supervisorStatus, sourceName, sourceType, workStatus, isVerifiedByRecepient, selectedSource);
-
+ 
             //if (sourceAddDetail == null)
             //{
             //    sourceAddDetail = new OriginalQueue();
@@ -1059,6 +1067,39 @@ namespace FOX.BusinessOperations.IndexInfoServices
             var financial_details  = _financialClassRepository.GetFirst(x => x.FINANCIAL_CLASS_ID == obj.FINANCIAL_CLASS_ID);
             if (financial_details != null) {
                 sourceAddDetail.FINANCIAL_CLASS_NAME = financial_details.NAME.ToString();  }
+            if (profile.isTalkRehab)
+            {
+                talkRehabWorkID = obj.talkRehabWorkID;
+                if (talkRehabTaskID > 0)
+                {
+                    TaskWorkInterfaceMapping twiMapping = _TaskWorkInterfaceMapping.GetFirst(x => x.TaskId == talkRehabTaskID);
+                    if (twiMapping != null)
+                    {
+                        twiMapping.WorkId = talkRehabWorkID;
+                        twiMapping.InterfaceId = talkRehabInterfaceID;
+                        twiMapping.ModifiedBy = profile.UserName;
+                        twiMapping.ModifiedDate = DateTime.Now;
+                        twiMapping.Deleted = false;
+                        _TaskWorkInterfaceMapping.Update(twiMapping);
+                        _TaskWorkInterfaceMapping.Save();
+                    }
+                    else
+                    {
+                        TaskWorkInterfaceMapping mapping = new TaskWorkInterfaceMapping();
+                        mapping.TwmID = Helper.getMaximumId("TWM_ID");
+                        mapping.TaskId = talkRehabTaskID;
+                        mapping.WorkId = talkRehabWorkID;
+                        mapping.InterfaceId = talkRehabInterfaceID;
+                        mapping.CreatedBy = profile.UserName;
+                        mapping.CreatedDate = DateTime.Now;
+                        mapping.ModifiedBy = profile.UserName;
+                        mapping.ModifiedDate = DateTime.Now;
+                        mapping.Deleted = false;
+                        _TaskWorkInterfaceMapping.Insert(mapping);
+                        _TaskWorkInterfaceMapping.Save();
+                    }
+                }
+            }
             return sourceAddDetail;
         }
 
@@ -3033,6 +3074,14 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     SqlParameter application = new SqlParameter("APPLICATION", string.IsNullOrEmpty(obj.APPLICATION) ? string.Empty : obj.APPLICATION);
                     var result = SpRepository<InterfaceSynchModel>.GetListWithStoreProcedure(@"FOX_PROC_INSERT_INTERFACE_DATA @ID, @PRACTICE_CODE,@CASE_ID,@Work_ID,@TASK_ID,@PATIENT_ACCOUNT,@USER_NAME,@IS_SYNCED,@APPLICATION",
                                                                                                            id, practiceCode, caseId, workId, taskId, patientAccount, userName, isSynced, application);
+                    if (Profile.isTalkRehab)
+                    {
+                        talkRehabInterfaceID = Pid;
+                    }
+                    else
+                    {
+                        talkRehabInterfaceID = 0;
+                    }
                     return result.Count;
                     //interfaceSynch.FOX_INTERFACE_SYNCH_ID = Helper.getMaximumId("FOX_INTERFACE_SYNCH_ID");
                     //interfaceSynch.CASE_ID = obj.CASE_ID;
@@ -3077,6 +3126,23 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 //FOX_TBL_TASK dbTask = _TaskRepository.GetFirst(t => t.PRACTICE_CODE == profile.PracticeCode && t.TASK_ID == task.TASK_ID);
                 if (dbTask == null)
                 {
+                    SqlParameter sendToId;
+                    if (profile.isTalkRehab)
+                    {
+                        try
+                        {
+                            long talkRehabGroupID = AddTalkRehabGroup(profile);
+                            sendToId = new SqlParameter("SEND_TO_ID", talkRehabGroupID);
+                        }
+                        catch(Exception ex)
+                        {
+                            sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID);
+                        }
+                    }
+                    else
+                    {
+                        sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID);
+                    }
                     long primaryKey = Helper.getMaximumId("FOX_TASK_ID");
                     SqlParameter id = new SqlParameter("ID", primaryKey);
                     SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
@@ -3086,7 +3152,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     SqlParameter userName = new SqlParameter("USER_NAME", profile.UserName);
                     SqlParameter isTemplate = new SqlParameter("IS_TEMPLATE", task.IS_TEMPLATE);
                     SqlParameter taskTypeId = new SqlParameter("TASK_TYPE_ID", task.TASK_TYPE_ID);
-                    SqlParameter sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID);
                     SqlParameter finalRouteId = new SqlParameter("FINAL_ROUTE_ID", task.FINAL_ROUTE_ID ?? (object)DBNull.Value);
                     SqlParameter priority = new SqlParameter("PRIORITY", string.IsNullOrEmpty(task.PRIORITY) ? string.Empty : task.PRIORITY);
                     SqlParameter dueDateTime = new SqlParameter("DUE_DATE_TIME", string.IsNullOrEmpty(task.DUE_DATE_TIME_str) ? (object)DBNull.Value : Helper.ConvertStingToDateTime(task.DUE_DATE_TIME_str) ?? Helper.GetCurrentDate());
@@ -3109,6 +3174,14 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
                     dbTask = SpRepository<FOX_TBL_TASK>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_INSERT_TASK @ID, @PRACTICE_CODE,@PATIENT_ACCOUNT ,@IS_COMPLETED_INT ,@USER_NAME,@IS_TEMPLATE,@TASK_TYPE_ID,@SEND_TO_ID,@FINAL_ROUTE_ID,@PRIORITY,@DUE_DATE_TIME,@CATEGORY_ID,@IS_REQ_SIGNOFF,@IS_SENDING_ROUTE_DETAILS,@SEND_CONTEXT_ID,@CONTEXT_INFO,@DEVELIVERY_ID,@DESTINATIONS,@LOC_ID,@PROVIDER_ID,@IS_SEND_EMAIL_AUTO,@DELETED,@IS_SEND_TO_USER,@IS_FINAL_ROUTE_USER,@IS_FINALROUTE_MARK_COMPLETE,@IS_SENDTO_MARK_COMPLETE",
                                                                                                                     id, practiceCode, patientAccount, isCompletedInt, userName, isTemplate, taskTypeId, sendToId, finalRouteId, priority, dueDateTime, categoryID, isReqSignedoff, isSendingRouteDetails, sendContextId, contextInfo, deliveryId, destinations, loc_Id, provider_ID, isSendMailAuto, deleted, isSendToUser, isFinalRouteUser, isFinalRouteMarkComplete, isSendToMarkComplete);
+                    if (profile.isTalkRehab)
+                    {
+                        talkRehabTaskID = primaryKey;
+                    }
+                    else
+                    {
+                        talkRehabTaskID = 0;
+                    }
 
                     //dbTask = new FOX_TBL_TASK();
                     //dbTask.TASK_ID = Helper.getMaximumId("FOX_TASK_ID");
@@ -5363,6 +5436,95 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 return result;
             }
             catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        private long AddTalkRehabGroup(UserProfile profile)
+        {
+            long groupID = 0;
+            var checkGroupExists = _groupRepository.GetFirst(x => x.GROUP_NAME == "Default");
+            if (checkGroupExists == null)
+            {
+                GROUP model = new GROUP();
+                model.GROUP_NAME = "Default";
+                var groupDetail = _groupService.AddUpdateGroup(model, profile);
+                if(groupDetail != null) {
+                    groupID = long.Parse(groupDetail.ID);
+                }
+                var _parmPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = profile.PracticeCode };
+                var allAdminUsers = SpRepository<User>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ALL_ADIM_USER @PRACTICE_CODE", _parmPracticeCode);
+                if(allAdminUsers != null && allAdminUsers.Count() > 0)
+                {
+                    GroupUsersCreateViewModel groupUsersCreateViewModel = new GroupUsersCreateViewModel();
+                    List<UserWithRoles> groupUserList = new List<UserWithRoles>();
+                    foreach (var user in allAdminUsers)
+                    {
+                        UserWithRoles groupUser = new UserWithRoles
+                        {
+                            FIRST_NAME = user.FIRST_NAME,
+                            GROUP_ID = groupID,
+                            GROUP_USER_ID = 0,
+                            LAST_NAME = user.LAST_NAME,
+                            ROLE_ID = (long) user.ROLE_ID,
+                            ROLE_NAME = user.ROLE_NAME,
+                            USER_ID = user.USER_ID,
+                            USER_NAME= user.USER_NAME
+                        };
+                        groupUserList.Add(groupUser);
+                    }
+                    groupUsersCreateViewModel.USERS = groupUserList.ToArray();
+                    _groupService.AddUsersInGroup(groupUsersCreateViewModel, profile);
+                }
+            }
+            else
+            {
+                groupID = checkGroupExists.GROUP_ID;
+            }
+
+            return groupID;
+        }
+        public long GetTalkRehabTaskWorkID(long taskId,UserProfile profile)
+        {
+            TaskWorkInterfaceMapping mappingDetail = _TaskWorkInterfaceMapping.GetFirst(x => x.TaskId == taskId);
+            if (mappingDetail != null)
+            {
+                InterfaceSynchModel taskInterface = __InterfaceSynchModelRepository.GetFirst(x => x.TASK_ID == taskId);
+                if (taskInterface != null) //if (taskInterface != null && taskInterface.IS_SYNCED == true)
+                {
+                    return mappingDetail.WorkId;
+                }
+                else
+                    return 0;
+            }
+            return 0;
+        }
+        public long MarkTaskAsComplete(long taskId,UserProfile profile)
+        {
+            try
+            {
+                FOX_TBL_TASK taskDetail = _TaskRepository.GetFirst(x => x.TASK_ID == taskId);
+                if (taskDetail != null)
+                {
+                    taskDetail.IS_SENDTO_MARK_COMPLETE = true;
+                    _TaskRepository.Update(taskDetail);
+                    _TaskRepository.Save();
+                }
+                //InterfaceSynchModel taskInterface = __InterfaceSynchModelRepository.GetFirst(x => x.TASK_ID == taskId);
+                //if(taskInterface != null)
+                //{
+                //    taskInterface.IS_SYNCED = true;
+                //    __InterfaceSynchModelRepository.Update(taskInterface);
+                //    __InterfaceSynchModelRepository.Save();
+                //}
+                TaskWorkInterfaceMapping mappingDetail = _TaskWorkInterfaceMapping.GetFirst(x => x.TaskId == taskId);
+                if(mappingDetail != null)
+                {
+                    return mappingDetail.WorkId;
+                }
+                return 0;
+            }
+            catch(Exception ex)
             {
                 throw ex;
             }

@@ -371,5 +371,15 @@ namespace FoxRehabilitationAPI.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Model is Empty");
             }
         }
+        [HttpGet]
+        public HttpResponseMessage GetTalkRehabTaskWorkID(long taskId)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetTalkRehabTaskWorkID(taskId, GetProfile()));
+        }
+        [HttpGet]
+        public HttpResponseMessage MarkTaskAsComplete(long taskId)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.MarkTaskAsComplete(taskId, GetProfile()));
+        }
     }
 }
