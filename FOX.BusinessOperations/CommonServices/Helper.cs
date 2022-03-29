@@ -756,7 +756,7 @@ namespace FOX.BusinessOperations.CommonService
         {
             if (patAccount.HasValue)
             {
-                var patient = _PatientRepository.GetSingle(e => e.Patient_Account == patAccount);
+                var patient = _PatientRepository.GetFirst(e => e.Patient_Account == patAccount);
                 return patient.First_Name + " " + patient.Last_Name;
             }
             else
