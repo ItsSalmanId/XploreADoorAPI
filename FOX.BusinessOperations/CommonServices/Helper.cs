@@ -26,20 +26,41 @@ namespace FOX.BusinessOperations.CommonService
 {
     public static class Helper
     {
-        private static readonly DbContextCommon _DbContextSP = new DbContextCommon();
-        private static readonly DbContextIndexinfo _IndexinfoContext = new DbContextIndexinfo();
+        private static DbContextCommon _DbContextSP;
+        private static DbContextIndexinfo _IndexinfoContext;
         //private static readonly DBContextExceptionLog _DbContextExceptionLog = new DBContextExceptionLog();
-        private static GenericRepository<Maintenance_Counter> _MaintenanceCounterRepositry = new GenericRepository<Maintenance_Counter>(_DbContextSP);
+        private static GenericRepository<Maintenance_Counter> _MaintenanceCounterRepositry;
         //private static readonly GenericRepository<WorkOrderHistory> _WorkHistoryRepository = new GenericRepository<WorkOrderHistory>(_DbContextSP);
-        private static readonly GenericRepository<User> _UserRepository = new GenericRepository<User>(_DbContextSP);
-        private static readonly GenericRepository<Patient> _PatientRepository = new GenericRepository<Patient>(_DbContextSP);
+        private static GenericRepository<User> _UserRepository;
+        private static GenericRepository<Patient> _PatientRepository;
         //private static readonly GenericRepository<FOX_TBL_SENDER> _SenderRepository = new GenericRepository<FOX_TBL_SENDER>(_DbContextSP);
         //private static readonly GenericRepository<FOX_TBL_EXCEPTION_LOG> _ExceptionLogRepository = new GenericRepository<FOX_TBL_EXCEPTION_LOG>(_DbContextExceptionLog);
         //private static readonly GenericRepository<EmailFaxLog> _emailfaxlogRepository = new GenericRepository<EmailFaxLog>(_DbContextSP);
-        private static readonly GenericRepository<OriginalQueue> _InsertSourceAddRepository = new GenericRepository<OriginalQueue>(_DbContextSP);
-        private static readonly GenericRepository<FoxDocumentType> _foxdocumenttypeRepository = new GenericRepository<FoxDocumentType>(_IndexinfoContext);
+        private static GenericRepository<OriginalQueue> _InsertSourceAddRepository;
+        private static GenericRepository<FoxDocumentType> _foxdocumenttypeRepository;
         
-            public static long getMaximumId(string columnName)
+        static Helper()
+        {
+            _DbContextSP = new DbContextCommon();
+            _IndexinfoContext = new DbContextIndexinfo();
+            _MaintenanceCounterRepositry = new GenericRepository<Maintenance_Counter>(_DbContextSP);
+            _UserRepository = new GenericRepository<User>(_DbContextSP);
+            _PatientRepository = new GenericRepository<Patient>(_DbContextSP);
+            _InsertSourceAddRepository = new GenericRepository<OriginalQueue>(_DbContextSP);
+            _foxdocumenttypeRepository = new GenericRepository<FoxDocumentType>(_IndexinfoContext);
+        }
+        public static void InitilizeUpdatedValues()
+        {
+            _DbContextSP = new DbContextCommon();
+            _IndexinfoContext = new DbContextIndexinfo();
+            _MaintenanceCounterRepositry = new GenericRepository<Maintenance_Counter>(_DbContextSP);
+            _UserRepository = new GenericRepository<User>(_DbContextSP);
+            _PatientRepository = new GenericRepository<Patient>(_DbContextSP);
+            _InsertSourceAddRepository = new GenericRepository<OriginalQueue>(_DbContextSP);
+            _foxdocumenttypeRepository = new GenericRepository<FoxDocumentType>(_IndexinfoContext);
+        }
+
+        public static long getMaximumId(string columnName)
         {
 
             var columnNamePar = new SqlParameter("Col_Name", SqlDbType.VarChar) { Value = columnName };
