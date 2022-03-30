@@ -979,10 +979,17 @@ namespace FOX.BusinessOperations.TaskServices
             var isUserLevel = Helper.getDBNullOrValue("IS_USER_LEVEL", taskSearchRequest.isUserLevel.ToString());
             SqlParameter Modified_By = new SqlParameter("MODIFIED_BY", string.IsNullOrEmpty( taskSearchRequest.Modified_By) ? string.Empty : taskSearchRequest.Modified_By);
 
+            string storedProcedureName = string.Empty;
+            if (profile?.isTalkRehab == true)
+            {
+                storedProcedureName = "FOX_PROC_GET_TASK_DETAIL_LIST_TalkRehab";
+            }
+            else
+            {
+                storedProcedureName = "FOX_PROC_GET_TASK_DETAIL_LIST";
+            }
 
-            var taskDetail = SpRepository<TaskDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_TASK_DETAIL_LIST
-                        @PRACTICE_CODE, @PATIENT_ACCOUNT, @CASE_ID, @OPTION, @USER_ID, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORT_BY, @SORT_ORDER,@INSURANCE_ID,@TASK_TYPE_ID,@TASK_SUB_TYPE_ID,
-                            @PROVIDER_ID,  @REGION,@LOC_ID,@CERTIFYING_REF_SOURCE_ID,@CERTIFYING_REF_SOURCE_FAX,@PATIENT_ZIP_CODE,@DUE_DATE_TIME,@DATE_FROM,@DATE_TO,@OWNER_ID, @MODIFIED_BY,@IS_USER_LEVEL",
+            var taskDetail = SpRepository<TaskDetail>.GetListWithStoreProcedure(@"exec "+ storedProcedureName + " @PRACTICE_CODE, @PATIENT_ACCOUNT, @CASE_ID, @OPTION, @USER_ID, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORT_BY, @SORT_ORDER,@INSURANCE_ID,@TASK_TYPE_ID,@TASK_SUB_TYPE_ID,@PROVIDER_ID,  @REGION,@LOC_ID,@CERTIFYING_REF_SOURCE_ID,@CERTIFYING_REF_SOURCE_FAX,@PATIENT_ZIP_CODE,@DUE_DATE_TIME,@DATE_FROM,@DATE_TO,@OWNER_ID, @MODIFIED_BY,@IS_USER_LEVEL, @TASK_ID",
                         PracticeCode, patientAccount, caseId, option, userId, currentPage, recordPerPage, searchText, sortBy, sortOrder, insuranceId, TaskTypeId, TaskSubtypeId, providereId, region, locID,
                        cer_ref_source_ID, cer_ref_source_FAX, patient_zip, due_date, dateFrom, dateTo, ownerID, isUserLevel, Modified_By);
             
