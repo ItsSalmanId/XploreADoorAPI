@@ -914,7 +914,49 @@ namespace FOX.DataModels.Models.Patient
         [NotMapped]
         public string DESCRIPTION { get; set; }
     }
+    [Table("AF_TBL_PATIENT_NEXT_OF_KIN")]
+    public class AF_TBL_PATIENT_NEXT_OF_KIN
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public long PATIENT_NEXT_OF_KIN_ID { get; set; }
 
+        public string FIRSTNAME { get; set; }
+
+        public string LASTNAME { get; set; }
+
+        public string MI { get; set; }
+
+        public string RELATIONTOPATIENT { get; set; }
+
+        public string PHONE { get; set; }
+
+        public string ADDRESS1 { get; set; }
+
+        public string ADDRESS2 { get; set; }
+
+        public string ZIP { get; set; }
+
+        public string CITY { get; set; }
+
+        public string STATE { get; set; }
+
+        public System.Nullable<long> PRACTICE_CODE { get; set; }
+
+        public System.Nullable<System.DateTime> CREATED_DATE { get; set; }
+
+        public string CREATED_BY { get; set; }
+
+        public System.Nullable<System.DateTime> MODIFIED_DATE { get; set; }
+
+        public string MODIFIED_BY { get; set; }
+
+        public System.Nullable<bool> DELETED { get; set; }
+
+        public System.Nullable<long> PATIENT_ACCOUNT { get; set; }
+        public string NOK_PHONE_TYPE { get; set; }
+
+    }
     public class ContactTypesForDropdown
     {
         public long Contact_Type_ID { get; set; }

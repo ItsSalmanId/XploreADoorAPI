@@ -66,6 +66,7 @@ namespace FOX.BusinessOperations.PatientServices
         private readonly GenericRepository<FacilityType> _FacilityTypeRepository;
         private readonly GenericRepository<ReferralSource> _OrderingRefSourceRepository;
         private readonly GenericRepository<PatientContact> _PatientContactRepository;
+        private readonly GenericRepository<AF_TBL_PATIENT_NEXT_OF_KIN> _AF_TBL_PATIENT_NEXT_OF_KINRepository;
         private readonly GenericRepository<ContactType> _ContactTypeRepository;
         private readonly GenericRepository<Subscriber> _SubscriberRepository;
         private readonly GenericRepository<MedicareLimitType> _MedicareLimitTypeRepository;
@@ -136,6 +137,7 @@ namespace FOX.BusinessOperations.PatientServices
             _FacilityTypeRepository = new GenericRepository<FacilityType>(_PatientContext);
             _OrderingRefSourceRepository = new GenericRepository<ReferralSource>(_PatientContext);
             _PatientContactRepository = new GenericRepository<PatientContact>(_PatientContext);
+            _AF_TBL_PATIENT_NEXT_OF_KINRepository = new GenericRepository<AF_TBL_PATIENT_NEXT_OF_KIN>(_PatientContext);
             _ContactTypeRepository = new GenericRepository<ContactType>(_PatientContext);
             _SubscriberRepository = new GenericRepository<Subscriber>(_PatientContext);
             _MedicareLimitTypeRepository = new GenericRepository<MedicareLimitType>(_PatientContext);
@@ -3098,6 +3100,8 @@ namespace FOX.BusinessOperations.PatientServices
         public PatientContact SaveContact(PatientContact contact, UserProfile profile)
         {
             bool isEdit = true;
+            string oldFname = string.Empty;
+            string oldLname = string.Empty;
             InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
             interfaceSynch.PATIENT_ACCOUNT = long.Parse(contact.Patient_Account_Str);
 
@@ -3123,6 +3127,12 @@ namespace FOX.BusinessOperations.PatientServices
             }
 
             var dbContact = _PatientContactRepository.GetByID(contact.Contact_ID);
+            if (dbContact != null)
+            {
+                oldFname = dbContact.First_Name;
+                oldLname = dbContact.Last_Name;
+            }
+
             if (dbContact == null) //Add
             {
                 isEdit = false;
@@ -3187,6 +3197,18 @@ namespace FOX.BusinessOperations.PatientServices
 
                 CheckAndUpdatePRSubscriber(contact.Patient_Account_Str, profile);
             }
+            if (profile.isTalkRehab)
+            {
+                if (contact.Contact_Type_Id == 600109)
+                {
+                    CreateUpdateTalkRehabContactsGuarantor(contact, profile, oldFname, oldLname);
+                }
+                else
+                {
+                    CreateUpdateTalkRehabContactsNextOfKin(contact, profile, oldFname, oldLname);
+                }
+            }
+
             //Task 149402:Dev Task: FOX-RT 105. Disabling editing of patient info. from RFO, Usman Nasir
             //InsertInterfaceTeamData(interfaceSynch, profile);
             if (contact.PopulateStatementAddress)
@@ -3196,6 +3218,169 @@ namespace FOX.BusinessOperations.PatientServices
             }
 
             return contact;
+        }
+        
+        private bool CreateUpdateTalkRehabContactsNextOfKin(PatientContact patientContactObj, UserProfile profile, string oldFname, string oldLname)
+        {
+            var currentDate = Helper.GetCurrentDate();
+
+            AF_TBL_PATIENT_NEXT_OF_KIN nextOfKin = new AF_TBL_PATIENT_NEXT_OF_KIN();
+            var dbContact = _AF_TBL_PATIENT_NEXT_OF_KINRepository.GetFirst(patientContact => patientContact.PATIENT_ACCOUNT == patientContactObj.Patient_Account && patientContact.FIRSTNAME == oldFname && patientContact.LASTNAME == oldLname);
+            if (dbContact == null)
+            {
+                nextOfKin.PATIENT_NEXT_OF_KIN_ID = Helper.getMaximumId("PATIENT_NEXT_OF_KIN_ID");
+
+                nextOfKin.FIRSTNAME = patientContactObj.First_Name;
+                nextOfKin.LASTNAME = patientContactObj.Last_Name;
+                //nextOfKin.MI = nextOfKin.MI;
+                nextOfKin.PATIENT_ACCOUNT = patientContactObj.Patient_Account;
+                nextOfKin.RELATIONTOPATIENT = FieldWiseComparison(patientContactObj.Contact_Type_Id);
+
+                nextOfKin.ADDRESS1 = patientContactObj.Address;
+                nextOfKin.ZIP = patientContactObj.Zip;
+                nextOfKin.CITY = patientContactObj.City;
+                nextOfKin.STATE = patientContactObj.State;
+                nextOfKin.PHONE = patientContactObj.Home_Phone;
+
+                nextOfKin.CREATED_DATE = currentDate;
+                nextOfKin.MODIFIED_DATE = currentDate;
+                nextOfKin.CREATED_BY = profile.UserName;
+                nextOfKin.MODIFIED_BY = profile.UserName;
+                nextOfKin.DELETED = false;
+                _AF_TBL_PATIENT_NEXT_OF_KINRepository.Insert(nextOfKin);
+            }
+            else
+            {
+                dbContact.FIRSTNAME = patientContactObj.First_Name;
+                dbContact.LASTNAME = patientContactObj.Last_Name;
+                //dbContact.MI = nextOfKin.MI;
+                dbContact.PATIENT_ACCOUNT = patientContactObj.Patient_Account;
+
+                dbContact.RELATIONTOPATIENT = FieldWiseComparison(patientContactObj.Contact_Type_Id);
+
+                dbContact.ADDRESS1 = patientContactObj.Address;
+                dbContact.ZIP = patientContactObj.Zip;
+                dbContact.CITY = patientContactObj.City;
+                dbContact.STATE = patientContactObj.State;
+                dbContact.PHONE = patientContactObj.Home_Phone;
+
+                dbContact.MODIFIED_DATE = currentDate;
+                dbContact.MODIFIED_BY = profile.UserName;
+                _AF_TBL_PATIENT_NEXT_OF_KINRepository.Update(dbContact);
+            }
+            _AF_TBL_PATIENT_NEXT_OF_KINRepository.Save();
+            return true;
+        }
+        private bool CreateUpdateTalkRehabContactsGuarantor(PatientContact patientContactObj, UserProfile profile,string oldFname, string oldLname)
+        {
+            var currentDate = Helper.GetCurrentDate();
+            Subscriber guarantorObj = new Subscriber();
+            var dbContact = _SubscriberRepository.GetFirst(patientContact => patientContact.GUARANT_FNAME == oldFname && patientContact.GUARANT_LNAME == oldLname);
+            if (dbContact == null)
+            {
+                guarantorObj.GUARANTOR_CODE = Helper.getMaximumId("GUARANTOR_CODE");
+
+                guarantorObj.GUARANT_FNAME = patientContactObj.First_Name;
+                guarantorObj.GUARANT_LNAME = patientContactObj.Last_Name;
+                //guarantorObj.MIDDLE_NAME = patientContactObj.MI;
+                //guarantorObj.Patient_Account = patientContactObj.Patient_Account.ToString();
+                // For Guaranter Only ( 544108 - Guarantor )
+                //guarantorObj.Guarant_Relation = patientContactObj.Contact_Type_Name;
+                guarantorObj.GUARANT_ADDRESS = patientContactObj.Address;
+                //guarantorObj.Email_Address = patientContactObj.EMAIL;
+                guarantorObj.GUARANT_ZIP = patientContactObj.Zip;
+                guarantorObj.GUARANT_CITY = patientContactObj.City;
+                guarantorObj.GUARANT_STATE = patientContactObj.State;
+                //guarantorObj.Country = patientContactObj.Country;
+                guarantorObj.GUARANT_HOME_PHONE = patientContactObj.Home_Phone;
+
+                guarantorObj.created_date = currentDate;
+                guarantorObj.modified_date = currentDate;
+                guarantorObj.created_by = profile.UserName;
+                guarantorObj.modified_by = profile.UserName;
+                guarantorObj.Deleted = false;
+                _SubscriberRepository.Insert(guarantorObj);
+            }
+            else
+            {
+
+                dbContact.GUARANT_FNAME = patientContactObj.First_Name;
+                dbContact.GUARANT_LNAME = patientContactObj.Last_Name;
+                //guarantorObj.MIDDLE_NAME = patientContactObj.MI;
+                //dbContact.Patient_Account = patientContactObj.Patient_Account.ToString();
+                // For Guaranter Only ( 544108 - Guarantor )
+                //dbContact.Contact_Type_Id = 600109;
+                //dbContact.Guarant_Relation = patientContactObj.Contact_Type_Name;
+                dbContact.GUARANT_ADDRESS = patientContactObj.Address;
+                //dbContact.Email_Address = patientContactObj.EMAIL;
+                dbContact.GUARANT_ZIP = patientContactObj.Zip;
+                dbContact.GUARANT_CITY = patientContactObj.City;
+                dbContact.GUARANT_STATE = patientContactObj.State;
+                //dbContact.Country = patientContactObj.Country;
+                dbContact.GUARANT_HOME_PHONE = patientContactObj.Home_Phone;
+
+                dbContact.modified_date = currentDate;
+                dbContact.modified_by = profile.UserName;
+                _SubscriberRepository.Update(dbContact);
+
+            }
+            _SubscriberRepository.Save();
+            return true;
+        }
+        private string FieldWiseComparison(long? contactType)
+        {
+            string typeId = string.Empty;
+           
+            if (contactType== 600104)
+            {
+                typeId = "OTH";
+            }
+            else if (contactType == 600105)
+            {
+                typeId = "CHD";
+            }
+            else if (contactType == 600106)
+            {
+                typeId = "OTH";
+            }
+            else if (contactType == 600108)
+            {
+                typeId = "FND";
+            }
+            else if (contactType == 600110)
+            {
+                typeId = "GRD";
+            }
+            else if (contactType == 600113)
+            {
+                typeId = "OTH";
+            }
+            else if (contactType == 600114)
+            {
+                typeId = "PAR";
+            }
+            else if (contactType == 600117)
+            {
+                typeId = "SEL";
+            }
+            else if (contactType == 600118)
+            {
+                typeId = "SIB";
+            }
+            else if (contactType == 600119)
+            {
+                typeId = "CHD";
+            }
+            else if (contactType == 600120)
+            {
+                typeId = "SPO";
+            }
+            else
+            {
+                typeId = "OTH";
+            }
+
+            return typeId;
         }
         public void CheckAndUpdatePRSubscriber(string Patient_Account, UserProfile profile)
         {
