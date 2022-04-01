@@ -24,6 +24,7 @@ namespace FoxRehabilitationAPI
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             Database.SetInitializer<Models.ApplicationDbContext>(null);
+            Database.SetInitializer<Models.TalkRehabDBContext>(null);
         }
         private void Application_EndRequest(Object source, EventArgs e)
         {

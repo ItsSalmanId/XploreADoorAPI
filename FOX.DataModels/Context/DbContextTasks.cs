@@ -29,6 +29,7 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<FOX_TBL_TASKSUBTYPE_REFSOURCE_MAPPING>().Property(t => t.TASKSUBTYPE_REFSOURCE_MAPPING_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<TaskLog>().Property(t => t.TASK_LOG_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<FOX_TBL_TASK_TASK_SUB_TYPE>().Property(t => t.TASK_TASK_SUB_TYPE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<TaskWorkInterfaceMapping>().Property(t => t.TwmID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
         }
 
         public virtual DbSet<FOX_TBL_TASK> Task { get; set; }
@@ -46,5 +47,6 @@ namespace FOX.DataModels.Context
         public virtual DbSet<FOX_TBL_TASKSUBTYPE_REFSOURCE_MAPPING> TaskRefMap { get; set; }
         public virtual DbSet<TaskLog> TaskLog { get; set; }
         public virtual DbSet<FOX_TBL_TASK_TASK_SUB_TYPE> FOX_TBL_TASK_TASK_SUB_TYPE { get; set; }
+        public virtual DbSet<TaskWorkInterfaceMapping> TaskWorkInterfaceMapping { get; set; }
     }
 }

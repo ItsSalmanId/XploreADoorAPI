@@ -145,7 +145,7 @@ namespace FoxRehabilitationAPI.Controllers
             var response = Request.CreateResponse(HttpStatusCode.OK, result);
             return response;
         }
- 
+
         //Role And Rights Section
 
         public HttpResponseMessage GetRoles()
@@ -499,6 +499,18 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage RedirecToTalkEhr()
         {
             return Request.CreateResponse(HttpStatusCode.OK, _userServices.RedirecToTalkEhr(GetProfile()));
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public HttpResponseMessage CheckisTalkrehab(string practiceCode)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _userServices.CheckisTalkrehab(practiceCode));
+        } 
+        [HttpGet]
+        [AllowAnonymous]
+        public HttpResponseMessage GetTalkrehabDisabedModules()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _userServices.GetTalkrehabDisabedModules());
         }
         [HttpGet]
         public HttpResponseMessage SetAutoLockTime(int AutoLockTime)

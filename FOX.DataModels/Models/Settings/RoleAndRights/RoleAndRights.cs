@@ -129,4 +129,11 @@ namespace FOX.DataModels.Models.Settings.RoleAndRights
         public DateTime MODIFIED_DATE { get; set; }
         public bool DELETED { get; set; }
     }
+    public class TalkRehabDisabledModules
+    {
+        public long TalkrehabModuleId { get; set; }
+        public string ModuleName { get; set; }
+        public bool IsShow { get; set; }
+
+    }
 }

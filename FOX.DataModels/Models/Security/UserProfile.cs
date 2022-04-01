@@ -37,6 +37,7 @@ namespace FOX.DataModels.Models.Security
         public string SENDER_TYPE { get; set; }
         public string EMAIL { get; set; }
         public List<RoleAndRights> ApplicationUserRoles { get; set; }
+        public bool isTalkRehab { set; get; }
 
     }
 
