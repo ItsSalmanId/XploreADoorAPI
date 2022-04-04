@@ -525,16 +525,11 @@ namespace FOX.BusinessOperations.SettingsService.ClinicianSetupService
                         }
                         else
                         {
-                            sendTo = "muhammadali9@mtbc.com,Javedakhtar@MTBC.COM";
-                            _ccList.Add("abdulsattar@MTBC.COM");
+                            sendTo = "adnanshah3@carecloud.com";
+                            _ccList.Add("abdulsattar@carecloud.com");
+                            _ccList.Add("muhammadarslan3@carecloud.com");
                         }
-
-                        //sendTo = "abdurrafay@mtbc.com,Javedakhtar@MTBC.COM";
-                        //_ccList.Add("usmanfarooq@MTBC.COM");
-
-                        //Helper.SendEmail(sendTo, subject, body, null, _bccList, "noreply@mtbc.com");
                         Helper.SendEmail(sendTo, subject, body, null, profile, _ccList);
-
                         #endregion
                         return true;
                     }

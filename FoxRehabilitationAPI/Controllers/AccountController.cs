@@ -616,7 +616,6 @@ namespace FoxRehabilitationAPI.Controllers
                           "<p> Hi,</p>" +
                           "<p> Please " + "<a href='" + link + encodedstring + @"' target='_blank'>click here</a>" + " to reset password of your FOX account.</p>" +
                           "<p><br/> If you believe that this request was erroneously sent, kindly ignore this email and promptly inform us at our tech support at (732) 873 - 5133 ext. 102 </p>";
-                    //Helper.SendEmail(sendTo, _subject, _body, null, _bccList, "noreply@mtbc.com");
                     Helper.SendEmail(sendTo, _subject, _body, null, null, null, _bccList);
                 }
                 //string EmailValidationResStr = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
@@ -651,7 +650,6 @@ namespace FoxRehabilitationAPI.Controllers
                    "<p> Hi,</p>" +
                    "<p> Your password has been changed successfully.</p>" +
                    "<p><br/> If you believe that this request was erroneously sent, kindly ignore this email and promptly inform us at our tech support at (732) 873 - 5133 ext. 102 </p>";
-                    //Helper.SendEmail(sendTo, _subject, _body, null, _bccList, "noreply@mtbc.com");
                     Helper.SendEmail(sendTo, _subject, _body, null, null, null, _bccList);
                 }
             }

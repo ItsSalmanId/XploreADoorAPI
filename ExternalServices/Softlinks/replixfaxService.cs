@@ -1071,7 +1071,7 @@ namespace FOX.ExternalServices.Softlinks
                     input.FaxUserId = username;
                 }
 
-                input.NotifyEmailAddress = "muhammadali9@mtbc.com";
+                input.NotifyEmailAddress = "adnanshah3@carecloud.com";
 
                 input.NotifyFailed = _false;
 
