@@ -334,4 +334,153 @@ namespace FOX.DataModels.Models.OriginalQueueModel
         public DateTime? MODIFIED_DATE { get; set; }
         public bool? DELETED { get; set; }
     }
+    public class CCREMOTEResOriginalQueueModel
+    {
+        public List<CCREMOTEOriginalQueueExcelMapping> CCREMOTEOriginalQueueList { get; set; }
+        public bool IsUniqueIdExist { get; set; } = false;
+        public List<string> Unique_IdList { get; set; }
+        public List<OriginalQueue> OriginalQueueList { get; set; }
+    }
+    public class CCREMOTEOriginalQueueExcelMapping
+    {
+        [Key]
+        public long WORK_ID { get; set; }
+        [NotMapped]
+        public int ROW { get; set; }
+        public string UNIQUE_ID { get; set; }
+        public long? PATIENT_ACCOUNT { get; set; }
+        [NotMapped]
+        public string Patient_Account_Str
+        {
+            get
+            {
+                return PATIENT_ACCOUNT.ToString();
+            }
+            set
+            {
+                long _lg;
+                PATIENT_ACCOUNT = long.TryParse(value, out _lg) ? _lg : 0;
+            }
+        }
+        public long? PRACTICE_CODE { get; set; }
+        public string SORCE_TYPE { get; set; }
+        public string SORCE_NAME { get; set; }
+        public string SORCE_NAME_FaxFormat { set; get; }
+        public string WORK_STATUS { get; set; }
+        public DateTime? RECEIVE_DATE { get; set; }
+        [NotMapped]
+        public string Received_Date_Str { get; set; }
+        public int? TOTAL_PAGES { get; set; }
+        public int? NO_OF_SPLITS { get; set; }
+        public string FILE_PATH { get; set; }
+        [NotMapped]
+        public string FILE_PATH_LOGO { get; set; }
+        public string ASSIGNED_TO { get; set; }
+        public string ASSIGNED_BY { get; set; }
+        public DateTime? ASSIGNED_DATE { get; set; }
+        public string COMPLETED_BY { get; set; }
+        public DateTime? COMPLETED_DATE { get; set; }
+        public long? DOCUMENT_TYPE { get; set; }
+        public long? SENDER_ID { get; set; }
+        public string FACILITY_NAME { get; set; }
+        [NotMapped]
+        public string FINANCIAL_CLASS_NAME { get; set; }
+        [NotMapped]
+        public int FINANCIAL_CLASS_ID { get; set; }
+        public long? FACILITY_ID { get; set; }
+        public string DEPARTMENT_ID { get; set; }
+        public bool IS_EMERGENCY_ORDER { get; set; }
+        public string REASON_FOR_VISIT { get; set; }
+        public string ACCOUNT_NUMBER { get; set; }
+        public string UNIT_CASE_NO { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime CREATED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public DateTime MODIFIED_DATE { get; set; }
+        public bool DELETED { get; set; }
+        [NotMapped]
+        public double TOTAL_ROCORD_PAGES { get; set; }
+        [NotMapped]
+        public bool IsCompleted { get; set; }
+        [NotMapped]
+        public bool IsSaved { get; set; }
+        public string INDEXED_BY { get; set; }
+        public DateTime? INDEXED_DATE { get; set; }
+        [NotMapped]
+        public int TOTAL_RECORDS { get; set; }
+        public string FAX_ID { get; set; }
+        public bool supervisor_status { get; set; }
+        public DateTime? INDEXER_ASSIGN_DATE { get; set; }
+        public DateTime? AGENT_ASSIGN_DATE { get; set; }
+        public bool? IS_VERIFIED_BY_RECIPIENT { get; set; }
+        public bool? IsSigned { get; set; }
+        public long? SignedBy { get; set; }
+        public long? CCREMOTE_TBL_SENDER_TYPE_ID { get; set; }
+        public long? CCREMOTE_TBL_SENDER_NAME_ID { get; set; }
+        [NotMapped]
+        public bool? IS_UNSIGNED { get; set; }
+        public string GuestID { get; set; }
+        public string REASON_FOR_THE_URGENCY { get; set; }
+        public bool? IS_POST_ACUTE { get; set; }
+        public DateTime? EXPECTED_DISCHARGE_DATE { get; set; }
+        [NotMapped]
+        public string EXPECTED_DISCHARGE_DATE_STR { get; set; }
+        [NotMapped]
+        public bool IsRequestForOrder { get; set; }
+        [NotMapped]
+        public string SPECIALITY_PROGRAM { get; set; }
+        public bool? IS_EVALUATE_TREAT { get; set; }
+        public string HEALTH_NAME { get; set; }
+        public string HEALTH_NUMBER { get; set; }
+        public bool? IS_VERBAL_ORDER { get; set; }
+        public long? VO_ON_BEHALF_OF { get; set; }
+        public string VO_RECIEVED_BY { get; set; }
+        public DateTime? VO_DATE_TIME { get; set; }
+        [NotMapped]
+        public string VO_DATE_TIME_STR { get; set; }
+
+        public Nullable<System.DateTime> TRANSFER_DATE { get; set; }
+        [NotMapped]
+        public List<FOX_TBL_PATIENT_DIAGNOSIS> DIAGNOSIS { get; set; }
+        [NotMapped]
+        public string CURRENT_DATE_STR { get; set; }
+        public bool? IS_TRASH_REFERRAL { get; set; }
+        [NotMapped]
+        public bool is_strategic_account { get; set; }
+        [NotMapped]
+        public bool IS_STRATEGIC { get; set; }
+        public string RFO_Type { get; set; }
+        public string REFERRAL_EMAIL_SENT_TO { get; set; }
+        [NotMapped]
+        public bool Is_Manual_ORS { get; set; }
+        [NotMapped]
+        public string ORS_NAME { get; set; }
+        [NotMapped]
+        public string ORS_PHONE { get; set; }
+        [NotMapped]
+        public string ORS_FAX { get; set; }
+        [NotMapped]
+        public string ORS_NPI { get; set; }
+        public long? OCR_STATUS_ID { get; set; }
+        [NotMapped]
+        public string OCR_STATUS { get; set; }
+        [NotMapped]
+        public bool IS_INTERFACE { get; set; }
+        [NotMapped]
+        public string CCREMOTE_TBL_PHD_CALL_DETAIL_ID { get; set; }
+        [NotMapped]
+        public bool ISNoAssociate { get; set; }
+        [NotMapped]
+        public bool? IS_ORS { get; set; }
+        public long? CCREMOTE_SOURCE_CATEGORY_ID { get; set; }
+
+        [NotMapped]
+        public List<string> FileNameList { get; set; }
+        [NotMapped]
+        public string THERAPY_TREATMENT_REFERRAL_REQUEST_HTML { get; set; }
+        [NotMapped]
+        public string guesttextarea { get; set; }
+        [NotMapped]
+        public string STATUS_TEXT { get; set; }
+    }
 }
