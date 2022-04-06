@@ -29,7 +29,9 @@ using System.Net.NetworkInformation;
 using System.Xml;
 using System.Collections.Specialized;
 using static FOX.DataModels.Models.Security.ProfileToken;
-
+using FOX.DataModels.Models.IndexInfo;
+using FOX.DataModels.Models.OriginalQueueModel;
+using FOX.DataModels;
 namespace FOX.BusinessOperations.AccountService
 {
     public class AccountServices : IAccountServices
@@ -543,7 +545,10 @@ namespace FOX.BusinessOperations.AccountService
 
                     //}
                     ////Create Referral Source for external user
-                    //CreateExternalUserOrdRefSource(user.USER_ID);
+                    if (EntityHelper.isTalkRehab)
+                    {
+                        CreateExternalUserOrdRefSource(user.USER_ID);
+                    }
                     return new ExternalUserSignupResponseModel() { status = 1, ErrorMessage = "Account registration request submitted successfully. You'll be notified by an SMS or email once your request is processed. ", Message = "Account registration request submitted successfully. You'll be notified by an SMS or email once your request is processed.", Success = true };
                 }
                 catch (Exception ex)
@@ -553,6 +558,43 @@ namespace FOX.BusinessOperations.AccountService
             }
         }
 
+        public ReferralSource CreateExternalUserOrdRefSource(long userId)
+        {
+            try
+            {
+                var usr = _userRepository.GetFirst(e => e.USER_ID == userId && e.PRACTICE_CODE == AppConfiguration.GetPracticeCode && !e.DELETED);
+                if (usr != null)
+                {
+                    var dbReferralSource = new ReferralSource();
+                    dbReferralSource.FIRST_NAME = usr.FIRST_NAME;
+                    dbReferralSource.LAST_NAME = usr.LAST_NAME;
+                    dbReferralSource.ADDRESS = usr.ADDRESS_1;
+                    dbReferralSource.ADDRESS_2 = usr.ADDRESS_2;
+                    dbReferralSource.ZIP = usr.ZIP;
+                    dbReferralSource.CITY = usr.CITY;
+                    dbReferralSource.STATE = usr.STATE;
+                    dbReferralSource.PHONE = !string.IsNullOrEmpty(usr.WORK_PHONE) ? usr.WORK_PHONE : usr.MOBILE_PHONE;
+                    dbReferralSource.FAX = usr.FAX;
+                    dbReferralSource.DELETED = false;
+                    dbReferralSource.CREATED_BY = "CareCloud Remote";
+                    dbReferralSource.CREATED_DATE = Helper.GetCurrentDate();
+                    dbReferralSource.MODIFIED_BY = "CareCloud Remote";
+                    dbReferralSource.MODIFIED_DATE = Helper.GetCurrentDate();
+                    _fox_tbl_ordering_ref_source.Insert(dbReferralSource);
+                    _fox_tbl_ordering_ref_source.Save();
+
+                    return dbReferralSource;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         //public FOX_TBL_ORDERING_REF_SOURCE CreateExternalUserOrdRefSource(long userId)
         //{
         //    try
