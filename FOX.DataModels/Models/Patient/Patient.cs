@@ -1,6 +1,7 @@
 ﻿using FOX.DataModels.HelperClasses;
 using FOX.DataModels.Models.CasesModel;
 using FOX.DataModels.Models.CommonModel;
+using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.Settings.FacilityLocation;
 using System;
 using System.Collections.Generic;
@@ -167,6 +168,8 @@ namespace FOX.DataModels.Models.Patient
         public List<PatientAddress> Patient_Address { get; set; }
         [NotMapped]
         public List<PatientInsurance> PatientInsurance { get; set; }
+        [NotMapped]
+        public SmartOrderSource SmartOrderSource { get; set; }
         [NotMapped]
         public string PCP_Name { get; set; }
         [NotMapped]
@@ -967,7 +970,81 @@ namespace FOX.DataModels.Models.Patient
         public string RT_CODE { get; set; }
         public string DESCRIPTION { get; set; }
     }
+    [Table("Webehr_Tbl_PatientCareTeam")]
+    public class WebehrTblPatientCareTeams
+    {
+        [Key]
+        public long PatientCareTeamID { get; set; }
 
+        public long? Patient_Account { get; set; }
+
+        public long? Practice_Code { get; set; }
+
+        public string LastName { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string Relation { get; set; }
+
+        public string Address { get; set; }
+
+        public string Zip { get; set; }
+
+        public string City { get; set; }
+
+        public string State { get; set; }
+
+        public string Phone { get; set; }
+
+        public string PhoneType { get; set; }
+
+        public bool? IsCareTeamMember { get; set; }
+
+        public string Created_By { get; set; }
+
+        public DateTime? Created_Date { get; set; }
+
+        public string Modified_By { get; set; }
+
+        public DateTime? Modified_Date { get; set; }
+
+        public bool? Deleted { get; set; }
+
+        public string OtherDescription { get; set; }
+
+        public bool? IsParticipant { get; set; }
+
+        public bool? IsInfromant { get; set; }
+
+        public string MiddleName { get; set; }
+
+        public string Country { get; set; }
+
+        public bool? IsGuardian { get; set; }
+
+        public string Mothers_Maiden_Name { get; set; }
+
+        public string TAXONOMY_CODE { get; set; }
+
+        public string Suffix { get; set; }
+
+        public string Taxonomy { get; set; }
+
+        public string Title { get; set; }
+
+        public string EMAIL { get; set; }
+
+        public string SPECIALITY { get; set; }
+
+        public string Fax { get; set; }
+        public bool? REFERRINGPROVIDER { get; set; }
+        public bool? PCP { get; set; }
+        public bool? OTHER { get; set; }
+
+        public string NPI { get; set; }
+
+
+    }
     [Table("Fox_Tbl_Patient_Contact_Types")]
     public class ContactType
     {
@@ -1043,6 +1120,8 @@ namespace FOX.DataModels.Models.Patient
         public string Guarant_Type { get; set; }
         public long? guarant_practice_code { get; set; }
         public string GUARANT_WORK_PHONE { get; set; }
+        public string Guarant_Relation { get; set; }
+        public string GUARANT_PHONE_TYPE { get; set; }
     }
 
     [Table("FOX_TBL_MEDICARE_LIMIT_TYPE")]

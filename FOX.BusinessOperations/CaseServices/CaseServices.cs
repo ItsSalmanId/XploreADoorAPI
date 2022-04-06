@@ -155,6 +155,9 @@ namespace FOX.BusinessOperations.CaseServices
                     caseObj.CASE_STATUS_ID = model.CASE_STATUS_ID;
                     caseObj.IsWellness = model.IsWellness;
                     caseObj.IsSkilled = model.IsSkilled;
+                    caseObj.DISCHARGE_DATE = model.DISCHARGE_DATE;
+                    caseObj.TREATING_PROVIDER_ID = model.TREATING_PROVIDER_ID;
+
                     var foxpatientDetail = _FoxTblPatientRepository.GetFirst(e => e.Patient_Account == _patient_Account);
                     var CaseName = _CaseStatusRepository.GetSingle(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode && t.CASE_STATUS_ID == model.CASE_STATUS_ID).NAME;
                     var activecases = _vwCaseRepository.GetMany(c => c.PATIENT_ACCOUNT == _patient_Account && c.CASE_ID != model.CASE_ID && c.DELETED == false && c.CASE_STATUS_NAME.ToUpper() == "ACT");
@@ -1349,8 +1352,14 @@ namespace FOX.BusinessOperations.CaseServices
                     var caseID = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = req.CASE_ID };
                     var caseStatusId = new SqlParameter("@CASE_STATUS_ID", SqlDbType.BigInt) { Value = req.CASE_STATUS_ID };
                     var taskTypeList = SpRepository<OpenIssueNotes>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_OPEN_ISSUE_LIST @PRACTICE_CODE, @CASE_ID, @CASE_STATUS_ID", practicCode, caseID, caseStatusId);
-
-                    var taskList = _TaskRepository.GetMany(t => t.CASE_ID == req.CASE_ID && t.PRACTICE_CODE == profile.PracticeCode && !t.DELETED && t.GENERAL_NOTE_ID == null);
+                    List<FOX_TBL_TASK> taskList = new List<FOX_TBL_TASK>();
+                    if (profile.isTalkRehab)
+                    {
+                        taskList = _TaskRepository.ExecuteCommand("select * from fox_tbl_task where CASE_ID= {0} and PRACTICE_CODE= {1} AND GENERAL_NOTE_ID IS NULL", req.CASE_ID, profile.PracticeCode);
+                    }
+                    else { 
+                        taskList = _TaskRepository.GetMany(t => t.CASE_ID == req.CASE_ID && t.PRACTICE_CODE == profile.PracticeCode && !t.DELETED && t.GENERAL_NOTE_ID == null);
+                    }
                     if (taskTypeList != null)
                     {
                         foreach (var item in taskTypeList)

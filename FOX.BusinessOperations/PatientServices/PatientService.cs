@@ -67,6 +67,7 @@ namespace FOX.BusinessOperations.PatientServices
         private readonly GenericRepository<ReferralSource> _OrderingRefSourceRepository;
         private readonly GenericRepository<PatientContact> _PatientContactRepository;
         private readonly GenericRepository<AF_TBL_PATIENT_NEXT_OF_KIN> _AF_TBL_PATIENT_NEXT_OF_KINRepository;
+        private readonly GenericRepository<WebehrTblPatientCareTeams> _WebehrTblPatientCareTeamsRepository;
         private readonly GenericRepository<ContactType> _ContactTypeRepository;
         private readonly GenericRepository<Subscriber> _SubscriberRepository;
         private readonly GenericRepository<MedicareLimitType> _MedicareLimitTypeRepository;
@@ -138,6 +139,7 @@ namespace FOX.BusinessOperations.PatientServices
             _OrderingRefSourceRepository = new GenericRepository<ReferralSource>(_PatientContext);
             _PatientContactRepository = new GenericRepository<PatientContact>(_PatientContext);
             _AF_TBL_PATIENT_NEXT_OF_KINRepository = new GenericRepository<AF_TBL_PATIENT_NEXT_OF_KIN>(_PatientContext);
+            _WebehrTblPatientCareTeamsRepository = new GenericRepository<WebehrTblPatientCareTeams>(_PatientContext);
             _ContactTypeRepository = new GenericRepository<ContactType>(_PatientContext);
             _SubscriberRepository = new GenericRepository<Subscriber>(_PatientContext);
             _MedicareLimitTypeRepository = new GenericRepository<MedicareLimitType>(_PatientContext);
@@ -225,6 +227,13 @@ namespace FOX.BusinessOperations.PatientServices
                 patient.DELETED = false;
 
                 _PatientRepository.Insert(patient);
+                if (patient.PCP!=null && profile.isTalkRehab)
+                {
+                    if (patient.PCP_Name!=null)
+                    {
+                        CreateUpdateCareTeam(patient, profile, "", "");
+                    }
+                }
                 _PatientRepository.Save();
                 //Task 149402:Dev Task: FOX-RT 105. Disabling editing of patient info. from RFO, Usman Nasir
                 //if(patient.InterfacePatient==true)
@@ -516,7 +525,17 @@ namespace FOX.BusinessOperations.PatientServices
                     CreatePatientUpdateHistory(patient.Patient_Account, "Referring_Physician", (dbPatient.Referring_Physician.HasValue ? dbPatient.Referring_Physician.ToString() : ""), (patient.Referring_Physician.HasValue ? patient.Referring_Physician.ToString() : ""), profile.UserName);
                     dbPatient.Referring_Physician = patient.Referring_Physician;
                 }
+                if (patient.PCP != null && profile.isTalkRehab)
+                {
+                    if (patient.PCP_Name != null)
+                    {
+                        var splitPCPName = patient.PCP_Name.Split(',');
+                        var splitPCPFName = splitPCPName[0];
+                        var splitPCPLName = splitPCPName[1].Split('|')[0].Trim();
 
+                        CreateUpdateCareTeam(patient, profile, splitPCPFName, splitPCPLName);
+                    }
+                }
                 _PatientRepository.Save();
 
                 if (patient.Patient_POS_Location_List != null && patient.Patient_POS_Location_List.Count > 0 && patient.FROM_INDEXINFO)
@@ -3203,13 +3222,17 @@ namespace FOX.BusinessOperations.PatientServices
                 {
                     CreateUpdateTalkRehabContactsGuarantor(contact, profile, oldFname, oldLname);
                 }
+                else if (contact.Contact_Type_Id == 600115)
+                {
+                    CreateUpdateCareTeam(contact, profile, oldFname, oldLname);
+                }
                 else
                 {
                     CreateUpdateTalkRehabContactsNextOfKin(contact, profile, oldFname, oldLname);
                 }
             }
 
-            //Task 149402:Dev Task: FOX-RT 105. Disabling editing of patient info. from RFO, Usman Nasir
+            //Task 149402:Dev Task: FOX-RT 105. Disabling editing of patient info. from RFO, Usman Nasir  
             //InsertInterfaceTeamData(interfaceSynch, profile);
             if (contact.PopulateStatementAddress)
             {
@@ -3219,7 +3242,167 @@ namespace FOX.BusinessOperations.PatientServices
 
             return contact;
         }
-        
+        private void CreateUpdateCareTeam(PatientContact patientContactObj, UserProfile profile, string oldFname, string oldLname)
+        {
+            WebehrTblPatientCareTeams dbContact = _WebehrTblPatientCareTeamsRepository.GetFirst(patientContact => patientContact.Patient_Account == patientContactObj.Patient_Account && patientContact.FirstName == oldFname && patientContact.LastName == oldLname);
+
+            if (dbContact==null)
+            {
+                WebehrTblPatientCareTeams patientCareObj = new WebehrTblPatientCareTeams();
+                patientCareObj.PatientCareTeamID = Helper.getMaximumId("PatientCareTeamID");
+
+                patientCareObj.FirstName = patientContactObj.First_Name;
+                patientCareObj.LastName = patientContactObj.Last_Name;
+                patientCareObj.Patient_Account = patientContactObj.Patient_Account;
+               
+                if (patientContactObj.Home_Phone != null)
+                {
+                    patientCareObj.Phone = patientContactObj.Home_Phone;
+                }
+                else
+                {
+                    if (patientContactObj.Work_Phone != null)
+                    {
+                        patientCareObj.Phone = patientContactObj.Work_Phone;
+                    }
+                    else
+                    {
+                        patientCareObj.Phone = patientContactObj.Cell_Phone;
+                    }
+                }
+
+                patientCareObj.Address = patientContactObj.Address;
+                patientCareObj.Zip = patientContactObj.Zip;
+                patientCareObj.City = patientContactObj.City;
+                patientCareObj.State = patientContactObj.State;
+               
+
+                if (patientContactObj.Contact_Type_Id == 600115)
+                {
+                    patientCareObj.REFERRINGPROVIDER = true;
+                }
+                patientCareObj.Created_Date = DateTime.Now.Date;
+                patientCareObj.Modified_Date = DateTime.Now;
+                patientCareObj.Created_By = profile.UserName;
+                patientCareObj.Modified_By = profile.UserName;
+                patientCareObj.Practice_Code = profile.PracticeCode;
+                patientCareObj.Deleted = false;
+                _WebehrTblPatientCareTeamsRepository.Insert(patientCareObj);
+            }
+            else
+            {
+                dbContact.FirstName = patientContactObj.First_Name;
+                dbContact.LastName = patientContactObj.Last_Name;
+                dbContact.Patient_Account = patientContactObj.Patient_Account;
+
+                if (patientContactObj.Home_Phone != null)
+                {
+                    dbContact.Phone = patientContactObj.Home_Phone;
+                }
+                else
+                {
+                    if (patientContactObj.Work_Phone != null)
+                    {
+                        dbContact.Phone = patientContactObj.Work_Phone;
+                    }
+                    else
+                    {
+                        dbContact.Phone = patientContactObj.Cell_Phone;
+                    }
+                }
+
+                dbContact.Address = patientContactObj.Address;
+                dbContact.Zip = patientContactObj.Zip;
+                dbContact.City = patientContactObj.City;
+                dbContact.State = patientContactObj.State;
+
+                if (patientContactObj.Contact_Type_Id == 600115)
+                {
+                    dbContact.REFERRINGPROVIDER = true;
+                }
+                dbContact.Created_Date = DateTime.Now.Date;
+                dbContact.Modified_Date = DateTime.Now;
+                dbContact.Created_By = profile.UserName;
+                dbContact.Modified_By = profile.UserName;
+                _WebehrTblPatientCareTeamsRepository.Update(dbContact);
+            }
+            _WebehrTblPatientCareTeamsRepository.Save();
+        }
+        private void CreateUpdateCareTeam(Patient patientContactObj, UserProfile profile, string oldFname="", string oldLname="")
+        {
+            WebehrTblPatientCareTeams dbContact = _WebehrTblPatientCareTeamsRepository.GetFirst(patientContact => patientContact.Patient_Account == patientContactObj.Patient_Account && patientContact.FirstName == oldFname && patientContact.LastName == oldLname);
+
+            if (dbContact == null && patientContactObj.SmartOrderSource!=null)
+            {
+                WebehrTblPatientCareTeams patientCareObj = new WebehrTblPatientCareTeams();
+                patientCareObj.PatientCareTeamID = Helper.getMaximumId("PatientCareTeamID");
+
+                patientCareObj.FirstName = patientContactObj.SmartOrderSource.FIRST_NAME;
+                patientCareObj.LastName = patientContactObj.SmartOrderSource.LAST_NAME;
+                patientCareObj.Patient_Account = patientContactObj.Patient_Account;
+
+                patientCareObj.Phone = patientContactObj.SmartOrderSource.PHONE;
+                patientCareObj.EMAIL = patientContactObj.SmartOrderSource.Email;
+
+                patientCareObj.Address = patientContactObj.SmartOrderSource.ADDRESS;
+                patientCareObj.Zip = patientContactObj.SmartOrderSource.ZIP;
+                patientCareObj.City = patientContactObj.SmartOrderSource.CITY;
+                patientCareObj.State = patientContactObj.SmartOrderSource.STATE;
+                patientCareObj.NPI = patientContactObj.SmartOrderSource.NPI;
+
+                if (patientContactObj.PCP != null)
+                {
+                    patientCareObj.PCP = true;
+                }
+                patientCareObj.Created_Date = DateTime.Now.Date;
+                patientCareObj.Modified_Date = DateTime.Now;
+                patientCareObj.Created_By = profile.UserName;
+                patientCareObj.Modified_By = profile.UserName;
+                patientCareObj.Practice_Code = profile.PracticeCode;
+                patientCareObj.Deleted = false;
+                _WebehrTblPatientCareTeamsRepository.Insert(patientCareObj);
+            }
+            else
+            {
+                dbContact.FirstName = patientContactObj.First_Name;
+                dbContact.LastName = patientContactObj.Last_Name;
+                dbContact.Patient_Account = patientContactObj.Patient_Account;
+
+                if (patientContactObj.Home_Phone != null)
+                {
+                    dbContact.Phone = patientContactObj.Home_Phone;
+                }
+                else
+                {
+                    if (patientContactObj.Business_Phone != null)
+                    {
+                        dbContact.Phone = patientContactObj.Business_Phone;
+                    }
+                    else
+                    {
+                        dbContact.Phone = patientContactObj.cell_phone;
+                    }
+                }
+
+                dbContact.Address = patientContactObj.Address;
+                dbContact.Zip = patientContactObj.ZIP;
+                dbContact.City = patientContactObj.City;
+                dbContact.State = patientContactObj.State;
+                dbContact.Fax = patientContactObj.Fax_Number;
+                dbContact.EMAIL = patientContactObj.Email_Address;
+                
+
+
+                if (patientContactObj.PCP != null)
+                {
+                    dbContact.PCP = true;
+                }
+                dbContact.Modified_Date = DateTime.Now;
+                dbContact.Modified_By = profile.UserName;
+                _WebehrTblPatientCareTeamsRepository.Update(dbContact);
+            }
+            _WebehrTblPatientCareTeamsRepository.Save();
+        }
         private bool CreateUpdateTalkRehabContactsNextOfKin(PatientContact patientContactObj, UserProfile profile, string oldFname, string oldLname)
         {
             var currentDate = Helper.GetCurrentDate();
@@ -3234,13 +3417,39 @@ namespace FOX.BusinessOperations.PatientServices
                 nextOfKin.LASTNAME = patientContactObj.Last_Name;
                 //nextOfKin.MI = nextOfKin.MI;
                 nextOfKin.PATIENT_ACCOUNT = patientContactObj.Patient_Account;
-                nextOfKin.RELATIONTOPATIENT = FieldWiseComparison(patientContactObj.Contact_Type_Id);
+                if (patientContactObj.Flag_Emergency_Contact == true)
+                {
+                    nextOfKin.RELATIONTOPATIENT = "EMC";
+                }
+                else
+                {
+                    nextOfKin.RELATIONTOPATIENT = FieldWiseComparison(patientContactObj.Contact_Type_Id);
+                }
 
                 nextOfKin.ADDRESS1 = patientContactObj.Address;
                 nextOfKin.ZIP = patientContactObj.Zip;
                 nextOfKin.CITY = patientContactObj.City;
                 nextOfKin.STATE = patientContactObj.State;
-                nextOfKin.PHONE = patientContactObj.Home_Phone;
+                //nextOfKin.PHONE = patientContactObj.Home_Phone;
+                if (patientContactObj.Home_Phone != null)
+                {
+                    nextOfKin.PHONE = patientContactObj.Home_Phone;
+                    nextOfKin.NOK_PHONE_TYPE = "Home Phone";
+                }
+                else
+                {
+                    if (patientContactObj.Work_Phone != null)
+                    {
+                        nextOfKin.PHONE = patientContactObj.Work_Phone;
+                        nextOfKin.NOK_PHONE_TYPE = "Office Phone";
+                    }
+                    else
+                    {
+                        nextOfKin.PHONE = patientContactObj.Cell_Phone;
+                        nextOfKin.NOK_PHONE_TYPE = "Cell Phone";
+                    }
+
+                }
 
                 nextOfKin.CREATED_DATE = currentDate;
                 nextOfKin.MODIFIED_DATE = currentDate;
@@ -3256,13 +3465,40 @@ namespace FOX.BusinessOperations.PatientServices
                 //dbContact.MI = nextOfKin.MI;
                 dbContact.PATIENT_ACCOUNT = patientContactObj.Patient_Account;
 
-                dbContact.RELATIONTOPATIENT = FieldWiseComparison(patientContactObj.Contact_Type_Id);
+                if (patientContactObj.Flag_Emergency_Contact == true)
+                {
+                    dbContact.RELATIONTOPATIENT = "EMC";
+                }
+                else
+                {
+                    dbContact.RELATIONTOPATIENT = FieldWiseComparison(patientContactObj.Contact_Type_Id);
+                }
 
                 dbContact.ADDRESS1 = patientContactObj.Address;
                 dbContact.ZIP = patientContactObj.Zip;
                 dbContact.CITY = patientContactObj.City;
                 dbContact.STATE = patientContactObj.State;
                 dbContact.PHONE = patientContactObj.Home_Phone;
+
+                if (patientContactObj.Home_Phone != null)
+                {
+                    dbContact.PHONE = patientContactObj.Home_Phone;
+                    dbContact.NOK_PHONE_TYPE = "Home Phone";
+                }
+                else
+                {
+                    if (patientContactObj.Work_Phone != null)
+                    {
+                        dbContact.PHONE = patientContactObj.Work_Phone;
+                        dbContact.NOK_PHONE_TYPE = "Office Phone";
+                    }
+                    else
+                    {
+                        dbContact.PHONE = patientContactObj.Cell_Phone;
+                        dbContact.NOK_PHONE_TYPE = "Cell Phone";
+                    }
+
+                }
 
                 dbContact.MODIFIED_DATE = currentDate;
                 dbContact.MODIFIED_BY = profile.UserName;
@@ -3276,23 +3512,38 @@ namespace FOX.BusinessOperations.PatientServices
             var currentDate = Helper.GetCurrentDate();
             Subscriber guarantorObj = new Subscriber();
             var dbContact = _SubscriberRepository.GetFirst(patientContact => patientContact.GUARANT_FNAME == oldFname && patientContact.GUARANT_LNAME == oldLname);
-            if (dbContact == null)
+            if (dbContact == null || oldFname=="")
             {
                 guarantorObj.GUARANTOR_CODE = Helper.getMaximumId("GUARANTOR_CODE");
 
                 guarantorObj.GUARANT_FNAME = patientContactObj.First_Name;
                 guarantorObj.GUARANT_LNAME = patientContactObj.Last_Name;
-                //guarantorObj.MIDDLE_NAME = patientContactObj.MI;
-                //guarantorObj.Patient_Account = patientContactObj.Patient_Account.ToString();
-                // For Guaranter Only ( 544108 - Guarantor )
-                //guarantorObj.Guarant_Relation = patientContactObj.Contact_Type_Name;
+                //guarantorObj.MIDDLE_NAME = patientContactObj.MI; 
+                guarantorObj.Guarant_Relation = "OTH";
                 guarantorObj.GUARANT_ADDRESS = patientContactObj.Address;
                 //guarantorObj.Email_Address = patientContactObj.EMAIL;
                 guarantorObj.GUARANT_ZIP = patientContactObj.Zip;
                 guarantorObj.GUARANT_CITY = patientContactObj.City;
                 guarantorObj.GUARANT_STATE = patientContactObj.State;
-                //guarantorObj.Country = patientContactObj.Country;
-                guarantorObj.GUARANT_HOME_PHONE = patientContactObj.Home_Phone;
+                if (patientContactObj.Home_Phone!=null)
+                {
+                    guarantorObj.GUARANT_HOME_PHONE = patientContactObj.Home_Phone;
+                    guarantorObj.GUARANT_PHONE_TYPE = "Home Phone";
+                }
+                else
+                {
+                    if (patientContactObj.Work_Phone!=null)
+                    {
+                        guarantorObj.GUARANT_HOME_PHONE = patientContactObj.Work_Phone;
+                        guarantorObj.GUARANT_PHONE_TYPE = "Office Phone";
+                    }
+                    else
+                    {
+                        guarantorObj.GUARANT_HOME_PHONE = patientContactObj.Cell_Phone;
+                        guarantorObj.GUARANT_PHONE_TYPE = "Cell Phone";
+                    }
+                    
+                }
 
                 guarantorObj.created_date = currentDate;
                 guarantorObj.modified_date = currentDate;
@@ -3300,6 +3551,7 @@ namespace FOX.BusinessOperations.PatientServices
                 guarantorObj.modified_by = profile.UserName;
                 guarantorObj.Deleted = false;
                 _SubscriberRepository.Insert(guarantorObj);
+                SaveGuarantorCodeInPatient(patientContactObj.Patient_Account, guarantorObj.GUARANTOR_CODE);
             }
             else
             {
@@ -3307,10 +3559,8 @@ namespace FOX.BusinessOperations.PatientServices
                 dbContact.GUARANT_FNAME = patientContactObj.First_Name;
                 dbContact.GUARANT_LNAME = patientContactObj.Last_Name;
                 //guarantorObj.MIDDLE_NAME = patientContactObj.MI;
-                //dbContact.Patient_Account = patientContactObj.Patient_Account.ToString();
-                // For Guaranter Only ( 544108 - Guarantor )
                 //dbContact.Contact_Type_Id = 600109;
-                //dbContact.Guarant_Relation = patientContactObj.Contact_Type_Name;
+                dbContact.Guarant_Relation = "OTH";
                 dbContact.GUARANT_ADDRESS = patientContactObj.Address;
                 //dbContact.Email_Address = patientContactObj.EMAIL;
                 dbContact.GUARANT_ZIP = patientContactObj.Zip;
@@ -3319,13 +3569,43 @@ namespace FOX.BusinessOperations.PatientServices
                 //dbContact.Country = patientContactObj.Country;
                 dbContact.GUARANT_HOME_PHONE = patientContactObj.Home_Phone;
 
+                if (patientContactObj.Home_Phone != null)
+                {
+                    dbContact.GUARANT_HOME_PHONE = patientContactObj.Home_Phone;
+                    dbContact.GUARANT_PHONE_TYPE = "Home Phone";
+                }
+                else
+                {
+                    if (patientContactObj.Work_Phone != null)
+                    {
+                        dbContact.GUARANT_HOME_PHONE = patientContactObj.Work_Phone;
+                        dbContact.GUARANT_PHONE_TYPE = "Office Phone";
+                    }
+                    else
+                    {
+                        dbContact.GUARANT_HOME_PHONE = patientContactObj.Cell_Phone;
+                        dbContact.GUARANT_PHONE_TYPE = "Cell Phone";
+                    }
+
+                }
                 dbContact.modified_date = currentDate;
                 dbContact.modified_by = profile.UserName;
                 _SubscriberRepository.Update(dbContact);
 
             }
-            _SubscriberRepository.Save();
+            _SubscriberRepository.Save();            
             return true;
+        }
+        private void SaveGuarantorCodeInPatient(long patientAccount, long guarantorCode)
+        {
+            var patient = _NewPatientRepository.GetFirst(e => e.Patient_Account == patientAccount && (e.DELETED ?? false) == false);
+            if (patient != null)
+            {
+                patient.Address_To_Guarantor = true;
+                patient.Financial_Guarantor = guarantorCode;
+                _NewPatientRepository.Update(patient);
+                _NewPatientRepository.Save();
+            }
         }
         private string FieldWiseComparison(long? contactType)
         {

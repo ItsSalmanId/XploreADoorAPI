@@ -35,6 +35,7 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<ReferralSource>().Property(t => t.SOURCE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<PatientContact>().Property(t => t.Contact_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<AF_TBL_PATIENT_NEXT_OF_KIN>().Property(t => t.PATIENT_NEXT_OF_KIN_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<WebehrTblPatientCareTeams>().Property(t => t.PatientCareTeamID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<ContactType>().Property(t => t.Contact_Type_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<Subscriber>().Property(t => t.GUARANTOR_CODE).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<MedicareLimitType>().Property(t => t.MEDICARE_LIMIT_TYPE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
@@ -96,6 +97,7 @@ namespace FOX.DataModels.Context
         public virtual DbSet<ReferralSource> OrderingRefSource { get; set; }
         public virtual DbSet<PatientContact> PatientContact { get; set; }
         public virtual DbSet<AF_TBL_PATIENT_NEXT_OF_KIN> AF_TBL_PATIENT_NEXT_OF_KIN { get; set; }
+        public virtual DbSet<WebehrTblPatientCareTeams> WebehrTblPatientCareTeams { get; set; }
         public virtual DbSet<ContactType> ContactType { get; set; }
         public virtual DbSet<Subscriber> Subscriber { get; set; }
         public virtual DbSet<MedicareLimitType> MedicareLimitType { get; set; }
