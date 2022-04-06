@@ -269,6 +269,18 @@ namespace FOX.DataModels.GenericRepository
             Context?.Dispose();
 
         }
+        public List<TEntity> ExecuteCommand(string query, params object[] parameters)
+        {
+            try
+            {
+                Context.Database.CommandTimeout = 300;
+                return DbSet.SqlQuery(query, parameters).ToList<TEntity>();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 
 

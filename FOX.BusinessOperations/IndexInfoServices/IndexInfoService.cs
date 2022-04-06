@@ -45,6 +45,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using FOX.BusinessOperations.GroupServices;
+using FOX.DataModels;
 
 namespace FOX.BusinessOperations.IndexInfoServices
 {
@@ -2828,8 +2829,16 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
         public string GetEmailOrFaxToSenderTemplate(EmailFaxToSender data)
         {
+            string templatePathOfSenderEmail = string.Empty;
             string body = string.Empty;
-            string templatePathOfSenderEmail = HttpContext.Current.Server.MapPath(@"~/HtmlTemplates/email_fax_to_sender_template.html");
+            if (EntityHelper.isTalkRehab)
+            {
+                templatePathOfSenderEmail = HttpContext.Current.Server.MapPath(@"~/HtmlTemplates/email_fax_to_sender_template_ccremote.html");
+            }
+            else
+            {
+                templatePathOfSenderEmail = HttpContext.Current.Server.MapPath(@"~/HtmlTemplates/email_fax_to_sender_template.html");
+            }
             if (File.Exists(templatePathOfSenderEmail))
             {
                 body = File.ReadAllText(templatePathOfSenderEmail);

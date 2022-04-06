@@ -264,7 +264,10 @@ namespace FOX.BusinessOperations.RequestForOrder
                         //        <b>FOX Rehabilitates Lives.</b>
                         //        ";
 
-                        string _body = @"
+                        string _body = String.Empty;
+                        if (!Profile.isTalkRehab)
+                        {
+                            _body = @"
                         <table style='width:100%; padding:0px;background:#fff;font-family: sans-serif !important;' cellpadding='0' cellspacing='0'>
 						<tr>
 							<td style='height:15px;width:100%;'></td>
@@ -338,6 +341,76 @@ namespace FOX.BusinessOperations.RequestForOrder
 						</tr>
 					</table>
                             ";
+                        }
+                        else
+                        {
+                            _body = @"
+                        <table style='width:100%; padding:0px;background:#fff;font-family: sans-serif !important;' cellpadding='0' cellspacing='0'>
+						<tr>
+							<td style='height:15px;width:100%;'></td>
+						</tr>
+						<tr>
+							<td align='center' style='padding: 0px 20px;'>
+								<table style='width:100%;margin:0 auto;background:#fff;margin-bottom:15px;' cellpadding='0' cellspacing='0'>
+									<tr>
+										<td align='left'>
+											<img src='https://fox.mtbc.com/assets/images/talkrehab-logo.png' alt='CC Remote logo' width='150'/>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td style='height:5px;width:100%;background-color:#00a9ef; '></td>
+						</tr>
+						<tr>
+							<td style='height:15px;width:100%;'></td>
+						</tr>
+						<tr>
+							<td style='background:#fff;'>
+								<table style='width:100%;margin:0 auto;background:transparent;font-family: sans-serif !important;' cellpadding='0' cellspacing='0'>
+									<tr>
+										<td style='padding:0px 20px;'>
+											<table style='width:100%;margin:0 auto;font-family: sans-serif !important;' cellpadding='0' cellspacing='0'>
+												<tr>
+													<td style='width:100%;font-size:14px;font-family: sans-serif !important;line-height: 1.5;'>
+                                                       ***Important Message regarding your patient’s care***<br><br>
+                                                       Please login to see the request for referral from CareCloud Remote
+													</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <table style='width:250px;font-family: sans-serif !important;' cellpadding='0' cellspacing='0'>
+                                                            <tr>
+                                                                <td style='text-align: center;background-color:#00a9ef; border:1px solid #00a9ef; vertical-align:middle; line-height:normal; padding:5px 15px 5px 15px;'>
+                                                                    <a style='color:#fff; font-size:16px;text-decoration:none; outline:none;background-color:#00a9ef;' target='_blank' href='" + link + @"'>Login To CC Remote</a>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>&nbsp;</td>
+                                                    </tr>
+                                                <tr>
+                                                    <td style='line-height: 1.5'>
+                                                        <strong>Regards</strong><br>
+                                                        CareCloud Remote.                                                             
+                                                    </td>
+                                                </tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+                            ";
+                        }
 
                         bool emailStatus = Helper.Email(requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath });
                         Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || Start Time of Finding WORK ID " + Helper.GetCurrentDate().ToLocalTime());
