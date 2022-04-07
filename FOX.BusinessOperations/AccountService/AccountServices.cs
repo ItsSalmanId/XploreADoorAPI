@@ -920,6 +920,11 @@ namespace FOX.BusinessOperations.AccountService
                         return resp;
                     }
                 }
+                if(token==null && profile.isTalkRehab)
+                {
+                    resp.Success = true;
+                    return resp;
+                }
                 resp.Success = false;
                 return resp;
             }
