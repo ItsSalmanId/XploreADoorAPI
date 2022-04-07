@@ -543,7 +543,7 @@ namespace FoxRehabilitationAPI
                                 user.ApplicationUserRoles = userProfile.ApplicationUserRoles = userService.GetCurrentUserRights(user.ROLE_ID ?? 0, user.PRACTICE_CODE);
                                 string encryptedPassword = Encrypt.EncryptPassword(password);
                                 string detectedBrowser = AccountController.BrowserDetection();
-                                //accountServices.InsertLogs(user, encryptedPassword, detectedBrowser, "Valid Internal Login");
+                                accountServices.InsertLogs(user, encryptedPassword, detectedBrowser, "Valid Internal Login");
                                 return new Tuple<ApplicationUser, UserProfile>(user, userProfile);
                             }
                             else
@@ -555,7 +555,7 @@ namespace FoxRehabilitationAPI
                                 {
                                     string encryptedPassword = Encrypt.EncryptPassword(password);
                                     string detectedBrowser = AccountController.BrowserDetection();
-                                    //accountServices.InsertLogs(dbUser, encryptedPassword, detectedBrowser, "Invalid Internal Login");
+                                    accountServices.InsertLogs(dbUser, encryptedPassword, detectedBrowser, "Invalid Internal Login");
                                 }
                             }
                         }
@@ -591,7 +591,7 @@ namespace FoxRehabilitationAPI
                                     //Creating Logs for Successfull Login
                                     string encryptedPassword = Encrypt.EncryptPassword(password);
                                     string detectedBrowser = AccountController.BrowserDetection();
-                                    //accountServices.InsertLogs(userProfile, encryptedPassword, detectedBrowser, "Login");
+                                    accountServices.InsertLogs(userProfile, encryptedPassword, detectedBrowser, "Login");
 
                                     return new Tuple<ApplicationUser, UserProfile>(user, userProfile);
                                 }
@@ -599,7 +599,7 @@ namespace FoxRehabilitationAPI
                                 {
                                     string encryptedPassword = Encrypt.EncryptPassword(password);
                                     string detectedBrowser = AccountController.BrowserDetection();
-                                    //accountServices.InsertLogs(userProfile, encryptedPassword, detectedBrowser, "Login");
+                                    accountServices.InsertLogs(userProfile, encryptedPassword, detectedBrowser, "Login");
                                 }
                             }
                             else
@@ -613,7 +613,7 @@ namespace FoxRehabilitationAPI
                                 user.ApplicationUserRoles = userProfile.ApplicationUserRoles = userService.GetCurrentUserRights(user.ROLE_ID ?? 0, user.PRACTICE_CODE);
                                 string encryptedPassword = Encrypt.EncryptPassword(password);
                                 string detectedBrowser = AccountController.BrowserDetection();
-                                //accountServices.InsertLogs(userProfile, encryptedPassword, detectedBrowser, "Login");
+                                accountServices.InsertLogs(userProfile, encryptedPassword, detectedBrowser, "Login");
                                 return new Tuple<ApplicationUser, UserProfile>(user, userProfile);
                             }
                         }
