@@ -1502,7 +1502,7 @@ namespace FOX.BusinessOperations.PatientServices
             var SortOrder = Helper.getDBNullOrValue("SORT_ORDER", patientSearchRequest.SortOrder);
             var Patient_Alias = new SqlParameter { ParameterName = "Patient_Alias", SqlDbType = SqlDbType.Bit, Value = patientSearchRequest.INCLUDE_ALIAS };
 
-            spName = patientSearchRequest.ISTALKREHAB ? "FOX_PROC_GET_PATIENT_LIST_TALKREHAB" : "FOX_PROC_GET_PATIENT_LIST";
+            spName = profile.isTalkRehab ? "FOX_PROC_GET_PATIENT_LIST_TALKREHAB" : "FOX_PROC_GET_PATIENT_LIST";
 
             var PatientList = SpRepository<Patient>.GetListWithStoreProcedure(@"exec "+ spName + " @Patient_Account, @First_Name, @Last_Name, @Middle_Name, @CHART_ID, @SSN, @Gender, @Created_Date, @CreatedBy, @ModifiedBy, @PRACTICE_CODE, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORT_BY, @SORT_ORDER,@DOB, @Patient_Alias",
                 accountNo, FirstName, LastName, MiddleName, MRN, SSN, Gender, CreatedDate, CreatedBy, ModifiedBy, PracticeCode, CurrentPage, RecordPerPage, SearchText, SortBy, SortOrder, dob, Patient_Alias);
