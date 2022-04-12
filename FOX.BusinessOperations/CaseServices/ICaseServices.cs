@@ -16,6 +16,7 @@ namespace FOX.BusinessOperations.CaseServices
         ResponseAddEditCase AddEditCase(FOX_TBL_CASE caseObj, UserProfile profile); //Get Case data
         //ResponseGetCasesDDL GetCasesDDL(UserProfile profile); //Get Cases drop down lists
         ResponseGetCasesDDL GetCasesDDL(string patient_Account, long practiceCode); //Get Cases drop down lists
+        ResponseGetCasesDDL GetCasesDDLTalRehab(string patient_Account, long practiceCode);  //Get Cases drop down lists for TalkRehab Without Practice
         ResponseGetCasesDDL GetCasesDDLTalkrehab(CasesSearchRequest casesmodel);
         List<FOX_TBL_IDENTIFIER> GetIdentifierList(long practiceCode);
         List<SmartIdentifierRes> GetSmartIdentifier(SmartIdentifierReq obj, UserProfile profile);
@@ -42,6 +43,6 @@ namespace FOX.BusinessOperations.CaseServices
         List<FOX_VW_CASE> GetPatientCasesList(long patientAccount, UserProfile profile);
         CaseAndOpenIssues GetCasesAndOpenIssues(long caseId, UserProfile profile);
         GetTreatingProviderRes PopulateTreatingProviderbasedOnPOS(GetTreatingProviderReq obj, UserProfile profile);
-        InactiveListOfGroupIDNAndSourceOfReferral GetAllIdentifierANDSourceofReferralList(long practiceCode);
+        InactiveListOfGroupIDNAndSourceOfReferral GetAllIdentifierANDSourceofReferralList(UserProfile profile);
     }
 }

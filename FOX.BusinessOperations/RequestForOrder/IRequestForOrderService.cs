@@ -7,7 +7,7 @@ namespace FOX.BusinessOperations.RequestForOrder
 {
     public interface IRequestForOrderService
     {
-        ResponseGeneratingWorkOrder GeneratingWorkOrder(long practiceCode, string userName, string email, long userId);
+        ResponseGeneratingWorkOrder GeneratingWorkOrder(long practiceCode, string userName, string email, long userId, UserProfile Profile);
         ResponseModel SendEmail(RequestSendEmailModel requestSendEmailModel, UserProfile Profile);
         ResponseModel SendFAX(RequestSendFAXModel requestSendFAXModel, UserProfile Profile);
         bool VerifyWorkOrderByRecipient(string value);

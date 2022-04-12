@@ -453,7 +453,8 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpPost]
         public HttpResponseMessage GetSourceofReferralList(SourceOfreferralSearch sourceOfreferralSearch)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _facilityLocationService.GetSourceofReferralList(sourceOfreferralSearch, GetProfile().PracticeCode));
+            var profile =GetProfile();
+            return Request.CreateResponse(HttpStatusCode.OK, _facilityLocationService.GetSourceofReferralList(sourceOfreferralSearch, profile));
         }
         [HttpPost]
         public HttpResponseMessage ExportToExcelSourceOfReferral(SourceOfreferralSearch sourceOfreferralSearch)
@@ -493,7 +494,8 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpGet]
         public HttpResponseMessage GetIdentifierTypes()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _facilityLocationService.GetIdentifierTypes(GetProfile().PracticeCode));
+            var profile = GetProfile();
+            return Request.CreateResponse(HttpStatusCode.OK, _facilityLocationService.GetIdentifierTypes(profile));
         }
         [HttpGet]
         public HttpResponseMessage RedirecToTalkEhr()

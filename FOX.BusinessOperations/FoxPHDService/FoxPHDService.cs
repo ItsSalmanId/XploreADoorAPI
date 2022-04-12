@@ -78,11 +78,22 @@ namespace FOX.BusinessOperations.FoxPHDService
             try
             {
                 DropdownLists ObjDropdownLists = new DropdownLists();
-                ObjDropdownLists.PhdCallScenarios = _PhdCallScenarioRepository.GetMany(s => s.PRACTICE_CODE == profile.PracticeCode && s.DELETED == false).OrderBy(o => o.NAME).ToList();
-                ObjDropdownLists.PhdCallReasons = _PhdCallReasonRepository.GetMany(s => s.PRACTICE_CODE == profile.PracticeCode && s.DELETED == false).OrderBy(o => o.NAME).ToList();
-                ObjDropdownLists.PhdCallRequests = _PhdCallRequestRepository.GetMany(s => s.PRACTICE_CODE == profile.PracticeCode && s.DELETED == false).OrderBy(o => o.NAME).ToList();
-                ObjDropdownLists.CSCaseCategories = _caseCategoriesRepository.GetMany(s => s.CS_Deleted == false).OrderBy(o => o.CS_Category_Name).ToList();
-                ObjDropdownLists.foxApplicationUsersViewModel = GetPHDCallerDropDownValue(profile);
+                if (profile.isTalkRehab)
+                {
+                    ObjDropdownLists.PhdCallScenarios = _PhdCallScenarioRepository.GetMany(s => s.DELETED == false).OrderBy(o => o.NAME).ToList();
+                    ObjDropdownLists.PhdCallReasons = _PhdCallReasonRepository.GetMany(s => s.DELETED == false).OrderBy(o => o.NAME).ToList();
+                    ObjDropdownLists.PhdCallRequests = _PhdCallRequestRepository.GetMany(s => s.DELETED == false).OrderBy(o => o.NAME).ToList();
+                    ObjDropdownLists.CSCaseCategories = _caseCategoriesRepository.GetMany(s => s.CS_Deleted == false).OrderBy(o => o.CS_Category_Name).ToList();
+                    ObjDropdownLists.foxApplicationUsersViewModel = GetPHDCallerDropDownValue(profile);
+                }
+                else
+                {
+                    ObjDropdownLists.PhdCallScenarios = _PhdCallScenarioRepository.GetMany(s => s.PRACTICE_CODE == profile.PracticeCode && s.DELETED == false).OrderBy(o => o.NAME).ToList();
+                    ObjDropdownLists.PhdCallReasons = _PhdCallReasonRepository.GetMany(s => s.PRACTICE_CODE == profile.PracticeCode && s.DELETED == false).OrderBy(o => o.NAME).ToList();
+                    ObjDropdownLists.PhdCallRequests = _PhdCallRequestRepository.GetMany(s => s.PRACTICE_CODE == profile.PracticeCode && s.DELETED == false).OrderBy(o => o.NAME).ToList();
+                    ObjDropdownLists.CSCaseCategories = _caseCategoriesRepository.GetMany(s => s.CS_Deleted == false).OrderBy(o => o.CS_Category_Name).ToList();
+                    ObjDropdownLists.foxApplicationUsersViewModel = GetPHDCallerDropDownValue(profile);
+                }
                 //ObjDropdownLists.foxApplicationUsersViewModel = _userRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode).Select(t => new FoxApplicationUsersViewModel()
                 //{
                 //    FIRST_NAME = t.FIRST_NAME,

@@ -32,7 +32,15 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetCasesDDL(string patient_Account)
         {
             var profile = GetProfile();
-            var result = _CaseServices.GetCasesDDL(patient_Account, profile.PracticeCode);
+            var result = new object();
+            if (profile.isTalkRehab)
+            {
+                result = _CaseServices.GetCasesDDLTalRehab(patient_Account, profile.PracticeCode);
+            }
+            else
+            {
+                result = _CaseServices.GetCasesDDL(patient_Account, profile.PracticeCode);
+            }
             var response = Request.CreateResponse(HttpStatusCode.OK, result);
             return response;
         }
@@ -66,7 +74,7 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetAllIdentifierANDSourceofReferralList()
         {
             var profile = GetProfile();
-            var result = _CaseServices.GetAllIdentifierANDSourceofReferralList(profile.PracticeCode);
+            var result = _CaseServices.GetAllIdentifierANDSourceofReferralList(profile);
             var response = Request.CreateResponse(HttpStatusCode.OK, result);
             return response;
         }

@@ -274,11 +274,11 @@ namespace FOX.BusinessOperations.CommonServices
 
         }
 
-        public ResponseGetSenderTypesModel GetSenderTypes(long practiceCode)
+        public ResponseGetSenderTypesModel GetSenderTypes(UserProfile profile)
         {
             try
             {
-                var senderTypeList = _FOX_TBL_SENDER_TYPE.GetMany(t => t.PRACTICE_CODE == practiceCode && !t.DELETED && t.DISPLAY_ORDER != null)
+                var senderTypeList = _FOX_TBL_SENDER_TYPE.GetMany(t => t.PRACTICE_CODE == profile.PracticeCode && !t.DELETED && t.DISPLAY_ORDER != null)
                     .OrderBy(t => t.DISPLAY_ORDER)
                     //.OrderBy(t => t.SENDER_TYPE_NAME)
                     .ToList();

@@ -2059,7 +2059,15 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     //Convert Bytes into Mbs.
                     result.fileSize = Convert.ToDecimal(string.Format("{0:0.00}", size / 1048576));
                     var usr = _User.GetByID(Profile.userID);
-                    var senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == usr.PRACTICE_CODE) && !t.DELETED);
+                    FOX_TBL_SENDER_TYPE senderType = new FOX_TBL_SENDER_TYPE();
+                    if (Profile.isTalkRehab)
+                    {
+                        senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && !t.DELETED);
+                    }
+                    else
+                    {
+                        senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == usr.PRACTICE_CODE) && !t.DELETED);
+                    }
                     result.SENDER_TYPE = senderType != null ? !string.IsNullOrWhiteSpace(senderType.SENDER_TYPE_NAME) ? senderType.SENDER_TYPE_NAME : "" : "";
                     return result;
 
@@ -5232,9 +5240,18 @@ namespace FOX.BusinessOperations.IndexInfoServices
         }
         public ReferralSourceAndGroups getAllReferralSourceAndGroups(UserProfile profile)
         {
-            ReferralSourceAndGroups response = new ReferralSourceAndGroups();            
-            response.ReferralSource = _referralSourceTableRepository.GetMany(x => !(x.DELETED) && (x.PRACTICE_CODE == profile.PracticeCode));
-            response.Groups = _groupRepository.GetMany(x => !(x.DELETED) && (x.PRACTICE_CODE == profile.PracticeCode));
+            ReferralSourceAndGroups response = new ReferralSourceAndGroups();
+            if (profile.isTalkRehab)
+            {
+                response.ReferralSource = _referralSourceTableRepository.GetMany(x => !(x.DELETED));
+                response.Groups = _groupRepository.GetMany(x => !(x.DELETED));
+            }
+            else
+            {
+                response.ReferralSource = _referralSourceTableRepository.GetMany(x => !(x.DELETED) && (x.PRACTICE_CODE == profile.PracticeCode));
+                response.Groups = _groupRepository.GetMany(x => !(x.DELETED) && (x.PRACTICE_CODE == profile.PracticeCode));
+            }
+            
             return response;
         }
 

@@ -36,7 +36,7 @@ namespace FOX.BusinessOperations.SettingsService.FacilityLocationService
         string ExportToExcelTaskType(TaskTpyeSearch taskTpyeSearch, UserProfile profile);
         List<FOX_TBL_ORDER_STATUS> GetOrderStatusList(OrderStatusSearch orderStatusSearch, long practiceCode);
         string ExportToExcelOrderStatus(OrderStatusSearch orderStatusSearch, UserProfile profile);
-        List<FOX_TBL_SOURCE_OF_REFERRAL> GetSourceofReferralList(SourceOfreferralSearch sourceOfreferralSearch, long practiceCode);
+        List<FOX_TBL_SOURCE_OF_REFERRAL> GetSourceofReferralList(SourceOfreferralSearch sourceOfreferralSearch, UserProfile profile);
         string ExportToExcelSourceOfReferral(SourceOfreferralSearch sourceOfreferralSearch, UserProfile profile);
         List<AlertType> GetAlertTypeList(AlertTypeSearch alertTypeSearch, long practiceCode);
         string ExportToExcelAlertType(AlertTypeSearch alertTypeSearch, UserProfile profile);
@@ -44,7 +44,7 @@ namespace FOX.BusinessOperations.SettingsService.FacilityLocationService
         string ExportToExcelDocumentType(DocumentTypeSearch documentTypeSearch, UserProfile profile);
         List<ContactType> GetPatientContactTypeList(PatientContactTypeSearch patientContactTypeSearch, long practiceCode);
         string ExportToExcelContactType(PatientContactTypeSearch patientContactTypeSearch, UserProfile profile);
-        List<IdentifierType> GetIdentifierTypes(long practiceCode);
+        List<IdentifierType> GetIdentifierTypes(UserProfile profile);
 
     }
 }

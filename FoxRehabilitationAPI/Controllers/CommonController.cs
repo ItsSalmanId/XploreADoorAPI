@@ -156,7 +156,7 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetSenderTypes()
         {
             var profile = GetProfile();
-            return Request.CreateResponse(HttpStatusCode.OK, _CommonService.GetSenderTypes(profile.PracticeCode));
+            return Request.CreateResponse(HttpStatusCode.OK, _CommonService.GetSenderTypes(profile));
         }
 
         [HttpPost]
