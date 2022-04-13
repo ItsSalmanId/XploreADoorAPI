@@ -3077,9 +3077,17 @@ namespace FOX.BusinessOperations.PatientServices
             return bestTimes;
         }
 
-        public List<ContactType> GetAllPatientContactTypes(long practiceCode)
+        public List<ContactType> GetAllPatientContactTypes(UserProfile profile)
         {
-            var conTypes = _ContactTypeRepository.GetMany(x => !(x.Deleted ?? false) && x.Practice_Code == practiceCode).ToList();
+            List<ContactType> conTypes = new List<ContactType>();
+            if (profile.isTalkRehab)
+            {
+                conTypes = _ContactTypeRepository.GetMany(x => !(x.Deleted ?? false)).ToList();
+            }
+            else
+            {
+                conTypes = _ContactTypeRepository.GetMany(x => !(x.Deleted ?? false) && x.Practice_Code == profile.PracticeCode).ToList();
+            }
 
             if (conTypes.Any())
             {
@@ -9206,8 +9214,15 @@ namespace FOX.BusinessOperations.PatientServices
 
         public List<FinancialClass> GetFinancialClassDDValues(string practiceCode)
         {
-            var PracticeCode = Convert.ToInt64(practiceCode);
-            return _financialClassRepository.GetMany(e => e.PRACTICE_CODE == PracticeCode && !e.DELETED);
+            if (practiceCode=="0")
+            {
+                return _financialClassRepository.GetMany(e => !e.DELETED);
+            }
+            else
+            {
+                var PracticeCode = Convert.ToInt64(practiceCode);
+                return _financialClassRepository.GetMany(e => e.PRACTICE_CODE == PracticeCode && !e.DELETED);
+            }
         }
 
         public List<AdvanceInsuranceSearch> GetInsurancePayersForAdvanceSearch(AdvanceInsuranceSearch searchReq)

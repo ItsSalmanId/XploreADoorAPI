@@ -493,7 +493,8 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpGet]
         public HttpResponseMessage GetIdentifierTypes()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _facilityLocationService.GetIdentifierTypes(GetProfile().PracticeCode));
+            var profile = GetProfile();
+            return Request.CreateResponse(HttpStatusCode.OK, _facilityLocationService.GetIdentifierTypes(profile));
         }
         [HttpGet]
         public HttpResponseMessage RedirecToTalkEhr()

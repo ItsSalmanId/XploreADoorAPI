@@ -161,7 +161,7 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetAllPatientContactTypes()
         {
             var profile = GetProfile();
-            return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetAllPatientContactTypes(profile.PracticeCode));
+            return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetAllPatientContactTypes(profile));
         }
         [HttpGet]
         public HttpResponseMessage GetPatientContactDetails(string contactid)
@@ -299,7 +299,14 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetFinancialClassDDValues()
         {
             var profile = GetProfile();
-            return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetFinancialClassDDValues(profile.PracticeCode.ToString()));
+            if (profile.isTalkRehab)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetFinancialClassDDValues("0"));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetFinancialClassDDValues(profile.PracticeCode.ToString()));
+            }
         }
 
         [HttpPost]

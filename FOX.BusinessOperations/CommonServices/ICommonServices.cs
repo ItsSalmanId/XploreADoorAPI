@@ -25,7 +25,7 @@ namespace FOX.BusinessOperations.CommonServices
         #endregion
         List<WorkOrderHistory> GetWorkHistory(string uniqueid);
         bool Authenticate(string password, UserProfile profile);
-        ResponseGetSenderTypesModel GetSenderTypes(long practiceCode);
+        ResponseGetSenderTypesModel GetSenderTypes(UserProfile profile);
         ResponseGetSenderNamesModel GetSenderNames(ReqGetSenderNamesModel model, UserProfile profile = null);
         List<ZipCityState> GetCityStateByZip(string zipCityState);
         SmartLocationRes GetTreatmentLocationByZip(string zip, long practiceCode);

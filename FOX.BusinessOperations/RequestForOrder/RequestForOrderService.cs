@@ -92,7 +92,7 @@ namespace FOX.BusinessOperations.RequestForOrder
             _SenderTypeRepository = new GenericRepository<FOX_TBL_SENDER_TYPE>(_DbContextCommon);
 
         }
-        public ResponseGeneratingWorkOrder GeneratingWorkOrder(long practiceCode, string userName, string email, long userId)
+        public ResponseGeneratingWorkOrder GeneratingWorkOrder(long practiceCode, string userName, string email, long userId, UserProfile Profile)
         {
             OriginalQueue originalQueue = new OriginalQueue();
             //var workId = Helper.getMaximumId("WORK_ID");
@@ -110,7 +110,15 @@ namespace FOX.BusinessOperations.RequestForOrder
             originalQueue.SORCE_TYPE = "Email";
 
             var usr = _UserRepository.GetByID(userId);
-            var senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == practiceCode) && !t.DELETED);
+            FOX_TBL_SENDER_TYPE senderType = new FOX_TBL_SENDER_TYPE();
+            if (Profile.isTalkRehab)
+            {
+                senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && !t.DELETED);
+            }
+            else
+            {
+                senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == practiceCode) && !t.DELETED);
+            }
             if (usr != null)
             {
                 originalQueue.FOX_TBL_SENDER_TYPE_ID = usr.FOX_TBL_SENDER_TYPE_ID;
@@ -141,7 +149,7 @@ namespace FOX.BusinessOperations.RequestForOrder
 
             //Get all request in single call
             ICommonServices _ICommonServices = new CommonServices.CommonServices();
-            var getSenderTypes = _ICommonServices.GetSenderTypes(practiceCode);
+            var getSenderTypes = _ICommonServices.GetSenderTypes(Profile);
             var getSenderNames = _ICommonServices.GetSenderNames(
                     new DataModels.Models.CommonModel.ReqGetSenderNamesModel()
                     {
