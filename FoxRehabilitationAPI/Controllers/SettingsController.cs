@@ -453,8 +453,7 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpPost]
         public HttpResponseMessage GetSourceofReferralList(SourceOfreferralSearch sourceOfreferralSearch)
         {
-            var profile =GetProfile();
-            return Request.CreateResponse(HttpStatusCode.OK, _facilityLocationService.GetSourceofReferralList(sourceOfreferralSearch, profile));
+            return Request.CreateResponse(HttpStatusCode.OK, _facilityLocationService.GetSourceofReferralList(sourceOfreferralSearch, GetProfile().PracticeCode));
         }
         [HttpPost]
         public HttpResponseMessage ExportToExcelSourceOfReferral(SourceOfreferralSearch sourceOfreferralSearch)

@@ -278,10 +278,21 @@ namespace FOX.BusinessOperations.CommonServices
         {
             try
             {
-                var senderTypeList = _FOX_TBL_SENDER_TYPE.GetMany(t => t.PRACTICE_CODE == profile.PracticeCode && !t.DELETED && t.DISPLAY_ORDER != null)
+                List<FOX_TBL_SENDER_TYPE> senderTypeList = new List<FOX_TBL_SENDER_TYPE>();
+                if (profile.isTalkRehab)
+                {
+                    senderTypeList = _FOX_TBL_SENDER_TYPE.GetMany(t => !t.DELETED && t.DISPLAY_ORDER != null)
                     .OrderBy(t => t.DISPLAY_ORDER)
                     //.OrderBy(t => t.SENDER_TYPE_NAME)
                     .ToList();
+                }
+                else
+                {
+                    senderTypeList = _FOX_TBL_SENDER_TYPE.GetMany(t => t.PRACTICE_CODE == profile.PracticeCode && !t.DELETED && t.DISPLAY_ORDER != null)
+                    .OrderBy(t => t.DISPLAY_ORDER)
+                    //.OrderBy(t => t.SENDER_TYPE_NAME)
+                    .ToList();
+                }
                 return new ResponseGetSenderTypesModel() { SenderTypeList = senderTypeList, ErrorMessage = "", Message = "Get Sender Types List Successfully.", Success = true };
             }
             catch (Exception exception)

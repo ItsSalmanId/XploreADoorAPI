@@ -741,12 +741,12 @@ namespace FOX.BusinessOperations.SettingsService.FacilityLocationService
                 throw ex;
             }
         }
-        public List<FOX_TBL_SOURCE_OF_REFERRAL> GetSourceofReferralList(SourceOfreferralSearch sourceOfreferralSearch, UserProfile profile)
+        public List<FOX_TBL_SOURCE_OF_REFERRAL> GetSourceofReferralList(SourceOfreferralSearch sourceOfreferralSearch, long practiceCode)
         {
 
             try
             {
-                var parmPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = profile.PracticeCode };
+                var parmPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practiceCode };
 
                 SqlParameter searchString = new SqlParameter { ParameterName = "SEARCH_STRING", Value = sourceOfreferralSearch.searchString };
                 SqlParameter name = new SqlParameter { ParameterName = "NAME", Value = sourceOfreferralSearch.Code };
@@ -786,7 +786,7 @@ namespace FOX.BusinessOperations.SettingsService.FacilityLocationService
                 }
                 List<FOX_TBL_SOURCE_OF_REFERRAL> result = new List<FOX_TBL_SOURCE_OF_REFERRAL>();
                 var pathtowriteFile = exportPath + "\\" + fileName;
-                result = GetSourceofReferralList(sourceOfreferralSearch, profile);
+                result = GetSourceofReferralList(sourceOfreferralSearch, profile.PracticeCode);
                 for (int i = 0; i < result.Count(); i++)
                 {
                     result[i].ROW = i + 1;

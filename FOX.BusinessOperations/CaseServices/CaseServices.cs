@@ -1062,13 +1062,13 @@ namespace FOX.BusinessOperations.CaseServices
                 var CaseGrpIdentifierResult = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED && (t.IS_ACTIVE ?? true));
                 var OrderStatusREsult = _OrderStatusRepository.GetMany(t => !t.DELETED && (t.IS_ACTIVE ?? true));
 
-                var CaseRefSourceResult = _CaseSourceofRefRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
+                var CaseRefSourceResult = _CaseSourceofRefRepository.GetMany(t => !t.DELETED);
                 var WorkOrderResult = _WorkOrderQueueRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode && t.PATIENT_ACCOUNT == _patient_Account);
-                var StatusOfCall = _CallStatusRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
-                var StatusOfCare = _StatusofCareRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
-                var CallResult = _CallResultRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
+                var StatusOfCall = _CallStatusRepository.GetMany(t => !t.DELETED);
+                var StatusOfCare = _StatusofCareRepository.GetMany(t => !t.DELETED);
+                var CallResult = _CallResultRepository.GetMany(t => !t.DELETED);
                 var PatientData = _PatientRepository.GetSingle(t => !(t.DELETED ?? false) && t.Practice_Code == practiceCode && t.Patient_Account == _patient_Account);
-                var CallType = _CallTypeRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
+                var CallType = _CallTypeRepository.GetMany(t => !t.DELETED);
 
 
                 var CaseTreatmentTeamList = _CaseTreatmentTeamRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode && t.PATIENT_ACCOUNT.ToString() == patient_Account);
@@ -1364,17 +1364,19 @@ namespace FOX.BusinessOperations.CaseServices
         public InactiveListOfGroupIDNAndSourceOfReferral GetAllIdentifierANDSourceofReferralList(UserProfile profile)
         {
             InactiveListOfGroupIDNAndSourceOfReferral list = new InactiveListOfGroupIDNAndSourceOfReferral();
+            List<FOX_TBL_SOURCE_OF_REFERRAL> res = new List<FOX_TBL_SOURCE_OF_REFERRAL>();
             List<FOX_TBL_GROUP_IDENTIFIER> res1 = new List<FOX_TBL_GROUP_IDENTIFIER>();
             try
             {
-                var res = _CaseSourceofRefRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
                 if (profile.isTalkRehab)
                 {
                     res1 = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED);
+                    res = _CaseSourceofRefRepository.GetMany(t => !t.DELETED);
                 }
                 else
                 {
                     res1 = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
+                    res = _CaseSourceofRefRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
                 }
 
                 if (res.Any())
