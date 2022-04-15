@@ -234,7 +234,14 @@ namespace FOX.BusinessOperations.CaseServices
                     caseObj.NO_OF_WEEK = model.NO_OF_WEEK;
                     caseObj.PATIENT_RESP_INS_ID = model.PATIENT_RESP_INS_ID;
                     caseObj.HOLD_DATE = model.HOLD_DATE;
-                    caseObj.HOLD_DURATION = model.HOLD_DURATION;
+                    if (profile.isTalkRehab && model.CASE_STATUS_ID== 600102)
+                    {
+                        caseObj.HOLD_DURATION = "Pending Assignment";
+                    }
+                    else
+                    {
+                        caseObj.HOLD_DURATION = model.HOLD_DURATION;
+                    }
                     caseObj.HOLD_TILL_DATE = model.HOLD_TILL_DATE;
                     if (!string.IsNullOrEmpty(model.HOLD_FOLLOW_UP_DATE_String))
                         caseObj.HOLD_FOLLOW_UP_DATE = Convert.ToDateTime(model.HOLD_FOLLOW_UP_DATE_String);
