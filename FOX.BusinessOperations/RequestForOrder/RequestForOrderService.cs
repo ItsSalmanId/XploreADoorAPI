@@ -31,6 +31,7 @@ using System.Linq;
 using FOX.DataModels.Models.SenderType;
 using System.Threading;
 using System.Diagnostics;
+using FOX.DataModels;
 
 namespace FOX.BusinessOperations.RequestForOrder
 {
@@ -574,13 +575,16 @@ namespace FOX.BusinessOperations.RequestForOrder
 
                 if (type == "fax")
                 {
-                    PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at +1 (800) 597 - 0848 or email admit@foxrehab.org",
-                    new Font("Arial", 10));
+                    if (!EntityHelper.isTalkRehab)
+                    {
+                        PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at +1 (800) 597 - 0848 or email admit@foxrehab.org",
+                                           new Font("Arial", 10));
 
-                    // footer settings
-                    converter.Options.DisplayFooter = true;
-                    converter.Footer.Height = 50;
-                    converter.Footer.Add(text);
+                        // footer settings
+                        converter.Options.DisplayFooter = true;
+                        converter.Footer.Height = 50;
+                        converter.Footer.Add(text);
+                    }
                 }
 
                 PdfDocument doc = converter.ConvertHtmlString(htmlDoc.DocumentNode.OuterHtml);

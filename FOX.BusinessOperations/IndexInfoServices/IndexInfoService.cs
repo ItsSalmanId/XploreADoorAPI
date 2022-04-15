@@ -2869,7 +2869,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                             receivedTime = workorder.RECEIVE_DATE.HasValue ? workorder.RECEIVE_DATE.Value.ToString("hh:mm tt") : "N/A";
                         }
                     }
-                    body = body.Replace("[[SENT_TO]]", "FOX Rehab");
+                    body = body.Replace("[[SENT_TO]]", (EntityHelper.isTalkRehab)? "CareCloud Remote" : "FOX Rehab");
                 }
                 else
                 {
@@ -2877,11 +2877,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     receivedTime = Helper.GetCurrentDate().ToString("hh:mm tt");
                     if (data.IS_EMAIL)
                     {
-                        body = body.Replace("[[SENT_TO]]", data.EMAIL ?? "FOX Rehab");
+                        body = body.Replace("[[SENT_TO]]", data.EMAIL ?? ((EntityHelper.isTalkRehab) ? "CareCloud Remote" : "FOX Rehab"));
                     }
                     else
                     {
-                        body = body.Replace("[[SENT_TO]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(data.FAX) ?? "FOX Rehab");
+                        body = body.Replace("[[SENT_TO]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(data.FAX) ?? ((EntityHelper.isTalkRehab) ? "CareCloud Remote" : "FOX Rehab"));
                     }
                 }
                 var sendingDate = Helper.GetCurrentDate().ToString("MM/dd/yyyy") + " " + Helper.GetCurrentDate().ToString("hh:mm tt");
@@ -4207,7 +4207,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             var ins_name = "";
             if (curr_insurances != null)
             {
-                ins_name = _foxInsurancePayersRepository.GetFirst(t => t.DELETED == false && t.FOX_TBL_INSURANCE_ID == curr_insurances.FOX_TBL_INSURANCE_ID).INSURANCE_NAME ?? "";
+                ins_name = _foxInsurancePayersRepository.GetFirst(t => (t.DELETED == null || t.DELETED == false) && t.FOX_TBL_INSURANCE_ID == curr_insurances.FOX_TBL_INSURANCE_ID).INSURANCE_NAME ?? "";
             }
 
             if (!String.IsNullOrWhiteSpace(ins_name))
