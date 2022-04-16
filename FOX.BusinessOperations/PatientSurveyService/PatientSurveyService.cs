@@ -1,5 +1,6 @@
 ﻿using FOX.BusinessOperations.CommonService;
 using FOX.BusinessOperations.CommonServices;
+using FOX.DataModels;
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.CommonModel;
@@ -897,7 +898,25 @@ namespace FOX.BusinessOperations.PatientSurveyService
             _psSSearchData.Regions = GetPSRegionsList(practiceCode, string.Empty);
             //_psSSearchData.States = SpRepository<string>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PS_STATES_LIST");
             //_psSSearchData.Regions = _patientSurveyRepository.GetMany(x => x.PRACTICE_CODE == practiceCode).OrderBy(x => x.REGION).Select(x => x.REGION).Distinct().ToList();
-            var List = new List<FeedBackCaller>(); ;
+            var List = new List<FeedBackCaller>();
+            if (EntityHelper.isTalkRehab)
+            {
+                var rep = _roleRepository.GetSingleOrDefault(x => !x.DELETED && x.PRACTICE_CODE == practiceCode && x.ROLE_NAME == "Feedback Caller")?.ROLE_ID;
+                if (!rep.Equals(null))
+                {
+                    var _roleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.BigInt, Value = rep };
+                    var _practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
+
+                    _psSSearchData.Users = SpRepository<PSUserList>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PSR_FEEDBACK_CALLER_NAME_LIST @PRACTICE_CODE, @ROLE_ID", _practiceCode, _roleId);
+                }
+                else
+                {
+                    _psSSearchData.Users = new List<PSUserList>();
+                }
+                return _psSSearchData;
+            }
+            else
+            {
             var rep = _roleRepository.GetSingle(x => !x.DELETED && x.PRACTICE_CODE == practiceCode && x.ROLE_NAME == "Feedback Caller").ROLE_ID;
             if (!rep.Equals(null))
             {
@@ -911,6 +930,8 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 _psSSearchData.Users = new List<PSUserList>();
             }
             return _psSSearchData;
+            }
+            
         }
 
         public PSInitialData GetPSInitialData(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile)

@@ -21,6 +21,7 @@ using System.Net;
 using static FOX.BusinessOperations.CommonServices.AppConfiguration.ActiveDirectoryViewModel;
 using FOX.BusinessOperations.CommonService;
 using FoxRehabilitationAPI.Filters;
+using FOX.DataModels;
 
 namespace FoxRehabilitationAPI.Providers
 {
@@ -28,6 +29,7 @@ namespace FoxRehabilitationAPI.Providers
     {
         private readonly string _publicClientId;
         int invalidAttempts = 0;
+        private string isTalkRehab;
 
         public ApplicationOAuthProvider(string publicClientId)
         {
@@ -36,6 +38,7 @@ namespace FoxRehabilitationAPI.Providers
                 throw new ArgumentNullException("publicClientId");
             }
             _publicClientId = publicClientId;
+            isTalkRehab = string.Empty;
         }
 
         public static string GetCookie(HttpRequestMessage request, string cookieName)
@@ -55,7 +58,9 @@ namespace FoxRehabilitationAPI.Providers
                 //string h = context.OwinContext.Request.Host.Value;
                 context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
                 var form = await context.Request.ReadFormAsync();
+                isTalkRehab = form["isTalkRehab"];
 
+                EntityHelper.isTalkRehab = (!string.IsNullOrWhiteSpace(isTalkRehab) && isTalkRehab.ToLower() == "true") ? true:false;
                 //var cookie = context.Request.Cookies["count"].FirstOrDefault();
                 //if (cookie != null)
                 //{
@@ -122,6 +127,14 @@ namespace FoxRehabilitationAPI.Providers
                 ClaimsIdentity oAuthIdentity;
                 try
                 {
+                    if(!string.IsNullOrWhiteSpace(isTalkRehab) && isTalkRehab.ToLower() == "true")
+                    {
+                        tuple.Item2.isTalkRehab = true;
+                    }
+                    else
+                    {
+                        tuple.Item2.isTalkRehab = false;
+                    }
                     oAuthIdentity = await tuple.Item1.GenerateUserIdentityAsync(userManager, OAuthDefaults.AuthenticationType, tuple.Item2);
 
                 }
@@ -130,7 +143,7 @@ namespace FoxRehabilitationAPI.Providers
                     throw;
                 }
 
-                ClaimsIdentity cookiesIdentity = await tuple.Item1.GenerateUserIdentityAsync(userManager, CookieAuthenticationDefaults.AuthenticationType);
+                ClaimsIdentity cookiesIdentity = await tuple.Item1.GenerateUserIdentityAsync(userManager, CookieAuthenticationDefaults.AuthenticationType, tuple.Item2);
                 AuthenticationProperties properties = CreateProperties(tuple.Item2);
                 AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
                 context.Validated(ticket);

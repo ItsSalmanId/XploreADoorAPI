@@ -59,6 +59,8 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         bool UpdateUser(User userToUpdate, dynamic user, UserProfile profile, bool canUpdateUsers);
         void AddUpdateUserAdditionalInfo(long UserId, bool isElectronicPOC, DateTime CreatedDate, string CreatedBy, DateTime ModifiedDate, string ModifiedBy, bool Deleted);
         string RedirecToTalkEhr(UserProfile profile);
+        bool CheckisTalkrehab(string PRACTICE_CODE);
+        List<TalkRehabDisabledModules> GetTalkrehabDisabedModules();
         bool SetAutoLockTimeSetup(int time, UserProfile profile);
         bool DeleteUser(DeleteUserModel res, UserProfile profile);
         List<ActiveIndexer> GetActiveIndexers(ActiveIndexer req, UserProfile profile);

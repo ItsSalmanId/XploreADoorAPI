@@ -32,7 +32,7 @@ namespace FOX.BusinessOperations.PatientServices
         List<PatientPOSLocation> AddUpdatePatientPOSLocation(PatientPOSLocation POSData, UserProfile profile);
         List<ContactTypesForDropdown> GetPatientContactTypes(long practiceCode);
         List<BestTimeToCallForDropdown> GetPatientBestTimeToCall(long practiceCode);     
-        List<ContactType> GetAllPatientContactTypes(long practiceCode);
+        List<ContactType> GetAllPatientContactTypes(UserProfile profile);
         PatientContact GetPatientContactDetails(long patient_Account);
         PatientContact SaveContact(PatientContact contact, UserProfile profile);
         bool SSNExists(SSNExist request, UserProfile profile);

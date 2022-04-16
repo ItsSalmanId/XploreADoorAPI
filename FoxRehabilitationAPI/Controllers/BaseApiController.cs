@@ -1,4 +1,6 @@
-﻿using FOX.BusinessOperations.Security;
+﻿using FOX.BusinessOperations.CommonService;
+using FOX.BusinessOperations.Security;
+using FOX.DataModels;
 using FOX.DataModels.Models.Security;
 using FoxRehabilitationAPI.Filters;
 using FoxRehabilitationAPI.Models;
@@ -20,7 +22,10 @@ namespace FoxRehabilitationAPI.Controllers
     {
         protected UserProfile GetProfile()
         {
-            return ClaimsModel.GetUserProfile(User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
+            UserProfile profile = ClaimsModel.GetUserProfile(User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
+            EntityHelper.isTalkRehab = profile.isTalkRehab;
+            Helper.InitilizeUpdatedValues();
+            return profile;
         }
 
         ApplicationUserManager _userManager;
@@ -33,32 +38,71 @@ namespace FoxRehabilitationAPI.Controllers
             }
         }
 
+        ApplicationUserManager _talkRehabUserManager;
+        protected ApplicationUserManager TalkRehabUserManager
+        {
+            get
+            {
+                _talkRehabUserManager = new ApplicationUserManager(new UserStore<ApplicationUser>(new TalkRehabDBContext()));
+                return _talkRehabUserManager ?? Request?.GetOwinContext()?.GetUserManager<ApplicationUserManager>() ?? null;
+            }
+        }
+
         protected async System.Threading.Tasks.Task<ApplicationUser> FindProfileAsync(string userName, string password)
         {
             ApplicationUser user = new ApplicationUser();
             UserProfile userProfile = new UserProfile();
-            using (var dbContext = new ApplicationDbContext())
+            if (EntityHelper.isTalkRehab)
             {
-                var userService = new FOX.BusinessOperations.SettingsService.UserMangementService.UserManagementService();
-                userProfile = userService.GetUserProfileByName(userName);
-                if (userProfile != null)
+                using (var dbContext = new TalkRehabDBContext())
                 {
-                    user = await UserManager.FindAsync(userProfile.UserName, password);
-                    if (user == null)
+                    var userService = new FOX.BusinessOperations.SettingsService.UserMangementService.UserManagementService();
+                    userProfile = userService.GetUserProfileByName(userName);
+                    if (userProfile != null)
                     {
-                        string encryptedPass = Encrypt.getEncryptedCode(password);
-                        user = await dbContext.Users.Where(u => (u.Email.ToLower() == userName.ToLower() || u.UserName.ToLower() == userName.ToLower()) && (u.PASSWORD == encryptedPass)).FirstOrDefaultAsync();
+                        user = await TalkRehabUserManager.FindAsync(userProfile.UserName, password);
+                        if (user == null)
+                        {
+                            string encryptedPass = Encrypt.getEncryptedCode(password);
+                            user = await dbContext.Users.Where(u => (u.Email.ToLower() == userName.ToLower() || u.UserName.ToLower() == userName.ToLower()) && (u.PASSWORD == encryptedPass)).FirstOrDefaultAsync();
+                        }
+                        if (user != null)
+                        {
+                            user.UserName = user.USER_NAME = userProfile.UserName;
+                        }
+                        else
+                        {
+                            return null;
+                        }
                     }
-                    if (user != null)
-                    {
-                        user.UserName = user.USER_NAME = userProfile.UserName;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
 
+                }
+            }
+            else
+            {
+                using (var dbContext = new ApplicationDbContext())
+                {
+                    var userService = new FOX.BusinessOperations.SettingsService.UserMangementService.UserManagementService();
+                    userProfile = userService.GetUserProfileByName(userName);
+                    if (userProfile != null)
+                    {
+                        user = await UserManager.FindAsync(userProfile.UserName, password);
+                        if (user == null)
+                        {
+                            string encryptedPass = Encrypt.getEncryptedCode(password);
+                            user = await dbContext.Users.Where(u => (u.Email.ToLower() == userName.ToLower() || u.UserName.ToLower() == userName.ToLower()) && (u.PASSWORD == encryptedPass)).FirstOrDefaultAsync();
+                        }
+                        if (user != null)
+                        {
+                            user.UserName = user.USER_NAME = userProfile.UserName;
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+
+                }
             }
             return user;
         }

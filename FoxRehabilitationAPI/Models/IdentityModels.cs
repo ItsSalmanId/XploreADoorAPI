@@ -131,20 +131,41 @@ namespace FoxRehabilitationAPI.Models
         public List<RoleAndRights> ApplicationUserRoles { get; set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager, string authenticationType, UserProfile userProfile = null)
         {
-            // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
-            var userIdentity = await manager.CreateIdentityAsync(this, authenticationType);
-            try
+            if(userProfile?.isTalkRehab == false)
             {
-                // Add custom user claims here
-                if (userProfile != null)
+                // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
+                var userIdentity = await manager.CreateIdentityAsync(this, authenticationType);
+                try
                 {
-                    userIdentity.AddClaim(new Claim("UserProfile", Newtonsoft.Json.JsonConvert.SerializeObject(userProfile)));
+                    // Add custom user claims here
+                    if (userProfile != null)
+                    {
+                        userIdentity.AddClaim(new Claim("UserProfile", Newtonsoft.Json.JsonConvert.SerializeObject(userProfile)));
+                    }
+                    return userIdentity;
                 }
-                return userIdentity;
+                catch (Exception ex)
+                {
+                    return userIdentity;
+                }
             }
-            catch (Exception ex)
+            else
             {
-                return userIdentity;
+                ApplicationUserManager applicationUserManagerTalkRehab = new ApplicationUserManager(new UserStore<ApplicationUser>(new TalkRehabDBContext()));
+                var userIdentity = await applicationUserManagerTalkRehab.CreateIdentityAsync(this, authenticationType);
+                try
+                {
+                    // Add custom user claims here
+                    if (userProfile != null)
+                    {
+                        userIdentity.AddClaim(new Claim("UserProfile", Newtonsoft.Json.JsonConvert.SerializeObject(userProfile)));
+                    }
+                    return userIdentity;
+                }
+                catch (Exception ex)
+                {
+                    return userIdentity;
+                }
             }
         }
         public string RT_USER_ID { get; set; }

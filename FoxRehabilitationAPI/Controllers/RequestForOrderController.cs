@@ -21,7 +21,7 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GeneratingWorkOrder()
         {
             var profile = GetProfile();
-            var responseGeneratingWorkOrder = _RequestForOrderService.GeneratingWorkOrder(profile.PracticeCode, profile.UserName, profile.UserEmailAddress, profile.userID);
+            var responseGeneratingWorkOrder = _RequestForOrderService.GeneratingWorkOrder(profile.PracticeCode, profile.UserName, profile.UserEmailAddress, profile.userID, profile);
             var response = Request.CreateResponse(HttpStatusCode.OK, responseGeneratingWorkOrder);
             return response;
         }

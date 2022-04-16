@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
@@ -47,6 +48,7 @@ namespace FOX.DataModels.GenericRepository
         /// <returns></returns>
         public IEnumerable<TEntity> GetListWithStoreProcedure(string query, params object[] parameters)
         {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
             return Context.Database.SqlQuery<TEntity>(query, parameters);
         }
 
@@ -57,6 +59,7 @@ namespace FOX.DataModels.GenericRepository
         /// <returns></returns>
         public virtual IEnumerable<TEntity> Get()
         {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
             IQueryable<TEntity> query = DbSet;
             return query.ToList();
         }
@@ -68,6 +71,7 @@ namespace FOX.DataModels.GenericRepository
         /// <returns></returns>
         public virtual TEntity GetByID(object id)
         {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
             return DbSet.Find(id);
         }
 
@@ -77,6 +81,7 @@ namespace FOX.DataModels.GenericRepository
         /// <param name="entity"></param>
         public virtual void Insert(TEntity entity)
         {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
             DbSet.Add(entity);
         }
 
@@ -89,6 +94,7 @@ namespace FOX.DataModels.GenericRepository
         /// <param name="id"></param>
         public virtual void Delete(object id)
         {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
             TEntity entityToDelete = DbSet.Find(id);
             Delete(entityToDelete);
         }
@@ -105,6 +111,7 @@ namespace FOX.DataModels.GenericRepository
         /// <param name="entityToDelete"></param>
         public virtual void Delete(TEntity entityToDelete)
         {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
             if (Context.Entry(entityToDelete).State == EntityState.Detached)
             {
                 DbSet.Attach(entityToDelete);
@@ -118,6 +125,7 @@ namespace FOX.DataModels.GenericRepository
         /// <param name="entityToUpdate"></param>
         public virtual void Update(TEntity entityToUpdate)
         {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
             DbSet.Attach(entityToUpdate);
             Context.Entry(entityToUpdate).State = EntityState.Modified;
 
@@ -130,6 +138,11 @@ namespace FOX.DataModels.GenericRepository
         /// <returns></returns>
         public virtual List<TEntity> GetMany(Expression<Func<TEntity, bool>> where)
         {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
+            if (EntityHelper.isTalkRehab)
+            {
+                Context.Database.CommandTimeout = 300;
+            }
             return DbSet.Where(where).ToList();
         }
 
@@ -140,6 +153,7 @@ namespace FOX.DataModels.GenericRepository
         /// <returns></returns>
         public virtual IQueryable<TEntity> GetManyQueryable(Expression<Func<TEntity, bool>> where)
         {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
             return DbSet.Where(where).AsQueryable();
         }
 
@@ -150,6 +164,7 @@ namespace FOX.DataModels.GenericRepository
         /// <returns></returns>
         public TEntity Get(Func<TEntity, Boolean> where)
         {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
             return DbSet.Where(where).FirstOrDefault<TEntity>();
         }
         /// <summary>
@@ -159,6 +174,7 @@ namespace FOX.DataModels.GenericRepository
         /// <returns></returns>
         public void Delete(Expression<Func<TEntity, bool>> where)
         {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
             IQueryable<TEntity> objects = DbSet.Where(where).AsQueryable();
             //foreach (TEntity obj in objects)
             //    DbSet.Remove(obj);
@@ -171,6 +187,7 @@ namespace FOX.DataModels.GenericRepository
         /// <returns></returns>
         public virtual IEnumerable<TEntity> GetAll()
         {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
             return DbSet.ToList();
         }
 
@@ -184,6 +201,7 @@ namespace FOX.DataModels.GenericRepository
             Expression<Func<TEntity,
             bool>> predicate, params string[] include)
         {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
             IQueryable<TEntity> query = DbSet;
             query = include.Aggregate(query, (current, inc) => current.Include(inc));
             return query.Where(predicate);
@@ -196,6 +214,7 @@ namespace FOX.DataModels.GenericRepository
         /// <returns></returns>
         public bool Exists(object primaryKey)
         {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
             return DbSet.Find(primaryKey) != null;
         }
 
@@ -206,7 +225,13 @@ namespace FOX.DataModels.GenericRepository
         /// <returns>A single record that matches the specified criteria</returns>
         public TEntity GetSingle(Expression<Func<TEntity, bool>> predicate)
         {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
             return DbSet.Single(predicate);
+        }
+        public TEntity GetSingleOrDefault(Expression<Func<TEntity, bool>> predicate)
+        {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
+            return DbSet.FirstOrDefault(predicate);
         }
 
         /// <summary>
@@ -216,6 +241,7 @@ namespace FOX.DataModels.GenericRepository
         /// <returns>A single record containing the first record matching the specified criteria</returns>
         public TEntity GetFirst(Expression<Func<TEntity, bool>> predicate)
         {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
             return DbSet.FirstOrDefault(predicate);
         }
 
@@ -226,6 +252,7 @@ namespace FOX.DataModels.GenericRepository
         /// <returns>A single record containing the first record matching the specified criteria</returns>
         public void Save()
         {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
             try
             {
                 Context.SaveChanges();
@@ -260,6 +287,30 @@ namespace FOX.DataModels.GenericRepository
         {
             Context?.Dispose();
 
+        }
+        public List<TEntity> ExecuteCommand(string query, params object[] parameters)
+        {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
+            try
+            {
+                Context.Database.CommandTimeout = 300;
+                return DbSet.SqlQuery(query, parameters).ToList<TEntity>();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        private void SetDataBaseConfigurationString()
+        {
+            if (EntityHelper.isTalkRehab)
+            {
+                Context.Database.Connection.ConnectionString = ConfigurationManager.ConnectionStrings["TalkRehabConnection"].ConnectionString;
+            }
+            else
+            {
+                Context.Database.Connection.ConnectionString = ConfigurationManager.ConnectionStrings["FOXConnection"].ConnectionString;
+            }
         }
     }
 

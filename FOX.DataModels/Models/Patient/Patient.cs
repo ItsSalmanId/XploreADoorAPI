@@ -1,6 +1,7 @@
 ﻿using FOX.DataModels.HelperClasses;
 using FOX.DataModels.Models.CasesModel;
 using FOX.DataModels.Models.CommonModel;
+using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.Settings.FacilityLocation;
 using System;
 using System.Collections.Generic;
@@ -168,6 +169,8 @@ namespace FOX.DataModels.Models.Patient
         [NotMapped]
         public List<PatientInsurance> PatientInsurance { get; set; }
         [NotMapped]
+        public SmartOrderSource SmartOrderSource { get; set; }
+        [NotMapped]
         public string PCP_Name { get; set; }
         [NotMapped]
         public string PCP_Notes { get; set; }
@@ -230,6 +233,7 @@ namespace FOX.DataModels.Models.Patient
         [NotMapped]
         public string PATIENT_FINANCIAL_CLASS { get; set; }
         public bool? Address_To_Guarantor { get; set; }
+        public string Address_Type { get; set; }
 
     }
 
@@ -380,6 +384,7 @@ namespace FOX.DataModels.Models.Patient
         public string SortBy { get; set; }
         public string SortOrder { get; set; }
         public bool INCLUDE_ALIAS { get; set; }
+        public bool ISTALKREHAB { get; set; }
     }
 
     //public class ZipCityState
@@ -912,7 +917,49 @@ namespace FOX.DataModels.Models.Patient
         [NotMapped]
         public string DESCRIPTION { get; set; }
     }
+    [Table("AF_TBL_PATIENT_NEXT_OF_KIN")]
+    public class AF_TBL_PATIENT_NEXT_OF_KIN
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public long PATIENT_NEXT_OF_KIN_ID { get; set; }
 
+        public string FIRSTNAME { get; set; }
+
+        public string LASTNAME { get; set; }
+
+        public string MI { get; set; }
+
+        public string RELATIONTOPATIENT { get; set; }
+
+        public string PHONE { get; set; }
+
+        public string ADDRESS1 { get; set; }
+
+        public string ADDRESS2 { get; set; }
+
+        public string ZIP { get; set; }
+
+        public string CITY { get; set; }
+
+        public string STATE { get; set; }
+
+        public System.Nullable<long> PRACTICE_CODE { get; set; }
+
+        public System.Nullable<System.DateTime> CREATED_DATE { get; set; }
+
+        public string CREATED_BY { get; set; }
+
+        public System.Nullable<System.DateTime> MODIFIED_DATE { get; set; }
+
+        public string MODIFIED_BY { get; set; }
+
+        public System.Nullable<bool> DELETED { get; set; }
+
+        public System.Nullable<long> PATIENT_ACCOUNT { get; set; }
+        public string NOK_PHONE_TYPE { get; set; }
+
+    }
     public class ContactTypesForDropdown
     {
         public long Contact_Type_ID { get; set; }
@@ -923,7 +970,81 @@ namespace FOX.DataModels.Models.Patient
         public string RT_CODE { get; set; }
         public string DESCRIPTION { get; set; }
     }
+    [Table("Webehr_Tbl_PatientCareTeam")]
+    public class WebehrTblPatientCareTeams
+    {
+        [Key]
+        public long PatientCareTeamID { get; set; }
 
+        public long? Patient_Account { get; set; }
+
+        public long? Practice_Code { get; set; }
+
+        public string LastName { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string Relation { get; set; }
+
+        public string Address { get; set; }
+
+        public string Zip { get; set; }
+
+        public string City { get; set; }
+
+        public string State { get; set; }
+
+        public string Phone { get; set; }
+
+        public string PhoneType { get; set; }
+
+        public bool? IsCareTeamMember { get; set; }
+
+        public string Created_By { get; set; }
+
+        public DateTime? Created_Date { get; set; }
+
+        public string Modified_By { get; set; }
+
+        public DateTime? Modified_Date { get; set; }
+
+        public bool? Deleted { get; set; }
+
+        public string OtherDescription { get; set; }
+
+        public bool? IsParticipant { get; set; }
+
+        public bool? IsInfromant { get; set; }
+
+        public string MiddleName { get; set; }
+
+        public string Country { get; set; }
+
+        public bool? IsGuardian { get; set; }
+
+        public string Mothers_Maiden_Name { get; set; }
+
+        public string TAXONOMY_CODE { get; set; }
+
+        public string Suffix { get; set; }
+
+        public string Taxonomy { get; set; }
+
+        public string Title { get; set; }
+
+        public string EMAIL { get; set; }
+
+        public string SPECIALITY { get; set; }
+
+        public string Fax { get; set; }
+        public bool? REFERRINGPROVIDER { get; set; }
+        public bool? PCP { get; set; }
+        public bool? OTHER { get; set; }
+
+        public string NPI { get; set; }
+
+
+    }
     [Table("Fox_Tbl_Patient_Contact_Types")]
     public class ContactType
     {
@@ -999,6 +1120,8 @@ namespace FOX.DataModels.Models.Patient
         public string Guarant_Type { get; set; }
         public long? guarant_practice_code { get; set; }
         public string GUARANT_WORK_PHONE { get; set; }
+        public string Guarant_Relation { get; set; }
+        public string GUARANT_PHONE_TYPE { get; set; }
     }
 
     [Table("FOX_TBL_MEDICARE_LIMIT_TYPE")]
@@ -2010,4 +2133,36 @@ namespace FOX.DataModels.Models.Patient
         public int ROW { get; set; }
     }
 
+    [Table("AF_TBL_PRACTICE_ADDRESSBOOK")]
+    public class PracticeAddressBook
+    {
+        [Key]
+        public long ADDRESSBOOK_ID { get; set; }
+        public long PRACTICE_CODE { get; set; }
+        public string FIRST_NAME { get; set; }
+        public string LAST_NAME { get; set; }
+        public string FAX_NUMBER { get; set; }
+        public string PHONE_NUMBER { get; set; }
+        public string DIRECT_ADDRESS { get; set; }
+        public string EMAIL { get; set; }
+        public string SPECIALIZATION_CODE { get; set; }
+        public string SPECIALIZATION_NAME { get; set; }
+        public DateTime? CREATED_DATE { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime? MODIFIED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public bool? DELETED { get; set; }
+        public string NPI { get; set; }
+        public string REPRESENTING_ORGANIZATION { get; set; }
+        public string COMMENTS { get; set; }
+        public string ADDRESS { get; set; }
+        public string CITY { get; set; }
+        public string STATE { get; set; }
+        public string ZIP { get; set; }
+        public string PHONE_NUMBER_1_EXT { get; set; }
+        public string WORK_FOR_ORGINAZTION { get; set; }
+        public long? REFERRAL_CODE { get; set; }
+        [NotMapped]
+        public bool isIndividualProvider { get; set; }
+    }
 }
