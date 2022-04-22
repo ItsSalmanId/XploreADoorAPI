@@ -2527,8 +2527,18 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     subject = (!string.IsNullOrWhiteSpace(WORK_ID) ? "Work Order ID " + WORK_ID.ToString() : "") + " - " + (!string.IsNullOrWhiteSpace(data.SUBJECT) ? data.SUBJECT : "Query on the attached referral order");
                     string sendTo = data.EMAIL;
 
-                    bool sent = Helper.Email(sendTo, subject, body, profile, data.work_id, null, null, new List<string> { Path.Combine(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME) });
-                   
+                    //bool sent = Helper.Email(sendTo, subject, body, profile, data.work_id, null, null, new List<string> { Path.Combine(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME) });
+
+                    bool sent = false;
+                    if (profile.isTalkRehab)
+                    {
+                        sent = Helper.Email(sendTo, subject, body, profile, data.work_id, null, null, new List<string> { Path.Combine(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME) }, "NOREPLY@CARECLOUD.COM");
+                    }
+                    else
+                    {
+                        sent = Helper.Email(sendTo, subject, body, profile, data.work_id, null, null, new List<string> { Path.Combine(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME) });
+                    }
+
                     if (sent)
                     {
                         ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, body, "tempcoversletter");
