@@ -21,25 +21,47 @@ using FOX.BusinessOperations.CommonServices;
 using FOX.DataModels.Models.CommonModel;
 using FOX.DataModels.Models.OriginalQueueModel;
 using FOX.DataModels.Models.IndexInfo;
+using System.Web.Configuration;
 
 namespace FOX.BusinessOperations.CommonService
 {
     public static class Helper
     {
-        private static readonly DbContextCommon _DbContextSP = new DbContextCommon();
-        private static readonly DbContextIndexinfo _IndexinfoContext = new DbContextIndexinfo();
+        private static DbContextCommon _DbContextSP;
+        private static DbContextIndexinfo _IndexinfoContext;
         //private static readonly DBContextExceptionLog _DbContextExceptionLog = new DBContextExceptionLog();
-        private static GenericRepository<Maintenance_Counter> _MaintenanceCounterRepositry = new GenericRepository<Maintenance_Counter>(_DbContextSP);
+        private static GenericRepository<Maintenance_Counter> _MaintenanceCounterRepositry;
         //private static readonly GenericRepository<WorkOrderHistory> _WorkHistoryRepository = new GenericRepository<WorkOrderHistory>(_DbContextSP);
-        private static readonly GenericRepository<User> _UserRepository = new GenericRepository<User>(_DbContextSP);
-        private static readonly GenericRepository<Patient> _PatientRepository = new GenericRepository<Patient>(_DbContextSP);
+        private static GenericRepository<User> _UserRepository;
+        private static GenericRepository<Patient> _PatientRepository;
         //private static readonly GenericRepository<FOX_TBL_SENDER> _SenderRepository = new GenericRepository<FOX_TBL_SENDER>(_DbContextSP);
         //private static readonly GenericRepository<FOX_TBL_EXCEPTION_LOG> _ExceptionLogRepository = new GenericRepository<FOX_TBL_EXCEPTION_LOG>(_DbContextExceptionLog);
         //private static readonly GenericRepository<EmailFaxLog> _emailfaxlogRepository = new GenericRepository<EmailFaxLog>(_DbContextSP);
-        private static readonly GenericRepository<OriginalQueue> _InsertSourceAddRepository = new GenericRepository<OriginalQueue>(_DbContextSP);
-        private static readonly GenericRepository<FoxDocumentType> _foxdocumenttypeRepository = new GenericRepository<FoxDocumentType>(_IndexinfoContext);
+        private static GenericRepository<OriginalQueue> _InsertSourceAddRepository;
+        private static GenericRepository<FoxDocumentType> _foxdocumenttypeRepository;
         
-            public static long getMaximumId(string columnName)
+        static Helper()
+        {
+            _DbContextSP = new DbContextCommon();
+            _IndexinfoContext = new DbContextIndexinfo();
+            _MaintenanceCounterRepositry = new GenericRepository<Maintenance_Counter>(_DbContextSP);
+            _UserRepository = new GenericRepository<User>(_DbContextSP);
+            _PatientRepository = new GenericRepository<Patient>(_DbContextSP);
+            _InsertSourceAddRepository = new GenericRepository<OriginalQueue>(_DbContextSP);
+            _foxdocumenttypeRepository = new GenericRepository<FoxDocumentType>(_IndexinfoContext);
+        }
+        public static void InitilizeUpdatedValues()
+        {
+            _DbContextSP = new DbContextCommon();
+            _IndexinfoContext = new DbContextIndexinfo();
+            _MaintenanceCounterRepositry = new GenericRepository<Maintenance_Counter>(_DbContextSP);
+            _UserRepository = new GenericRepository<User>(_DbContextSP);
+            _PatientRepository = new GenericRepository<Patient>(_DbContextSP);
+            _InsertSourceAddRepository = new GenericRepository<OriginalQueue>(_DbContextSP);
+            _foxdocumenttypeRepository = new GenericRepository<FoxDocumentType>(_IndexinfoContext);
+        }
+
+        public static long getMaximumId(string columnName)
         {
 
             var columnNamePar = new SqlParameter("Col_Name", SqlDbType.VarChar) { Value = columnName };
@@ -125,9 +147,7 @@ namespace FOX.BusinessOperations.CommonService
                 return false;
             }
         }
-
-        //public static bool SendEmail(string messageTo, string subject, string body, List<string> CC = null, List<string> BCC = null, string senderEmail = "noreply@mtbc.com")
-        public static bool SendEmail(string messageTo, string subject, string body,long? WORK_ID = null, UserProfile profile = null, List<string> CC = null, List<string> BCC = null, string senderEmail = "foxrehab@mtbc.com")
+        public static bool SendEmail(string messageTo, string subject, string body,long? WORK_ID = null, UserProfile profile = null, List<string> CC = null, List<string> BCC = null, string senderEmail = "foxrehab@carecloud.com")
         {
             var bodyHTML = "";
             bodyHTML += "<body>";
@@ -160,6 +180,7 @@ namespace FOX.BusinessOperations.CommonService
                 msg.Body = bodyHTML;
                 msg.IsBodyHtml = true;
                 msg.Priority = MailPriority.Normal;
+                client.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["FoxRehabUserName"], WebConfigurationManager.AppSettings["FoxRehabPassword"]);
                 client.Send(msg);
                 LogEmailData(messageTo,"Success",profile,CC,BCC, senderEmail, null, WORK_ID, null);
                 return true;
@@ -172,7 +193,7 @@ namespace FOX.BusinessOperations.CommonService
         }
 
         //public static bool Email(string from, string to, string subject, string body, List<string> CC = null, List<string> BCC = null, List<string> AttachmentFilePaths = null)
-        public static bool Email(string to, string subject, string body,UserProfile profile =null, long? WORK_ID=null, List<string> CC = null, List<string> BCC = null, List<string> AttachmentFilePaths = null, string from = "foxrehab@mtbc.com")
+        public static bool Email(string to, string subject, string body,UserProfile profile =null, long? WORK_ID=null, List<string> CC = null, List<string> BCC = null, List<string> AttachmentFilePaths = null, string from = "foxrehab@carecloud.com")
         {
             bool IsMailSent = false;
             try
@@ -203,6 +224,7 @@ namespace FOX.BusinessOperations.CommonService
                                 if (File.Exists(filePth)) { mail.Attachments.Add(new Attachment(filePth)); }
                             }
                         }
+                        smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["FoxRehabUserName"], WebConfigurationManager.AppSettings["FoxRehabPassword"]);
                         smtp.Send(mail);
                         LogEmailData(to,"Success",profile,CC,BCC, from,null,WORK_ID, AttachmentFilePaths);
                         IsMailSent = true;
@@ -756,7 +778,7 @@ namespace FOX.BusinessOperations.CommonService
         {
             if (patAccount.HasValue)
             {
-                var patient = _PatientRepository.GetSingle(e => e.Patient_Account == patAccount);
+                var patient = _PatientRepository.GetFirst(e => e.Patient_Account == patAccount);
                 return patient.First_Name + " " + patient.Last_Name;
             }
             else
@@ -929,7 +951,7 @@ namespace FOX.BusinessOperations.CommonService
             return rnd.Next(10000, 99999);
         }
 
-        public static void LogEmailData(string to, string status, UserProfile profile ,List<string> CC = null, List<string> BCC = null, string senderEmail = "foxrehab@mtbc.com", Exception ex = null, long? work_id = null, List<string> attachments = null)
+        public static void LogEmailData(string to, string status, UserProfile profile ,List<string> CC = null, List<string> BCC = null, string senderEmail = "foxrehab@carecloud.com", Exception ex = null, long? work_id = null, List<string> attachments = null)
         {
             DbContextCommon _DbContextSP_New = new DbContextCommon();
             GenericRepository<EmailFaxLog> _emailfaxlogRepository = new GenericRepository<EmailFaxLog>(_DbContextSP_New);
@@ -1094,15 +1116,15 @@ namespace FOX.BusinessOperations.CommonService
         public static void SendEmailOnException(string exceptionMsg = "", string exceptionDetails = "", string subject = "")
         {
             //bool IsMailSent = false;
-            string from = "noreply@mtbc.com";
+            string from = "noreply@carecloud.com";
             //Live
-            //string to = "omermehmood@mtbc.com";
             //QA
-            string to = "abdurrafay@mtbc.com";
+            string to = "abdulsattar@carecloud.com";
             //string subject = "Exception occurred in Exception Filter";
             List<string> cc = new List<string>();
-            cc.Add("muhammadali9@mtbc.com");
-            cc.Add("abdulsattar@mtbc.com");
+            cc.Add("muhammadarslan3@carecloud.com");
+            cc.Add("adnanshah3@carecloud.com");
+            cc.Add("aftabkhan@carecloud.com");
 
             //string ccvalues = ConfigurationManager.AppSettings["CCListException"];
             //if (!string.IsNullOrWhiteSpace(ccvalues))
@@ -1142,7 +1164,7 @@ namespace FOX.BusinessOperations.CommonService
                         {
                             foreach (var item in cc) { mail.CC.Add(item); }
                         }
-
+                        smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["NoReplyUserName"], WebConfigurationManager.AppSettings["NoReplyPassword"]);
                         smtp.Send(mail);
                     }
                 }

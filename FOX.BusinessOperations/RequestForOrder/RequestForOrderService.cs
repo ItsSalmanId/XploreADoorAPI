@@ -31,6 +31,7 @@ using System.Linq;
 using FOX.DataModels.Models.SenderType;
 using System.Threading;
 using System.Diagnostics;
+using FOX.DataModels;
 
 namespace FOX.BusinessOperations.RequestForOrder
 {
@@ -92,7 +93,7 @@ namespace FOX.BusinessOperations.RequestForOrder
             _SenderTypeRepository = new GenericRepository<FOX_TBL_SENDER_TYPE>(_DbContextCommon);
 
         }
-        public ResponseGeneratingWorkOrder GeneratingWorkOrder(long practiceCode, string userName, string email, long userId)
+        public ResponseGeneratingWorkOrder GeneratingWorkOrder(long practiceCode, string userName, string email, long userId, UserProfile Profile)
         {
             OriginalQueue originalQueue = new OriginalQueue();
             //var workId = Helper.getMaximumId("WORK_ID");
@@ -110,7 +111,15 @@ namespace FOX.BusinessOperations.RequestForOrder
             originalQueue.SORCE_TYPE = "Email";
 
             var usr = _UserRepository.GetByID(userId);
-            var senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == practiceCode) && !t.DELETED);
+            FOX_TBL_SENDER_TYPE senderType = new FOX_TBL_SENDER_TYPE();
+            if (Profile.isTalkRehab)
+            {
+                senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && !t.DELETED);
+            }
+            else
+            {
+                senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == practiceCode) && !t.DELETED);
+            }
             if (usr != null)
             {
                 originalQueue.FOX_TBL_SENDER_TYPE_ID = usr.FOX_TBL_SENDER_TYPE_ID;
@@ -141,7 +150,7 @@ namespace FOX.BusinessOperations.RequestForOrder
 
             //Get all request in single call
             ICommonServices _ICommonServices = new CommonServices.CommonServices();
-            var getSenderTypes = _ICommonServices.GetSenderTypes(practiceCode);
+            var getSenderTypes = _ICommonServices.GetSenderTypes(Profile);
             var getSenderNames = _ICommonServices.GetSenderNames(
                     new DataModels.Models.CommonModel.ReqGetSenderNamesModel()
                     {
@@ -242,7 +251,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                         //string attachmentPath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
                         string attachmentPath = "";
                         //For Live
-                        List<string> _bccList = new List<string>() { "muhammadali9@mtbc.com" };
+                        List<string> _bccList = new List<string>() { "adnanshah3@carecloud.com" };
 
                         //For QA UAT
                         //List<string> _bccList = new List<string>() { "abdulsattar@mtbc.com" };
@@ -264,7 +273,10 @@ namespace FOX.BusinessOperations.RequestForOrder
                         //        <b>FOX Rehabilitates Lives.</b>
                         //        ";
 
-                        string _body = @"
+                        string _body = String.Empty;
+                        if (!Profile.isTalkRehab)
+                        {
+                            _body = @"
                         <table style='width:100%; padding:0px;background:#fff;font-family: sans-serif !important;' cellpadding='0' cellspacing='0'>
 						<tr>
 							<td style='height:15px;width:100%;'></td>
@@ -338,8 +350,77 @@ namespace FOX.BusinessOperations.RequestForOrder
 						</tr>
 					</table>
                             ";
+                        }
+                        else
+                        {
+                            _body = @"
+                        <table style='width:100%; padding:0px;background:#fff;font-family: sans-serif !important;' cellpadding='0' cellspacing='0'>
+						<tr>
+							<td style='height:15px;width:100%;'></td>
+						</tr>
+						<tr>
+							<td align='center' style='padding: 0px 20px;'>
+								<table style='width:100%;margin:0 auto;background:#fff;margin-bottom:15px;' cellpadding='0' cellspacing='0'>
+									<tr>
+										<td align='left'>
+											<img src='https://fox.mtbc.com/assets/images/talkrehab-logo.png' alt='CC Remote logo' width='150'/>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td style='height:5px;width:100%;background-color:#00a9ef; '></td>
+						</tr>
+						<tr>
+							<td style='height:15px;width:100%;'></td>
+						</tr>
+						<tr>
+							<td style='background:#fff;'>
+								<table style='width:100%;margin:0 auto;background:transparent;font-family: sans-serif !important;' cellpadding='0' cellspacing='0'>
+									<tr>
+										<td style='padding:0px 20px;'>
+											<table style='width:100%;margin:0 auto;font-family: sans-serif !important;' cellpadding='0' cellspacing='0'>
+												<tr>
+													<td style='width:100%;font-size:14px;font-family: sans-serif !important;line-height: 1.5;'>
+                                                       ***Important Message regarding your patient’s care***<br><br>
+                                                       Please login to see the request for referral from CareCloud Remote
+													</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <table style='width:250px;font-family: sans-serif !important;' cellpadding='0' cellspacing='0'>
+                                                            <tr>
+                                                                <td style='text-align: center;background-color:#00a9ef; border:1px solid #00a9ef; vertical-align:middle; line-height:normal; padding:5px 15px 5px 15px;'>
+                                                                    <a style='color:#fff; font-size:16px;text-decoration:none; outline:none;background-color:#00a9ef;' target='_blank' href='" + link + @"'>Login To CC Remote</a>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>&nbsp;</td>
+                                                    </tr>
+                                                <tr>
+                                                    <td style='line-height: 1.5'>
+                                                        <strong>Regards</strong><br>
+                                                        CareCloud Remote.                                                             
+                                                    </td>
+                                                </tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+                            ";
+                        }
 
-                        //Helper.Email("noreply@mtbc.com", requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, null, _bccList, new List<string>() { attachmentPath });
                         bool emailStatus = Helper.Email(requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath });
                         Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || Start Time of Finding WORK ID " + Helper.GetCurrentDate().ToLocalTime());
                        
@@ -494,13 +575,16 @@ namespace FOX.BusinessOperations.RequestForOrder
 
                 if (type == "fax")
                 {
-                    PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at +1 (800) 597 - 0848 or email admit@foxrehab.org",
-                    new Font("Arial", 10));
+                    if (!EntityHelper.isTalkRehab)
+                    {
+                        PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at +1 (800) 597 - 0848 or email admit@foxrehab.org",
+                                           new Font("Arial", 10));
 
-                    // footer settings
-                    converter.Options.DisplayFooter = true;
-                    converter.Footer.Height = 50;
-                    converter.Footer.Add(text);
+                        // footer settings
+                        converter.Options.DisplayFooter = true;
+                        converter.Footer.Height = 50;
+                        converter.Footer.Add(text);
+                    }
                 }
 
                 PdfDocument doc = converter.ConvertHtmlString(htmlDoc.DocumentNode.OuterHtml);

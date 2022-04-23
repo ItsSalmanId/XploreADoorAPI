@@ -1,6 +1,7 @@
 ﻿using FOX.BusinessOperations.CommonService;
 using FOX.BusinessOperations.CommonServices;
 using FOX.BusinessOperations.PatientDocumentsService;
+using FOX.DataModels;
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.CasesModel;
@@ -577,6 +578,19 @@ namespace FOX.BusinessOperations.PatientDocumentsService
         {
             GenericRepository<PatientDocumentFiles> _foxPatientdocumentFilesRepository = new GenericRepository<PatientDocumentFiles>(_PatientPATDocumentContext);
             var ExistingFiles = _foxPatientdocumentFilesRepository.GetMany(r => r.PAT_DOCUMENT_ID == objPatientDocument.PAT_DOCUMENT_ID && !r.DELETED).FirstOrDefault();
+            if (EntityHelper.isTalkRehab)
+            {
+                if (ExistingFiles != null)
+                {
+                    var ExistingDocument = _foxPatientPATdocumentRepository.GetFirst(r => r.PAT_DOCUMENT_ID == objPatientDocument.PAT_DOCUMENT_ID && r.DELETED == false);
+                    ExistingDocument.DELETED = true;
+                    _foxPatientPATdocumentRepository.Update(ExistingDocument);
+                    _foxPatientPATdocumentRepository.Save();
+                    return;
+                }
+            }
+            else
+            {
             if (ExistingFiles == null)
             {
                 var ExistingDocument = _foxPatientPATdocumentRepository.GetFirst(r => r.PAT_DOCUMENT_ID == objPatientDocument.PAT_DOCUMENT_ID && r.DELETED == false);
@@ -585,6 +599,7 @@ namespace FOX.BusinessOperations.PatientDocumentsService
                 _foxPatientPATdocumentRepository.Save();
                 return;
             }
+            }           
         }
         public void InsertInterfaceTeamData(InterfaceSynchModel obj, UserProfile Profile)
         {

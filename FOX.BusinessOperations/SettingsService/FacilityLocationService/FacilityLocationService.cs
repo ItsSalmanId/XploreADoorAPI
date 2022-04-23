@@ -980,9 +980,16 @@ namespace FOX.BusinessOperations.SettingsService.FacilityLocationService
                 throw ex;
             }
         }
-        public List<IdentifierType> GetIdentifierTypes(long practiceCode)
+        public List<IdentifierType> GetIdentifierTypes(UserProfile profile)
         {
-            return _identifierTypeRepository.GetMany(t => t.PRACTICE_CODE == practiceCode && !t.DELETED).OrderBy(t => t.NAME).ToList();
+            if (profile.isTalkRehab)
+            {
+                return _identifierTypeRepository.GetMany(t => !t.DELETED).OrderBy(t => t.NAME).ToList();
+            }
+            else
+            {
+                return _identifierTypeRepository.GetMany(t => t.PRACTICE_CODE == profile.PracticeCode && !t.DELETED).OrderBy(t => t.NAME).ToList();
+            }
         }
     }
    

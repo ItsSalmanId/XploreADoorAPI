@@ -7,10 +7,21 @@ namespace FOX.DataModels
 {
     public static class EntityHelper
     {
+        public static bool isTalkRehab;
+        static EntityHelper()
+        {
+            isTalkRehab = false;
+        }
         public static string getConnectionStringName()
         {
-
-            return "FOXConnection";
+            if (isTalkRehab == true)
+            {
+                return "TalkRehabConnection";
+            }
+            else
+            {
+                return "FOXConnection";
+            }
         }
         public static string getDB5ConnectionStringName()
         {

@@ -32,11 +32,36 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetCasesDDL(string patient_Account)
         {
             var profile = GetProfile();
-            var result = _CaseServices.GetCasesDDL(patient_Account, profile.PracticeCode);
+            var result = new object();
+            if (profile.isTalkRehab)
+            {
+                result = _CaseServices.GetCasesDDLTalRehab(patient_Account, profile.PracticeCode);
+            }
+            else
+            {
+                result = _CaseServices.GetCasesDDL(patient_Account, profile.PracticeCode);
+            }
             var response = Request.CreateResponse(HttpStatusCode.OK, result);
             return response;
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public HttpResponseMessage GetCasesDDLTalkrehab(string patientAccount, string practiceCode)
+        {
+            ResponseGetCasesDDL result = _CaseServices.GetCasesDDL(patientAccount, Convert.ToInt64(practiceCode));
+            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, result);
+            return response;
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public HttpResponseMessage GetCasesDDLTalkrehab(CasesSearchRequest casesmodel)
+        {
+            ResponseGetCasesDDL result = _CaseServices.GetCasesDDLTalkrehab(casesmodel);
+            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, result);
+            return response;
+        }
         [HttpGet]
         public HttpResponseMessage GetIdentifierList()
         {
@@ -49,7 +74,7 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetAllIdentifierANDSourceofReferralList()
         {
             var profile = GetProfile();
-            var result = _CaseServices.GetAllIdentifierANDSourceofReferralList(profile.PracticeCode);
+            var result = _CaseServices.GetAllIdentifierANDSourceofReferralList(profile);
             var response = Request.CreateResponse(HttpStatusCode.OK, result);
             return response;
         }

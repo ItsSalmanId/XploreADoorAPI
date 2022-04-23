@@ -29,7 +29,9 @@ using System.Net.NetworkInformation;
 using System.Xml;
 using System.Collections.Specialized;
 using static FOX.DataModels.Models.Security.ProfileToken;
-
+using FOX.DataModels.Models.IndexInfo;
+using FOX.DataModels.Models.OriginalQueueModel;
+using FOX.DataModels;
 namespace FOX.BusinessOperations.AccountService
 {
     public class AccountServices : IAccountServices
@@ -392,10 +394,6 @@ namespace FOX.BusinessOperations.AccountService
                                            .Replace("[[COMMENTS]]", user.COMMENTS);
                     }
                     string subjectOfAdminEmail = "New signup request: " + user.LAST_NAME + ", " + user.FIRST_NAME + ", " + user.USER_TYPE;
-                    //string sendToOfAdminEmail = "support@foxrehab.org";
-                    //string sendToOfAdminEmail = "alihassan2@mtbc.com";
-                    //string sendToOfAdminEmail = "muhammadhassan5@mtbc.com";
-                    //string sendToOfAdminEmail = "yasiramin@mtbc.com";
                     string sendToOfAdminEmail = string.Empty;
                     string firstName = string.IsNullOrEmpty(user.FIRST_NAME) ? string.Empty : user.FIRST_NAME;
                     string lastName = string.IsNullOrEmpty(user.LAST_NAME) ? string.Empty : user.LAST_NAME;
@@ -407,9 +405,7 @@ namespace FOX.BusinessOperations.AccountService
                     {
                         sendToOfAdminEmail = AppConfiguration.SendEmailToQAOnExternalUserSignUp_To;
                     }
-                    //string sendToOfAdminEmail = "asimshah4@mtbc.com";
                     List<string> _bccListOfAdminEmail = new List<string>();
-                    //Helper.SendEmail(sendToOfAdminEmail, subjectOfAdminEmail, bodyOfAdminEmail, null, _bccListOfAdminEmail, "noreply@mtbc.com");
                     if (string.IsNullOrEmpty(sendToOfAdminEmail))
                     {
                         Helper.SendEmail(sendToOfAdminEmail, subjectOfAdminEmail, bodyOfAdminEmail, null, null, null, _bccListOfAdminEmail);
@@ -512,11 +508,7 @@ namespace FOX.BusinessOperations.AccountService
                     {
                      sendToOfAdminEmail = "support@foxrehab.org";
                     }
-
-                    //string sendToOfAdminEmail = "usmanfarooq@mtbc.com";
-                    //string sendToOfAdminEmail = "asimshah4@mtbc.com";
                     List<string> _bccListOfAdminEmail = new List<string>();
-                    //Helper.SendEmail(sendToOfAdminEmail, subjectOfAdminEmail, bodyOfAdminEmail, null, _bccListOfAdminEmail, "noreply@mtbc.com");
                     Helper.SendEmail(sendToOfAdminEmail, subjectOfAdminEmail, bodyOfAdminEmail, null,null,null, _bccListOfAdminEmail);
 
                     #endregion
@@ -553,7 +545,10 @@ namespace FOX.BusinessOperations.AccountService
 
                     //}
                     ////Create Referral Source for external user
-                    //CreateExternalUserOrdRefSource(user.USER_ID);
+                    if (EntityHelper.isTalkRehab)
+                    {
+                        CreateExternalUserOrdRefSource(user.USER_ID);
+                    }
                     return new ExternalUserSignupResponseModel() { status = 1, ErrorMessage = "Account registration request submitted successfully. You'll be notified by an SMS or email once your request is processed. ", Message = "Account registration request submitted successfully. You'll be notified by an SMS or email once your request is processed.", Success = true };
                 }
                 catch (Exception ex)
@@ -563,6 +558,43 @@ namespace FOX.BusinessOperations.AccountService
             }
         }
 
+        public ReferralSource CreateExternalUserOrdRefSource(long userId)
+        {
+            try
+            {
+                var usr = _userRepository.GetFirst(e => e.USER_ID == userId && e.PRACTICE_CODE == AppConfiguration.GetPracticeCode && !e.DELETED);
+                if (usr != null)
+                {
+                    var dbReferralSource = new ReferralSource();
+                    dbReferralSource.FIRST_NAME = usr.FIRST_NAME;
+                    dbReferralSource.LAST_NAME = usr.LAST_NAME;
+                    dbReferralSource.ADDRESS = usr.ADDRESS_1;
+                    dbReferralSource.ADDRESS_2 = usr.ADDRESS_2;
+                    dbReferralSource.ZIP = usr.ZIP;
+                    dbReferralSource.CITY = usr.CITY;
+                    dbReferralSource.STATE = usr.STATE;
+                    dbReferralSource.PHONE = !string.IsNullOrEmpty(usr.WORK_PHONE) ? usr.WORK_PHONE : usr.MOBILE_PHONE;
+                    dbReferralSource.FAX = usr.FAX;
+                    dbReferralSource.DELETED = false;
+                    dbReferralSource.CREATED_BY = "CareCloud Remote";
+                    dbReferralSource.CREATED_DATE = Helper.GetCurrentDate();
+                    dbReferralSource.MODIFIED_BY = "CareCloud Remote";
+                    dbReferralSource.MODIFIED_DATE = Helper.GetCurrentDate();
+                    _fox_tbl_ordering_ref_source.Insert(dbReferralSource);
+                    _fox_tbl_ordering_ref_source.Save();
+
+                    return dbReferralSource;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         //public FOX_TBL_ORDERING_REF_SOURCE CreateExternalUserOrdRefSource(long userId)
         //{
         //    try
@@ -669,13 +701,10 @@ namespace FOX.BusinessOperations.AccountService
             {
                 sendToOfAdminEmail = AppConfiguration.SendEmailToQAOnExternalUserSignUp_To;
             }
-
-            //Helper.SendEmail(sendToOfAdminEmail, subjectOfAdminEmail, bodyOfAdminEmail, null, _bccListOfAdminEmail, "noreply@mtbc.com");
             if (!string.IsNullOrEmpty(sendToOfAdminEmail))
             {
                 Helper.SendEmail(sendToOfAdminEmail, subjectOfAdminEmail, bodyOfAdminEmail, null, null, _ccListOfAdminEmail, _bccListOfAdminEmail);
             }
-
         }
 
         public void SavePasswordHistory(dynamic user)
@@ -891,6 +920,11 @@ namespace FOX.BusinessOperations.AccountService
                         return resp;
                     }
                 }
+                if(token==null && profile.isTalkRehab)
+                {
+                    resp.Success = true;
+                    return resp;
+                }
                 resp.Success = false;
                 return resp;
             }
@@ -912,11 +946,11 @@ namespace FOX.BusinessOperations.AccountService
                         {
                             UserName = user.EMAIL,
                             Password = encryptedPassword,
-                            DeviceInfo = "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
+                            DeviceInfo = (EntityHelper.isTalkRehab)? "CC_Remote_Portal. App_Name: MTBC CC Remote. Browser: " + detectedBrowser : "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
                             AdResponse = string.Empty,
                             ServiceResponse = string.Empty,
                             CreatedDate = Helper.GetCurrentDate(),
-                            CreatedBy = "Fox_Portal",
+                            CreatedBy = (EntityHelper.isTalkRehab) ? "CC_REMOTE" : "Fox_Portal",
                             FirstName = user.FIRST_NAME,
                             LastName = user.LAST_NAME,
                             UserType = "Internal User",
@@ -932,11 +966,11 @@ namespace FOX.BusinessOperations.AccountService
                         {
                             UserName = user.Email,
                             Password = encryptedPassword,
-                            DeviceInfo = "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
+                            DeviceInfo = (EntityHelper.isTalkRehab) ? "CC_Remote_Portal. App_Name: MTBC CC Remote. Browser: " + detectedBrowser : "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
                             AdResponse = string.Empty,
                             ServiceResponse = string.Empty,
                             CreatedDate = Helper.GetCurrentDate(),
-                            CreatedBy = "Fox_Portal",
+                            CreatedBy = (EntityHelper.isTalkRehab) ? "CC_REMOTE" : "Fox_Portal",
                             FirstName = user.FIRST_NAME,
                             LastName = user.LAST_NAME,
                             UserType = "Internal User",
@@ -954,11 +988,11 @@ namespace FOX.BusinessOperations.AccountService
                         {
                             UserName = user.UserEmailAddress,
                             Password = encryptedPassword,
-                            DeviceInfo = "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
+                            DeviceInfo = (EntityHelper.isTalkRehab)? "CC_Remote_Portal. App_Name: MTBC CC Remote. Browser: " + detectedBrowser : "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
                             AdResponse = string.Empty,
                             ServiceResponse = string.Empty,
                             CreatedDate = Helper.GetCurrentDate(),
-                            CreatedBy = "Fox_Portal",
+                            CreatedBy = (EntityHelper.isTalkRehab) ? "CC_REMOTE" : "Fox_Portal",
                             FirstName = user.FirstName,
                             LastName = user.LastName,
                             UserType = "External User",
@@ -975,11 +1009,11 @@ namespace FOX.BusinessOperations.AccountService
                         {
                             UserName = user.UserEmailAddress,
                             Password = encryptedPassword,
-                            DeviceInfo = "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
+                            DeviceInfo = (EntityHelper.isTalkRehab)? "CC_Remote_Portal. App_Name: MTBC CC Remote. Browser: " + detectedBrowser : "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
                             AdResponse = string.Empty,
                             ServiceResponse = string.Empty,
                             CreatedDate = Helper.GetCurrentDate(),
-                            CreatedBy = "Fox_Portal",
+                            CreatedBy = (EntityHelper.isTalkRehab) ? "CC_REMOTE" : "Fox_Portal",
                             FirstName = user.FirstName,
                             LastName = user.LastName,
                             UserType = "External User",
@@ -996,11 +1030,11 @@ namespace FOX.BusinessOperations.AccountService
                         {
                             UserName = user.Email,
                             Password = encryptedPassword,
-                            DeviceInfo = "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
+                            DeviceInfo = (EntityHelper.isTalkRehab)? "CC_Remote_Portal. App_Name: MTBC CC Remote. Browser: " + detectedBrowser : "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
                             AdResponse = string.Empty,
                             ServiceResponse = string.Empty,
                             CreatedDate = Helper.GetCurrentDate(),
-                            CreatedBy = "Fox_Portal",
+                            CreatedBy = (EntityHelper.isTalkRehab) ? "CC_REMOTE" : "Fox_Portal",
                             FirstName = user.FirstName,
                             LastName = user.LastName,
                             UserType = "External User",
@@ -1017,11 +1051,11 @@ namespace FOX.BusinessOperations.AccountService
                         {
                             UserName = user.Email,
                             Password = encryptedPassword,
-                            DeviceInfo = "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
+                            DeviceInfo = (EntityHelper.isTalkRehab)? "CC_Remote_Portal. App_Name: MTBC CC Remote. Browser: " + detectedBrowser : "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
                             AdResponse = string.Empty,
                             ServiceResponse = string.Empty,
                             CreatedDate = Helper.GetCurrentDate(),
-                            CreatedBy = "Fox_Portal",
+                            CreatedBy = (EntityHelper.isTalkRehab) ? "CC_REMOTE" : "Fox_Portal",
                             FirstName = user.FIRST_NAME,
                             LastName = user.LAST_NAME,
                             UserType = "External User",

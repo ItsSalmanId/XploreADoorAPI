@@ -254,7 +254,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     };
                     _passwordHistoryRepository.Insert(ph);
                     _passwordHistoryRepository.Save();
-                  
+
                     var senderName = _FOX_TBL_SENDER_NAME.GetFirst(t => t.SENDER_NAME_CODE.Equals(usr.USER_NAME));
                     if (senderName == null)
                     {
@@ -332,11 +332,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     }
                     string subject = "Signup declined for FOX Rehab portal";
                     string sendTo = user.EMAIL;
-                    //string sendTo = "muhammadhassan5@mtbc.com";
-                    //string sendTo = "yasiramin@mtbc.com";
-                    //string sendTo = "asimshah4@mtbc.com";
                     List<string> _bccList = new List<string>();
-                    //Helper.SendEmail(sendTo, subject, body, null, _bccList, "noreply@mtbc.com");
                     Helper.SendEmail(sendTo, subject, body, null, profile, _bccList);
 
                     #endregion
@@ -401,8 +397,8 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 string exportPath = "";
                 string path = string.Empty;
                 bool exported;
-               request.CurrentPage = 1;
-               request.RecordPerPage = 0;
+                request.CurrentPage = 1;
+                request.RecordPerPage = 0;
                 var CalledFrom = "Users_Reports";
                 string virtualPath = @"/" + profile.PracticeDocumentDirectory + "/" + "Fox/ExportedFiles/";
                 exportPath = HttpContext.Current.Server.MapPath("~" + virtualPath);
@@ -447,7 +443,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 if(userRole !=null && !string.IsNullOrWhiteSpace(userRole.ROLE_NAME))
                 {
                     user.ROLE_NAME = userRole.ROLE_NAME.Trim();
-                }               
+                }
                 Decripted_Password_Info respnse2 = new Decripted_Password_Info();
 
                 if (!string.IsNullOrWhiteSpace(role.ROLE_NAME) && !string.IsNullOrWhiteSpace(user.EMAIL) && !string.IsNullOrWhiteSpace(profile.UserEmailAddress) && role.ROLE_NAME.ToLower().Contains("administrator") && user.EMAIL != profile.UserEmailAddress)
@@ -2646,7 +2642,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 }
                 if(ActiveIUser != null)
                 {
-                    
+
                     ActiveIUser.INDEXER = ActiveIUser.INDEXER;
                     ActiveIUser.DEFAULT_VALUE = ActiveIUser.DEFAULT_VALUE;
                     ActiveIUser.IS_ACTIVE = false;
@@ -3102,19 +3098,15 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                             }
                             else
                             {
-                                sendTo = "Carey.sambogna@foxrehab.org,muhammadali9@mtbc.com";
-                                _ccList.Add("foxsupport@mtbc.com");
+                                sendTo = "Carey.sambogna@foxrehab.org,adnanshah3@carecloud.com";
+                                _ccList.Add("foxsupport@carecloud.com");
                             }
                         }
                         else
                         {
-                            sendTo = "muhammadali9@mtbc.com,muhammadarslan3@mtbc.com";
-                            _ccList.Add("foxdev@MTBC.COM");
+                            sendTo = "adnanshah3@carecloud.com,muhammadarslan3@carecloud.com";
+                            _ccList.Add("foxdev@carecloud.com");
                         }
-                        
-                        //sendTo = "abdurrafay@mtbc.com,Javedakhtar@MTBC.COM";
-                        //_ccList.Add("usmanfarooq@MTBC.COM");
-                        //Helper.SendEmail(sendTo, subject, body, null, _bccList, "noreply@mtbc.com");
                         Helper.SendEmail(sendTo, subject, body, null, profile, _ccList);
                         #endregion
                         return true;
@@ -3135,6 +3127,24 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             }
         }
 
+        public bool CheckisTalkrehab(string practiceCode)
+        {
+            SqlParameter pracCode = new SqlParameter("@Practice_code", practiceCode);
+            var response = SpRepository<string>.GetSingleObjectWithStoreProcedure(@"Exec Af_proc_is_talkrehab_practice @Practice_code", pracCode);
+            if (response == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        public List<TalkRehabDisabledModules> GetTalkrehabDisabedModules()
+        {
+            List<TalkRehabDisabledModules> response = SpRepository<TalkRehabDisabledModules>.GetListWithStoreProcedure(@"Exec FOX_PROC_TALKREHAB_DISABLED_MODULES");
+            return response;
+        }
         public List<ActiveIndexer> GetActiveIndexers(ActiveIndexer req, UserProfile profile)
         {
             SqlParameter practiceCode = new SqlParameter("@PRACTICE_CODE", profile.PracticeCode);
@@ -3173,7 +3183,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         {
             try
             {
-               
+
                 if (oldData != null && newData != null)
                 {
                     if(oldData.DEFAULT_VALUE != newData.DEFAULT_VALUE)
@@ -3183,7 +3193,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                         {
                             if (newData.DEFAULT_VALUE.ToLower().Contains("regular"))
                             {
-                                 message = user.FIRST_NAME + " " + user.LAST_NAME + " default value set as Regular indexer";
+                                message = user.FIRST_NAME + " " + user.LAST_NAME + " default value set as Regular indexer";
                             }
                             if (newData.DEFAULT_VALUE.ToLower().Contains("poc"))
                             {
@@ -3194,7 +3204,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                                 message = user.FIRST_NAME + " " + user.LAST_NAME + " default value set as Trainee indexer";
                             }
                         }
-                         
+
                         var pID = CommonService.Helper.getMaximumId("ACTIVE_INDEXER_LOG_ID");
 
                         SqlParameter id = new SqlParameter("@ID", pID);
@@ -3315,4 +3325,4 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             }
         }
     }
-} 
+}

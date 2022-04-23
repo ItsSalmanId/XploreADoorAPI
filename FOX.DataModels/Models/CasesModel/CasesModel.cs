@@ -580,6 +580,7 @@ namespace FOX.DataModels.Models.CasesModel
         public List<COMMUNICATION_CALL_STATUS> CallStatusList { get; set; }
         public List<COMMUNICATION_STATUS_OF_CARE> StatusofCareList { get; set; }
         public Patient.Patient PatientObj { get; set; }
+        public List<Patient.Patient> PatientTalkrehab { get; set; }
         public List<FOX_TBL_COMMUNICATION_CALL_RESULT> ResultCallList { get; set; }
         public List<FOX_TBL_COMMUNICATION_CALL_TYPE> CallTypeList { get; set; }
         public List<PatientInsurance> InsuranceList { get; set; }
@@ -987,6 +988,18 @@ namespace FOX.DataModels.Models.CasesModel
         public string REFERRAL_REGION_CODE { get; set; }
         public string REFERRAL_REGION_NAME { get; set; }
         public string REFERRAL_REGION { get; set; }
+    }
+    public class CasesSearchRequest
+    {
+        public long ProviderCode { get; set; }
+        public long LocationCode { get; set; }
+        public string ProviderName { get; set; }
+        public string LocationName { get; set; }
+        public int StatusId { get; set; }
+        public string StatusName { get; set; }
+        public int PageIndex { get; set; }
+        public int PageSize { get; set; }
+        public long PracticeCode { get; set; }    
     }
 
 

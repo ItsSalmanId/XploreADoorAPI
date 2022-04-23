@@ -25,5 +25,6 @@ namespace FoxRehabilitationAPI.Models
     public class ValidatePassword: BaseModel
     {
         public string password { get; set; }
+        public bool isTalkRehab { set; get; }
     }
 }
