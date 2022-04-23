@@ -40,7 +40,7 @@ namespace FOX.DataModels.GenericRepository
         #endregion
 
         #region Public member methods...
-       
+
 
         /// <summary>
         /// generic Execute SP
@@ -274,7 +274,7 @@ namespace FOX.DataModels.GenericRepository
                 foreach (var item in outputLines)
                 {
                     HelperClasses.Helper.LogException(item);
-                }                
+                }
                 throw e;
             }
 
@@ -303,11 +303,11 @@ namespace FOX.DataModels.GenericRepository
         }
         private void SetDataBaseConfigurationString()
         {
-            if (EntityHelper.isTalkRehab)
+            if (EntityHelper.isTalkRehab && (Context.Database.Connection.ConnectionString != ConfigurationManager.ConnectionStrings["TalkRehabConnection"].ConnectionString))
             {
                 Context.Database.Connection.ConnectionString = ConfigurationManager.ConnectionStrings["TalkRehabConnection"].ConnectionString;
             }
-            else
+            else if (!EntityHelper.isTalkRehab && (Context.Database.Connection.ConnectionString != ConfigurationManager.ConnectionStrings["FOXConnection"].ConnectionString))
             {
                 Context.Database.Connection.ConnectionString = ConfigurationManager.ConnectionStrings["FOXConnection"].ConnectionString;
             }
