@@ -421,7 +421,19 @@ namespace FOX.BusinessOperations.RequestForOrder
                             ";
                         }
 
-                        bool emailStatus = Helper.Email(requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath });
+                        //Helper.Email("noreply@mtbc.com", requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, null, _bccList, new List<string>() { attachmentPath });
+                        //bool emailStatus = Helper.Email(requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath });
+
+                        bool emailStatus = false;
+                        if (Profile.isTalkRehab)
+                        {
+                            emailStatus = Helper.Email(requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath }, "NOREPLY@CARECLOUD.COM");
+                        }
+                        else
+                        {
+                            emailStatus = Helper.Email(requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath });
+                        }
+
                         Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || Start Time of Finding WORK ID " + Helper.GetCurrentDate().ToLocalTime());
                        
                         var queueResult = _QueueRepository.GetFirst(s => s.WORK_ID == requestSendEmailModel.WorkId && s.DELETED == false);
