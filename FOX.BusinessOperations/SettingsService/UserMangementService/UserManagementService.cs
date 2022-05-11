@@ -3324,5 +3324,52 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 return true;
             }
         }
+        List<UserTeamModel> IUserManagementService.UpdateUserTeam(UserProfile profile, string callerUserID, string filter)
+        {
+            var result = new List<UserTeamModel>();
+            string[] teamID = callerUserID.Split(',');
+            long[] teamIDArray = new long[teamID.Length];
+            int i = 0;
+            foreach (string ID in teamID)
+            {
+                if(ID != "")
+                {
+                    //teamIDArray[i] = long.Parse(ID);
+                    SqlParameter userTeamID = new SqlParameter { ParameterName = "USER_TEAM_ID", SqlDbType = SqlDbType.BigInt, Value = Helper.getMaximumId("USER_TEAM_ID") };
+                    SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = profile.userID };
+                    SqlParameter phdCallScenareioID = new SqlParameter { ParameterName = "PHD_CALL_SCENARIO_ID", SqlDbType = SqlDbType.BigInt, Value = ID };
+                    SqlParameter practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                    SqlParameter filterForCheck = new SqlParameter { ParameterName = "FILTER", SqlDbType = SqlDbType.VarChar, Value = filter};
+                    SqlParameter counter = new SqlParameter { ParameterName = "COUNTER", SqlDbType = SqlDbType.BigInt, Value = 0};
+                    result = SpRepository<UserTeamModel>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_USER_TEAM @USER_TEAM_ID, @USER_ID, @PHD_CALL_SCENARIO_ID ,@PRACTICE_CODE,@COUNTER,@FILTER", userTeamID, userID, phdCallScenareioID, practiceCode,counter, filterForCheck);
+                }
+                /*if (author.Trim() != "")
+                    Console.WriteLine(author);*/
+            }
+            //int[] tokensArray = Array.ConvertAll(tokens, s => int.Parse(s));
+
+            /*SqlParameter practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+            SqlParameter callAttendedBy = new SqlParameter { ParameterName = "CALL_ATTENDED_BY", SqlDbType = SqlDbType.BigInt, Value = tokensArray };
+            var result = SpRepository<UserTeamModel>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_USER_TEAM @PRACTICE_CODE, @CALL_ATTENDED_BY", practiceCode, callAttendedBy);
+            *///IEnumerable<UserTeamModel> userTeamModel = null;
+            //if (result != null)
+            //{
+            //    userTeamModel = result.Select(c => new UserTeamModel
+            //    {
+            //        PHD_CALL_SCENARIO_ID = c.PHD_CALL_SCENARIO_ID,
+                   
+            //    });
+            //    if (userTeamModel != null)
+            //    {
+            //        result = userTeamModel.ToList();
+            //    }
+            //}
+            //else
+            //{
+            //    return result = new List<UserTeamModel>();
+            //}
+            return result;
+            throw new NotImplementedException();
+        }
     }
 }
