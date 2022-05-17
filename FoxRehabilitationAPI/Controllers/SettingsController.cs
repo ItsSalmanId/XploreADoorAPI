@@ -55,7 +55,7 @@ namespace FoxRehabilitationAPI.Controllers
             bool canUpdateUser = _userServices.CanUserUpdateUser(profile);
             if (userToUpdate == null && !_accountServices.CheckIfEmailAlreadyInUse(new EmailExist() { EMAIL = user.EMAIL }))
             {
-                string password = HttpUtility.UrlDecode( user.PASSWORD);
+                string password = HttpUtility.UrlDecode(user.PASSWORD);
 
                 user.USER_ID = Helper.getMaximumId("USER_ID");
                 user.USER_NAME = $"{user.LAST_NAME.Trim()}_{user.USER_ID}";
@@ -79,7 +79,7 @@ namespace FoxRehabilitationAPI.Controllers
                 //    _userServicess.AddUpdateReferralSourceInfo(user.USER_NAME, profile);
 
                 //}
-                return Request.CreateResponse(HttpStatusCode.OK, profile);
+                return Request.CreateResponse(HttpStatusCode.OK, user);
             }
             else
             {
@@ -393,7 +393,7 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpPost]
         public HttpResponseMessage GetGroupIdentifierList(GroupIdentifierSearch groupIdentifierSearch)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _facilityLocationService.GetGroupIdentifierList(groupIdentifierSearch,GetProfile().PracticeCode));
+            return Request.CreateResponse(HttpStatusCode.OK, _facilityLocationService.GetGroupIdentifierList(groupIdentifierSearch, GetProfile().PracticeCode));
         }
         [HttpPost]
         public HttpResponseMessage ExportToExcelGetGroupIdentifier(GroupIdentifierSearch groupIdentifierSearch)
@@ -506,7 +506,7 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage CheckisTalkrehab(string practiceCode)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _userServices.CheckisTalkrehab(practiceCode));
-        } 
+        }
         [HttpGet]
         [AllowAnonymous]
         public HttpResponseMessage GetTalkrehabDisabedModules()
@@ -552,6 +552,18 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage CheckActiveStatus()
         {
             return Request.CreateResponse(HttpStatusCode.OK, _userServices.CheckActiveStatus(GetProfile()));
+        }
+        [HttpGet]
+        public HttpResponseMessage AddUserTeam(string callerUserID, string userID)
+        {
+            if (!string.IsNullOrEmpty(callerUserID))
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _userServices.AddUserTeam(GetProfile(), callerUserID, userID));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Caller User ID is Empty");
+            }
         }
     }
 }
