@@ -356,4 +356,19 @@ namespace FOX.DataModels.Models.Security
         public string MODIFIED_BY { get; set; }
         public bool DELETED { get; set; }
     }
+    
+    public class GetTeamList
+    {
+        [Key]
+        public long PHD_CALL_SCENARIO_ID { get; set; }
+        public long PRACTICE_CODE { get; set; }
+        public string NAME { get; set; }
+        public string DESCRIPTION { get; set; }
+        public DateTime CREATED_DATE { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime MODIFIED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public bool DELETED { get; set; }
+        public bool IS_CHECK_DISABLED { get; set; }
+    }
 }

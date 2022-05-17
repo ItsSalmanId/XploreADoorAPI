@@ -558,12 +558,17 @@ namespace FoxRehabilitationAPI.Controllers
         {
             if (!string.IsNullOrEmpty(callerUserID))
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _userServices.UpdateUserTeam(GetProfile(), callerUserID,filter));
+                return Request.CreateResponse(HttpStatusCode.OK, _userServices.UpdateUserTeam(GetProfile(), callerUserID, filter));
             }
             else
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Caller User ID is Empty");
             }
+        }
+        [HttpGet]
+        public HttpResponseMessage GetTeamList(string roleID)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _userServices.GetTeamList(roleID, GetProfile()));
         }
     }
 }
