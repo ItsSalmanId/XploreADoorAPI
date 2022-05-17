@@ -3354,5 +3354,28 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             }
 
         }
+      
+        //  this function get team list 
+        public List<GetTeamList> GetTeamList(string roleID, UserProfile profile)
+        {
+            var result = new List<GetTeamList>();
+            try { 
+          
+            if (roleID != null && profile.PracticeCode != null)
+            {
+                SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                SqlParameter roleId = new SqlParameter { ParameterName = "USER_ROLE_ID", SqlDbType = SqlDbType.BigInt, Value = roleID };
+                result = SpRepository<GetTeamList>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PRACTICE_TEAM @USER_ID, @USER_ROLE_ID",  userID, roleId);
+                return result;
+            }
+            }
+            catch(Exception ex)
+            {
+                
+                throw ex;
+            }
+            return result;
+
+        }
     }
 }

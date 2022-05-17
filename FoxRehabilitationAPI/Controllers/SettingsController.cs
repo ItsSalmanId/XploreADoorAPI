@@ -565,6 +565,12 @@ namespace FoxRehabilitationAPI.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Caller User ID is Empty");
             }
         }
+
+        [HttpGet]
+        public HttpResponseMessage GetTeamList(string roleID)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _userServices.GetTeamList(roleID, GetProfile()));
+        }
     }
 }
 
