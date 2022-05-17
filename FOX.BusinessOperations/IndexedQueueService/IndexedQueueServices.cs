@@ -55,7 +55,7 @@ namespace FOX.BusinessOperations.IndexedQueueService
             // select * from FOX_TBL_WORK_QUEUE where UNIQUE_ID = '5447928_2'
 
             string uqId = req?.FirstOrDefault().UNIQUE_ID ?? "";
-            var queue = _QueueRepository.Get(t => t.UNIQUE_ID.Equals(uqId));
+            var queue = _QueueRepository.GetFirst(t => t.UNIQUE_ID.Equals(uqId));
             long CurrrentParentID = queue?.WORK_ID ?? 0;
 
             var workID = req.FirstOrDefault().WORK_ID;
@@ -63,7 +63,7 @@ namespace FOX.BusinessOperations.IndexedQueueService
             if (a.Contains("_"))
             {
                 var arr = a.Split('_').ToArray();
-                workID = Convert.ToInt32(arr[0]);
+                workID = Convert.ToInt64(arr[0]);
             }
 
             var workQueue = os.SaveQueueFromOldQueueData(workID, profile, numberOfPages, CurrrentParentID);
