@@ -70,5 +70,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         string ExportToExcelHistory(ActiveIndexerHistory req, UserProfile profile);
         bool CheckActiveStatus(UserProfile profile);
         string ExportToExcelUsersReport(UserRequest req, UserProfile profile);
+        List<GetTeamList> GetTeamList(string req, UserProfile profile);
+        List<UserTeamModel> UpdateUserTeam(UserProfile profile,string userId, string callerUserID, string filter);
     }
 }

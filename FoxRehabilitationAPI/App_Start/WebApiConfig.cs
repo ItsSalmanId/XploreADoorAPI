@@ -31,6 +31,8 @@ namespace FoxRehabilitationAPI
 
             string Origins = @"
                                 http://localhost:14479,
+                                http://localhost:4200,
+                                http://172.16.0.207:6893,
                                 https://uatfox.mtbc.com,
                                 https://stagingfox.mtbc.com,
                                 https://stagingfox2.mtbc.com,

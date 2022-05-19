@@ -553,6 +553,30 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _userServices.CheckActiveStatus(GetProfile()));
         }
+        [HttpGet]
+        public HttpResponseMessage GetTeamList(string roleID)
+        {
+            if (!string.IsNullOrEmpty(roleID))
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _userServices.GetTeamList(roleID, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Role ID is Empty");
+            }
+        }
+        [HttpGet]
+        public HttpResponseMessage UpdateUserTeam(string userId,string callerUserID, string filter)
+        {
+            if (!string.IsNullOrEmpty(callerUserID))
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _userServices.UpdateUserTeam(GetProfile(),userId, callerUserID, filter));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Caller User ID is Empty");
+            }
+        }
     }
 }
 

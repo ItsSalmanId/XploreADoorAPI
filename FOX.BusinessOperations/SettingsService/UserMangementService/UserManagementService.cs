@@ -3324,5 +3324,55 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 return true;
             }
         }
+        //  this function get team list 
+        public List<GetTeamList> GetTeamList(string roleID, UserProfile profile)
+        {
+            var result = new List<GetTeamList>();
+            try
+            {
+
+                if (roleID != null && profile.PracticeCode != null)
+                {
+                    SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                    SqlParameter roleId = new SqlParameter { ParameterName = "USER_ROLE_ID", SqlDbType = SqlDbType.BigInt, Value = roleID };
+                    result = SpRepository<GetTeamList>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PRACTICE_TEAM @USER_ID, @USER_ROLE_ID", userID, roleId);
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            return result;
+
+        }
+        List<UserTeamModel> IUserManagementService.UpdateUserTeam(UserProfile profile,string userId, string callerUserID, string filter)
+        {
+            var result = new List<UserTeamModel>();
+            string[] teamID = callerUserID.Split(',');
+            long[] teamIDArray = new long[teamID.Length];
+            
+            int i = 0;
+            foreach (string ID in teamID)
+            {
+                if (ID != "")
+                {
+                    //teamIDArray[i] = long.Parse(ID);
+                    SqlParameter userTeamID = new SqlParameter { ParameterName = "USER_TEAM_ID", SqlDbType = SqlDbType.BigInt, Value = Helper.getMaximumId("USER_TEAM_ID") };
+                    SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = userId};
+                    SqlParameter phdCallScenareioID = new SqlParameter { ParameterName = "PHD_CALL_SCENARIO_ID", SqlDbType = SqlDbType.BigInt, Value = ID };
+                    SqlParameter practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                    SqlParameter filterForCheck = new SqlParameter { ParameterName = "FILTER", SqlDbType = SqlDbType.VarChar, Value = filter };
+                    SqlParameter counter = new SqlParameter { ParameterName = "COUNTER", SqlDbType = SqlDbType.BigInt, Value = 0 };
+                    result = SpRepository<UserTeamModel>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_USER_TEAM @USER_TEAM_ID, @USER_ID, @PHD_CALL_SCENARIO_ID ,@PRACTICE_CODE,@COUNTER,@FILTER", userTeamID, userID, phdCallScenareioID, practiceCode, counter, filterForCheck);
+                }
+            }
+            return result;
+            throw
+
+
+              new NotImplementedException();
+        }
     }
 }
