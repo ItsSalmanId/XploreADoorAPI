@@ -3374,5 +3374,32 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
 
               new NotImplementedException();
         }
+
+
+        List<UserTeamModel> IUserManagementService.UpdateUserTeamV2(List<UserTeamModelV2> userTeamModelV2s)
+        {
+            var result = new List<UserTeamModel>();
+
+
+            foreach (UserTeamModelV2 ID in userTeamModelV2s)
+            {
+                if (userTeamModelV2s.Count != null)
+                {
+                    //teamIDArray[i] = long.Parse(ID);
+                    SqlParameter userTeamID = new SqlParameter { ParameterName = "USER_TEAM_ID", SqlDbType = SqlDbType.BigInt, Value = Helper.getMaximumId("USER_TEAM_ID") };
+                    SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(ID.USER_ID) };
+                    SqlParameter phdCallScenareioID = new SqlParameter { ParameterName = "PHD_CALL_SCENARIO_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(ID.PHD_CALL_SCENARIO_ID) };
+                    SqlParameter practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = 1011163};
+                    SqlParameter filterForCheck = new SqlParameter { ParameterName = "FILTER", SqlDbType = SqlDbType.Bit, Value = Convert.ToInt64(ID.DELETED )};
+                    SqlParameter counter = new SqlParameter { ParameterName = "COUNTER", SqlDbType = SqlDbType.BigInt, Value = 0 };
+                    result = SpRepository<UserTeamModel>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_USER_TEAM @USER_TEAM_ID, @USER_ID, @PHD_CALL_SCENARIO_ID ,@PRACTICE_CODE,@COUNTER,@FILTER", userTeamID, userID, phdCallScenareioID, practiceCode, counter, filterForCheck);
+                }
+            }
+            return result;
+            throw
+
+
+              new NotImplementedException();
+        }
     }
 }

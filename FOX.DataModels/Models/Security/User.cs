@@ -368,4 +368,18 @@ namespace FOX.DataModels.Models.Security
         public string MODIFIED_BY { get; set; }
         public bool DELETED { get; set; }
     }
+
+    public class UserTeamModelV2
+    {
+        [Key]
+        public string     USER_TEAM_ID { get; set; }
+        public string     USER_ID { get; set; }
+        public string     PHD_CALL_SCENARIO_ID { get; set; }
+        public string     PRACTICE_CODE { get; set; }
+        public string CREATED_DATE { get; set; }
+        public string   CREATED_BY { get; set; }
+        public string MODIFIED_DATE { get; set; }
+        public string   MODIFIED_BY { get; set; }
+        public string     DELETED { get; set; }
+    }
 }

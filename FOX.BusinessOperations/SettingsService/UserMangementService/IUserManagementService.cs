@@ -72,5 +72,6 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         string ExportToExcelUsersReport(UserRequest req, UserProfile profile);
         List<GetTeamList> GetTeamList(string req, UserProfile profile);
         List<UserTeamModel> UpdateUserTeam(UserProfile profile,string userId, string callerUserID, string filter);
+        List<UserTeamModel> UpdateUserTeamV2(List<UserTeamModelV2> userTeamModelV2s);
     }
 }
