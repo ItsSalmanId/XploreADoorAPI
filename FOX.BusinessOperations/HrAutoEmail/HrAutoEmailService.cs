@@ -44,7 +44,7 @@ namespace FOX.BusinessOperations.HrAutoEmail
                 {
                     var result = _hrAutoEmailRepository.GetAll().Where(h => h.DELETED == false && h.PRACTICE_CODE == userProfile.PracticeCode).Select(s => s.NAME.Trim().ToLower()).Contains(hrAutoEmail.NAME.Trim().ToLower());
 
-                    if(!result)
+                    if (!result)
                     {
                         hrAutoEmail.HR_CONFIGURE_ID = Helper.getMaximumId("HR_CONFIGURE_ID");
                         hrAutoEmail.PRACTICE_CODE = userProfile.PracticeCode;
@@ -68,7 +68,7 @@ namespace FOX.BusinessOperations.HrAutoEmail
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.Success = false;
                 response.ErrorMessage = "";
@@ -164,7 +164,7 @@ namespace FOX.BusinessOperations.HrAutoEmail
                         HR_CONFIGURE_ID = s.HR_CONFIGURE_ID,
                         PRACTICE_CODE = s.PRACTICE_CODE,
                         CREATED_DATE = s.CREATED_DATE
-                    }).Distinct().ToList().OrderByDescending(s =>s.CREATED_DATE);
+                    }).Distinct().ToList().OrderByDescending(s => s.CREATED_DATE);
                 }
                 return distinctNames;
             }
@@ -271,7 +271,7 @@ namespace FOX.BusinessOperations.HrAutoEmail
 
                         var configureId = hrEmailDocumentFileAll[0].HR_CONFIGURE_ID;
 
-                        if(configureId != null)
+                        if (configureId != null)
                         {
                             var result = _hrAutoEmailRepository.GetFirst(f => f.HR_CONFIGURE_ID == configureId && !f.DELETED).NAME;
                             string uploadFilesPath = basePath + "\\" + result;
@@ -294,7 +294,7 @@ namespace FOX.BusinessOperations.HrAutoEmail
                             }
 
                         }
-                    }                   
+                    }
                     foreach (var item in hrEmailDocumentFileAll)
                     {
                         item.HR_MTBC_EMAIL_DOCUMENT_FILE_ID = Helper.getMaximumId("HR_MTBC_EMAIL_DOCUMENT_FILE_ID");
@@ -312,7 +312,7 @@ namespace FOX.BusinessOperations.HrAutoEmail
                     response.Message = "HR Auto Email Document Files Added successfully";
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.Success = false;
                 response.ErrorMessage = "";
@@ -341,13 +341,13 @@ namespace FOX.BusinessOperations.HrAutoEmail
                     response.ErrorMessage = "";
                     response.Message = "HR Auto Email Configure Note Updated.";
                 }
-                else if (ExistingHrAutoEmailDetail.NAME.Trim().ToLower() != newStr.Trim().ToLower() &&  result == true )
+                else if (ExistingHrAutoEmailDetail.NAME.Trim().ToLower() != newStr.Trim().ToLower() && result == true)
                 {
                     response.Success = false;
                     response.ErrorMessage = "";
                     response.Message = "HR Auto Email Configure Note Updated.";
                 }
-                else if(ExistingHrAutoEmailDetail != null && ExistingHrAutoEmailDetail.NAME != null && !string.IsNullOrWhiteSpace(ExistingHrAutoEmailDetail.NAME))
+                else if (ExistingHrAutoEmailDetail != null && ExistingHrAutoEmailDetail.NAME != null && !string.IsNullOrWhiteSpace(ExistingHrAutoEmailDetail.NAME))
                 {
                     ExistingHrAutoEmailDetail.NAME = hrAutoEmail.NAME;
                     ExistingHrAutoEmailDetail.MODIFIED_DATE = Helper.GetCurrentDate();
@@ -360,7 +360,7 @@ namespace FOX.BusinessOperations.HrAutoEmail
                     response.Message = "HR Auto Email Configure Updated successfully";
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response.Success = false;
                 response.ErrorMessage = "";

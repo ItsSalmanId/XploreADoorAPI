@@ -52,7 +52,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 }
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -70,7 +70,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
             string _subject = string.Empty;
             string sendTo = string.Empty;
             string link = string.Empty;
-            List<right> rightList = new List<right>() ;
+            List<right> rightList = new List<right>();
             string MRN = "";
             var dbSurvey = _patientSurveyRepository.GetByID(patientSurvey.SURVEY_ID);
             if (dbSurvey != null) //update
@@ -116,7 +116,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                         dbSurvey.SURVEY_FLAG = null;
                         dbSurvey.IS_PROTECTIVE_EQUIPMENT = null;
                     }
-                    if(patientSurvey.SURVEY_STATUS_BASE.Equals("Incomplete") && (patientSurvey.SURVEY_STATUS_CHILD.Equals("Callback") || patientSurvey.SURVEY_STATUS_CHILD.Equals("New Case Same Discipline")))
+                    if (patientSurvey.SURVEY_STATUS_BASE.Equals("Incomplete") && (patientSurvey.SURVEY_STATUS_CHILD.Equals("Callback") || patientSurvey.SURVEY_STATUS_CHILD.Equals("New Case Same Discipline")))
                     {
                         dbSurvey.FEEDBACK = patientSurvey.FEEDBACK;
                     }
@@ -126,7 +126,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                         dbSurvey.SURVEY_FLAG = patientSurvey.SURVEY_FLAG;
                     }
                 }
-                if(patientSurvey.ACTIVE_FORMAT == "New Format")
+                if (patientSurvey.ACTIVE_FORMAT == "New Format")
                 {
                     dbSurvey.SURVEY_FORMAT_TYPE = "New Format";
                 }
@@ -156,7 +156,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 var resPartyPhone = new SqlParameter { ParameterName = "@RESPONSIBLE_PARTY_TELEPHONE", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.RESPONSIBLE_PARTY_TELEPHONE ?? null };
                 var restPartySSN = new SqlParameter { ParameterName = "@RESPONSIBLE_PARTY_SSN", SqlDbType = SqlDbType.Char, Value = dbSurvey.RESPONSIBLE_PARTY_SSN ?? null };
                 var restPartSex = new SqlParameter { ParameterName = "@RESPONSIBLE_PARTY_SEX", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.RESPONSIBLE_PARTY_SEX ?? null };
-                var restPartDOB = new SqlParameter { ParameterName = "@RESPONSIBLE_PARTY_DATE_OF_BIRTH", SqlDbType = SqlDbType.DateTime, Value = dbSurvey.RESPONSIBLE_PARTY_DATE_OF_BIRTH ?? null};
+                var restPartDOB = new SqlParameter { ParameterName = "@RESPONSIBLE_PARTY_DATE_OF_BIRTH", SqlDbType = SqlDbType.DateTime, Value = dbSurvey.RESPONSIBLE_PARTY_DATE_OF_BIRTH ?? null };
                 var patLastName = new SqlParameter { ParameterName = "@PATIENT_LAST_NAME", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.PATIENT_LAST_NAME ?? null };
                 var patFirstName = new SqlParameter { ParameterName = "@PATIENT_FIRST_NAME", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.PATIENT_FIRST_NAME ?? null };
                 var patMidName = new SqlParameter { ParameterName = "@PATIENT_MIDDLE_INITIAL", SqlDbType = SqlDbType.Char, Value = dbSurvey.PATIENT_MIDDLE_INITIAL ?? null };
@@ -177,28 +177,28 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 var servicePaymentDesc = new SqlParameter { ParameterName = "@SERVICE_OR_PAYMENT_DESCRIPTION", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.SERVICE_OR_PAYMENT_DESCRIPTION ?? null };
                 var provider = new SqlParameter { ParameterName = "@PROVIDER", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.PROVIDER ?? null };
                 var region = new SqlParameter { ParameterName = "@REGION", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.REGION ?? null };
-                var lastVisitDate = new SqlParameter { ParameterName = "@LAST_VISIT_DATE", SqlDbType = SqlDbType.DateTime, Value = dbSurvey.LAST_VISIT_DATE ?? null};
+                var lastVisitDate = new SqlParameter { ParameterName = "@LAST_VISIT_DATE", SqlDbType = SqlDbType.DateTime, Value = dbSurvey.LAST_VISIT_DATE ?? null };
                 var dischargeDate = new SqlParameter { ParameterName = "@DISCHARGE_DATE", SqlDbType = SqlDbType.DateTime, Value = dbSurvey.DISCHARGE_DATE ?? null };
                 var attendingDocName = new SqlParameter { ParameterName = "@ATTENDING_DOCTOR_NAME", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.ATTENDING_DOCTOR_NAME ?? null };
                 var ptOtSlp = new SqlParameter { ParameterName = "@PT_OT_SLP", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.PT_OT_SLP ?? null };
                 var referralDate = new SqlParameter { ParameterName = "@REFERRAL_DATE", SqlDbType = SqlDbType.DateTime, Value = dbSurvey.REFERRAL_DATE ?? null };
                 var procTranCode = new SqlParameter { ParameterName = "@PROCEDURE_OR_TRAN_CODE", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.PROCEDURE_OR_TRAN_CODE ?? null };
-                var servicePaymentAmnt = new SqlParameter { ParameterName = "@SERVICE_OR_PAYMENT_AMOUNT", SqlDbType = SqlDbType.Money, Value = dbSurvey.SERVICE_OR_PAYMENT_AMOUNT ?? null};
+                var servicePaymentAmnt = new SqlParameter { ParameterName = "@SERVICE_OR_PAYMENT_AMOUNT", SqlDbType = SqlDbType.Money, Value = dbSurvey.SERVICE_OR_PAYMENT_AMOUNT ?? null };
                 var isContactHQ = new SqlParameter { ParameterName = "@IS_CONTACT_HQ", SqlDbType = SqlDbType.Bit, Value = dbSurvey.IS_CONTACT_HQ ?? null };
                 var isResponsedByHq = new SqlParameter { ParameterName = "@IS_RESPONSED_BY_HQ", SqlDbType = SqlDbType.Bit, Value = dbSurvey.IS_RESPONSED_BY_HQ ?? null };
                 var isQuestionAnswered = new SqlParameter { ParameterName = "@IS_QUESTION_ANSWERED", SqlDbType = SqlDbType.Bit, Value = dbSurvey.IS_QUESTION_ANSWERED ?? null };
                 var isReferrable = new SqlParameter { ParameterName = "@IS_REFERABLE", SqlDbType = SqlDbType.Bit, Value = dbSurvey.IS_REFERABLE ?? null };
                 var isImprovedSetisfaction = new SqlParameter { ParameterName = "@IS_IMPROVED_SETISFACTION", SqlDbType = SqlDbType.Bit, Value = dbSurvey.IS_IMPROVED_SETISFACTION ?? null };
                 var feedback = new SqlParameter { ParameterName = "@FEEDBACK", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.FEEDBACK ?? null };
-                var surveyFlag = new SqlParameter { ParameterName = "@SURVEY_FLAG", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.SURVEY_FLAG ?? null};
-                var surveyStatusBase = new SqlParameter { ParameterName = "@SURVEY_STATUS_BASE", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.SURVEY_STATUS_BASE ?? null};
-                var surveyStatusChild = new SqlParameter { ParameterName = "@SURVEY_STATUS_CHILD", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.SURVEY_STATUS_CHILD ?? null};
-                var surveyFormat= new SqlParameter { ParameterName = "@SURVEY_FORMAT_TYPE", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.SURVEY_FORMAT_TYPE ?? null};
-                var isSurveyed = new SqlParameter { ParameterName = "@IS_SURVEYED", SqlDbType = SqlDbType.Bit, Value = dbSurvey.IS_SURVEYED ?? null};
-                var inProgress = new SqlParameter { ParameterName = "@IN_PROGRESS", SqlDbType = SqlDbType.Bit, Value = dbSurvey.IN_PROGRESS ?? null};
-                var fileName = new SqlParameter { ParameterName = "@FILE_NAME", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.FILE_NAME ?? null};
-                var sheetName = new SqlParameter { ParameterName = "@SHEET_NAME", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.SHEET_NAME ?? null};
-                var totalRecordInFile = new SqlParameter { ParameterName = "@TOTAL_RECORD_IN_FILE", SqlDbType = SqlDbType.BigInt, Value = dbSurvey.TOTAL_RECORD_IN_FILE ?? null};
+                var surveyFlag = new SqlParameter { ParameterName = "@SURVEY_FLAG", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.SURVEY_FLAG ?? null };
+                var surveyStatusBase = new SqlParameter { ParameterName = "@SURVEY_STATUS_BASE", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.SURVEY_STATUS_BASE ?? null };
+                var surveyStatusChild = new SqlParameter { ParameterName = "@SURVEY_STATUS_CHILD", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.SURVEY_STATUS_CHILD ?? null };
+                var surveyFormat = new SqlParameter { ParameterName = "@SURVEY_FORMAT_TYPE", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.SURVEY_FORMAT_TYPE ?? null };
+                var isSurveyed = new SqlParameter { ParameterName = "@IS_SURVEYED", SqlDbType = SqlDbType.Bit, Value = dbSurvey.IS_SURVEYED ?? null };
+                var inProgress = new SqlParameter { ParameterName = "@IN_PROGRESS", SqlDbType = SqlDbType.Bit, Value = dbSurvey.IN_PROGRESS ?? null };
+                var fileName = new SqlParameter { ParameterName = "@FILE_NAME", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.FILE_NAME ?? null };
+                var sheetName = new SqlParameter { ParameterName = "@SHEET_NAME", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.SHEET_NAME ?? null };
+                var totalRecordInFile = new SqlParameter { ParameterName = "@TOTAL_RECORD_IN_FILE", SqlDbType = SqlDbType.BigInt, Value = dbSurvey.TOTAL_RECORD_IN_FILE ?? null };
                 var createdBy = new SqlParameter { ParameterName = "@CREATED_BY", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.CREATED_BY };
                 var createdDate = new SqlParameter { ParameterName = "@CREATED_DATE", SqlDbType = SqlDbType.DateTime, Value = dbSurvey.@CREATED_DATE };
                 var modifiedBy = new SqlParameter { ParameterName = "@MODIFIED_BY", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.MODIFIED_BY };
@@ -440,7 +440,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 {
                     isprotectiveEquipment.Value = DBNull.Value;
                 }
-                if(dbSurvey.SURVEY_COMPLETED_DATE == null)
+                if (dbSurvey.SURVEY_COMPLETED_DATE == null)
                 {
                     surveyCompletedDate.Value = DBNull.Value;
                 }
@@ -459,7 +459,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                  , isReferrable, isImprovedSetisfaction, feedback, surveyFlag, surveyStatusBase, surveyStatusChild, surveyFormat, isSurveyed, inProgress, fileName, sheetName, totalRecordInFile, createdBy
                  , createdDate, modifiedBy, modifiedDate, delete, isExceptional, isprotectiveEquipment, surveyCompletedDate);
 
-                if(patientAccount.Value.ToString() != null && practiceCode.Value != null)
+                if (patientAccount.Value.ToString() != null && practiceCode.Value != null)
                 {
                     CheckDeceasedPatient(patientAccount.Value.ToString(), Convert.ToInt64(practiceCode.Value));
                 }
@@ -467,7 +467,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 if (patientSurvey.IS_EXCEPTIONAL == true)
                 {
 
-                    if (AppConfiguration.ClientURL.Contains("https://fox.mtbc.com/") && profile.PracticeCode== 1012714 )
+                    if (AppConfiguration.ClientURL.Contains("https://fox.mtbc.com/") && profile.PracticeCode == 1012714)
                     {
                         sendTo = WebConfigurationManager.AppSettings["PatientSurveyEmailAddressForLive"].ToString();
                     }
@@ -476,7 +476,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                         sendTo = WebConfigurationManager.AppSettings["PatientSurveyEmailAddressForTest"].ToString();
                     }
                     _subject = "Exceptional feedback ";
-                    if(!string.IsNullOrEmpty(patientSurvey.SURVEY_STATUS_CHILD))
+                    if (!string.IsNullOrEmpty(patientSurvey.SURVEY_STATUS_CHILD))
                     {
                         if (patientSurvey.SURVEY_STATUS_CHILD.ToLower() == "not recommended")
                         {
@@ -520,7 +520,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                         _subject += "_" + profile.UserName;
                     }
 
-                    _body += "<p>Surveyed by: " + profile.UserName + "</p>" + "<p>Survey date & time: " +DateTime.Now.ToString("MM/dd/yyyy hh:mm tt") + "</p> <br>";
+                    _body += "<p>Surveyed by: " + profile.UserName + "</p>" + "<p>Survey date & time: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt") + "</p> <br>";
                     if (!string.IsNullOrEmpty(patientSurvey.PROVIDER))
                     {
                         _body += "<p>Provider: " + patientSurvey.PROVIDER + "</p> ";
@@ -536,7 +536,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
 
                     link = AppConfiguration.ClientURL + @"#/Reporting/PatientSurveyDetail?value=" + HttpUtility.UrlEncode(dbSurvey.SURVEY_ID.ToString());
                     link += "&name=" + profile.UserEmailAddress;
-                    _body += "<p>Please   <a href = " +  link + "> " + " click here to login</a>" + " and see the survey details.</p>";
+                    _body += "<p>Please   <a href = " + link + "> " + " click here to login</a>" + " and see the survey details.</p>";
                     //_body += "<h3 style=font-weight:normal;margin:0;><b>Auditor: </b><a href=" +link + " > " + " click here to login </a></h3>";
                     if (!string.IsNullOrEmpty(sendTo))
                     {
@@ -874,7 +874,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 }
                 var PatientSurveyList = SpRepository<PatientSurveyCallLog>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_PATIENT_SURVEY_CALL_LOG 
                  @SURVEY_CALL_ID, @PRACTICE_CODE, @ACU_CALL_ID, @SURVEY_ID, @PATIENT_ACCOUNT, @FILE_NAME, @IS_RECEIVED, @CALL_OUT_COME, @CALL_DURATION, @IS_TO_PATIENT, @MODIFIED_BY, @MODIFIED_DATE, @CREATED_BY, @CREATED_DATE, @DELETED"
-                 , surveyCallId, practiceCode, acuID, surveyId, patientAccount, fileName, isReceived, callOutCome, callDuration, isToPatient, createdBy, createdDate, modifiedBy, modifiedDate,delete);
+                 , surveyCallId, practiceCode, acuID, surveyId, patientAccount, fileName, isReceived, callOutCome, callDuration, isToPatient, createdBy, createdDate, modifiedBy, modifiedDate, delete);
             }
         }
 
@@ -917,21 +917,21 @@ namespace FOX.BusinessOperations.PatientSurveyService
             }
             else
             {
-            var rep = _roleRepository.GetSingle(x => !x.DELETED && x.PRACTICE_CODE == practiceCode && x.ROLE_NAME == "Feedback Caller").ROLE_ID;
-            if (!rep.Equals(null))
-            {
-                var _roleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.BigInt, Value = rep };
-                var _practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
+                var rep = _roleRepository.GetSingle(x => !x.DELETED && x.PRACTICE_CODE == practiceCode && x.ROLE_NAME == "Feedback Caller").ROLE_ID;
+                if (!rep.Equals(null))
+                {
+                    var _roleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.BigInt, Value = rep };
+                    var _practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
 
-                _psSSearchData.Users = SpRepository<PSUserList>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PSR_FEEDBACK_CALLER_NAME_LIST @PRACTICE_CODE, @ROLE_ID", _practiceCode, _roleId);
+                    _psSSearchData.Users = SpRepository<PSUserList>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PSR_FEEDBACK_CALLER_NAME_LIST @PRACTICE_CODE, @ROLE_ID", _practiceCode, _roleId);
+                }
+                else
+                {
+                    _psSSearchData.Users = new List<PSUserList>();
+                }
+                return _psSSearchData;
             }
-            else
-            {
-                _psSSearchData.Users = new List<PSUserList>();
-            }
-            return _psSSearchData;
-            }
-            
+
         }
 
         public PSInitialData GetPSInitialData(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile)
@@ -1061,7 +1061,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 var result = SpRepository<string>.GetListWithStoreProcedure(@"FOX_PROC_GET_PATIENT_SURVEY_REGIONS @PRACTICE_CODE", practice_code);
                 return result.ToList();
             }
-                //return _patientSurveyRepository.GetMany(x => x.PRACTICE_CODE == practiceCode && x.REGION != null && !string.IsNullOrEmpty(x.REGION)).OrderBy(x => x.REGION).Select(x => x.REGION).Distinct().ToList();
+            //return _patientSurveyRepository.GetMany(x => x.PRACTICE_CODE == practiceCode && x.REGION != null && !string.IsNullOrEmpty(x.REGION)).OrderBy(x => x.REGION).Select(x => x.REGION).Distinct().ToList();
             return _patientSurveyRepository.GetMany(x => x.PRACTICE_CODE == practiceCode && x.PATIENT_STATE == state && x.REGION != null && !string.IsNullOrEmpty(x.REGION)).OrderBy(x => x.REGION).Select(x => x.REGION).Distinct().ToList();
         }
 
@@ -1103,7 +1103,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 }
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }

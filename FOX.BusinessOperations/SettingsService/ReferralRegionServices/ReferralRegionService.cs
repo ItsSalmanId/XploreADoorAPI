@@ -136,7 +136,7 @@ namespace FOX.BusinessOperations.SettingsService.ReferralRegionServices
                     return new List<FOX_TBL_ZIP_STATE_COUNTY>();
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new List<FOX_TBL_ZIP_STATE_COUNTY>();
             }
@@ -278,7 +278,7 @@ namespace FOX.BusinessOperations.SettingsService.ReferralRegionServices
                 {
                     foreach (var i in req.SublistMapped)
                     {
-                      
+
                         var ZipData = _zipStateCountyRepository.Get(x => x.PRACTICE_CODE == profile.PracticeCode && x.ZIP_STATE_COUNTY_ID == i.ZIP_STATE_COUNTY_ID && !x.DELETED && x.COUNTY?.ToLower() == req.COUNTY?.ToLower());
                         if (ZipData != null)
                         {
@@ -312,7 +312,7 @@ namespace FOX.BusinessOperations.SettingsService.ReferralRegionServices
                 }
                 return res;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return "";
             }
@@ -326,7 +326,7 @@ namespace FOX.BusinessOperations.SettingsService.ReferralRegionServices
                 var zipcodecounties = GetReferralRegionZipCodeData(req, profile);
                 if (zipcodecounties != null && zipcodecounties.Count() > 0)
                 {
-                    var ZipData = _zipStateCountyRepository.Get(x => x.PRACTICE_CODE == profile.PracticeCode && x.ZIP_STATE_COUNTY_ID == zipcodecounties[0].ZIP_STATE_COUNTY_ID && !x.DELETED && x.COUNTY?.ToLower() == req.COUNTY ?.ToLower());
+                    var ZipData = _zipStateCountyRepository.Get(x => x.PRACTICE_CODE == profile.PracticeCode && x.ZIP_STATE_COUNTY_ID == zipcodecounties[0].ZIP_STATE_COUNTY_ID && !x.DELETED && x.COUNTY?.ToLower() == req.COUNTY?.ToLower());
                     if (ZipData != null)
                     {
                         if (!string.IsNullOrEmpty(ZipData.STATE) && !string.IsNullOrEmpty(req?.State))
@@ -353,7 +353,7 @@ namespace FOX.BusinessOperations.SettingsService.ReferralRegionServices
                 }
                 return res;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return "";
             }
@@ -432,23 +432,23 @@ namespace FOX.BusinessOperations.SettingsService.ReferralRegionServices
                 }
                 List<AdvancedRegionsWithZipCodes> result = new List<AdvancedRegionsWithZipCodes>();
                 var pathtowriteFile = exportPath + "\\" + fileName;
-                if(advancedregionreq != null)
+                if (advancedregionreq != null)
                 {
-                    if(advancedregionreq.ObjAdvanceRegionSearchRequest != null)
+                    if (advancedregionreq.ObjAdvanceRegionSearchRequest != null)
                     {
                         advancedregionreq.ObjAdvanceRegionSearchRequest.RecordPerPage = 0;
                     }
-                result = GetAdvancedRegionSearch(advancedregionreq.ObjAdvanceRegionSearchRequest, profile.PracticeCode);
-                if(result != null)
-                {
-                    var counter = 0;
-                    foreach(var c in result)
+                    result = GetAdvancedRegionSearch(advancedregionreq.ObjAdvanceRegionSearchRequest, profile.PracticeCode);
+                    if (result != null)
                     {
-                        c.ROW_NUM = counter + 1;
-                        counter++;
+                        var counter = 0;
+                        foreach (var c in result)
+                        {
+                            c.ROW_NUM = counter + 1;
+                            counter++;
+                        }
                     }
-                }
-                exported = ExportToExcel.CreateExcelDocument<AdvancedRegionsWithZipCodes>(result, pathtowriteFile, CalledFrom.Replace(' ', '_'));
+                    exported = ExportToExcel.CreateExcelDocument<AdvancedRegionsWithZipCodes>(result, pathtowriteFile, CalledFrom.Replace(' ', '_'));
                 }
                 return virtualPath + fileName;
             }

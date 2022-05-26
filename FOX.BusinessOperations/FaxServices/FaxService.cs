@@ -42,7 +42,7 @@ namespace FOX.BusinessOperations.FaxServices
                 string username = GetFaxUserDetails(profile.PracticeCode).INTERFAX_USERNAME;
                 return replixfaxService.getRecievedFaxes(username, objRequest.fromDate, objRequest.toDate, objRequest.faxStatus, objRequest.faxID, objRequest.resultLimit, objRequest.nextRef);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return response;
             }
@@ -58,7 +58,7 @@ namespace FOX.BusinessOperations.FaxServices
                 response = replixfaxService.getSentFaxes(username, objRequest.fromDate, objRequest.toDate, objRequest.faxStatus, objRequest.faxID, objRequest.resultLimit, objRequest.nextRef);
                 return response;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return response;
             }
@@ -186,7 +186,7 @@ namespace FOX.BusinessOperations.FaxServices
                     return msg;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw;
@@ -251,7 +251,7 @@ namespace FOX.BusinessOperations.FaxServices
                     return msg;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw;
@@ -315,7 +315,7 @@ namespace FOX.BusinessOperations.FaxServices
                     return msg;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw;
@@ -401,7 +401,7 @@ namespace FOX.BusinessOperations.FaxServices
                 }
                 return directoryPath;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw;
@@ -488,7 +488,7 @@ namespace FOX.BusinessOperations.FaxServices
                 }
                 return directoryPath;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw;
@@ -665,7 +665,7 @@ namespace FOX.BusinessOperations.FaxServices
                                 {
                                     return "failed";
                                     //throw new Exception("SendRpxFax method returned false.");
-                                }                            
+                                }
                                 if (isCallFromFax == true)
                                 {
                                     if (File.Exists(savePath))
@@ -701,7 +701,7 @@ namespace FOX.BusinessOperations.FaxServices
                 }
                 return st.ToString() + "," + isOK + "," + isok2 + "," + username_new + "," + Fax_Company_new + "," + _faxerror;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return "failed";
                 //throw ex;
@@ -727,7 +727,7 @@ namespace FOX.BusinessOperations.FaxServices
                 StreamWriter.Close();
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
