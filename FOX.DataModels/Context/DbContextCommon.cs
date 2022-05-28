@@ -45,6 +45,7 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<Valid_Login_Attempts>().Property(t => t.INVALID_USER_COUNT_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<RoleToAdd>().Property(t => t.ROLE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<ReferralSender>().Property(t => t.ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<Splash>().Property(t => t.FOX_SPLASH_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
         }
         public virtual DbSet<Maintenance_Counter> Maintenance_Counter { get; set; }
         public virtual DbSet<WorkOrderHistory> WorkOrderHistory { get; set; }
@@ -63,6 +64,6 @@ namespace FOX.DataModels.Context
         public virtual DbSet<Valid_Login_Attempts> ValidLoginAttempts { get; set; }
         public virtual DbSet<RoleToAdd> GetUserRoles { get; set; }
         public virtual DbSet<ReferralSender> ReferralSender { get; set; }
-
+        public virtual DbSet<Splash> Splashes { get; set; }
     }
 }
