@@ -232,5 +232,20 @@ namespace FOX.DataModels.Models.CommonModel
     {
         public string WORK_STATUS { get; set; }
     }
+    [Table("FOX_TBL_SPLASH")]
+    public class Splash
+    {
+        [Key]
+        public long FOX_SPLASH_ID { get; set; }
+        public string SPLASH_TYPE { get; set; }
+        public long USER_ID { get; set; }
+        public string USER_NAME { get; set; }
+        public long SHOW_COUNT { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime CREATED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public DateTime MODIFIED_DATE { get; set; }
+        public bool DELETED { get; set; }
+    }
 
 }
