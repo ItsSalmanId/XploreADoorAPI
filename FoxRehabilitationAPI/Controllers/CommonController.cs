@@ -73,20 +73,20 @@ namespace FoxRehabilitationAPI.Controllers
 
         [HttpGet]
         public HttpResponseMessage DownloadSingleFile()
-         {
+        {
             HttpResponseMessage httpResponseMessage = new HttpResponseMessage();
             string FilePath = CompleteFilePath;
             if (!string.IsNullOrEmpty(FilePath))
             {
                 try
-                { 
+                {
                     string fileName = Path.GetFileName(FilePath);
                     string test = Path.GetDirectoryName(FilePath);
                     string fileExtension = Path.GetExtension(FilePath);
                     if (!string.IsNullOrEmpty(fileName) && new[] { ".xml", ".zip", ".jpeg", ".jpg", ".png", ".pdf", ".tiff", ".tif", ".docx", ".doc", ".xls", ".xlsx", ".csv", ".ppt", ".pptx", ".mp3", ".wav",".txt" }.Contains(fileExtension))
                     {
                         if (!Directory.Exists(test))
-                        FilePath = HttpContext.Current.Server.MapPath("~/" + FilePath);
+                            FilePath = HttpContext.Current.Server.MapPath("~/" + FilePath);
                         //FilePath = @"\\\\it-126\\" + FilePath;                    
                         if (File.Exists(FilePath))
                         {
@@ -110,7 +110,7 @@ namespace FoxRehabilitationAPI.Controllers
                     }
                     return this.Request.CreateResponse(HttpStatusCode.OK, "File not found.");
                 }
-                catch 
+                catch
                 {
                     throw;
                     //Helper.CustomExceptionLog(ex);
@@ -203,6 +203,16 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetStates()
         {
             return Request.CreateResponse(HttpStatusCode.OK, _CommonService.GetStates());
+        }
+        [HttpGet]
+        public HttpResponseMessage GetSplashDetails()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _CommonService.IsShowSplash(GetProfile()));
+        }
+        [HttpGet]
+        public HttpResponseMessage SaveSplashDetails()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _CommonService.SaveSplashDetails(GetProfile()));
         }
     }
 }
