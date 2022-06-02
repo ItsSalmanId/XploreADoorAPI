@@ -939,7 +939,7 @@ namespace FOX.BusinessOperations.CommonService
                     return Convert.ToDateTime(_dateTimeString);
                 return null;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }

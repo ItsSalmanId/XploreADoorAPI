@@ -19,10 +19,6 @@ namespace FOX.BusinessOperations.CommonService
 {
     class ConvertPDFToImages
     {
-        string dirPath = "FoxDocumentDirectory\\Fox\\";//directory path
-        string ImgDirPath = "FoxDocumentDirectory\\Fox\\Images";
-
-
         private readonly DBContextQueue _QueueContext = new DBContextQueue();
         //private readonly GenericRepository<OriginalQueue> _QueueRepository;
         private readonly GenericRepository<OriginalQueueFiles> _OriginalQueueFiles;
@@ -89,19 +85,19 @@ namespace FOX.BusinessOperations.CommonService
                    
                     // Save the image as a JPEG file with quality level.
                     var size = bitmap.Size.Width * bitmap.Size.Height;
-                    var quality = 100L;
-                    if (size >= 20000000)//if size is > than 20 MB, compress it to reduce size
-                    {
-                        quality = 60L;
-                    }
-                    else if (size >= 10000000)//10 MB
-                    {
-                        quality = 70L;
-                    }
-                    else if (size >= 5000000)//5 MB
-                    {
-                        quality = 80L;
-                    }
+                    //var quality = 100L;
+                    //if (size >= 20000000)//if size is > than 20 MB, compress it to reduce size
+                    //{
+                    //    quality = 60L;
+                    //}
+                    //else if (size >= 10000000)//10 MB
+                    //{
+                    //    quality = 70L;
+                    //}
+                    //else if (size >= 5000000)//5 MB
+                    //{
+                    //    quality = 80L;
+                    //}
 
                     //EncoderParameter encoderParameter = new EncoderParameter(encoder, quality);
                     //encoderParameters.Param[0] = encoderParameter;

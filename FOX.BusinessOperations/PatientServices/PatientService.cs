@@ -1696,39 +1696,42 @@ namespace FOX.BusinessOperations.PatientServices
         }
         public string GetTimeZoneName(string timeZone)
         {
+            string zoneName = string.Empty;
             switch (timeZone)
             {
                 case "Alaska":
-                    return "AKST -  Alaska Standard Time";
+                    zoneName = "AKST -  Alaska Standard Time";
                     break;
                 case "Eastern":
-                    return "EST - Eastern Standard Time";
+                    zoneName = "EST - Eastern Standard Time";
                     break;
                 case "Chamorro":
-                    return "CHST -  Chamorro Standard Time";
+                    zoneName = "CHST -  Chamorro Standard Time";
                     break;
                 case "Marshall":
-                    return "MHT -  Marshall Islands Time";
+                    zoneName = "MHT -  Marshall Islands Time";
                     break;
                 case "Pacific":
-                    return "PST - Pacific Standard Time";
+                    zoneName = "PST - Pacific Standard Time";
                     break;
                 case "Atlantic":
-                    return "AST -  Atlantic Standard Time";
+                    zoneName = "AST -  Atlantic Standard Time";
                     break;
                 case "Central":
-                    return "CST - Central Standard Time";
+                    zoneName = "CST - Central Standard Time";
                     break;
                 case "Mountain":
-                    return "MST - Mountain Standard Time";
+                    zoneName = "MST - Mountain Standard Time";
                     break;
                 case "Pohnpei":
-                    return "PONT - Pohnpei Standard Time";
+                    zoneName = "PONT - Pohnpei Standard Time";
                     break;
 
                 default:
-                    return "No Time Zone Applicable";
+                    zoneName = "No Time Zone Applicable";
+                    return zoneName;
             }
+            return zoneName;
         }
         public ZipRegionIDName GetRegionByZip(string zipCode, UserProfile profile)
         {
@@ -3126,7 +3129,6 @@ namespace FOX.BusinessOperations.PatientServices
 
         public PatientContact SaveContact(PatientContact contact, UserProfile profile)
         {
-            bool isEdit = true;
             string oldFname = string.Empty;
             string oldLname = string.Empty;
             InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
@@ -3162,7 +3164,6 @@ namespace FOX.BusinessOperations.PatientServices
 
             if (dbContact == null) //Add
             {
-                isEdit = false;
                 dbContact = contact;
                 contact.Contact_ID = Helper.getMaximumId("Fox_Patient_Contact_ID");
                 contact.Created_By = contact.Modified_By = profile.UserName;
@@ -4464,7 +4465,7 @@ namespace FOX.BusinessOperations.PatientServices
             if (result != null)
             {
                 var priInsu = result.FOX_TBL_INSURANCE_ID;
-                if (priInsu != null)
+                if (priInsu != 0)
                 {
                     //name = _FoxInsurancePayorsRepository.GetByID(priInsu.FOX_TBL_INSURANCE_ID).INSURANCE_NAME;
                     name = _foxInsurancePayersRepository.GetByID(priInsu)?.INSURANCE_NAME;
@@ -7317,7 +7318,6 @@ namespace FOX.BusinessOperations.PatientServices
             InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
             PatientPATDocument ExistingDocumentInfo = new PatientPATDocument();
             string AddorUpdate = "";
-            var COUNT = 0;
             if(ObjPatientPATDocument.WORK_ID == 0)
             {
                 ObjPatientPATDocument.WORK_ID = null;
@@ -9628,7 +9628,7 @@ namespace FOX.BusinessOperations.PatientServices
             foreach (var item in obj)
             {
                 var exportModel = new PatientExportToExcelModel();
-                if (item.ROW == null)
+                if (item.ROW == 0)
                     item.ROW = 0;
                 exportModel.ROW = item.ROW;
                 exportModel.Patient_Account = !string.IsNullOrEmpty(item.Patient_Account.ToString()) ? item.Patient_Account.ToString() : "";
@@ -10217,7 +10217,7 @@ namespace FOX.BusinessOperations.PatientServices
 
                         PatientInsuranceInformation patientInsuranceInformation = new PatientInsuranceInformation();
 
-                        if (insuranceToCreateUpdate.Patient_Insurance_Id != null)
+                        if (insuranceToCreateUpdate.Patient_Insurance_Id != 0)
                         {
                             //patientInsuranceInformation = _result.Where(x => x.PATIENT_INSURANCE_ID == insuranceToCreateUpdate.Patient_Insurance_Id).FirstOrDefault();
                             patientInsuranceInformation = _result.Where(x => x.MTBC_Patient_Insurance_Id == insuranceToCreateUpdate.MTBC_Patient_Insurance_Id).FirstOrDefault();
@@ -10406,7 +10406,6 @@ namespace FOX.BusinessOperations.PatientServices
             }
             if (task != null && profile != null)
             {
-                bool isEdit = true;
                 FOX_TBL_TASK dbTask = _TaskRepository.GetFirst(t => t.PRACTICE_CODE == profile.PracticeCode && t.TASK_ID == task.TASK_ID);
                 if (dbTask == null)
                 {

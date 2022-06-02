@@ -271,7 +271,7 @@ namespace FOX.BusinessOperations.HrAutoEmail
 
                         var configureId = hrEmailDocumentFileAll[0].HR_CONFIGURE_ID;
 
-                        if (configureId != null)
+                        if (configureId != 0)
                         {
                             var result = _hrAutoEmailRepository.GetFirst(f => f.HR_CONFIGURE_ID == configureId && !f.DELETED).NAME;
                             string uploadFilesPath = basePath + "\\" + result;

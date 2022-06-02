@@ -323,7 +323,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                     threadCounter.Add(1);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 threadCounter.Add(1);
             }
@@ -402,7 +402,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                 var result = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_ADD_TO_DB_FROM_UPLOAD_ORDER_IMAGES @PRACTICE_CODE, @WORK_ID, @USER_NAME, @FILE_PATH, @NO_OF_PAGES",
                     PracticeCode, workid, username, filePaths, noofpages);
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 //throw exception;
             }

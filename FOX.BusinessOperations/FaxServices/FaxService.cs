@@ -40,7 +40,7 @@ namespace FOX.BusinessOperations.FaxServices
             try
             {
                 string username = GetFaxUserDetails(profile.PracticeCode).INTERFAX_USERNAME;
-                return replixfaxService.getRecievedFaxes(username, objRequest.fromDate, objRequest.toDate, objRequest.faxStatus, objRequest.faxID, objRequest.resultLimit, objRequest.nextRef);
+                return ReplixfaxService.getRecievedFaxes(username, objRequest.fromDate, objRequest.toDate, objRequest.faxStatus, objRequest.faxID, objRequest.resultLimit, objRequest.nextRef);
             }
             catch (Exception)
             {
@@ -55,7 +55,7 @@ namespace FOX.BusinessOperations.FaxServices
             try
             {
                 string username = GetFaxUserDetails(profile.PracticeCode).INTERFAX_USERNAME;
-                response = replixfaxService.getSentFaxes(username, objRequest.fromDate, objRequest.toDate, objRequest.faxStatus, objRequest.faxID, objRequest.resultLimit, objRequest.nextRef);
+                response = ReplixfaxService.getSentFaxes(username, objRequest.fromDate, objRequest.toDate, objRequest.faxStatus, objRequest.faxID, objRequest.resultLimit, objRequest.nextRef);
                 return response;
             }
             catch (Exception)
@@ -72,7 +72,7 @@ namespace FOX.BusinessOperations.FaxServices
                 guid = Guid.NewGuid();
                 string newGuid = guid.ToString();
 
-                var contentOutput = replixfaxService.getSentFaxPDF(faxID);
+                var contentOutput = ReplixfaxService.getSentFaxPDF(faxID);
                 if (contentOutput.RequestStatus.StatusCode.CompareTo("0") == 0)
                 {
                     // save content to a file
@@ -122,7 +122,7 @@ namespace FOX.BusinessOperations.FaxServices
                     return msg;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw;
@@ -136,7 +136,7 @@ namespace FOX.BusinessOperations.FaxServices
                 guid = Guid.NewGuid();
                 string newGuid = guid.ToString();
 
-                var contentOutput = replixfaxService.getSentFaxPDF(faxID);
+                var contentOutput = ReplixfaxService.getSentFaxPDF(faxID);
                 if (contentOutput.RequestStatus.StatusCode.CompareTo("0") == 0)
                 {
                     // save content to a file
@@ -201,7 +201,7 @@ namespace FOX.BusinessOperations.FaxServices
                 guid = Guid.NewGuid();
                 string newGuid = guid.ToString();
 
-                var contentOutput = replixfaxService.getReceivedtFaxPDF(faxID);
+                var contentOutput = ReplixfaxService.getReceivedtFaxPDF(faxID);
                 if (contentOutput.RequestStatus.StatusCode.CompareTo("0") == 0)
                 {
                     // save content to a file
@@ -265,7 +265,7 @@ namespace FOX.BusinessOperations.FaxServices
                 guid = Guid.NewGuid();
                 string newGuid = guid.ToString();
 
-                var contentOutput = replixfaxService.getReceivedtFaxPDF(faxID);
+                var contentOutput = ReplixfaxService.getReceivedtFaxPDF(faxID);
                 if (contentOutput.RequestStatus.StatusCode.CompareTo("0") == 0)
                 {
                     // save content to a file
@@ -332,7 +332,7 @@ namespace FOX.BusinessOperations.FaxServices
                 var OnlyPath = "";
                 var path = "";
                 var directoryPath = "";
-                var contentOutputList = replixfaxService.getMultipleSentFaxPDF(faxIdList);
+                var contentOutputList = ReplixfaxService.getMultipleSentFaxPDF(faxIdList);
                 foreach (var contentOutput in contentOutputList)
                 {
                     if (contentOutput.RequestStatus.StatusCode.CompareTo("0") == 0)
@@ -419,7 +419,7 @@ namespace FOX.BusinessOperations.FaxServices
                 var path = "";
                 var OnlyPath = "";
                 var directoryPath = "";
-                var contentOutputList = replixfaxService.getMultipleReceivedtFaxPDF(faxIdList);
+                var contentOutputList = ReplixfaxService.getMultipleReceivedtFaxPDF(faxIdList);
                 foreach (var contentOutput in contentOutputList)
                 {
                     if (contentOutput.RequestStatus.StatusCode.CompareTo("0") == 0)
@@ -660,7 +660,7 @@ namespace FOX.BusinessOperations.FaxServices
                                     newAttachfile[0] = DestinationSavePathhtml;
                                 }
 
-                                isOK = replixfaxService.SendRpxFax(username_new, password_new, faxnumberME, recipientName, Subject, newAttachfile, savePath, profile);
+                                isOK = ReplixfaxService.SendRpxFax(username_new, password_new, faxnumberME, recipientName, Subject, newAttachfile, savePath, profile);
                                 if (!isOK)
                                 {
                                     return "failed";
@@ -710,12 +710,12 @@ namespace FOX.BusinessOperations.FaxServices
 
         public bool deleteSentFax(string[] faxIdList)
         {
-            return replixfaxService.deleteSentFax(faxIdList);
+            return ReplixfaxService.deleteSentFax(faxIdList);
         }
 
         public bool deleteReceivedFax(string[] faxIdList)
         {
-            return replixfaxService.deleteReceivedFax(faxIdList);
+            return ReplixfaxService.deleteReceivedFax(faxIdList);
         }
         public void WriteHtmlFile(string filePath, string contents)
         {

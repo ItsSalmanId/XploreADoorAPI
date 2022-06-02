@@ -1804,13 +1804,13 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     obj.CATEGORY = "";
                 if (obj.DOS == null)
                     obj.DOS = "";
-                if (obj.LOCATION_CODE == null)
+                if (obj.LOCATION_CODE == 0)
                     obj.LOCATION_CODE = 0;
                 if (obj.PROCCODE == null)
                     obj.PROCCODE = "";
                 if (obj.PROCDESCRIPTION == null)
                     obj.PROCDESCRIPTION = "";
-                if (obj.PROVIDER_CODE == null)
+                if (obj.PROVIDER_CODE == 0)
                     obj.PROVIDER_CODE = 0;
                 var cATEGORY = new SqlParameter("@CATEGORY", SqlDbType.VarChar) { Value = obj.CATEGORY };
                 var dOS = new SqlParameter("@DOS", SqlDbType.VarChar) { Value = obj.DOS };
@@ -2585,7 +2585,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 for (int i = 0; i < noOfPages; i++)
                 {
-                    string deliveryReportId = "";
                     //End
                     //string ImgDirPath = "FoxDocumentDirectory\\Fox\\Images";
                     var imgPath = "";
@@ -3148,7 +3147,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
             }
             if (task != null && profile != null)
             {
-                bool isEdit = true;
                 FOX_TBL_TASK dbTask = GetTask(profile.PracticeCode, task.TASK_ID);
                 //FOX_TBL_TASK dbTask = _TaskRepository.GetFirst(t => t.PRACTICE_CODE == profile.PracticeCode && t.TASK_ID == task.TASK_ID);
                 if (dbTask == null)
@@ -3593,7 +3591,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                         porta_logs.Add("Reason for the Urgency : " + WORK_QUEUE.REASON_FOR_THE_URGENCY);
                         Procedure_information = true;
                     }
-                    if (WORK_QUEUE.IS_EMERGENCY_ORDER != null && WORK_QUEUE.IS_EMERGENCY_ORDER)
+                    if (WORK_QUEUE.IS_EMERGENCY_ORDER == true)
                     {
                         //taskLoglist.Add(new TaskLog() { ACTION = "Urgent Referral", ACTION_DETAIL = "Urgent Referral: Yes" });
                         porta_logs.Add("Urgent Referral: Yes");
@@ -4968,7 +4966,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         public bool UpdateOCRValue(long? work_id, UserProfile profile)
         {
             var ocrStatus = _OcrStatusRepository.GetFirst(x => x.OCR_STATUS.ToLower() == "Data pulled into referral" && !(x.DELETED ?? false)).OCR_STATUS_ID;
-            if (ocrStatus != null)
+            if (ocrStatus != 0)
             {
                 var que = _QueueRepository.GetFirst(x => x.WORK_ID == work_id && !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode);
 

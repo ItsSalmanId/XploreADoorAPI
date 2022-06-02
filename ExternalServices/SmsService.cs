@@ -7,10 +7,11 @@ using FOX.ExternalServices.SundrySmsService;
 using Org.BouncyCastle.Asn1.Ocsp;
 using System.Web;
 using System.Net;
+using System.Configuration;
 
 namespace FOX.ExternalServices
 {
-    public class SmsService
+    public static class SmsService
     {
         // FOX.ExternalServices.TelenorSmsService
         public static string NJSmsService(string CellPhone, string SmsBody)
@@ -23,7 +24,7 @@ namespace FOX.ExternalServices
             Sundry obj = new ExternalServices.SundrySmsService.Sundry();
             ValidationSoapHeader header = new ValidationSoapHeader();
             string statusValue = "phrInprogress";
-            string userID = "6KjP6ha7N", Password = "7455sM3X4rGHzd2g";
+            string userID = "6KjP6ha7N", Password = ConfigurationManager.AppSettings["ExternalServiceSMSPassword"];
             header.ValidUserID = userID;
             header.ValidPassword = Password;
             header.DeviceInfo = HttpContext.Current.Request.UserAgent;
