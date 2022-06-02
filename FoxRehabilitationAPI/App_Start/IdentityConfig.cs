@@ -322,7 +322,7 @@ namespace FoxRehabilitationAPI
                                 }
                             }
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                             return new Tuple<ApplicationUser, UserProfile>(null, null);
                         }
@@ -559,7 +559,7 @@ namespace FoxRehabilitationAPI
                                 }
                             }
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                             return new Tuple<ApplicationUser, UserProfile>(null, null);
                         }
@@ -658,7 +658,7 @@ namespace FoxRehabilitationAPI
             {
                 return user.CheckValidUserLoginAttempt(userName: userName);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return user.CheckValidUserLoginAttempt(userName: userName);
             }
@@ -671,7 +671,7 @@ namespace FoxRehabilitationAPI
             {
                 return user.IsUserBlocked(userName: userName);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return user.IsUserBlocked(userName: userName);
             }
@@ -684,7 +684,7 @@ namespace FoxRehabilitationAPI
             {
                 return user.GetInvalidAttempts(userName: userName);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
             return 0;
@@ -697,7 +697,7 @@ namespace FoxRehabilitationAPI
             {
                 return user.AddUserInvalidLoginAttempt(userName: userName);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return user.AddUserInvalidLoginAttempt(userName: userName);
             }
@@ -710,7 +710,7 @@ namespace FoxRehabilitationAPI
             {
                 return user.AddUserValidLoginAttempt(userName: userName);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return user.AddUserValidLoginAttempt(userName: userName);
             }

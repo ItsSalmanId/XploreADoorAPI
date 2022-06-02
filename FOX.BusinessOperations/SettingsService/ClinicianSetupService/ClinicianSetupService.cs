@@ -533,7 +533,7 @@ namespace FOX.BusinessOperations.SettingsService.ClinicianSetupService
                         #endregion
                         return true;
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         return false;
                     }

@@ -189,7 +189,7 @@ namespace FOX.BusinessOperations.CommonServices
                 hash.ComputeHash(bt);
                 hashKey = ByteArrayToString(hash.Hash);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 System.Diagnostics.StackTrace a = new System.Diagnostics.StackTrace();
                 System.Diagnostics.StackFrame stackFrame = new System.Diagnostics.StackFrame();
@@ -400,7 +400,7 @@ namespace FOX.BusinessOperations.CommonServices
                 File.WriteAllBytes(SaveDocPath, pdfBytes);
                 return SaveDocPath;
             }
-            catch (Exception ex) { return ""; }
+            catch (Exception) { return ""; }
         }
     }
 

@@ -72,7 +72,7 @@ namespace FOX.BusinessOperations.Security
 
                 return tokenModel;
             }
-            catch (Exception ex) {
+            catch (Exception) {
                 return new ProfileToken();
             }
         }
@@ -100,7 +100,7 @@ namespace FOX.BusinessOperations.Security
 
                 return tokenModel;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new ProfileToken();
             }

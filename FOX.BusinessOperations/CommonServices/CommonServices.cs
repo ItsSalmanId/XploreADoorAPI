@@ -108,7 +108,7 @@ namespace FOX.BusinessOperations.CommonServices
                 }
                 return "";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return "";
             }
