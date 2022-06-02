@@ -41,7 +41,7 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             }
         }
         [TearDown]
-        public void BaseCleanup ()
+        public void BaseCleanup()
         {
             // Optionally dispose or cleanup objects
             userProfile = null;
