@@ -81,7 +81,7 @@ namespace FOX.BusinessOperations.PatientDocumentsService
         }
         public List<FoxSpecialityProgram> GetAllSpecialityProgram(UserProfile profile)
         {
-            var SpecialityPrograms = _foxspecialityprogramRepository.GetMany(d => !d.DELETED && d.PRACTICE_CODE == profile.PracticeCode).OrderBy(o => o.PROGRAM_NAME).ToList();          
+            var SpecialityPrograms = _foxspecialityprogramRepository.GetMany(d => !d.DELETED && d.PRACTICE_CODE == profile.PracticeCode).OrderBy(o => o.PROGRAM_NAME).ToList();
             return SpecialityPrograms;
         }
         public List<FoxDocumentType> GetAllDocumentTypeswithInactive(UserProfile profile)
@@ -164,7 +164,7 @@ namespace FOX.BusinessOperations.PatientDocumentsService
                             }
                             else
                             {
-                                    AddDocument(ObjPatientPATDocument, profile);
+                                AddDocument(ObjPatientPATDocument, profile);
                             }
                         }
                         else
@@ -244,7 +244,7 @@ namespace FOX.BusinessOperations.PatientDocumentsService
                                             _foxPatientPATdocumentRepository.Save();
                                         }
                                     }
-                                        UpdateDocument(ExistingDocumentInfo, ObjPatientPATDocument, profile);
+                                    UpdateDocument(ExistingDocumentInfo, ObjPatientPATDocument, profile);
                                 }
                                 else
                                 {
@@ -253,7 +253,7 @@ namespace FOX.BusinessOperations.PatientDocumentsService
                             }
                             else
                             {
-                            UpdateDocument(ExistingDocumentInfo, ObjPatientPATDocument, profile);
+                                UpdateDocument(ExistingDocumentInfo, ObjPatientPATDocument, profile);
                             }
                         }
                         else
@@ -405,16 +405,16 @@ namespace FOX.BusinessOperations.PatientDocumentsService
         }
         public void UpdateDocument(PatientPATDocument ExistingDocumentInfo, PatientPATDocument ObjPatientPATDocument, UserProfile profile)
         {
-                ExistingDocumentInfo.DOCUMENT_TYPE = ObjPatientPATDocument.DOCUMENT_TYPE;
-                ExistingDocumentInfo.CASE_ID = ObjPatientPATDocument.CASE_ID;
-                ExistingDocumentInfo.START_DATE = ObjPatientPATDocument.START_DATE;
-                ExistingDocumentInfo.END_DATE = ObjPatientPATDocument.END_DATE;
-                ExistingDocumentInfo.SHOW_ON_PATIENT_PORTAL = ObjPatientPATDocument.SHOW_ON_PATIENT_PORTAL;
-                ExistingDocumentInfo.COMMENTS = ObjPatientPATDocument.COMMENTS;
-                ExistingDocumentInfo.MODIFIED_BY = profile.UserName;
-                ExistingDocumentInfo.MODIFIED_DATE = Helper.GetCurrentDate();
-                _foxPatientPATdocumentRepository.Update(ExistingDocumentInfo);
-                _foxPatientPATdocumentRepository.Save();
+            ExistingDocumentInfo.DOCUMENT_TYPE = ObjPatientPATDocument.DOCUMENT_TYPE;
+            ExistingDocumentInfo.CASE_ID = ObjPatientPATDocument.CASE_ID;
+            ExistingDocumentInfo.START_DATE = ObjPatientPATDocument.START_DATE;
+            ExistingDocumentInfo.END_DATE = ObjPatientPATDocument.END_DATE;
+            ExistingDocumentInfo.SHOW_ON_PATIENT_PORTAL = ObjPatientPATDocument.SHOW_ON_PATIENT_PORTAL;
+            ExistingDocumentInfo.COMMENTS = ObjPatientPATDocument.COMMENTS;
+            ExistingDocumentInfo.MODIFIED_BY = profile.UserName;
+            ExistingDocumentInfo.MODIFIED_DATE = Helper.GetCurrentDate();
+            _foxPatientPATdocumentRepository.Update(ExistingDocumentInfo);
+            _foxPatientPATdocumentRepository.Save();
         }
         public string ExportToExcelDocumentInformation(UserProfile profile, PatientDocumentRequest ObjPatientDocumentRequest)
         {
@@ -458,10 +458,10 @@ namespace FOX.BusinessOperations.PatientDocumentsService
             try
             {
                 int RECORD_PER_PAGE = 0;
-                if(ObjPatientDocumentRequest.IS_DOCUMENT_CLICKED == false)
+                if (ObjPatientDocumentRequest.IS_DOCUMENT_CLICKED == false)
                 {
                     RECORD_PER_PAGE = ObjPatientDocumentRequest.RECORD_PER_PAGE;
-                    
+
                 }
                 else
                 {
@@ -563,7 +563,7 @@ namespace FOX.BusinessOperations.PatientDocumentsService
                 };
                 return response;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 ResponseModel response = new ResponseModel()
                 {
@@ -591,15 +591,15 @@ namespace FOX.BusinessOperations.PatientDocumentsService
             }
             else
             {
-            if (ExistingFiles == null)
-            {
-                var ExistingDocument = _foxPatientPATdocumentRepository.GetFirst(r => r.PAT_DOCUMENT_ID == objPatientDocument.PAT_DOCUMENT_ID && r.DELETED == false);
-                ExistingDocument.DELETED = true;
-                _foxPatientPATdocumentRepository.Update(ExistingDocument);
-                _foxPatientPATdocumentRepository.Save();
-                return;
+                if (ExistingFiles == null)
+                {
+                    var ExistingDocument = _foxPatientPATdocumentRepository.GetFirst(r => r.PAT_DOCUMENT_ID == objPatientDocument.PAT_DOCUMENT_ID && r.DELETED == false);
+                    ExistingDocument.DELETED = true;
+                    _foxPatientPATdocumentRepository.Update(ExistingDocument);
+                    _foxPatientPATdocumentRepository.Save();
+                    return;
+                }
             }
-            }           
         }
         public void InsertInterfaceTeamData(InterfaceSynchModel obj, UserProfile Profile)
         {

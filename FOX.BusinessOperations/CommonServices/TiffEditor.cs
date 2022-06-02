@@ -386,7 +386,7 @@ namespace FOX.BusinessOperations.CommonService
                 SaveBitmapImagesAsPdf(BitmapList, TempPathForTiffToPdfFile);
                 returnValue = TempPathForTiffToPdfFile;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 returnValue = "";
             }
@@ -408,7 +408,7 @@ namespace FOX.BusinessOperations.CommonService
                 SaveBitmapImagesAsPdf(BitmapList, TempPathForTiffToPdfFile);
                 returnValue = TempPathForTiffToPdfFile;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 returnValue = "";
             }

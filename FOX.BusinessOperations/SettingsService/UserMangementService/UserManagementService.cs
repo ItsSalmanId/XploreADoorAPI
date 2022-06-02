@@ -272,7 +272,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                         _FOX_TBL_SENDER_NAME.Save();
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     return false;
                 }
@@ -378,7 +378,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     //var users = SpRepository<User>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_PRACTICE_USERS_90365] @PRACTICE_CODE,@SEARCH_TEXT, @RECORD_PER_PAGE, @CURRENT_PAGE", parmPracticeCode, parmSearchText, RecordPerPage, CurrentPage);
                     //8 return users;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     return new List<User>();
                 }
@@ -433,14 +433,13 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         {
             try
             {
-                string DB_PASSWORD = "";
                 var user = _UserRepository.GetSingle(x => x.USER_NAME.Equals(username));
                 //Source Email Validation Vulnerability
                 user.SECURITY_QUESTION = null;
                 user.SECURITY_QUESTION_ANSWER = null;
                 var role = _RoleRepository.GetFirst(x => x.ROLE_ID.Equals(profile.RoleId));
                 var userRole = _RoleRepository.GetFirst(x => x.ROLE_ID.Equals(user.ROLE_ID ?? 0) && !x.DELETED);
-                if(userRole !=null && !string.IsNullOrWhiteSpace(userRole.ROLE_NAME))
+                if (userRole != null && !string.IsNullOrWhiteSpace(userRole.ROLE_NAME))
                 {
                     user.ROLE_NAME = userRole.ROLE_NAME.Trim();
                 }
@@ -457,7 +456,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     {
                         encryptedPassword = item.Password;
                     }
-                    foreach(var item in adminPassword)
+                    foreach (var item in adminPassword)
                     {
                         encryptedAdminPassword = item.Password;
 
@@ -528,14 +527,14 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     user.SPECIALITY_NAME = speciality != null ? speciality.NAME : "";
                     user.PRACTICE_NAME = _fox_tbl_practice_organization.Get(t => !t.DELETED && t.PRACTICE_CODE == AppConfiguration.GetPracticeCode && t.PRACTICE_ORGANIZATION_ID == user.PRACTICE_ORGANIZATION_ID)?.NAME ?? "";
                     /* user.Is_Electronic_POC = */
-                    SqlDataAdapter result =   SpRepository<object>.getSpSqlDataAdapter("select Is_Electronic_POC from FOX_TBL_APP_USER_ADDITIONAL_INFO where deleted=0 and FOX_TBL_APPLICATION_USER_Id=" + user.USER_ID);
+                    SqlDataAdapter result = SpRepository<object>.getSpSqlDataAdapter("select Is_Electronic_POC from FOX_TBL_APP_USER_ADDITIONAL_INFO where deleted=0 and FOX_TBL_APPLICATION_USER_Id=" + user.USER_ID);
 
                     DataTable dt = new DataTable();
                     result.Fill(dt);
-                    if(dt.Rows.Count>0)
+                    if (dt.Rows.Count > 0)
                     {
                         bool Is_Electronic_POC = bool.Parse(dt.Rows[0][0].ToString());
-                        user.Is_Electronic_POC = Is_Electronic_POC ;
+                        user.Is_Electronic_POC = Is_Electronic_POC;
                     }
                     else
                     {
@@ -555,7 +554,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 }
                 return user;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
@@ -566,14 +565,14 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             try
             {
 
-                User_And_Regions_Data response = new User_And_Regions_Data ();
+                User_And_Regions_Data response = new User_And_Regions_Data();
                 List<Decripted_Password_Info> list = new List<Decripted_Password_Info>();
                 var user = _UserRepository.GetSingle(x => x.USER_NAME.Equals(username));
                 string user_encryptedPassword = "";
                 string admin_encryptedPassword = "";
                 string decryptedPassword = "";
                 string admin_decryptedPassword = "";
-                if (user.ROLE_ID != null && user.ROLE_ID !=0)
+                if (user.ROLE_ID != null && user.ROLE_ID != 0)
                 {
                     var role = _RoleRepository.GetFirst(x => x.ROLE_ID == user.ROLE_ID);
                     var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
@@ -584,9 +583,9 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     var email = new SqlParameter { ParameterName = "EMAIL", SqlDbType = SqlDbType.VarChar, Value = user.EMAIL };
                     var admin_email = new SqlParameter { ParameterName = "EMAIL", SqlDbType = SqlDbType.VarChar, Value = profile.UserEmailAddress };
                     var ref_region = SpRepository<Clinician_And_Referral_Region_Data>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ASSOCIATED_REAGION_DATA @PRACTICE_CODE, @USER_NAME, @EMAIL, @ROLE", PracticeCode, username1, Email, role_name);
-                    var login_log = SpRepository<Login_log_Data>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_LOGIN_LOG  @EMAIL",  email);
+                    var login_log = SpRepository<Login_log_Data>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_LOGIN_LOG  @EMAIL", email);
                     var admin_log = SpRepository<Login_log_Data>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_LOGIN_LOG  @EMAIL", admin_email);
-                    foreach(var item1 in admin_log)
+                    foreach (var item1 in admin_log)
                     {
                         admin_encryptedPassword = item1.Password;
                         if (item1.CreatedBy.ToLower() == "fox web service team" && item1.AdLoginResponse.ToLower() == "user login successfully")
@@ -594,7 +593,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                             var decrypted = Encrypt.DecryptApp_password(admin_encryptedPassword);
                             admin_decryptedPassword = decrypted;
                         }
-                        else if( item1.CreatedBy.ToLower() == "fox_portal" && item1.AdLoginResponse.ToLower() == "user login successfully")
+                        else if (item1.CreatedBy.ToLower() == "fox_portal" && item1.AdLoginResponse.ToLower() == "user login successfully")
                         {
                             var decrypted = Encrypt.DecryptPassword(admin_encryptedPassword);
                             admin_decryptedPassword = decrypted;
@@ -631,7 +630,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 }
                 return response;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
@@ -648,7 +647,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         {
             var pc = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practiceCode };
             var roleAndList = SpRepository<RoleAndRights>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ROLE_RIGHTS @PRACTICE_CODE", pc);
-            List<right> right = (from x in roleAndList select new right() { RIGHT_NAME = x.RIGHT_NAME, RIGHT_ID = x.RIGHT_ID, RIGHT_TYPE_NAME = x.RIGHT_TYPE_NAME, OrderId = x.OrderId }).OrderBy(e => e.OrderId ).GroupBy(p => p.RIGHT_ID).Select(g => g.First()).ToList();
+            List<right> right = (from x in roleAndList select new right() { RIGHT_NAME = x.RIGHT_NAME, RIGHT_ID = x.RIGHT_ID, RIGHT_TYPE_NAME = x.RIGHT_TYPE_NAME, OrderId = x.OrderId }).OrderBy(e => e.OrderId).GroupBy(p => p.RIGHT_ID).Select(g => g.First()).ToList();
             for (var i = 0; i < right.Count; i++)
             {
                 var roles = (from x in roleAndList where x.RIGHT_ID == right[i].RIGHT_ID select new Role() { IS_CHECKED = x.IS_CHECKED, ROLE_ID = x.ROLE_ID, ROLE_NAME = x.ROLE_NAME, RIGHT_ID = x.RIGHT_ID, RIGHTS_OF_ROLE_ID = x.RIGHTS_OF_ROLE_ID }).OrderBy(t => t.ROLE_ID).ToList();
@@ -1438,13 +1437,10 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         public void AddUpdateReferralRegion(ReferralRegion referralRegion, UserProfile profile)
         {
             var refRegion = _ReferralRegionRepository.GetByID(referralRegion.REFERRAL_REGION_ID);
-            bool isNewRegion = false;
             long Referral_RegionID = 0;
             string operation;
-            bool isNewState = false;
             if (refRegion == null)
             {
-                isNewRegion = true;
                 Referral_RegionID = referralRegion.REFERRAL_REGION_ID = Helper.getMaximumId("REFERRAL_REGION_ID");
                 if (referralRegion.IS_INACTIVE == null)
                 {
@@ -1493,7 +1489,6 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 refRegion.DELETED = referralRegion.DELETED;
                 if (refRegion.STATE_CODE != referralRegion.STATE_CODE)
                 {
-                    isNewState = true;
                     DeleteStateCountyMapping(referralRegion, profile);
                     //if (referralRegion?.COUNTIES != null && referralRegion?.COUNTIES.Count() > 0)
                     //{
@@ -1584,7 +1579,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             if (referralRegion != null && referralRegion.IS_FAX_COVER_LETTER.HasValue)
             {
                 var regionCoverLetterResponse = _RegionCoverLetterRepository.GetFirst(x => x.REFERRAL_REGION_ID == referralRegion.REFERRAL_REGION_ID && !x.DELETED);
-                if(regionCoverLetterResponse == null)
+                if (regionCoverLetterResponse == null)
                 {
                     //Insert
                     RegionCoverLetter regionCover = new RegionCoverLetter();
@@ -1732,8 +1727,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             }
             catch (Exception exception)
             {
-                //throw exception;
-                throw;
+                throw exception.InnerException;
             }
         }
         public int UpdatePassword(ResetPasswordViewModel data)
@@ -1888,7 +1882,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     FileRecieverResultList = new List<FileRecieverResult>();
                 }
@@ -1915,7 +1909,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 }
                 return false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -1958,9 +1952,9 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 else
                     return null;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                return null;
             }
         }
         public SmartSpecialitySearchResponseModel getSmartSpecialities(SmartSearchRequest model, UserProfile Profile)
@@ -2016,7 +2010,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             var usrParmAuth = new SqlParameter("UserName", SqlDbType.VarChar) { Value = uSER_NAME };
             return SpRepository<UserProfile>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_USER_PROFILING_DATA @UserName", usrParmAuth).FirstOrDefault();
         }
-        public void AddUpdateUserAdditionalInfo(long UserId, bool isElectronicPOC,DateTime CreatedDate,string CreatedBy, DateTime ModifiedDate,string ModifiedBy,bool Deleted)
+        public void AddUpdateUserAdditionalInfo(long UserId, bool isElectronicPOC, DateTime CreatedDate, string CreatedBy, DateTime ModifiedDate, string ModifiedBy, bool Deleted)
         {
             bool isEdit = true;
             var userAddInfo = _userAdditionalInfoRepository.GetFirst(e => e.FOX_TBL_APPLICATION_USER_ID == UserId && !e.DELETED);
@@ -2037,7 +2031,8 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             {
                 _userAdditionalInfoRepository.Update(userAddInfo);
             }
-            else {
+            else
+            {
                 _userAdditionalInfoRepository.Insert(userAddInfo);
             }
 
@@ -2158,7 +2153,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 _FOX_TBL_SENDER_NAME.Insert(senderName);
                 _FOX_TBL_SENDER_NAME.Save();
             }
-            if (user.ROLE_ID == 101 && user.IS_ACTIVE ==true)
+            if (user.ROLE_ID == 101 && user.IS_ACTIVE == true)
             {
                 var ActiveIUser = _ActiveIndexerRepository.GetFirst(t => t.INDEXER.Equals(userName));
                 if (ActiveIUser == null)
@@ -2503,7 +2498,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             {
                 return true;
             }
-            else if (userRights!= null && userRights.Count > 0)
+            else if (userRights != null && userRights.Count > 0)
             {
                 RoleAndRights updateUserRight = userRights.Find(e => e.RIGHT_NAME.Contains("Create/Modify User"));
                 if (updateUserRight == null)
@@ -2640,7 +2635,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     _ActiveIndexerRepository.Insert(ActiveIUser);
                     _ActiveIndexerRepository.Save();
                 }
-                if(ActiveIUser != null)
+                if (ActiveIUser != null)
                 {
 
                     ActiveIUser.INDEXER = ActiveIUser.INDEXER;
@@ -2695,7 +2690,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 //string smsBody = @"Your signup request for Fox Rehab portal has been approved. You may now login to your account and start sending a patient referral right away! Download on the App Store: https://itunes.apple.com/us/app/mtbc-fox/id1384823410?mt=8";
                 //string smsBody = @"Dear " + userToUpdate.LAST_NAME + ", " + userToUpdate.FIRST_NAME + "\nYour request for access to Fox Rehabilitation's online referral portal has been approved. Also, if you agreed to receiving Electronic Plans of Care, please see your email for final security step.\nFox Rehabilitation,\nClient Services Team";
                 string smsBody = @"Dear " + userToUpdate.LAST_NAME + ", " + userToUpdate.FIRST_NAME + "\nYour request for access to Fox Rehabilitation online referral portal has been approved.\nFox Rehabilitation,\nClient Services Team";
-                if ( user.MOBILE_PHONE != null)
+                if (user.MOBILE_PHONE != null)
                 {
                     recipient = user.MOBILE_PHONE;
                     SmsService.NJSmsService(recipient, smsBody);
@@ -2752,7 +2747,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         public int GetInvalidAttempts(string userName)
         {
             Valid_Login_Attempts invalidAttempts = _validLoginAtttempts.GetFirst(x => x.USER_NAME == userName);
-            if(invalidAttempts != null)
+            if (invalidAttempts != null)
             {
                 return Convert.ToInt32(invalidAttempts.FAIL_ATTEMPT_COUNT);
             }
@@ -2848,7 +2843,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     FOX_TBL_DASHBOARD_ACCESS temp = _dashBoardAccessRepository.Get(e => e.REFERRAL_REGION_ID == referralRegionId && e.USER_NAME == o.USER_NAME);
                     if (temp == null)
                     {
-                        if(o.ROLE_NAME != null && o.ROLE_NAME.ToLower() == "account manager")
+                        if (o.ROLE_NAME != null && o.ROLE_NAME.ToLower() == "account manager")
                         {
                             InsertAlternateManager(o.USER_NAME, referralRegionId, profile);
                         }
@@ -3010,7 +3005,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                         {
                             var userName = reader["USER_NAME"].ToString();
                             var password = reader["PASSWORD"].ToString();
-                            if(!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(password))
+                            if (!string.IsNullOrWhiteSpace(userName) && !string.IsNullOrWhiteSpace(password))
                             {
                                 Loginlink = link + "param=" + Encrypt.getEncryptedCodeTalkEhrRedirection(password + "~" + userName + "~" + DateTime.Now.ToString() + "~" + "MA359");
                             }
@@ -3111,7 +3106,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                         #endregion
                         return true;
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         return false;
                     }
@@ -3152,12 +3147,12 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             SqlParameter recordPerPage = new SqlParameter("@RECORD_PER_PAGE", req.RecordPerPage);
             SqlParameter searchText = new SqlParameter("@SEARCH_TEXT", req.SearchText);
 
-            return  SpRepository<ActiveIndexer>.GetListWithStoreProcedure(@"Exec FOX_PROC_GET_INDEXERS
+            return SpRepository<ActiveIndexer>.GetListWithStoreProcedure(@"Exec FOX_PROC_GET_INDEXERS
             @PRACTICE_CODE, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT", practiceCode, currentPage, recordPerPage, searchText);
         }
         public bool UpdateActiveIndexers(List<ActiveIndexer> res, UserProfile profile)
         {
-            foreach(var item in res)
+            foreach (var item in res)
             {
                 var indexer = _ActiveIndexerRepository.GetFirst(x => x.INDEXER == item.INDEXER);
                 var user = new User();
@@ -3186,7 +3181,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
 
                 if (oldData != null && newData != null)
                 {
-                    if(oldData.DEFAULT_VALUE != newData.DEFAULT_VALUE)
+                    if (oldData.DEFAULT_VALUE != newData.DEFAULT_VALUE)
                     {
                         string message = String.Empty;
                         if (user != null)
@@ -3271,7 +3266,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             SqlParameter searchText = new SqlParameter("@SEARCH_TEXT", req.SearchText);
             SqlParameter date = new SqlParameter("@DATE", req.CREATED_DATE.ToString());
 
-            var result =  SpRepository<ActiveIndexerHistory>.GetListWithStoreProcedure(@"Exec FOX_PROC_GET_INDEXERS_HISTORY
+            var result = SpRepository<ActiveIndexerHistory>.GetListWithStoreProcedure(@"Exec FOX_PROC_GET_INDEXERS_HISTORY
             @PRACTICE_CODE, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @DATE", practiceCode, currentPage, recordPerPage, searchText, date);
             return result;
         }
@@ -3315,7 +3310,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         {
             var active = _ActiveIndexerRepository.GetFirst(x => (x.IS_ACTIVE ?? false) == true && x.PRACTICE_CODE == profile.PracticeCode && !(x.DELETED));
 
-            if(active != null)
+            if (active != null)
             {
                 return false;
             }

@@ -144,7 +144,7 @@ namespace FoxRehabilitationAPI.Models
                     }
                     return userIdentity;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     return userIdentity;
                 }
@@ -162,7 +162,7 @@ namespace FoxRehabilitationAPI.Models
                     }
                     return userIdentity;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     return userIdentity;
                 }

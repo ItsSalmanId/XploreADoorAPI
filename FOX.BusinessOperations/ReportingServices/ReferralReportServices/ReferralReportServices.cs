@@ -184,7 +184,7 @@ namespace FOX.BusinessOperations.ReportingServices.ReferralReportServices
                 else
                     return new List<TaskListResponse>();
             }
-            catch (Exception ex) {
+            catch (Exception) {
                 return new List<TaskListResponse>();
             }
         }

@@ -214,5 +214,17 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _CommonService.SaveSplashDetails(GetProfile()));
         }
+        [HttpGet]
+        public HttpResponseMessage DeleteDownloadedFile(string fileLocation)
+        {
+            if (!string.IsNullOrEmpty(fileLocation))
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _CommonService.DeleteDownloadedFile(fileLocation));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "File Location Empty");
+            }
+        }
     }
 }
