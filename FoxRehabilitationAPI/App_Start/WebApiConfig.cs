@@ -31,6 +31,7 @@ namespace FoxRehabilitationAPI
 
             string Origins = @"
                                 http://localhost:14479,
+                                https://ccremote.carecloud.com,
                                 https://uatfox.mtbc.com,
                                 https://stagingfox.mtbc.com,
                                 https://stagingfox2.mtbc.com,
