@@ -3325,7 +3325,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 return true;
             }
         }
-        public bool AddUserTeam(UserProfile profile, string callerUserID, string userId)
+        public bool AddUserTeam(UserProfile profile, string callerUserID, string userId,string roleID)
         {
             try
             {
@@ -3340,7 +3340,8 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                             SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(userId)};
                             SqlParameter phdCallScenareioID = new SqlParameter { ParameterName = "PHD_CALL_SCENARIO_ID", SqlDbType = SqlDbType.BigInt, Value = ID };
                             SqlParameter practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
-                            SpRepository<UserTeamModel>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_USER_TEAM_INSERT_RECORD @USER_TEAM_ID, @USER_ID, @PHD_CALL_SCENARIO_ID ,@PRACTICE_CODE", userTeamID, userID, phdCallScenareioID, practiceCode);
+                            SqlParameter roleid = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(roleID) };
+                            SpRepository<UserTeamModel>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_USER_TEAM_INSERT_RECORD @USER_TEAM_ID, @USER_ID, @PHD_CALL_SCENARIO_ID ,@PRACTICE_CODE,@ROLE_ID", userTeamID, userID, phdCallScenareioID, practiceCode, roleid);
                         }
                     }
                     return true;

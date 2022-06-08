@@ -554,11 +554,11 @@ namespace FoxRehabilitationAPI.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, _userServices.CheckActiveStatus(GetProfile()));
         }
         [HttpGet]
-        public HttpResponseMessage AddUserTeam(string callerUserID, string userID)
+        public HttpResponseMessage AddUserTeam(string callerUserID, string userID, string roleID)
         {
             if (!string.IsNullOrEmpty(callerUserID))
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _userServices.AddUserTeam(GetProfile(), callerUserID, userID));
+                return Request.CreateResponse(HttpStatusCode.OK, _userServices.AddUserTeam(GetProfile(), callerUserID, userID, roleID));
             }
             else
             {
