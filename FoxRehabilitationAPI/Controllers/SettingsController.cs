@@ -569,37 +569,30 @@ namespace FoxRehabilitationAPI.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Role ID is Empty");
             }
         }
-        [HttpGet]
-        public HttpResponseMessage UpdateUserTeam(string userId,string callerUserID, string filter)
-        {
-            if (!string.IsNullOrEmpty(callerUserID))
-            {
-                return Request.CreateResponse(HttpStatusCode.OK, _userServices.UpdateUserTeam(GetProfile(),userId, callerUserID, filter));
-            }
-            else
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Caller User ID is Empty");
-            }
-        }
+        //[HttpGet]
+        //public HttpResponseMessage UpdateUserTeam(string userId,string callerUserID, string filter)
+        //{
+        //    if (!string.IsNullOrEmpty(callerUserID))
+        //    {
+        //        return Request.CreateResponse(HttpStatusCode.OK, _userServices.UpdateUserTeam(GetProfile(),userId, callerUserID, filter));
+        //    }
+        //    else
+        //    {
+        //        return Request.CreateResponse(HttpStatusCode.BadRequest, "Caller User ID is Empty");
+        //    }
+        //}
 
         [HttpGet]
-        public HttpResponseMessage UpdateUserTeamV2(string userTeamModelV2)
+        public HttpResponseMessage UpdateUserTeam(string userTeamModel)
         {
-            var myList = JsonConvert.DeserializeObject<List<UserTeamModelV2>>(userTeamModelV2);
-            //var result = ((IEnumerable)userTeamModelV2).Cast<object>().ToList();
-            /*IList collection = (IList)userTeamModelV2;
-            foreach (var item in result)
+            var userTeamList = JsonConvert.DeserializeObject<List<UserTeamModel>>(userTeamModel);
+            if (userTeamList.Count > 0)
             {
-                UserTeamModelV2 user = new UserTeamModelV2();
-                
-            }*/
-            if (myList.Count > 0)
-            {
-                return Request.CreateResponse(HttpStatusCode.OK, _userServices.UpdateUserTeamV2(myList));
+                return Request.CreateResponse(HttpStatusCode.OK, _userServices.UpdateUserTeam(userTeamList, GetProfile()));
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Caller User ID is Empty");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "User List is Empty");
             }
         }
     }
