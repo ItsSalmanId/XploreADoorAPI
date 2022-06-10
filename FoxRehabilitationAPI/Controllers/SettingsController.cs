@@ -556,7 +556,7 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpGet]
         public HttpResponseMessage AddUserTeam(string callerUserID, string userID, string roleID)
         {
-            if (!string.IsNullOrEmpty(callerUserID))
+            if (!string.IsNullOrEmpty(callerUserID) && !string.IsNullOrEmpty(userID) && !string.IsNullOrEmpty(roleID))
             {
                 return Request.CreateResponse(HttpStatusCode.OK, _userServices.AddUserTeam(GetProfile(), callerUserID, userID, roleID));
             }
@@ -569,7 +569,14 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpGet]
         public HttpResponseMessage GetTeamList(string roleID)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _userServices.GetTeamList(roleID, GetProfile()));
+            if (!string.IsNullOrEmpty(roleID))
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _userServices.GetTeamList(roleID, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Role ID is Empty");
+            }
         }
     }
 }

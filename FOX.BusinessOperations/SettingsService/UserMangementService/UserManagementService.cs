@@ -3351,7 +3351,6 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             catch (Exception ex)
             {
                 throw ex;
-                return false;
             }
 
         }
@@ -3362,7 +3361,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             var result = new List<GetTeamList>();
             try { 
           
-            if (roleID != null && profile.PracticeCode != null)
+            if (roleID != null && profile.PracticeCode != 0)
             {
                 SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
                 SqlParameter roleId = new SqlParameter { ParameterName = "USER_ROLE_ID", SqlDbType = SqlDbType.BigInt, Value = roleID };
