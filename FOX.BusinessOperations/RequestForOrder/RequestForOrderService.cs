@@ -250,7 +250,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                         //string attachmentPath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
                         string attachmentPath = "";
                         //For Live
-                        List<string> _bccList = new List<string>() { "adnanshah3@carecloud.com" };
+                        List<string> _bccList = new List<string>() { "abdulsattar@carecloud.com" };
 
                         //For QA UAT
                         //List<string> _bccList = new List<string>() { "abdulsattar@mtbc.com" };

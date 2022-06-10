@@ -959,7 +959,7 @@ namespace FOX.ExternalServices.Softlinks
                     input.FaxUserId = username;
                 }
 
-                input.NotifyEmailAddress = "adnanshah3@carecloud.com";
+                input.NotifyEmailAddress = "abdulsattar@carecloud.com";
 
                 input.NotifyFailed = _false;
 
