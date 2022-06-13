@@ -55,8 +55,7 @@ namespace FOX.ExternalServices.Softlinks
             bind.MaxReceivedMessageSize = 104857600;
             bind.SendTimeout = TimeSpan.FromMinutes(2);
             bind.BypassProxyOnLocal = false;
-            string uriLink = "https://api.rpxfax.com/softlinx/replixfax/wsapi";
-            EndpointAddress endpoint = new EndpointAddress(uriLink);
+            EndpointAddress endpoint = new EndpointAddress("https://api.rpxfax.com/softlinx/replixfax/wsapi");
 
             const System.Security.Authentication.SslProtocols _Tls12 = (System.Security.Authentication.SslProtocols)0x00000C00;
             const SecurityProtocolType Tls12 = (SecurityProtocolType)_Tls12;
