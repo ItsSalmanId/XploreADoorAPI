@@ -525,15 +525,15 @@ namespace FOX.BusinessOperations.SettingsService.ClinicianSetupService
                         }
                         else
                         {
-                            sendTo = "adnanshah3@carecloud.com";
-                            _ccList.Add("abdulsattar@carecloud.com");
+                            sendTo = "abdulsattar@carecloud.com";
+                            _ccList.Add("aftabkhan@carecloud.com");
                             _ccList.Add("muhammadarslan3@carecloud.com");
                         }
                         Helper.SendEmail(sendTo, subject, body, null, profile, _ccList);
                         #endregion
                         return true;
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         return false;
                     }

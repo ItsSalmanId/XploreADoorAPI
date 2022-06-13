@@ -74,7 +74,7 @@ namespace FOX.BusinessOperations.GroupServices
         {
             try
             {
-                return _groupRepository.GetMany(t => t.PRACTICE_CODE == userProfile.PracticeCode && !t.DELETED).OrderByDescending(g=>g.CREATED_DATE).ToList();
+                return _groupRepository.GetMany(t => t.PRACTICE_CODE == userProfile.PracticeCode && !t.DELETED).OrderByDescending(g => g.CREATED_DATE).ToList();
             }
             catch (Exception)
             {
@@ -162,7 +162,7 @@ namespace FOX.BusinessOperations.GroupServices
                 };
                 return SpRepository<UserWithRoles>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_USERS_WITH_THEIR_ROLE @PRACTICE_CODE", paramPracticeCode);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
@@ -273,7 +273,7 @@ namespace FOX.BusinessOperations.GroupServices
                 }
                 return results;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new UsersAndGroupUsersViewModel();
             }

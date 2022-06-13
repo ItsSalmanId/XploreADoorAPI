@@ -39,6 +39,7 @@
       <HintPath>..\Libraries\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.EnterpriseServices" />
@@ -71,7 +72,7 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
     <Compile Include="SmsService.cs" />
-    <Compile Include="Softlinks\replixfaxService.cs" />
+    <Compile Include="Softlinks\ReplixfaxService.cs" />
     <Compile Include="Web References\PatientEligibilityService\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

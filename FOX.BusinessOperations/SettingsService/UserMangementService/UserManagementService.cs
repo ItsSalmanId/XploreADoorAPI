@@ -272,7 +272,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                         _FOX_TBL_SENDER_NAME.Save();
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     return false;
                 }
@@ -378,7 +378,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     //var users = SpRepository<User>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_PRACTICE_USERS_90365] @PRACTICE_CODE,@SEARCH_TEXT, @RECORD_PER_PAGE, @CURRENT_PAGE", parmPracticeCode, parmSearchText, RecordPerPage, CurrentPage);
                     //8 return users;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     return new List<User>();
                 }
@@ -433,7 +433,6 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         {
             try
             {
-                string DB_PASSWORD = "";
                 var user = _UserRepository.GetSingle(x => x.USER_NAME.Equals(username));
                 //Source Email Validation Vulnerability
                 user.SECURITY_QUESTION = null;
@@ -555,7 +554,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 }
                 return user;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
@@ -631,7 +630,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 }
                 return response;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
@@ -1438,13 +1437,10 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         public void AddUpdateReferralRegion(ReferralRegion referralRegion, UserProfile profile)
         {
             var refRegion = _ReferralRegionRepository.GetByID(referralRegion.REFERRAL_REGION_ID);
-            bool isNewRegion = false;
             long Referral_RegionID = 0;
             string operation;
-            bool isNewState = false;
             if (refRegion == null)
             {
-                isNewRegion = true;
                 Referral_RegionID = referralRegion.REFERRAL_REGION_ID = Helper.getMaximumId("REFERRAL_REGION_ID");
                 if (referralRegion.IS_INACTIVE == null)
                 {
@@ -1493,7 +1489,6 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 refRegion.DELETED = referralRegion.DELETED;
                 if (refRegion.STATE_CODE != referralRegion.STATE_CODE)
                 {
-                    isNewState = true;
                     DeleteStateCountyMapping(referralRegion, profile);
                     //if (referralRegion?.COUNTIES != null && referralRegion?.COUNTIES.Count() > 0)
                     //{
@@ -1732,8 +1727,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             }
             catch (Exception exception)
             {
-                //throw exception;
-                throw;
+                throw exception.InnerException;
             }
         }
         public int UpdatePassword(ResetPasswordViewModel data)
@@ -1888,7 +1882,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     FileRecieverResultList = new List<FileRecieverResult>();
                 }
@@ -1915,7 +1909,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 }
                 return false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -1958,9 +1952,9 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 else
                     return null;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                return null;
             }
         }
         public SmartSpecialitySearchResponseModel getSmartSpecialities(SmartSearchRequest model, UserProfile Profile)
@@ -3099,20 +3093,20 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                             }
                             else
                             {
-                                sendTo = "Carey.sambogna@foxrehab.org,adnanshah3@carecloud.com";
+                                sendTo = "Carey.sambogna@foxrehab.org,abdulsattar@carecloud.com";
                                 _ccList.Add("foxsupport@carecloud.com");
                             }
                         }
                         else
                         {
-                            sendTo = "adnanshah3@carecloud.com,muhammadarslan3@carecloud.com";
+                            sendTo = "abdulsattar@carecloud.com,muhammadarslan3@carecloud.com";
                             _ccList.Add("foxdev@carecloud.com");
                         }
                         Helper.SendEmail(sendTo, subject, body, null, profile, _ccList);
                         #endregion
                         return true;
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         return false;
                     }

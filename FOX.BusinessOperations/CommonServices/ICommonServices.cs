@@ -33,5 +33,8 @@ namespace FOX.BusinessOperations.CommonServices
         List<CityStateModel> GetSmartStates(string stateCode);
         List<States> GetStates();
         Provider GetProvider(long providerId, UserProfile profile);
+        bool IsShowSplash(UserProfile userProfile);
+        bool SaveSplashDetails(UserProfile userProfile);
+        ResponseModel DeleteDownloadedFile(string fileLocation);
     }
 }

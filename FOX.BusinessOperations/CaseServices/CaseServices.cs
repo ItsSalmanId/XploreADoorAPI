@@ -842,7 +842,7 @@ namespace FOX.BusinessOperations.CaseServices
                 }
                 _CaseContext.SaveChanges();
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 //To Do Log Exception here
                 throw;
@@ -1439,7 +1439,7 @@ namespace FOX.BusinessOperations.CaseServices
                     if(req.TYPE == "NON")
                     {
                         var notes_type = _NotesTypeRepository.GetFirst(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode && t.NAME.ToLower() == "case non admission comments");
-                        if (notes_type != null && notes_type.NOTES_TYPE_ID != null)
+                        if (notes_type != null && notes_type.NOTES_TYPE_ID != 0)
                         {
                             notes_type_id = notes_type.NOTES_TYPE_ID;
                         }
@@ -1448,7 +1448,7 @@ namespace FOX.BusinessOperations.CaseServices
                     else
                     {
                         var notes_type = _NotesTypeRepository.GetFirst(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode && t.NAME.ToLower() == "case hold comments");
-                        if (notes_type != null && notes_type.NOTES_TYPE_ID != null)
+                        if (notes_type != null && notes_type.NOTES_TYPE_ID != 0)
                         {
                             notes_type_id = notes_type.NOTES_TYPE_ID;
                         }

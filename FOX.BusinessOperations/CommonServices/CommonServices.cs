@@ -23,6 +23,7 @@ using FOX.DataModels.Models.CasesModel;
 using FOX.BusinessOperations.CommonService;
 using FOX.DataModels.Models.StatesModel;
 using FOX.DataModels.Models.ServiceConfiguration;
+using System.Web.Configuration;
 
 namespace FOX.BusinessOperations.CommonServices
 {
@@ -41,6 +42,7 @@ namespace FOX.BusinessOperations.CommonServices
         private readonly GenericRepository<States> _statesRepository;
         private readonly GenericRepository<Provider> _providerRepository;
         private readonly GenericRepository<EmailFaxLog> _emailfaxlogRepository;
+        private readonly GenericRepository<Splash> _splashRepository;
 
         public CommonServices()
         {
@@ -55,7 +57,7 @@ namespace FOX.BusinessOperations.CommonServices
             _statesRepository = new GenericRepository<States>(_DbContextCommon);
             _providerRepository = new GenericRepository<Provider>(_DbContextCommon);
             _emailfaxlogRepository = new GenericRepository<EmailFaxLog>(_DbContextCommon);
-
+            _splashRepository = new GenericRepository<Splash>(_DbContextCommon);
         }
 
     public string GeneratePdf(long WorkId, string practiceDocumentDirectory)
@@ -106,7 +108,7 @@ namespace FOX.BusinessOperations.CommonServices
                 }
                 return "";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return "";
             }
@@ -535,6 +537,82 @@ namespace FOX.BusinessOperations.CommonServices
         {
             return _providerRepository.GetFirst(row => row.PRACTICE_CODE == profile.PracticeCode && row.FOX_PROVIDER_ID == providerId);
         }
-
+        // Splash will be showing on the basics of user id 
+        public bool IsShowSplash(UserProfile userProfile)
+        {
+            if (userProfile != null && !string.IsNullOrEmpty(userProfile.UserName))
+            {
+                var splashType = WebConfigurationManager.AppSettings["SplashType"];
+                var splashUser = _splashRepository.GetFirst(s => s.DELETED == false && s.USER_ID == userProfile.userID && s.USER_NAME == userProfile.UserName && s.SPLASH_TYPE == splashType);
+                if (splashUser != null && splashUser.SHOW_COUNT > 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    DateTime start = Convert.ToDateTime(WebConfigurationManager.AppSettings["SplashStartTime"]);
+                    DateTime end = Convert.ToDateTime(WebConfigurationManager.AppSettings["SplashEndTime"]);
+                    var currentDateTime = DateTime.Now;
+                    if (currentDateTime > start && currentDateTime < end)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        // Data of splash screen will be save to db
+        public bool SaveSplashDetails(UserProfile userProfile)
+        {
+            if(userProfile != null && !string.IsNullOrEmpty(userProfile.UserName))
+            {
+                var getSplashResponse = _splashRepository.GetFirst(s => s.DELETED == false && s.USER_ID == userProfile.userID && s.USER_NAME == userProfile.UserName);
+                if(getSplashResponse == null)
+                {
+                    Splash splashObj = new Splash();
+                    splashObj.FOX_SPLASH_ID = Helper.getMaximumId("FOX_SPLASH_ID");
+                    splashObj.USER_ID = userProfile.userID;
+                    splashObj.USER_NAME = userProfile.UserName;
+                    splashObj.SPLASH_TYPE = WebConfigurationManager.AppSettings["SplashType"];
+                    splashObj.CREATED_BY = splashObj.MODIFIED_BY = "FOX_TEAM";
+                    splashObj.CREATED_DATE = splashObj.MODIFIED_DATE = Helper.GetCurrentDate();
+                    splashObj.SHOW_COUNT = 1;
+                    _splashRepository.Insert(splashObj);
+                    _splashRepository.Save();
+                }
+                else
+                {
+                    getSplashResponse.SHOW_COUNT = getSplashResponse.SHOW_COUNT + 1;
+                    _splashRepository.Update(getSplashResponse);
+                    _splashRepository.Save();
+                }
+            }
+            return true;
+        }
+        // Delete Files From Server.
+        public ResponseModel DeleteDownloadedFile(string fileLocation)
+        {
+            ResponseModel response = new ResponseModel();
+            if (!string.IsNullOrEmpty(fileLocation))
+            {
+                var completeFilePath = HttpContext.Current?.Server?.MapPath("~/" + fileLocation);
+                if (!string.IsNullOrEmpty(completeFilePath) && File.Exists(Path.Combine(completeFilePath)))
+                {
+                    File.Delete(Path.Combine(completeFilePath));
+                    response.Success = true;
+                    response.Message = "Successfully deleted files";
+                }
+                else
+                {
+                    response.Success = false;
+                    response.Message = "File not found";
+                }
+            }
+            return response;
+        }
     }
 }

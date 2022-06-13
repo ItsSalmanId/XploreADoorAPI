@@ -32,11 +32,11 @@ namespace FOX.BusinessOperations.CommonServices
             {
                 client.Send(lookup);
             }
-            catch (SmartyException ex)
+            catch (SmartyException)
             {
                throw;
             }
-            catch (IOException ex)
+            catch (IOException)
             {
                 throw;
             }

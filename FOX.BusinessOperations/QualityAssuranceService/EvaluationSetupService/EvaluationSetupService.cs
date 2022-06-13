@@ -71,7 +71,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.EvaluationSetupService
         {
             var tempObj = new List<EvaluationCriteriaCategories>();
             var clientID = _evaluationCriteriaRepository.GetFirst(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode && t.CRITERIA_NAME == "Client Experience" && t.CALL_TYPE == obj.CALL_TYPE);
-            if (clientID != null && clientID.EVALUATION_CRITERIA_ID != null)
+            if (clientID != null && clientID.EVALUATION_CRITERIA_ID != 0)
             {
                 tempObj = _evaluationCriteriaCategoriesRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode && t.EVALUATION_CRITERIA_ID == clientID.EVALUATION_CRITERIA_ID && t.CALL_TYPE == obj.CALL_TYPE).ToList();
 
@@ -168,7 +168,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.EvaluationSetupService
             var tempObj = new List<EvaluationCriteriaCategories>();
             var clientID = _evaluationCriteriaRepository.GetFirst(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode && t.CRITERIA_NAME == "System Product and Process" && t.CALL_TYPE == obj.CALL_TYPE);
             var index1 = -1;
-            if (clientID != null && clientID.EVALUATION_CRITERIA_ID != null)
+            if (clientID != null && clientID.EVALUATION_CRITERIA_ID != 0)
             {
                 tempObj = _evaluationCriteriaCategoriesRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode && t.EVALUATION_CRITERIA_ID == clientID.EVALUATION_CRITERIA_ID && t.CALL_TYPE == obj.CALL_TYPE).ToList();
 

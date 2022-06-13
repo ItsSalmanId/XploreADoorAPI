@@ -62,9 +62,11 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommonServiceUnitTest\CommonServiceTest.cs" />
     <Compile Include="FoxPHDServiceUnitTest\FoxPHDServiceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserManagementServiceUnitTest\UserManagmentTestCases.cs" />
+    <Compile Include="SignatureRequiredServiceUnitTest\SignatureRequiredServiceTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
