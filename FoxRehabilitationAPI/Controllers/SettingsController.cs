@@ -19,6 +19,7 @@ using System.Web;
 using System.Web.Http;
 using FOX.BusinessOperations.AccountService;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace FoxRehabilitationAPI.Controllers
 {
@@ -554,28 +555,16 @@ namespace FoxRehabilitationAPI.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, _userServices.CheckActiveStatus(GetProfile()));
         }
         [HttpGet]
-        public HttpResponseMessage AddUserTeam(string callerUserID, string userID, string roleID)
+        public HttpResponseMessage AddUserTeam(string userTeamModel)
         {
-            if (!string.IsNullOrEmpty(callerUserID) && !string.IsNullOrEmpty(userID) && !string.IsNullOrEmpty(roleID))
+            var userTeamList = JsonConvert.DeserializeObject<List<UserTeamModel>>(userTeamModel);
+            if (userTeamList.Count > 0)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _userServices.AddUserTeam(GetProfile(), callerUserID, userID, roleID));
+                return Request.CreateResponse(HttpStatusCode.OK, _userServices.AddUserTeam(userTeamList, GetProfile()));
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Caller User ID is Empty");
-            }
-        }
-
-        [HttpGet]
-        public HttpResponseMessage GetTeamList(string roleID)
-        {
-            if (!string.IsNullOrEmpty(roleID))
-            {
-                return Request.CreateResponse(HttpStatusCode.OK, _userServices.GetTeamList(roleID, GetProfile()));
-            }
-            else
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Role ID is Empty");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "User List is Empty");
             }
         }
     }

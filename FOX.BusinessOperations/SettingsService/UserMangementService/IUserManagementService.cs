@@ -70,7 +70,8 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         string ExportToExcelHistory(ActiveIndexerHistory req, UserProfile profile);
         bool CheckActiveStatus(UserProfile profile);
         string ExportToExcelUsersReport(UserRequest req, UserProfile profile);
-        bool AddUserTeam(UserProfile profile, string callerUserID, string userID, string roleID);
         List<GetTeamList> GetTeamList(string roleID, UserProfile profile);
+        bool AddUserTeam(List<UserTeamModel> userTeamModel, UserProfile profile);
+
     }
 }
