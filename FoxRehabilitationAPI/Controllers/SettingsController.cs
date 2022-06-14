@@ -19,6 +19,9 @@ using System.Web;
 using System.Web.Http;
 using FOX.BusinessOperations.AccountService;
 using System.Collections.Generic;
+using System.Collections;
+using System.Linq;
+using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Newtonsoft.Json;
 
 namespace FoxRehabilitationAPI.Controllers
@@ -561,6 +564,32 @@ namespace FoxRehabilitationAPI.Controllers
             if (userTeamList.Count > 0)
             {
                 return Request.CreateResponse(HttpStatusCode.OK, _userServices.AddUserTeam(userTeamList, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "User List is Empty");
+            }
+        }
+        [HttpGet]
+        public HttpResponseMessage GetTeamList(string roleID)
+        {
+            if (!string.IsNullOrEmpty(roleID))
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _userServices.GetTeamList(roleID, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Role ID is Empty");
+            }
+        }
+
+        [HttpGet]
+        public HttpResponseMessage UpdateUserTeam(string userTeamModel)
+        {
+            var userTeamList = JsonConvert.DeserializeObject<List<UserTeamModel>>(userTeamModel);
+            if (userTeamList.Count > 0)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _userServices.UpdateUserTeam(userTeamList, GetProfile()));
             }
             else
             {

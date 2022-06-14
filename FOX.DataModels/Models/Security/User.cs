@@ -8,7 +8,7 @@ using System.Web;
 
 namespace FOX.DataModels.Models.Security
 {
-    
+
     // [Serializable]
     [Table("fox_tbl_application_user")]
     //[Table("fox_tbl_application_user_temp2")]
@@ -16,11 +16,11 @@ namespace FOX.DataModels.Models.Security
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-       
+
         public long USER_ID { get; set; }
-       
+
         public string USER_NAME { get; set; }
-      
+
         public long PRACTICE_CODE { get; set; }
         public string PASSWORD { get; set; }
         public int FAILED_PASSWORD_ATTEMPT_COUNT { get; set; }
@@ -40,7 +40,7 @@ namespace FOX.DataModels.Models.Security
         public DateTime? DATE_OF_BIRTH { get; set; }
         public string EMAIL { get; set; }
         public string RT_USER_ID { get; set; }
-      
+
         public int? RESET_PASS { get; set; }
         public string SECURITY_QUESTION { get; set; }
         public string SECURITY_QUESTION_ANSWER { get; set; }
@@ -134,9 +134,9 @@ namespace FOX.DataModels.Models.Security
         public long? REFERRAL_REGION_ID { get; set; }
         [NotMapped]
         public string REGION_NAME { get; set; }
-       
+
         public bool? FULL_ACCESS_OVER_APP { get; set; }
-        
+
         [NotMapped]
         public bool? Is_Electronic_POC { get; set; }
         [NotMapped]
@@ -163,7 +163,7 @@ namespace FOX.DataModels.Models.Security
         public bool FilterIs_Approved { get; set; }
         public int CurrentPage { get; set; }
         public int RecordPerPage { get; set; }
-        
+
     }
 
     [Table("FOX_TBL_APP_USER_ADDITIONAL_INFO")]
@@ -201,7 +201,7 @@ namespace FOX.DataModels.Models.Security
         public string ROLE_NAME_IN_DASHBOARD { get; set; }
         public string USER_EMAIL { get; set; }
         public string CLINICIAN_EMAIL { get; set; }
-        public string  RT_USER_ID  { get; set; }
+        public string RT_USER_ID { get; set; }
         public string FOX_PROVIDER_CODE { get; set; }
         public string FIRST_NAME { get; set; }
         public string LAST_NAME { get; set; }
@@ -342,22 +342,6 @@ namespace FOX.DataModels.Models.Security
         [NotMapped]
         public int TOTAL_RECORDS { get; set; }
     }
-    [Table("FOX_TBL_APPLICATION_USER_TEAM")]
-    public class UserTeamModel
-    {
-        public long USER_TEAM_ID { get; set; }
-        public long USER_ID { get; set; }
-        public long PHD_CALL_SCENARIO_ID { get; set; }
-        public string PRACTICE_CODE { get; set; }
-        public DateTime CREATED_DATE { get; set; }
-        public string CREATED_BY { get; set; }
-        public DateTime MODIFIED_DATE { get; set; }
-        public string MODIFIED_BY { get; set; }
-        public bool DELETED { get; set; }
-        public bool IS_CHECK_DISABLED { get; set; }
-        public long ROLE_ID { get; set; }
-    }
-
     public class GetTeamList
     {
         public long PHD_CALL_SCENARIO_ID { get; set; }
@@ -371,4 +355,21 @@ namespace FOX.DataModels.Models.Security
         public bool DELETED { get; set; }
         public bool IS_CHECK_DISABLED { get; set; }
     }
+    public class UserTeamModel
+    {
+        [Key]
+        public long USER_TEAM_ID { get; set; }
+        public long USER_ID { get; set; }
+        public long PHD_CALL_SCENARIO_ID { get; set; }
+        public string PRACTICE_CODE { get; set; }
+        public DateTime CREATED_DATE { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime MODIFIED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public bool DELETED { get; set; }
+        public bool IS_CHECK_DISABLED { get; set; }
+        public long ROLE_ID { get; set; }
+
+    }
+
 }
