@@ -19,6 +19,7 @@ using System.Web;
 using System.Web.Http;
 using FOX.BusinessOperations.AccountService;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace FoxRehabilitationAPI.Controllers
 {
@@ -554,15 +555,16 @@ namespace FoxRehabilitationAPI.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, _userServices.CheckActiveStatus(GetProfile()));
         }
         [HttpGet]
-        public HttpResponseMessage AddUserTeam(string callerUserID, string userID)
+        public HttpResponseMessage AddUserTeam(string userTeamModel)
         {
-            if (!string.IsNullOrEmpty(callerUserID))
+            var userTeamList = JsonConvert.DeserializeObject<List<UserTeamModel>>(userTeamModel);
+            if (userTeamList.Count > 0)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _userServices.AddUserTeam(GetProfile(), callerUserID, userID));
+                return Request.CreateResponse(HttpStatusCode.OK, _userServices.AddUserTeam(userTeamList, GetProfile()));
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Caller User ID is Empty");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "User List is Empty");
             }
         }
     }

@@ -345,15 +345,16 @@ namespace FOX.DataModels.Models.Security
     [Table("FOX_TBL_APPLICATION_USER_TEAM")]
     public class UserTeamModel
     {
-        [Key]
         public long USER_TEAM_ID { get; set; }
         public long USER_ID { get; set; }
         public long PHD_CALL_SCENARIO_ID { get; set; }
-        public long PRACTICE_CODE { get; set; }
+        public string PRACTICE_CODE { get; set; }
         public DateTime CREATED_DATE { get; set; }
         public string CREATED_BY { get; set; }
         public DateTime MODIFIED_DATE { get; set; }
         public string MODIFIED_BY { get; set; }
         public bool DELETED { get; set; }
+        public bool IS_CHECK_DISABLED { get; set; }
+        public long ROLE_ID { get; set; }
     }
 }
