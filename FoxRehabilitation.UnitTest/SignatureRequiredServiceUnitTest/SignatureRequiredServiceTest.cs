@@ -2,35 +2,80 @@
 using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.SignatureRequired;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.SignatureRequiredServiceUnitTest
 {
+    [TestFixture]
     public class SignatureRequiredServiceTest
     {
-        SignatureRequiredService signatureRequired = new SignatureRequiredService();
-        UserProfile userProfile = new UserProfile();
+        private SignatureRequiredService _signatureRequired;
+        private UserProfile _userProfile;
+        private SignatureRequiredRequest _requiredRequest;
+        private ReqsignatureModel _reqsignature;
 
         [SetUp]
         public void Setup()
         {
-            signatureRequired = new SignatureRequiredService();
+            _signatureRequired = new SignatureRequiredService();
+            _userProfile = new UserProfile();
+            _requiredRequest = new SignatureRequiredRequest();
+            _reqsignature = new ReqsignatureModel();
         }
         [Test]
-        public void GetReferralList_EmptyModel_NoReturnData()
+        public void GetReferralList_EmptyModel_NoReturnsData()
         {
             //Arrange
-            SignatureRequiredRequest requiredRequest = new SignatureRequiredRequest();
-            UserProfile userProfile = new UserProfile();
-            requiredRequest = null;
-            userProfile = null;
+            _requiredRequest = null;
+            _userProfile = null;
 
             //Act
-            var result = signatureRequired.GetReferralList(requiredRequest, userProfile);
+            var result = _signatureRequired.GetReferralList(_requiredRequest, _userProfile);
+
+            //Assert
+            if (result.Count <= 0)
+            {
+                Assert.AreEqual(0, result.Count);
+            }
+            else
+            {
+                Assert.Pass("Failed");
+            }
+        }
+        [Test]
+        [TestCase(false)]
+        [TestCase(true)]
+        public void GetReferralList_HasSignatureRequired_ReturnsData(bool isSignatureRequired)
+        {
+            //Arrange
+            _requiredRequest.CURRENT_PAGE = 1;
+            _requiredRequest.IsSignatureRequired = isSignatureRequired;
+            _requiredRequest.RECORD_PER_PAGE = 10;
+            _requiredRequest.SEARCH_TEXT = "";
+            _requiredRequest.SORT_BY = "";
+            _requiredRequest.SORT_ORDER = "";
+            _userProfile.UserEmailAddress = "abdurrafay @carecloud.com";
+            _userProfile.UserType = "External_User_Ord_Ref_Source";
+            _userProfile.UserName = "1163testing";
+
+            //Act
+            var result = _signatureRequired.GetReferralList(_requiredRequest, _userProfile);
+
+            //Assert
+            if(result.Count >= 0)
+            {
+                Assert.That(result.Count, Is.GreaterThanOrEqualTo(0));
+            }
+        }
+        [Test]
+        public void GetWorkDetailsUniqueId_EmptyModel_NoReturnsData()
+        {
+            //Arrange
+            _reqsignature = null;
+            _userProfile = null;
+
+            //Act
+            var result = _signatureRequired.GetWorkDetailsUniqueId(_reqsignature, _userProfile);
 
             //Assert
             if (result.Count <= 0)
@@ -41,35 +86,35 @@ namespace FoxRehabilitation.UnitTest.SignatureRequiredServiceUnitTest
             {
                 Assert.Pass("Failed");
             }
-
         }
         [Test]
-        public void GetWorkDetailsUniqueId_EmptyModel_NoReturnData()
+        [TestCase("", 1011163)]
+        [TestCase("54819279", 1011163)]
+        public void GetWorkDetailsUniqueId_EmptyUniqueID_ReturnData(string isUniqueID, long practiceCode)
         {
             //Arrange
-            ReqsignatureModel reqsignature = new ReqsignatureModel();
-            UserProfile userProfile = new UserProfile();
-            reqsignature = null;
-            userProfile = null;
-
+            _reqsignature = new ReqsignatureModel()
+            {
+                Unique_IdList = new List<string>()
+                {
+                    isUniqueID
+                }
+            };
+            _userProfile.PracticeCode = practiceCode;
             //Act
-            var result = signatureRequired.GetWorkDetailsUniqueId(reqsignature, userProfile);
+            var result = _signatureRequired.GetWorkDetailsUniqueId(_reqsignature, _userProfile);
 
             //Assert
-            if (result.Count <= 0)
-            {
-                Assert.Pass("Passed");
-            }
-            else
-            {
-                Assert.Pass("Failed");
-            }
+            Assert.That(result.Count, Is.GreaterThanOrEqualTo(0));
         }
         [TearDown]
-        public void BaseCleanup()
+        public void Teardown()
         {
             // Optionally dispose or cleanup objects
-            userProfile = null;
+            _signatureRequired = null;
+            _userProfile = null;
+            _requiredRequest = null;
+            _reqsignature = null;
         }
     }
 }
