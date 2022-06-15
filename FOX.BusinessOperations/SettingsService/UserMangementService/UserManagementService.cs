@@ -3093,13 +3093,13 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                             }
                             else
                             {
-                                sendTo = "Carey.sambogna@foxrehab.org,adnanshah3@carecloud.com";
+                                sendTo = "Carey.sambogna@foxrehab.org,abdulsattar@carecloud.com";
                                 _ccList.Add("foxsupport@carecloud.com");
                             }
                         }
                         else
                         {
-                            sendTo = "adnanshah3@carecloud.com,muhammadarslan3@carecloud.com";
+                            sendTo = "abdulsattar@carecloud.com,muhammadarslan3@carecloud.com";
                             _ccList.Add("foxdev@carecloud.com");
                         }
                         Helper.SendEmail(sendTo, subject, body, null, profile, _ccList);
