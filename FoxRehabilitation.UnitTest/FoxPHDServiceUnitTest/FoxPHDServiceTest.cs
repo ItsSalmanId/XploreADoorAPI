@@ -138,7 +138,7 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
         }
         [Test]
         [TestCase("", "", 0)]
-        [TestCase("06/10/20221", "", 1011163)]
+        [TestCase("06/10/2022", "", 1011163)]
         [TestCase("06/10/2022", "2015683335", 1011163)]
         public void GetUnmappedCalls_PHDMappedCall_ReturnsData(string callDate, string callNumber, long practiceCode)
         {
