@@ -1297,7 +1297,6 @@ namespace FOX.BusinessOperations.FoxPHDService
                 }
                 catch (NullReferenceException)
                 {
-
                     throw;
                 }
             }
@@ -1321,7 +1320,6 @@ namespace FOX.BusinessOperations.FoxPHDService
             }
             catch (NullReferenceException)
             {
-
                 throw;
             }
         }
