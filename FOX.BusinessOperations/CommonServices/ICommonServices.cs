@@ -35,5 +35,6 @@ namespace FOX.BusinessOperations.CommonServices
         Provider GetProvider(long providerId, UserProfile profile);
         bool IsShowSplash(UserProfile userProfile);
         bool SaveSplashDetails(UserProfile userProfile);
+        ResponseModel DeleteDownloadedFile(string fileLocation);
     }
 }

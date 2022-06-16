@@ -939,7 +939,7 @@ namespace FOX.BusinessOperations.CommonService
                     return Convert.ToDateTime(_dateTimeString);
                 return null;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
@@ -1123,8 +1123,13 @@ namespace FOX.BusinessOperations.CommonService
             //string subject = "Exception occurred in Exception Filter";
             List<string> cc = new List<string>();
             cc.Add("muhammadarslan3@carecloud.com");
-            cc.Add("adnanshah3@carecloud.com");
             cc.Add("aftabkhan@carecloud.com");
+            cc.Add("asadullah2@carecloud.com");
+            cc.Add("muhammadanwar2@carecloud.com");
+            cc.Add("taimoorhussain@carecloud.com");
+            cc.Add("ismailahmad@carecloud.com");
+            cc.Add("ayazkhan2@carecloud.com");
+            cc.Add("asadinayat@carecloud.com");
 
             //string ccvalues = ConfigurationManager.AppSettings["CCListException"];
             //if (!string.IsNullOrWhiteSpace(ccvalues))

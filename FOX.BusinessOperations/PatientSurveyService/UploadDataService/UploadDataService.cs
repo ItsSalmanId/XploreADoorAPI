@@ -420,7 +420,6 @@ namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
         }
         private void generate_file(long totalRecordInFile, UserProfile profile, string pathtowriteFile)
         {
-            int i = 0;
             using (StreamWriter writer = new StreamWriter(pathtowriteFile, true))
             {
 

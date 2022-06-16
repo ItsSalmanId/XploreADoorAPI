@@ -199,7 +199,7 @@ namespace FoxRehabilitationAPI.Controllers
         //    return Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.AttachLedger(ledgerDetails, GetProfile()));
         //}
         [HttpPost]
-        public async Task<ResponseLedgerUploadFilesModel> UploadReconsiliationLedger()
+        public Task<ResponseLedgerUploadFilesModel> UploadReconsiliationLedger()
         {
             var reconsiliationLedgerPath = FOX.BusinessOperations.CommonServices.AppConfiguration.ReconciliationOriginalFilesDirectory;
             var absoluteAttachmentPath = HttpContext.Current.Server.MapPath("~/" + reconsiliationLedgerPath);
@@ -225,11 +225,9 @@ namespace FoxRehabilitationAPI.Controllers
                     AbsolutePath = uploadFiles.FilePath,
                     FILE_NAME = uploadFiles.OrignalFileName
                 };
-
-                var response = Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.AttachLedger(ledgerDetails, GetProfile()));
-
+                Request.CreateResponse(HttpStatusCode.OK, _reconciliationService.AttachLedger(ledgerDetails, GetProfile()));
             }
-            return uploadFiles;
+            return Task.FromResult(uploadFiles);
             //var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
             //if (response.StatusCode == HttpStatusCode.OK)
             //{

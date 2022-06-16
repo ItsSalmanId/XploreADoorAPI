@@ -742,8 +742,6 @@ namespace FOX.BusinessOperations.TaskServices
                         .OrderBy(x => x.NAME)
                         .ToList();
             }
-
-            return null;
         }
 
         public DropDownData GetDropDownData(long practiceCode)
