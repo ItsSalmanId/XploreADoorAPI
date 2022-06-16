@@ -65,8 +65,8 @@ namespace FOX.BusinessOperations.PatientMaintenanceService.PatientInsuranceServi
                 var _searchText = new SqlParameter("SEARCH_STRING", SqlDbType.VarChar) { Value = unmappedInsuranceRequest.SearchText };
                 var _currentPage = new SqlParameter("CURRENT_PAGE", SqlDbType.Int) { Value = unmappedInsuranceRequest.CurrentPage };
                 var _recordPerPage = new SqlParameter("RECORD_PER_PAGE", SqlDbType.Int) { Value = unmappedInsuranceRequest.RecordPerPage };
-                var _financialClassId = new SqlParameter("FinancialClassId", SqlDbType.VarChar) { Value = string.IsNullOrEmpty(unmappedInsuranceRequest.FinancialClassID ) ? "" : unmappedInsuranceRequest.FinancialClassID };
-                var _state = new SqlParameter("State", SqlDbType.VarChar) { Value = String.IsNullOrEmpty(unmappedInsuranceRequest.State) ?  "" : unmappedInsuranceRequest.State};
+                var _financialClassId = new SqlParameter("FinancialClassId", SqlDbType.VarChar) { Value = string.IsNullOrEmpty(unmappedInsuranceRequest.FinancialClassID) ? "" : unmappedInsuranceRequest.FinancialClassID };
+                var _state = new SqlParameter("State", SqlDbType.VarChar) { Value = String.IsNullOrEmpty(unmappedInsuranceRequest.State) ? "" : unmappedInsuranceRequest.State };
                 var _payerId = new SqlParameter("PayerID", SqlDbType.VarChar) { Value = String.IsNullOrEmpty(unmappedInsuranceRequest.PayerID) ? "" : unmappedInsuranceRequest.PayerID };
                 var _Name = new SqlParameter("Name", SqlDbType.VarChar) { Value = String.IsNullOrEmpty(unmappedInsuranceRequest.Name) ? "" : unmappedInsuranceRequest.Name };
                 var _Address = new SqlParameter("Address", SqlDbType.VarChar) { Value = String.IsNullOrEmpty(unmappedInsuranceRequest.Address) ? "" : unmappedInsuranceRequest.Address };
@@ -79,8 +79,8 @@ namespace FOX.BusinessOperations.PatientMaintenanceService.PatientInsuranceServi
                 var _SORT_BY = new SqlParameter("SORT_BY", SqlDbType.VarChar) { Value = String.IsNullOrEmpty(unmappedInsuranceRequest.sortBy) ? "" : unmappedInsuranceRequest.sortBy };
                 var _SORT_ORDER = new SqlParameter("SORT_ORDER", SqlDbType.VarChar) { Value = String.IsNullOrEmpty(unmappedInsuranceRequest.sortOrder) ? "" : unmappedInsuranceRequest.sortOrder };
                 var result = SpRepository<FoxInsurancePayers>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_UNMAPPED_INSURANCES_LIST
-                            @PRACTICE_CODE, @INCLUDE_MAPPED, @SEARCH_STRING, @CURRENT_PAGE, @RECORD_PER_PAGE, @State, @FinancialClassId, @PayerID, @Name,@Address,@ZIP,@Phone,@Carrier,@Carrier_Locality,@Carrier_State,@Fee_Redirect,@SORT_BY,@SORT_ORDER", _practiceCode, 
-                            _insludeMapped, _searchText, _currentPage, _recordPerPage, _state, _financialClassId, _payerId, _Name,_Address, _ZIP, _Phone, _Carrier, _Carrier_Locality, _Carrier_State, _Fee_Redirect,_SORT_BY, _SORT_ORDER);
+                            @PRACTICE_CODE, @INCLUDE_MAPPED, @SEARCH_STRING, @CURRENT_PAGE, @RECORD_PER_PAGE, @State, @FinancialClassId, @PayerID, @Name,@Address,@ZIP,@Phone,@Carrier,@Carrier_Locality,@Carrier_State,@Fee_Redirect,@SORT_BY,@SORT_ORDER", _practiceCode,
+                            _insludeMapped, _searchText, _currentPage, _recordPerPage, _state, _financialClassId, _payerId, _Name, _Address, _ZIP, _Phone, _Carrier, _Carrier_Locality, _Carrier_State, _Fee_Redirect, _SORT_BY, _SORT_ORDER);
                 return result;
             }
             catch (Exception exception)
@@ -219,7 +219,7 @@ namespace FOX.BusinessOperations.PatientMaintenanceService.PatientInsuranceServi
                             @PRACTICE_CODE, @PATIENT_ACCOUNT, @PATIENT_INSURANCE_ID, @EFFECTIVE_DATE, @TERMINATION_DATE", _practiceCode, _patientAccount, _patientInsuranceIds, _effectiveDate, _terminationDate);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new List<ClaimInsuranceViewModel>();
             }

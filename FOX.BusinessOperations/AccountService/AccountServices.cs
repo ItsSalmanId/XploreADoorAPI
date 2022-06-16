@@ -746,8 +746,8 @@ namespace FOX.BusinessOperations.AccountService
         public bool IpConfig(GetUserIP data)
         {
             bool _isValidUser = false;
-            string serverName = System.Web.HttpContext.Current.Request.Url.Host;
-            string showUrl = HttpContext.Current.Request.Url.AbsoluteUri;
+            string serverName = System.Web.HttpContext.Current?.Request?.Url?.Host;
+            string showUrl = HttpContext.Current?.Request?.Url?.AbsoluteUri;
            if (data.userName.ToLower().Contains("@foxrehab.org"))
             {
                 _isValidUser = true;

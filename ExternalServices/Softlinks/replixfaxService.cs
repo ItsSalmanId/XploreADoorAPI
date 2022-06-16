@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ServiceModel;
 using System.IO;
 using iTextSharp.text;
@@ -13,66 +10,46 @@ using System.Net;
 
 namespace FOX.ExternalServices.Softlinks
 {
-    public class replixfaxService
+    public class ReplixfaxService
     {
 
         private const string _true = "true";
         private const string _false = "false";
         private const string _pdf = "pdf";
-        private const string _tif = "tif";
         private const string _all = "all";
-
         private const string _portrait = "portrait";
-        private const string _landscape = "landscape";
-        private const string _qualityLow = "low";
         private const string _qualityHigh = "high";
-
 
         private AuthenticationToken _authToken = null;
         protected void connectReplifax(object sender, EventArgs e)
         {
+            try
             {
-                try
+                System.ServiceModel.BasicHttpBinding bind = null;
+                ReplixFaxPortClient client = null;
+                Authentication auth = null;
+                initServiceCall(ref bind, ref client, ref auth);
+                LoginInput input = new LoginInput();
+                input.Authentication = auth;
+                LoginOutput result = client.Login(input);
+                if (result.RequestStatus.StatusCode.Equals("0"))
                 {
-                    System.ServiceModel.BasicHttpBinding bind = null;
-                    ReplixFaxPortClient client = null;
-                    Authentication auth = null;
-                    initServiceCall(ref bind, ref client, ref auth);
-                    LoginInput input = new LoginInput();
-                    input.Authentication = auth;
-                    LoginOutput result = client.Login(input);
-                    if (result.RequestStatus.StatusCode.Equals("0"))
-                    {
-                        AuthenticationToken authtoken = new AuthenticationToken();
-                        authtoken.AuthToken = result.AuthToken;
-                        _authToken = authtoken;
-                        //loginSuccess.InnerText = "User is logged in";
-                        //MessageBox.Show(this, "User is logged in", "Success", MessageBoxButtons.OK);
-
-                    }
-                    else
-                    {
-                        String msg = "StatusCode = " + result.RequestStatus.StatusCode + " Message= " + result.RequestStatus.StatusText;
-                        //loginSuccess.InnerText = "Error: " + msg; ;
-                        //MessageBox.Show(this, msg, "Error", MessageBoxButtons.OK);
-                    }
+                    AuthenticationToken authtoken = new AuthenticationToken();
+                    authtoken.AuthToken = result.AuthToken;
+                    _authToken = authtoken;
                 }
-                catch (Exception)
-                {
-                    //loginSuccess.InnerText = "Error: " + ex;
-                    //MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK);
-                }
+            }
+            catch (Exception ex)
+            {
+                throw ex.InnerException;
             }
         }
         private void initServiceCall(ref System.ServiceModel.BasicHttpBinding bind, ref ReplixFaxPortClient client, ref Authentication auth)
         {
             bind = new System.ServiceModel.BasicHttpBinding();
-            //bind.Security.Mode = System.ServiceModel.BasicHttpSecurityMode.TransportCredentialOnly;
 
             // HERE'S THE IMPORTANT BIT FOR SSL
             bind.Security.Mode = BasicHttpSecurityMode.Transport;
-            //System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
-
             bind.Security.Transport.ClientCredentialType = System.ServiceModel.HttpClientCredentialType.Basic;
             bind.MessageEncoding = WSMessageEncoding.Mtom;
             bind.MaxReceivedMessageSize = 104857600;
@@ -89,44 +66,10 @@ namespace FOX.ExternalServices.Softlinks
             client = new ReplixFaxPortClient(bind, endpoint);
             client.ClientCredentials.UserName.UserName = "anonymous";
             auth = new Authentication();
-            auth.Login = "admin"; // ReplixWSClient.Properties.Settings.Default.ReplixFaxUser;          
-            auth.Password = EncodeTo64("admin"); //ReplixWSClient.Properties.Settings.Default.ReplixFaxPassword);
+            auth.Login = "admin";           
+            auth.Password = EncodeTo64("admin");
             auth.PasswordSecurity = "base64";
             auth.Realm = "mtbc";
-
-            //bind = new System.ServiceModel.BasicHttpBinding();
-            //bind.Security.Mode = System.ServiceModel.BasicHttpSecurityMode.TransportCredentialOnly;
-            ////bind.Security.Mode = System.ServiceModel.BasicHttpSecurityMode.Transport;
-            //bind.Security.Transport.ClientCredentialType = System.ServiceModel.HttpClientCredentialType.Basic;
-            //bind.MessageEncoding = WSMessageEncoding.Mtom;
-            //bind.MaxReceivedMessageSize = 104857600;
-            //bind.SendTimeout = TimeSpan.FromMinutes(2);
-            //bind.BypassProxyOnLocal = false;
-
-            //////FIXATION START 
-            ////bind.BypassProxyOnLocal = false;
-            ////bind.UseDefaultWebProxy = true;
-            ////string TcpIP = "172.16.0.22";
-            ////int TCPPort = 8080;
-            ////System.Net.WebProxy pry = new System.Net.WebProxy(TcpIP, TCPPort);
-            ////pry.UseDefaultCredentials = true;
-            ////System.Net.WebClient oCli = new System.Net.WebClient();
-            ////oCli.Proxy = pry;
-            ////WebRequest.DefaultWebProxy = pry;
-            //////FIXATION END 
-
-
-            //EndpointAddress endpoint = new EndpointAddress("http://api.rpxfax.com/softlinx/replixfax/wsapi");
-            //bind.HostNameComparisonMode = HostNameComparisonMode.Exact;
-            //bind.Security.Transport.ProxyCredentialType = HttpProxyCredentialType.Basic;
-            //client = new ReplixFaxPortClient(bind, endpoint);
-            //client.ClientCredentials.UserName.UserName = "anonymous";
-            //auth = new Authentication();
-            //auth.Login = "admin"; // ReplixWSClient.Properties.Settings.Default.ReplixFaxUser;          
-            //auth.Password = EncodeTo64("admin"); //ReplixWSClient.Properties.Settings.Default.ReplixFaxPassword);
-            //auth.PasswordSecurity = "base64";
-            //auth.Realm = "mtbc";
-
         }
         private string EncodeTo64(string toEncode)
         {
@@ -136,7 +79,7 @@ namespace FOX.ExternalServices.Softlinks
         }
         public static ReceivedFaxResponse getRecievedFaxes(string username, string fromDate, string toDate, string faxStatus, string faxID, string resultLimit, string nextRef)
         {
-            replixfaxService obj = new replixfaxService();
+            ReplixfaxService obj = new ReplixfaxService();
             BasicHttpBinding bind = null;
             ReplixFaxPortClient client = null;
             Authentication auth = null;
@@ -156,7 +99,7 @@ namespace FOX.ExternalServices.Softlinks
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw ex.InnerException;
             }
             QueryReceiveFaxInput input = new QueryReceiveFaxInput();
 
@@ -202,9 +145,9 @@ namespace FOX.ExternalServices.Softlinks
             {
                 output = client.QueryReceiveFax(input);
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                throw exception;
+                throw ex.InnerException;
             }
             ReceivedFaxResponse resp = new ReceivedFaxResponse();
             resp.faxInfo = new List<FaxInfo>();
@@ -257,7 +200,7 @@ namespace FOX.ExternalServices.Softlinks
         }
         public static ReceivedFaxResponse getSentFaxes(string username, string fromDate, string toDate, string faxStatus, string faxID, string resultLimit, string nextRef)
         {
-            replixfaxService obj = new replixfaxService();
+            ReplixfaxService obj = new ReplixfaxService();
             System.ServiceModel.BasicHttpBinding bind = null;
             ReplixFaxPortClient client = null;
             Authentication auth = null;
@@ -278,7 +221,7 @@ namespace FOX.ExternalServices.Softlinks
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw ex.InnerException;
             }
 
             QuerySendFaxInput input = new QuerySendFaxInput();
@@ -326,14 +269,8 @@ namespace FOX.ExternalServices.Softlinks
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw ex.InnerException;
             }
-
-
-            //if (!output.RequestStatus.StatusCode.Equals("0"))
-            //{
-            //    return output.RequestStatus.StatusText;
-            //}
 
             ReceivedFaxResponse resp = new ReceivedFaxResponse();
             resp.faxInfo = new List<FaxInfo>();
@@ -390,36 +327,6 @@ namespace FOX.ExternalServices.Softlinks
                     objFax.TSI = output.FaxInfo[n].TSI;
                     objFax.Mark = output.FaxInfo[n].Mark;
                     resp.faxInfo.Add(objFax);
-
-                    //string dateTime = row[6].ToString();
-                    //string date = dateTime.Split('T')[0];
-                    //string time = dateTime.Split('T')[1].Substring(0, dateTime.Split('T')[1].Length - 1);
-
-                    //string status = row[2].ToString();
-                    //if (status == "sent")
-                    //{
-                    //    status = "Sent";
-                    //}
-                    //if (status == "sendFailed")
-                    //{
-                    //    status = "Failed";
-                    //}
-                    //if (status == "sending")
-                    //{
-                    //    status = "Sending";
-                    //}
-                    //if (status == "scheduled")
-                    //{
-                    //    status = "Scheduled";
-                    //}
-                    //if (status == "awaitingConversion")
-                    //{
-                    //    status = "Waiting for Conversion";
-                    //}
-                    //if (status == "awaitingCoverpage")
-                    //{
-                    //    status = "Waiting for Coverpage";
-                    //}
                 }
                 return resp;
             }
@@ -427,7 +334,7 @@ namespace FOX.ExternalServices.Softlinks
         }
         public static bool deleteSentFax(string[] faxIdList)
         {
-            replixfaxService obj = new replixfaxService();
+            ReplixfaxService obj = new ReplixfaxService();
             System.ServiceModel.BasicHttpBinding bind = null;
             ReplixFaxPortClient client = null;
             Authentication auth = null;
@@ -445,9 +352,6 @@ namespace FOX.ExternalServices.Softlinks
                 }
                 DeleteSendFaxInput input = new DeleteSendFaxInput();
                 DeleteSendFaxOutput output = null;
-                //cmf1314 start
-                //String[] faxToDel = faxId.Split(',');
-                //cmf1314 end //faxToDel[0] = faxId;
                 input.Authentication = auth;
                 input.AuthenticationToken = obj._authToken;
                 input.FaxId = faxIdList;
@@ -470,13 +374,13 @@ namespace FOX.ExternalServices.Softlinks
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw ex.InnerException;
             }
         }
         public static bool deleteReceivedFax(string[] faxIdList)
         {
             string returnValue = string.Empty;
-            replixfaxService obj = new replixfaxService();
+            ReplixfaxService obj = new ReplixfaxService();
             System.ServiceModel.BasicHttpBinding bind = null;
             ReplixFaxPortClient client = null;
             Authentication auth = null;
@@ -495,7 +399,6 @@ namespace FOX.ExternalServices.Softlinks
                 }
                 DeleteReceiveFaxInput input = new DeleteReceiveFaxInput();
                 DeleteReceiveFaxOutput output = null;
-                //String[] faxToDel = faxId.Split(',');
                 input.Authentication = auth;
                 input.AuthenticationToken = obj._authToken;
                 input.FaxId = faxIdList;
@@ -525,7 +428,7 @@ namespace FOX.ExternalServices.Softlinks
         }
         public static GetReceiveFaxContentOutput downloadRecievedFax(string faxID)
         {
-            replixfaxService obj = new replixfaxService();
+            ReplixfaxService obj = new ReplixfaxService();
             System.ServiceModel.BasicHttpBinding bind = null;
             ReplixFaxPortClient client = null;
             Authentication auth = null;
@@ -556,18 +459,18 @@ namespace FOX.ExternalServices.Softlinks
                 }
                 catch (Exception ex)
                 {
-                    throw ex;
+                    throw ex.InnerException;
                 }
                 return contentOutput;
             }
-            catch (Exception ee)
+            catch (Exception ex)
             {
-                throw ee;
+                throw ex.InnerException;
             }
         }
         public static GetSendFaxContentOutput downloadSentFax(string faxID)
         {
-            replixfaxService obj = new replixfaxService();
+            ReplixfaxService obj = new ReplixfaxService();
             System.ServiceModel.BasicHttpBinding bind = null;
             ReplixFaxPortClient client = null;
             Authentication auth = null;
@@ -599,19 +502,19 @@ namespace FOX.ExternalServices.Softlinks
                 }
                 catch (Exception ex)
                 {
-                    throw ex;
+                    throw ex.InnerException;
                 }
 
                 return contentOutput;
             }
-            catch (Exception ee)
+            catch (Exception ex)
             {
-                throw ee;
+                throw ex.InnerException;
             }
         }
         public static GetSendFaxContentOutput getSentFaxPDF(string faxID)
         {
-            replixfaxService obj = new replixfaxService();
+            ReplixfaxService obj = new ReplixfaxService();
             System.ServiceModel.BasicHttpBinding bind = null;
             ReplixFaxPortClient client = null;
             Authentication auth = null;
@@ -641,20 +544,20 @@ namespace FOX.ExternalServices.Softlinks
                 }
                 catch (Exception ex)
                 {
-                    throw ex;
+                    throw ex.InnerException;
                 }
 
                 return contentOutput;
 
             }
-            catch (Exception ee)
+            catch (Exception ex)
             {
-                throw ee;
+                throw ex.InnerException;
             }
         }
         public static GetReceiveFaxContentOutput getReceivedtFaxPDF(string faxID)
         {
-            replixfaxService obj = new replixfaxService();
+            ReplixfaxService obj = new ReplixfaxService();
             System.ServiceModel.BasicHttpBinding bind = null;
             ReplixFaxPortClient client = null;
             Authentication auth = null;
@@ -684,19 +587,19 @@ namespace FOX.ExternalServices.Softlinks
                 }
                 catch (Exception ex)
                 {
-                    throw ex;
+                    throw ex.InnerException;
                 }
                 return contentOutput;
 
             }
-            catch (Exception ee)
+            catch (Exception ex)
             {
-                throw ee;
+                throw ex.InnerException;
             }
         }
         public static List<GetSendFaxContentOutput> getMultipleSentFaxPDF(string[] faxIdList)
         {
-            replixfaxService obj = new replixfaxService();
+            ReplixfaxService obj = new ReplixfaxService();
             System.ServiceModel.BasicHttpBinding bind = null;
             ReplixFaxPortClient client = null;
             Authentication auth = null;
@@ -713,7 +616,6 @@ namespace FOX.ExternalServices.Softlinks
                     authtoken.AuthToken = result.AuthToken;
                     obj._authToken = authtoken;
                 }
-                //string[] multipleFaxesID = faxID.Split(',');
                 List<GetSendFaxContentOutput> contentOutputList = new List<GetSendFaxContentOutput>();
                 for (var i = 0; i < faxIdList.Length; i++)
                 {
@@ -733,21 +635,20 @@ namespace FOX.ExternalServices.Softlinks
                     }
                     catch (Exception ex)
                     {
-                        throw ex;
+                        throw ex.InnerException;
                     }
 
                 }
                 return contentOutputList;
             }
-            catch (Exception ee)
+            catch (Exception ex)
             {
-                throw ee;
+                throw ex.InnerException;
             }
         }
         public static List<GetReceiveFaxContentOutput> getMultipleReceivedtFaxPDF(string[] faxIdList)
         {
-            string totalPathReturn = string.Empty;
-            replixfaxService obj = new replixfaxService();
+            ReplixfaxService obj = new ReplixfaxService();
             System.ServiceModel.BasicHttpBinding bind = null;
             ReplixFaxPortClient client = null;
             Authentication auth = null;
@@ -765,7 +666,6 @@ namespace FOX.ExternalServices.Softlinks
                     authtoken.AuthToken = result.AuthToken;
                     obj._authToken = authtoken;
                 }
-                //string[] multipleFaxesID = faxID.Split(',');
                 for (var i = 0; i < faxIdList.Length; i++)
                 {
                     GetReceiveFaxContentInput contentInput = new GetReceiveFaxContentInput();
@@ -782,21 +682,21 @@ namespace FOX.ExternalServices.Softlinks
                     }
                     catch (Exception ex)
                     {
-                        throw ex;
+                        throw ex.InnerException;
                     }
 
-                    markReceivedFax(faxIdList[i]);//4574 new change
+                    markReceivedFax(faxIdList[i]);
                 }
                 return contentOutputList;
             }
-            catch (Exception ee)
+            catch (Exception ex)
             {
-                throw ee;
+                throw ex.InnerException;
             }
         }
         public static void markReceivedFax(string FaxID)
         {
-            replixfaxService obj = new replixfaxService();
+            ReplixfaxService obj = new ReplixfaxService();
             System.ServiceModel.BasicHttpBinding bind = null;
             ReplixFaxPortClient client = null;
             Authentication auth = null;
@@ -817,7 +717,6 @@ namespace FOX.ExternalServices.Softlinks
                 ModifyReceiveFaxInput input = new ModifyReceiveFaxInput();
                 string faxToModify = FaxID;
 
-                ModifyReceiveFaxOutput output = null;
                 input.AuthenticationToken = obj._authToken;
                 input.FaxId = faxToModify;
 
@@ -825,22 +724,22 @@ namespace FOX.ExternalServices.Softlinks
 
                 try
                 {
-                    output = client.ModifyReceiveFax(input);
+                    client.ModifyReceiveFax(input);
                 }
                 catch (Exception ex)
                 {
-                    throw ex;
+                    throw ex.InnerException;
                 }
             }
-            catch (Exception ee)
+            catch (Exception ex)
             {
-                throw ee;
+                throw ex.InnerException;
             }
 
         }
         public QueryReceiveFaxOutput updateUnreadFaxes(string username)
         {
-            replixfaxService obj = new replixfaxService();
+            ReplixfaxService obj = new ReplixfaxService();
             System.ServiceModel.BasicHttpBinding bind = null;
             ReplixFaxPortClient client = null;
             Authentication auth = null;
@@ -861,7 +760,7 @@ namespace FOX.ExternalServices.Softlinks
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw ex.InnerException;
             }
             QueryReceiveFaxInput input = new QueryReceiveFaxInput();
 
@@ -879,7 +778,7 @@ namespace FOX.ExternalServices.Softlinks
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw ex.InnerException;
             }
             if (output != null && output.FaxInfo != null)
             {
@@ -890,7 +789,7 @@ namespace FOX.ExternalServices.Softlinks
         }
         public static QueryReceiveFaxOutput getUnreadFaxes(string username)
         {
-            replixfaxService obj = new replixfaxService();
+            ReplixfaxService obj = new ReplixfaxService();
             System.ServiceModel.BasicHttpBinding bind = null;
             ReplixFaxPortClient client = null;
             Authentication auth = null;
@@ -906,12 +805,11 @@ namespace FOX.ExternalServices.Softlinks
                     AuthenticationToken authtoken = new AuthenticationToken();
                     authtoken.AuthToken = result.AuthToken;
                     obj._authToken = authtoken;
-
                 }
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw ex.InnerException;
             }
             QueryReceiveFaxInput input = new QueryReceiveFaxInput();
 
@@ -929,7 +827,7 @@ namespace FOX.ExternalServices.Softlinks
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw ex.InnerException;
             }
             if (output != null && output.FaxInfo != null)
             {
@@ -940,10 +838,7 @@ namespace FOX.ExternalServices.Softlinks
 
         public static bool SendRpxFax(string username, string pass, string recepientNumber, string recipientName, string coverMsg, string[] DestinationSavePathhtml, string pdfFullPath, UserProfile profile)
         {
-            //WEBEHR_Labs_New_Lab_Order objCharts = new WEBEHR_Labs_New_Lab_Order();
-            //objCharts._userName = username;
-            //objCharts._password = pass;
-            replixfaxService obj = new replixfaxService();
+            ReplixfaxService obj = new ReplixfaxService();
             try
             {
                 System.ServiceModel.BasicHttpBinding bind = null;
@@ -954,7 +849,6 @@ namespace FOX.ExternalServices.Softlinks
 
                 SendFaxInput input = new SendFaxInput();
                 input.Authentication = auth;
-                //input.AuthenticationToken = objCharts._authToken;
                 // get recipients
                 FaxRecipient[] recipients = new FaxRecipient[1];
 
@@ -984,9 +878,7 @@ namespace FOX.ExternalServices.Softlinks
                         if (extension == "tiff" || extension == "tif" || extension == ".tiff" || extension == ".tif")
                         {
 
-                            // System.Drawing.Image[] gImages = new System.Drawing.Image[imgs.Length];
                             string gPath = "";
-                            //Bitmap tImg = null;
                             gPath = DestinationSavePathhtml[n];
                             // creation of the document with a certain size and certain margins  
                             iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A4, 0, 0, 0, 0);
@@ -1042,13 +934,10 @@ namespace FOX.ExternalServices.Softlinks
                         }
                         else
                         {
-
-                            //attachments = new ReplixFaxService.Attachment[1];
                             attachments[n] = new Attachment();
                             attachments[n].ContentType = obj.ReturnExtension(fileinfo.Extension.ToLower());
                             attachments[n].AttachmentContent = File.ReadAllBytes(DestinationSavePathhtml[n]);
                             attachments[n].FileName = DestinationSavePathhtml[n];
-                            //input.Attachment = attachments;
                         }
                     }
                 }
@@ -1062,16 +951,14 @@ namespace FOX.ExternalServices.Softlinks
 
 
                 input.CoverPageEnabled = _true;
-                //input.CoverMessage = "Testing Replix Fax Service for MTBC WebEHR";
                 input.CoverMessage = coverMsg;
 
-                string _userName = profile.UserName;
                 if (username != "")
                 {
                     input.FaxUserId = username;
                 }
 
-                input.NotifyEmailAddress = "adnanshah3@carecloud.com";
+                input.NotifyEmailAddress = "abdulsattar@carecloud.com";
 
                 input.NotifyFailed = _false;
 
@@ -1096,11 +983,8 @@ namespace FOX.ExternalServices.Softlinks
 
                     SendFaxOutput output = client.SendFax(input);
 
-                    string msg = "StatusCode = " + output.RequestStatus.StatusCode + " Message= " + output.RequestStatus.StatusText;
                     if (output.FaxInfo != null && output.RequestStatus.StatusCode == "0")
                     {
-                        string faxId = output.FaxInfo[0].FaxId;
-                        string faxNumber = output.FaxInfo[0].FaxNumber;
                         return true;
                     }
                     else
@@ -1111,15 +995,12 @@ namespace FOX.ExternalServices.Softlinks
                 }
                 catch (Exception ex)
                 {
-                    throw ex;
-
-                    //return false;
+                    throw ex.InnerException;
                 }
             }
             catch (Exception ex)
             {
-                throw ex;
-                //return false;
+                throw ex.InnerException;
             }
         }
 

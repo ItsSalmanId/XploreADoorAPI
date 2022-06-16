@@ -219,7 +219,6 @@ namespace FOX.BusinessOperations.RequestForOrder
                     && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
                     && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
                 {
-                    string orderingRefSourceFullName = null;
                     OriginalQueue originalQueue = _QueueRepository.GetFirst(t => t.WORK_ID == requestSendEmailModel.WorkId && !t.DELETED && t.PRACTICE_CODE == Profile.PracticeCode);
                     if (originalQueue != null)
                     {
@@ -251,7 +250,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                         //string attachmentPath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
                         string attachmentPath = "";
                         //For Live
-                        List<string> _bccList = new List<string>() { "adnanshah3@carecloud.com" };
+                        List<string> _bccList = new List<string>() { "abdulsattar@carecloud.com" };
 
                         //For QA UAT
                         //List<string> _bccList = new List<string>() { "abdulsattar@mtbc.com" };
@@ -947,7 +946,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                 }
                 threadCounter.Add(1);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 threadCounter.Add(1);
             }
@@ -987,7 +986,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                 var result = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_ADD_TO_DB_FROM_RFO @PRACTICE_CODE,@WORK_ID,@USER_NAME,@NO_OF_PAGES,@FROM_INDEXINFO",
                     PracticeCode, workid, username, noofpages, fromindexinfo);
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 //throw exception;
             }
