@@ -693,7 +693,7 @@ namespace FOX.BusinessOperations.ReconciliationService
                 }
                 return result;
             }
-            catch (Exception ex) { throw; }
+            catch (Exception) { throw; }
         }
 
         /// <summary>Update reconciliation logs remarks </summary>
@@ -730,7 +730,7 @@ namespace FOX.BusinessOperations.ReconciliationService
 
                 LogReconciliationDetails(logsList, autoReconciliationToUpdate.RECONCILIATION_CP_ID, profile);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -862,7 +862,6 @@ namespace FOX.BusinessOperations.ReconciliationService
         }
         public ResponseModel EditReconciliationCP(ReconciliationCP reconciliationToSave, UserProfile profile)
         {
-            bool dBDataIsNull = false;
             ReconciliationCP prevObj = null;
             ResponseModel response = new ResponseModel();
             try
@@ -1801,7 +1800,7 @@ namespace FOX.BusinessOperations.ReconciliationService
             foreach (var item in obj)
             {
                 var exportModel = new ReconciliationCPExportModel();
-                if (item.ROW == null)
+                if (item.ROW == 0)
                 {
                     item.ROW = 0;
                 }
@@ -2335,7 +2334,6 @@ namespace FOX.BusinessOperations.ReconciliationService
                 path = HttpContext.Current.Server.MapPath(path);
                 string fileType = path.Substring(path.Length - 3);
                 long totalRecordInFile = 0;
-                long total_record_updated = 0;
                 List<string> Failed_Records = new List<string>();
                 HRAutoEmailsUploadResponse responseData = new HRAutoEmailsUploadResponse();
 
@@ -2554,7 +2552,6 @@ namespace FOX.BusinessOperations.ReconciliationService
         private void generate_file(HRAutoEmailsUploadResponse log, UserProfile profile)
         {
 
-            string exportPath = "";
             string path = string.Empty;
             var filepath = log.File_Path;
             //string fileName = log.HR_FILE_NAME;
@@ -2627,7 +2624,6 @@ namespace FOX.BusinessOperations.ReconciliationService
                 path = HttpContext.Current.Server.MapPath(path);
                 string fileType = path.Substring(path.Length - 3);
                 long totalRecordInFile = 0;
-                long total_record_updated = 0;
                 List<string> Failed_Records = new List<string>();
                 ReconciliationUploadResponse responseData = new ReconciliationUploadResponse();
 

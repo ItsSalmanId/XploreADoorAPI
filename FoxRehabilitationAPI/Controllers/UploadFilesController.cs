@@ -27,7 +27,7 @@ namespace FoxRehabilitationAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<HttpResponseMessage> UploadFilesAPI()
+        public Task<HttpResponseMessage> UploadFilesAPI()
         {
             RequestUploadFilesModel requestUploadFilesAPIModel = new RequestUploadFilesModel()
             {
@@ -38,11 +38,11 @@ namespace FoxRehabilitationAPI.Controllers
             };
             var uploadFiles = _IUploadFilesServices.UploadFiles(requestUploadFilesAPIModel);
             var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
-            return response;
+            return Task.FromResult(response);
         }
 
         [HttpPost]
-        public async Task<HttpResponseMessage> UploadExcelFilesAPI()
+        public Task<HttpResponseMessage> UploadExcelFilesAPI()
         {
             RequestUploadFilesModel requestUploadFilesModel = new RequestUploadFilesModel()
             {
@@ -52,10 +52,10 @@ namespace FoxRehabilitationAPI.Controllers
             };
             var uploadFiles = _IUploadFilesServices.UploadFiles(requestUploadFilesModel);
             var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
-            return response;
+            return Task.FromResult(response);
         }
         [HttpPost]
-        public async Task<HttpResponseMessage> UploadExcelFilesAPIHR()
+        public Task<HttpResponseMessage> UploadExcelFilesAPIHR()
         {
             RequestUploadFilesModel requestUploadFilesModel = new RequestUploadFilesModel()
             {
@@ -65,10 +65,10 @@ namespace FoxRehabilitationAPI.Controllers
             };
             var uploadFiles = _IUploadFilesServices.UploadFiles(requestUploadFilesModel);
             var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
-            return response;
+            return Task.FromResult(response);
         }
         [HttpPost]
-        public async Task<HttpResponseMessage> UploadTaskAttachment()
+        public Task<HttpResponseMessage> UploadTaskAttachment()
         {
             var taskAttachmentsPath = FOX.BusinessOperations.CommonServices.AppConfiguration.TasksAttachmentsPath;
             var absoluteAttachmentPath = HttpContext.Current.Server.MapPath("~/" + taskAttachmentsPath);
@@ -81,10 +81,10 @@ namespace FoxRehabilitationAPI.Controllers
             var uploadFiles = _IUploadFilesServices.UploadFiles(requestUploadFilesModel);
             uploadFiles.FilePath = $@"{taskAttachmentsPath}\{uploadFiles.FilePath}";
             var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
-            return response;
+            return Task.FromResult(response);
         }
         [HttpPost]
-        public async Task<HttpResponseMessage> UploadDocumentAttachment()
+        public Task<HttpResponseMessage> UploadDocumentAttachment()
         {
             var documentAttachmentsPath = FOX.BusinessOperations.CommonServices.AppConfiguration.DocumentAttachmentsPath;
             var absoluteAttachmentPath = HttpContext.Current.Server.MapPath("~/" + documentAttachmentsPath);
@@ -97,7 +97,7 @@ namespace FoxRehabilitationAPI.Controllers
             var uploadFiles = _IUploadFilesServices.UploadFiles(requestUploadFilesModel);
             uploadFiles.FilePath = $@"{documentAttachmentsPath}\{uploadFiles.FilePath}";
             var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
-            return response;
+            return Task.FromResult(response);
         }
 
         //public async Task<HttpResponseMessage> UploadReconsiliationLedger()
@@ -117,7 +117,7 @@ namespace FoxRehabilitationAPI.Controllers
         //    return response;
         //}
         [HttpPost]
-        public async Task<HttpResponseMessage> UploadPHDFiles()
+        public Task<HttpResponseMessage> UploadPHDFiles()
         {
             RequestUploadFilesModel requestUploadFilesAPIModel = new RequestUploadFilesModel()
             {
@@ -128,10 +128,10 @@ namespace FoxRehabilitationAPI.Controllers
             };
             var uploadFiles = _IUploadFilesServices.UploadFiles(requestUploadFilesAPIModel);
             var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
-            return response;
+            return Task.FromResult(response);
         }
         [HttpPost]
-        public async Task<HttpResponseMessage> UploadHRAutoEmailFiles()
+        public Task<HttpResponseMessage> UploadHRAutoEmailFiles()
         {
             RequestUploadFilesModel requestUploadFilesAPIModel = new RequestUploadFilesModel()
             {
@@ -146,7 +146,7 @@ namespace FoxRehabilitationAPI.Controllers
             }
             var uploadFiles = _IUploadFilesServices.UploadHAutoEmailFiles(requestUploadFilesAPIModel, GetProfile());
             var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
-            return response;
+            return Task.FromResult(response);
         }
     }
 }

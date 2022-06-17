@@ -135,7 +135,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                 var SortBy = Helper.getDBNullOrValue("SORT_BY", ObjPatientSearchRequest.SORT_BY);
                 var SortOrder = Helper.getDBNullOrValue("SORT_ORDER", ObjPatientSearchRequest.SORT_ORDER);
                 var PatientsInfoList = SpRepository<Patient>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_PATIENT_LIST @PATIENT_ACCOUNT,@CHART_ID, @LAST_NAME, @FIRST_NAME, @SSN,@DOB, @HOME_PHONE, @WORK_PHONE, @CELL_PHONE, @PRACTICE_CODE, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER",
-                   AccountNo,MRN, LastName, FirstName, SSN, dob, HomePhone, WorkPhone, CellPhone, PracticeCode, CurrentPage, RecordPerPage, SortBy, SortOrder);
+                   AccountNo, MRN, LastName, FirstName, SSN, dob, HomePhone, WorkPhone, CellPhone, PracticeCode, CurrentPage, RecordPerPage, SortBy, SortOrder);
                 foreach (var a in PatientsInfoList)
                 {
                     var PatientAddress = _PatientAddressRepository.GetFirst(r => r.PATIENT_ACCOUNT == a.Patient_Account && r.DELETED == false && r.ADDRESS_TYPE.ToLower() == "home address");
@@ -180,7 +180,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                 };
                 return response;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 ResponseModel response = new ResponseModel()
                 {
@@ -542,7 +542,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                     var CALL_ATTENDED_BY_NAME = _userRepository.GetFirst(t => t.USER_ID == callAttendendName && !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
 
                     string NOTE = "";
-                    if(ObjPHDCallDetailRequest.IsNewPatient == false)
+                    if (ObjPHDCallDetailRequest.IsNewPatient == false)
                     {
                         if (ObjPHDCallDetailRequest.INCOMING_CALL_NO != "")
                         {
@@ -640,7 +640,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                                     if (!string.IsNullOrEmpty(ObjPHDCallDetailRequest.CALL_DETAILS))
                                     {
                                         var LogDetailCn = ObjPHDCallDetailRequest.CALL_DETAILS;
-                                        if(LogDetailCn != null)
+                                        if (LogDetailCn != null)
                                         {
                                             AddPHDLog(ObjPHDCallDetailRequest, "CALL_NOTES", LogDetailCn, profile);
                                         }
@@ -652,13 +652,13 @@ namespace FOX.BusinessOperations.FoxPHDService
                                     {
                                         var LogDetailfu = "";
                                         DateTime datetimeStr = Convert.ToDateTime(ObjPHDCallDetailRequest.FOLLOW_UP_DATE);
-                                        if(datetimeStr != null)
+                                        if (datetimeStr != null)
                                         {
                                             LogDetailfu = "Follow up started. Follow up on " + datetimeStr.ToString("d") + ".";
                                             AddPHDLog(ObjPHDCallDetailRequest, "FOLLOW_UP", LogDetailfu, profile);
                                         }
                                     }
-                                }                              
+                                }
                             }
                         }
                         else
@@ -689,7 +689,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                             AddorUpdate = "Record updated successfully.";
 
 
-                            if(ObjPHDCallDetailRequest != null)
+                            if (ObjPHDCallDetailRequest != null)
                             {
                                 if (!string.IsNullOrEmpty(ObjPHDCallDetailRequest.CALL_DETAILS))
                                 {
@@ -711,7 +711,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                                 {
                                     var LogDetailfu = "";
                                     DateTime datetimeStr = Convert.ToDateTime(ObjPHDCallDetailRequest.FOLLOW_UP_DATE);
-                                    if(datetimeStr != null)
+                                    if (datetimeStr != null)
                                     {
                                         LogDetailfu = "Follow up started. Follow up on " + datetimeStr.ToString("d") + ".";
                                         if (existingLogfu.FirstOrDefault().CALL_DETAILS != LogDetailfu)
@@ -724,7 +724,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                                 {
                                     var LogDetailfu = "";
                                     DateTime datetimeStr = Convert.ToDateTime(ObjPHDCallDetailRequest.FOLLOW_UP_DATE);
-                                    if(datetimeStr != null)
+                                    if (datetimeStr != null)
                                     {
                                         LogDetailfu = "Follow up started. Follow up on " + datetimeStr.ToString("d") + ".";
                                         AddPHDLog(ObjPHDCallDetailRequest, "FOLLOW_UP", LogDetailfu, profile);
@@ -735,11 +735,11 @@ namespace FOX.BusinessOperations.FoxPHDService
                             {
                                 if (existingLogfu != null && existingLogfu.Count() > 0)
                                 {
-                                    var LogDetailC = "Follow up cleared.";  
+                                    var LogDetailC = "Follow up cleared.";
                                     if (existingLogfu.FirstOrDefault().CALL_DETAILS != LogDetailC)
                                     {
                                         AddPHDLog(ObjPHDCallDetailRequest, "FOLLOW_UP", LogDetailC, profile);
-                                    }                                    
+                                    }
                                 }
                             }
 
@@ -824,7 +824,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                     }
                     #endregion End of Registered Patient
                 }
-                if(ObjPHDCallDetailRequest.IsNewPatient == true)
+                if (ObjPHDCallDetailRequest.IsNewPatient == true)
                 {
                     ResponseModel response = new ResponseModel()
                     {
@@ -1147,7 +1147,7 @@ namespace FOX.BusinessOperations.FoxPHDService
             try
             {
                 var getDocumentTypeList = _foxDocumentTypeRepository.GetMany(d => !d.DELETED && d.IS_ACTIVE != null).OrderBy(o => o.NAME).ToList();
-                if(getDocumentTypeList == null)
+                if (getDocumentTypeList == null)
                 {
                     return getDocumentTypeList = new List<FoxDocumentType>();
                 }
@@ -1168,7 +1168,7 @@ namespace FOX.BusinessOperations.FoxPHDService
             {
                 SqlParameter UserID = new SqlParameter { ParameterName = "USERID", SqlDbType = SqlDbType.Int, Value = userProfile.userID };
                 var getFollowCalls = SpRepository<PHDCallDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_PATIENT_DETAILS @USERID", UserID);
-                if(getFollowCalls == null)
+                if (getFollowCalls == null)
                 {
                     return getFollowCalls = new List<PHDCallDetail>();
                 }
@@ -1194,7 +1194,7 @@ namespace FOX.BusinessOperations.FoxPHDService
 
                 var users = GetUserDetails(profile);
 
-                if (users != null && users.Count > 0 && users.Select(s=>s.User_FName != null).FirstOrDefault())
+                if (users != null && users.Count > 0 && users.Select(s => s.User_FName != null).FirstOrDefault())
                 {
                     var UserId = users.Select(u => u.InternalUserID)?.FirstOrDefault().ToUpper();
                     var PracticeCode = profile.PracticeCode;
@@ -1233,7 +1233,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                     if (objPHDCallDetailRequest.PRIORITY == null)
                         objPHDCallDetailRequest.PRIORITY = "";
 
-                    InsertCase(sscmCaseNum, FullName.FIRST_NAME + " " + FullName.LAST_NAME, CallReasonName, objPHDCallDetailRequest.CALL_DETAILS,"", csCaseCategory, 0, "2",
+                    InsertCase(sscmCaseNum, FullName.FIRST_NAME + " " + FullName.LAST_NAME, CallReasonName, objPHDCallDetailRequest.CALL_DETAILS, "", csCaseCategory, 0, "2",
                     objPHDCallDetailRequest.PRIORITY, PracticeCode.ToString(), "", objPHDCallDetailRequest.PATIENT_ACCOUNT_STR, "", "", "", objPHDCallDetailRequest.INCOMING_CALL_NO, 0, Email,
                     "NC", "", false, false, UserId.ToString());
                 }
@@ -1297,7 +1297,6 @@ namespace FOX.BusinessOperations.FoxPHDService
                 }
                 catch (NullReferenceException)
                 {
-
                     throw;
                 }
             }
@@ -1313,7 +1312,7 @@ namespace FOX.BusinessOperations.FoxPHDService
             {
                 SqlParameter locationID = new SqlParameter { ParameterName = "LOCATION_ID", SqlDbType = SqlDbType.VarChar, Value = LocationID };
                 var result = SpRepository<string>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_LOCATION_CHAR_CODE @LOCATION_ID", locationID);
-                if(result == null)
+                if (result == null)
                 {
                     return result = "";
                 }
@@ -1321,7 +1320,6 @@ namespace FOX.BusinessOperations.FoxPHDService
             }
             catch (NullReferenceException)
             {
-
                 throw;
             }
         }
@@ -1356,14 +1354,14 @@ namespace FOX.BusinessOperations.FoxPHDService
         string strPriority, string strPractice, string strProvider, string strPatientAccount, string strClaimNo, string strInsCode, string strResDate, string strPhone, int intPhoneType,
         string strEmail, string CaseStatus, string SendMailTo, bool ShowOnWeb, bool boolTemplate, string userid)
         {
-            using(var db = new DBContextFoxPHD())
+            using (var db = new DBContextFoxPHD())
             {
                 try
                 {
                     SqlParameter CsCategoryId = new SqlParameter { ParameterName = "CS_Category_ID", SqlDbType = SqlDbType.VarChar, Value = strCaseCategory };
                     var CsPrimaryPerson = SpRepository<string>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_CS_PRIMARY_RES_PERSON @CS_Category_ID", CsCategoryId);
 
-                    if(CsPrimaryPerson != null)
+                    if (CsPrimaryPerson != null)
                     {
                         // Insert Records in CustomerSupportInfo Table.
 

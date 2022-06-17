@@ -656,7 +656,7 @@ function subst() {{
                         break;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     Thread.Sleep(cnt < 10 ? 50 : 100);
                 }
@@ -805,7 +805,7 @@ function subst() {{
 #endif
                     WkHtmlToPdfProcess = null;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                 }
             }
