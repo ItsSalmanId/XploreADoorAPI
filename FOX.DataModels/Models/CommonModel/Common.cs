@@ -247,5 +247,18 @@ namespace FOX.DataModels.Models.CommonModel
         public DateTime MODIFIED_DATE { get; set; }
         public bool DELETED { get; set; }
     }
-
+    public class PHDRecordingConfiguration
+    {
+        public int PHD_CALLING_UPDATE_SERVICE_CONFIG_ID { get; set; }
+        public long PRACTICE_CODE { get; set; }
+        public string ENVIRONMENT_NAME { get; set; }
+        public bool LOAD_XML { get; set; }
+        public string RECORDING_FOLDER_PATH { get; set; }
+        public string XML_FOLDER_PATH { get; set; }
+        public bool DELETED { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime CREATED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public DateTime MODIFIED_DATE { get; set; }
+    }
 }
