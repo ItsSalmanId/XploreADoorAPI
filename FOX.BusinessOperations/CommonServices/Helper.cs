@@ -930,7 +930,16 @@ namespace FOX.BusinessOperations.CommonService
             }
             return config;
         }
-
+        public static PHDRecordingConfiguration GetPHDRecordingConfigurations(long practiceCode)
+        {
+            var config = new PHDRecordingConfiguration();
+            var configList = SpRepository<PHDRecordingConfiguration>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_RECORDING_SERCVICE_CONFIG");
+            if (configList != null && configList.Count() > 0)
+            {
+                config = configList.Where(c => c.PRACTICE_CODE == practiceCode).FirstOrDefault();
+            }
+            return config;
+        }
         public static DateTime? ConvertStingToDateTime(string _dateTimeString)
         {
             try
