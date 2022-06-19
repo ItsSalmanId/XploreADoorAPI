@@ -83,11 +83,11 @@ namespace FoxRehabilitationAPI.Controllers
                     string fileName = Path.GetFileName(FilePath);
                     string test = Path.GetDirectoryName(FilePath);
                     string fileExtension = Path.GetExtension(FilePath);
-                    if (!string.IsNullOrEmpty(fileName) && new[] { ".xml", ".zip", ".jpeg", ".jpg", ".png", ".pdf", ".tiff", ".tif", ".docx", ".doc", ".xls", ".xlsx", ".csv", ".ppt", ".pptx", ".mp3", ".wav",".txt" }.Contains(fileExtension))
+                    if (!string.IsNullOrEmpty(fileName) && new[] { ".xml", ".zip", ".jpeg", ".jpg", ".png", ".pdf", ".tiff", ".tif", ".docx", ".doc", ".xls", ".xlsx", ".csv", ".ppt", ".pptx", ".mp3", ".wav",".txt", ".opus" }.Contains(fileExtension))
                     {
                         if (!Directory.Exists(test))
                             FilePath = HttpContext.Current.Server.MapPath("~/" + FilePath);
-                        //FilePath = @"\\\\it-126\\" + FilePath;                    
+                        //FilePath = @"\\\\It-bkp\\d\\IT-126\\" + FilePath;                    
                         if (File.Exists(FilePath))
                         {
                             using (MemoryStream ms = new MemoryStream())

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Configuration;
+using FOX.BusinessOperations.CommonService;
 
 namespace FoxRehabilitationAPI.Controllers
 {
@@ -51,6 +52,20 @@ namespace FoxRehabilitationAPI.Controllers
                 Files = HttpContext.Current.Request.Files
             };
             var uploadFiles = _IUploadFilesServices.UploadFiles(requestUploadFilesModel);
+            var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
+            return Task.FromResult(response);
+        }
+        [HttpPost]
+        public Task<HttpResponseMessage> UploadRecordingPath()
+        {
+            var config = Helper.GetPHDRecordingConfigurations(AppConfiguration.GetPracticeCode);
+            RequestUploadFilesModel requestUploadFilesAPIModel = new RequestUploadFilesModel()
+            {
+                AllowedFileExtensions = new List<string> { ".opus" },
+                UploadFilesPath = config.RECORDING_FOLDER_PATH,
+                Files = HttpContext.Current.Request.Files
+            };
+            var uploadFiles = _IUploadFilesServices.UploadFiles(requestUploadFilesAPIModel);
             var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
             return Task.FromResult(response);
         }
