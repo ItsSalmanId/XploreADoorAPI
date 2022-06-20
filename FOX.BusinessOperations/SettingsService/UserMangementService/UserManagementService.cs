@@ -3330,7 +3330,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         {
             try
             {
-                if (userTeamModel.Count != 0 && profile.PracticeCode != 0)
+                if (userTeamModel != null && userTeamModel.Count != 0 && profile.PracticeCode != 0)
                 {
                     foreach (UserTeamModel ID in userTeamModel)
                     {
@@ -3345,6 +3345,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     }
                     return true;
                 }
+                return false;
             }
                 catch (Exception ex)
             {
@@ -3352,33 +3353,31 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             }
         }
         //  this function get team list 
-        public List<GetTeamList> GetTeamList(string roleID, UserProfile profile)
+        public List<GetTeamList> GetTeamList(string userID, UserProfile profile)
         {
             var result = new List<GetTeamList>();
             try
             {
-                if (roleID != null && profile.PracticeCode != 0)
+                if (userID != null && profile.PracticeCode != 0)
                 {
-                    SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
-                    SqlParameter roleId = new SqlParameter { ParameterName = "USER_ROLE_ID", SqlDbType = SqlDbType.BigInt, Value = roleID };
-                    result = SpRepository<GetTeamList>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PRACTICE_TEAM @USER_ID, @USER_ROLE_ID", userID, roleId);
+                    SqlParameter practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                    SqlParameter userId = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = userID };
+                    result = SpRepository<GetTeamList>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PRACTICE_TEAM @PRACTICE_CODE, @USER_ID", practiceCode, userId);
                     return result;
                 }
+                return result;
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
-            return result;
-
         }
         //  this function Update User Teams 
         public bool UpdateUserTeam(List<UserTeamModel> userTeamModel, UserProfile profile)
         {
             try
             {
-                if (userTeamModel.Count != 0 && profile.PracticeCode != 0)
+                if (userTeamModel != null && userTeamModel.Count != 0 && profile.PracticeCode != 0)
                 {
                         SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(userTeamModel[0].USER_ID) };
                         SqlParameter RoleID = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(userTeamModel[0].ROLE_ID) };
@@ -3395,7 +3394,6 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                         SpRepository<UserTeamModel>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_USER_TEAM @USER_TEAM_ID, @USER_ID, @PHD_CALL_SCENARIO_ID ,@PRACTICE_CODE,@COUNTER,@FILTER,@ROLE_ID", userTeamID, userID, phdCallScenareioID, practiceCode, counter, filterForCheck, roleID);
                     }
                     return true;
-
                 }
                 return false;
             }
