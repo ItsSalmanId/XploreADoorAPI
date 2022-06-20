@@ -1205,7 +1205,7 @@ namespace FOX.BusinessOperations.Scheduler
         {
             InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
 
-            if (obj.APPOINTMENT_ID == null)
+            if (obj.APPOINTMENT_ID == 0)
             {
 
             }

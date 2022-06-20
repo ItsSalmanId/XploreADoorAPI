@@ -108,7 +108,7 @@ namespace FOX.BusinessOperations.CommonServices
                 }
                 return "";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return "";
             }
@@ -592,6 +592,27 @@ namespace FOX.BusinessOperations.CommonServices
                 }
             }
             return true;
+        }
+        // Delete Files From Server.
+        public ResponseModel DeleteDownloadedFile(string fileLocation)
+        {
+            ResponseModel response = new ResponseModel();
+            if (!string.IsNullOrEmpty(fileLocation))
+            {
+                var completeFilePath = HttpContext.Current?.Server?.MapPath("~/" + fileLocation);
+                if (!string.IsNullOrEmpty(completeFilePath) && File.Exists(Path.Combine(completeFilePath)))
+                {
+                    File.Delete(Path.Combine(completeFilePath));
+                    response.Success = true;
+                    response.Message = "Successfully deleted files";
+                }
+                else
+                {
+                    response.Success = false;
+                    response.Message = "File not found";
+                }
+            }
+            return response;
         }
     }
 }

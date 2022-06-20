@@ -24,7 +24,7 @@ namespace FoxRehabilitationAPI
                 }
                 return response;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return await _BadRequest(request);
             }

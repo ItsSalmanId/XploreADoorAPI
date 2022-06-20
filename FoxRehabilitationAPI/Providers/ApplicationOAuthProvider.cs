@@ -138,7 +138,7 @@ namespace FoxRehabilitationAPI.Providers
                     oAuthIdentity = await tuple.Item1.GenerateUserIdentityAsync(userManager, OAuthDefaults.AuthenticationType, tuple.Item2);
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     throw;
                 }
@@ -149,7 +149,7 @@ namespace FoxRehabilitationAPI.Providers
                 context.Validated(ticket);
                 context.Request.Context.Authentication.SignIn(cookiesIdentity);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -192,7 +192,7 @@ namespace FoxRehabilitationAPI.Providers
 
                 return Task.FromResult<object>(null);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Task.FromResult<object>(null);
             }
@@ -207,7 +207,7 @@ namespace FoxRehabilitationAPI.Providers
                 var result = tokenService.SaveTokenWithProfile(userProfile, context.AccessToken);
                 return base.TokenEndpointResponse(context);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return base.TokenEndpointResponse(context);
             }
@@ -226,7 +226,7 @@ namespace FoxRehabilitationAPI.Providers
 
                 return Task.FromResult<object>(null);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Task.FromResult<object>(null);
             }
