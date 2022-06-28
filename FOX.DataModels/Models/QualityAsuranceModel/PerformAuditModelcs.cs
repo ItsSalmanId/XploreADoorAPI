@@ -219,4 +219,11 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public string SURVEY_FLAG { get; set; }
 
     }
+    public class TeamMemberNameModel : BaseModel
+    {
+        public string USER_NAME { get; set; }
+        public string NAME { get; set; }
+        public string EMAIL { get; set; }
+
+    }
 }

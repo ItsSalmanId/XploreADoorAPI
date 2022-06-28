@@ -557,19 +557,20 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _userServices.CheckActiveStatus(GetProfile()));
         }
-        [HttpGet]
-        public HttpResponseMessage AddUserTeam(string userTeamModel)
+
+        [HttpPost]
+        public HttpResponseMessage AddUserTeam(List<TeamAddUpdateModel> userTeamModel)
         {
-            var userTeamList = JsonConvert.DeserializeObject<List<UserTeamModel>>(userTeamModel);
-            if (userTeamList.Count > 0)
+            if (userTeamModel.Count > 0)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _userServices.AddUserTeam(userTeamList, GetProfile()));
+                return Request.CreateResponse(HttpStatusCode.OK, _userServices.AddUserTeam(userTeamModel, GetProfile()));
             }
             else
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "User List is Empty");
             }
         }
+
         [HttpGet]
         public HttpResponseMessage GetTeamList(string roleID)
         {
@@ -583,13 +584,12 @@ namespace FoxRehabilitationAPI.Controllers
             }
         }
 
-        [HttpGet]
-        public HttpResponseMessage UpdateUserTeam(string userTeamModel)
+        [HttpPost]
+        public HttpResponseMessage UpdateUserTeam(List<TeamAddUpdateModel> userTeamModel)
         {
-            var userTeamList = JsonConvert.DeserializeObject<List<UserTeamModel>>(userTeamModel);
-            if (userTeamList.Count > 0)
+            if (userTeamModel.Count > 0)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _userServices.UpdateUserTeam(userTeamList, GetProfile()));
+                return Request.CreateResponse(HttpStatusCode.OK, _userServices.UpdateUserTeam(userTeamModel, GetProfile()));
             }
             else
             {

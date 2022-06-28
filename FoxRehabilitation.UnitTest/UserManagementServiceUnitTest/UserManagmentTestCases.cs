@@ -13,14 +13,14 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
     {
         UserManagementService userManagementService = new UserManagementService();
         UserProfile userProfile = new UserProfile();
-        private List<UserTeamModel> _userTeamModel;
-        UserTeamModel userTeamModelobj;
+        private List<TeamAddUpdateModel> _userTeamModel;
+        TeamAddUpdateModel userTeamModelobj;
         private string roleID;
 
         [SetUp]
         public void SetUp()
         {
-            _userTeamModel = new List<UserTeamModel>();
+            _userTeamModel = new List<TeamAddUpdateModel>();
             userManagementService = new UserManagementService();
             userProfile = new UserProfile();
            
@@ -71,16 +71,10 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         {
             //Arrange
             userProfile.PracticeCode = 0;
-            UserTeamModel userTeamModelobj = new UserTeamModel();
+            TeamAddUpdateModel userTeamModelobj = new TeamAddUpdateModel();
             userTeamModelobj.USER_ID = 123;
             userTeamModelobj.PHD_CALL_SCENARIO_ID = 123;
-            userTeamModelobj.PRACTICE_CODE = "123";
-            userTeamModelobj.CREATED_DATE = DateTime.UtcNow;
-            userTeamModelobj.CREATED_BY = "Ali";
-            userTeamModelobj.MODIFIED_DATE = DateTime.UtcNow;
-            userTeamModelobj.MODIFIED_BY = "Ali";
             userTeamModelobj.DELETED = false;
-            userTeamModelobj.IS_CHECK_DISABLED = false;
             userTeamModelobj.ROLE_ID = 123;
             _userTeamModel.Add(userTeamModelobj);
 
@@ -104,16 +98,10 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         {
             //Arrange
             userProfile.PracticeCode = 111363;
-            userTeamModelobj = new UserTeamModel();
+            userTeamModelobj = new TeamAddUpdateModel();
             userTeamModelobj.USER_ID = 123;
             userTeamModelobj.PHD_CALL_SCENARIO_ID = 123;
-            userTeamModelobj.PRACTICE_CODE = "123";
-            userTeamModelobj.CREATED_DATE = DateTime.UtcNow;
-            userTeamModelobj.CREATED_BY = "Ali";
-            userTeamModelobj.MODIFIED_DATE = DateTime.UtcNow;
-            userTeamModelobj.MODIFIED_BY = "Ali";
             userTeamModelobj.DELETED = false;
-            userTeamModelobj.IS_CHECK_DISABLED = false;
             userTeamModelobj.ROLE_ID = 123;
             _userTeamModel.Add(userTeamModelobj);
             //Act
@@ -153,16 +141,12 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         {
             //Arrange
             userProfile.PracticeCode = 111363;
-            userTeamModelobj = new UserTeamModel();
+            userTeamModelobj = new TeamAddUpdateModel();
             userTeamModelobj.USER_ID = 123;
             userTeamModelobj.PHD_CALL_SCENARIO_ID = 123;
-            userTeamModelobj.PRACTICE_CODE = "123";
-            userTeamModelobj.CREATED_DATE = DateTime.UtcNow;
-            userTeamModelobj.CREATED_BY = "Ali";
-            userTeamModelobj.MODIFIED_DATE = DateTime.UtcNow;
-            userTeamModelobj.MODIFIED_BY = "Ali";
+
             userTeamModelobj.DELETED = false;
-            userTeamModelobj.IS_CHECK_DISABLED = false;
+     
             userTeamModelobj.ROLE_ID = 123;
             _userTeamModel.Add(userTeamModelobj);
             //Act
@@ -203,16 +187,10 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         {
             //Arrange
             userProfile.PracticeCode = 0;
-            UserTeamModel userTeamModelobj = new UserTeamModel();
+            TeamAddUpdateModel userTeamModelobj = new TeamAddUpdateModel();
             userTeamModelobj.USER_ID = 123;
             userTeamModelobj.PHD_CALL_SCENARIO_ID = 123;
-            userTeamModelobj.PRACTICE_CODE = "123";
-            userTeamModelobj.CREATED_DATE = DateTime.UtcNow;
-            userTeamModelobj.CREATED_BY = "Ali";
-            userTeamModelobj.MODIFIED_DATE = DateTime.UtcNow;
-            userTeamModelobj.MODIFIED_BY = "Ali";
             userTeamModelobj.DELETED = false;
-            userTeamModelobj.IS_CHECK_DISABLED = false;
             userTeamModelobj.ROLE_ID = 123;
             _userTeamModel.Add(userTeamModelobj);
             //Act
@@ -252,7 +230,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         {
             //Arrange
             userProfile.PracticeCode = 1011163;
-            roleID = "5483091";
+            roleID = "5483202";
             //Act
             var result = userManagementService.GetTeamList(roleID, userProfile);
             //Assert

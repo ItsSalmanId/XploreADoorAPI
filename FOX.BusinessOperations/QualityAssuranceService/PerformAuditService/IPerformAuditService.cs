@@ -16,5 +16,6 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
         List<CallLogModel> PostCallList(RequestCallList request, UserProfile profile);
         bool InsertAuditScores(SurveyAuditScores req, UserProfile profile);
         List<SurveyAuditScores> ListAuditedCalls(RequestCallFromQA agentName, UserProfile profile);
+        List<TeamMemberNameModel> GetTeamMemberName(long callScanrioID, UserProfile profile);
     }
 }

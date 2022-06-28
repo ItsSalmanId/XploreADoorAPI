@@ -3326,13 +3326,13 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             }
         }
         //  this function Update User Teams 
-        public bool AddUserTeam(List<UserTeamModel> userTeamModel, UserProfile profile)
+        public bool AddUserTeam(List<TeamAddUpdateModel> userTeamModel, UserProfile profile)
         {
             try
             {
                 if (userTeamModel != null && userTeamModel.Count != 0 && profile.PracticeCode != 0)
                 {
-                    foreach (UserTeamModel ID in userTeamModel)
+                    foreach (TeamAddUpdateModel ID in userTeamModel)
                     {
                            SqlParameter userTeamID = new SqlParameter { ParameterName = "USER_TEAM_ID", SqlDbType = SqlDbType.BigInt, Value = Helper.getMaximumId("USER_TEAM_ID") };
                         SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(ID.USER_ID) };
@@ -3373,7 +3373,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             }
         }
         //  this function Update User Teams 
-        public bool UpdateUserTeam(List<UserTeamModel> userTeamModel, UserProfile profile)
+        public bool UpdateUserTeam(List<TeamAddUpdateModel> userTeamModel, UserProfile profile)
         {
             try
             {
@@ -3382,7 +3382,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                         SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(userTeamModel[0].USER_ID) };
                         SqlParameter RoleID = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(userTeamModel[0].ROLE_ID) };
                         SpRepository<UserTeamModel>.GetListWithStoreProcedure(@"exec FOX_PROC_DELETE_USER_TEAM @USER_ID,@ROLE_ID", userID, RoleID);
-                    foreach (UserTeamModel ID in userTeamModel)
+                    foreach (TeamAddUpdateModel ID in userTeamModel)
                     {
                         SqlParameter userTeamID = new SqlParameter { ParameterName = "USER_TEAM_ID", SqlDbType = SqlDbType.BigInt, Value = Helper.getMaximumId("USER_TEAM_ID") };
                         userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(ID.USER_ID) };
