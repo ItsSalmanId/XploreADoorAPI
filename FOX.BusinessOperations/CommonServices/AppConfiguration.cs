@@ -122,8 +122,9 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     return _ACUServiceURL;
                 }
-                return "https://uat-webservices.mtbc.com/ACU-WebAPI/api/FoxSurveyCalls/MakeCall/"; // For live.
+               // return "https://uat-webservices.mtbc.com/ACU-WebAPI/api/FoxSurveyCalls/MakeCall/"; // For live.
                 //return "http://172.16.0.71/ACU_WebAPI/api/FoxSurveyCalls/MakeCall/"; // For QA and UAT.
+                return "https://acu.mtbc.com/ACU_FoxSurvey_API/api/FoxSurveyCalls/MakeCall/";//for testing
 
             }
         }
@@ -133,6 +134,22 @@ namespace FOX.BusinessOperations.CommonServices
             {
                 //return "BC0A6BAC-8536-432E-8A8F-3D1B6310D9BD"; // For QA and UAT.
                 return "D74AB142-BDF8-4C49-9DD7-5D659B392E24"; // For live.
+            }
+        }
+        public static string ACUServiceTeamId2
+        {
+            get
+            {
+                //return "BC0A6BAC-8536-432E-8A8F-3D1B6310D9BD"; // For QA and UAT.
+                return "27640DF1-249C-461B-8EA4-1899CA7D4D6C"; // For live.
+            }
+        }
+        public static string ACUServiceTeamId3
+        {
+            get
+            {
+                //return "BC0A6BAC-8536-432E-8A8F-3D1B6310D9BD"; // For QA and UAT.
+                return "41892460-2AEA-4186-A9BC-437D97D1C25B"; // For live.
             }
         }
         public static string NPIRegistryURL
