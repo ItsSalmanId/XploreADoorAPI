@@ -135,6 +135,22 @@ namespace FOX.BusinessOperations.CommonServices
                 return "D74AB142-BDF8-4C49-9DD7-5D659B392E24"; // For live.
             }
         }
+        public static string ACUServiceTeamIdFor8381
+        {
+            get
+            {
+                //return "BC0A6BAC-8536-432E-8A8F-3D1B6310D9BD"; // For QA and UAT.
+                return "27640DF1-249C-461B-8EA4-1899CA7D4D6C"; // For live.
+            }
+        }
+        public static string ACUServiceTeamIdFor8384
+        {
+            get
+            {
+                //return "BC0A6BAC-8536-432E-8A8F-3D1B6310D9BD"; // For QA and UAT.
+                return "41892460-2AEA-4186-A9BC-437D97D1C25B"; // For live.
+            }
+        }
         public static string NPIRegistryURL
         {
             get
