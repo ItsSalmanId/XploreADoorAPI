@@ -781,19 +781,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                     data["Extension"] = patientSurveyCall.Extension;
                     data["FileName"] = patientSurveyCall.FileName;
                     // data["TeamID"] = AppConfiguration.ACUServiceTeamId;
-
-                    if(data["Extension"] == "8381")
-                    {
-                        data["TeamID"] = AppConfiguration.ACUServiceTeamId2;
-                    }
-                    if (data["Extension"] == "8384")
-                    {
-                        data["TeamID"] = AppConfiguration.ACUServiceTeamId3;
-                    }
-                    if(data["Extension"] != "8384" && data["Extension"] != "8381")
-                    {
-                        data["TeamID"] = AppConfiguration.ACUServiceTeamId;
-                    }
+                    data["TeamID"] = AppConfiguration.ACUServiceTeamId;
                     //data["Number"] = "7328735133";
                     //data["Extension"] = "1111";
                     //data["FileName"] = patientSurveyCall.FileName;
