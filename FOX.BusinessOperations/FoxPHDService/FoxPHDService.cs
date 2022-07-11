@@ -684,6 +684,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                             ExistingDetailInfo.PRIORITY = ObjPHDCallDetailRequest.PRIORITY;
                             ExistingDetailInfo.FOLLOW_UP_DATE = ObjPHDCallDetailRequest.FOLLOW_UP_DATE;
                             ExistingDetailInfo.SSCM_CASE_ID = ObjPHDCallDetailRequest.SSCM_CASE_ID;
+                            ExistingDetailInfo.CALL_RECORDING_PATH = ObjPHDCallDetailRequest.CALL_RECORDING_PATH;
                             _PHDDetailRepository.Update(ExistingDetailInfo);
                             _PHDDetailRepository.Save();
                             AddorUpdate = "Record updated successfully.";
