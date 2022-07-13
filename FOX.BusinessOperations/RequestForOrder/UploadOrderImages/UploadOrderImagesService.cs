@@ -226,7 +226,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                         {
                             Directory.CreateDirectory(config.ORIGINAL_FILES_PATH_SERVER);
                         }
-                        if (ext == ".tiff" || ext == ".tif" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".gif")
+                        if (ext == ".tiff" || ext == ".tif" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".gif" || ext == ".bmp")
                         {
                             ConvertPDFToImages pdfToImg = new ConvertPDFToImages();
                             int numberOfPages = pdfToImg.tifToImage(filePath, config.IMAGES_PATH_SERVER, workId, pageCounter, config.IMAGES_PATH_DB, out pageCounter, true);
