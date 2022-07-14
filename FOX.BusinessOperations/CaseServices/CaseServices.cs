@@ -1047,7 +1047,7 @@ namespace FOX.BusinessOperations.CaseServices
                 List<GetTotalDisciplineRes> DiscpilineList = new List<GetTotalDisciplineRes>();
                 var _patient_Account = Convert.ToInt64(patient_Account);
                 //var FOX_TBL_CASEList = _CaseRepository.GetMany(t => !t.DELETED);
-                var FOX_VW_CASEList = _vwCaseRepository.GetMany(t => !t.DELETED && t.PATIENT_ACCOUNT == _patient_Account).OrderByDescending(t => t.CREATED_DATE).ToList();
+                var FOX_VW_CASEList = _vwCaseRepository.GetMany(t => !t.DELETED && t.PATIENT_ACCOUNT == _patient_Account && t.PRACTICE_CODE == practiceCode).OrderByDescending(t => t.CREATED_DATE).ToList();  
                 if (FOX_VW_CASEList.Count() > 0)
                 {
                     foreach (var rec in FOX_VW_CASEList)

@@ -5348,21 +5348,25 @@ namespace FOX.BusinessOperations.PatientServices
             dbPatientInsurance.CHK_HOSPICE = details.InsuranceToCreateUpdate.CHK_HOSPICE;
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             //Medicare Info
-            MedicareLimit newABNData = details.InsuranceToCreateUpdate.CurrentMedicareLimitList.Where(e => e.MEDICARE_LIMIT_TYPE_NAME == "ABN").FirstOrDefault();
-            newABNData.Patient_Account = dbPatientInsurance.Patient_Account;
-            //UpdateABNData(newABNData, dbPatientInsurance.ABN_LIMIT_ID);
-            dbPatientInsurance.ABN_LIMIT_ID = abnInfoChanged ? CreateNewLimit(dbPatientInsurance.ABN_LIMIT_ID, newABNData, "ABN", profile) : dbPatientInsurance.ABN_LIMIT_ID;
 
-            MedicareLimit newHOSData = details.InsuranceToCreateUpdate.CurrentMedicareLimitList.Where(e => e.MEDICARE_LIMIT_TYPE_NAME == "Hospice").FirstOrDefault();
-            newHOSData.Patient_Account = dbPatientInsurance.Patient_Account;
-            //UpdateHOSData(newHOSData, dbPatientInsurance.HOSPICE_LIMIT_ID);
-            dbPatientInsurance.HOSPICE_LIMIT_ID = hosInfoChanged ? CreateNewLimit(dbPatientInsurance.HOSPICE_LIMIT_ID, newHOSData, "Hospice", profile) : dbPatientInsurance.HOSPICE_LIMIT_ID;
+            if (details.InsuranceToCreateUpdate.CurrentMedicareLimitList.Count != 0)
+            {
+                MedicareLimit newABNData = details.InsuranceToCreateUpdate.CurrentMedicareLimitList.Where(e => e.MEDICARE_LIMIT_TYPE_NAME == "ABN").FirstOrDefault();
+                newABNData.Patient_Account = dbPatientInsurance.Patient_Account;
+                //UpdateABNData(newABNData, dbPatientInsurance.ABN_LIMIT_ID);
+                dbPatientInsurance.ABN_LIMIT_ID = abnInfoChanged ? CreateNewLimit(dbPatientInsurance.ABN_LIMIT_ID, newABNData, "ABN", profile) : dbPatientInsurance.ABN_LIMIT_ID;
 
-            MedicareLimit newHHData = details.InsuranceToCreateUpdate.CurrentMedicareLimitList.Where(e => e.MEDICARE_LIMIT_TYPE_NAME == "Home Health Episode").FirstOrDefault();
-            newHHData.Patient_Account = dbPatientInsurance.Patient_Account;
-            //UpdateHHData(newHHData, dbPatientInsurance.HOME_HEALTH_LIMIT_ID);
-            dbPatientInsurance.HOME_HEALTH_LIMIT_ID = hhInfoChanged ? CreateNewLimit(dbPatientInsurance.HOME_HEALTH_LIMIT_ID, newHHData, "Home Health Episode", profile) : dbPatientInsurance.HOME_HEALTH_LIMIT_ID;
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                MedicareLimit newHOSData = details.InsuranceToCreateUpdate.CurrentMedicareLimitList.Where(e => e.MEDICARE_LIMIT_TYPE_NAME == "Hospice").FirstOrDefault();
+                newHOSData.Patient_Account = dbPatientInsurance.Patient_Account;
+                //UpdateHOSData(newHOSData, dbPatientInsurance.HOSPICE_LIMIT_ID);
+                dbPatientInsurance.HOSPICE_LIMIT_ID = hosInfoChanged ? CreateNewLimit(dbPatientInsurance.HOSPICE_LIMIT_ID, newHOSData, "Hospice", profile) : dbPatientInsurance.HOSPICE_LIMIT_ID;
+
+                MedicareLimit newHHData = details.InsuranceToCreateUpdate.CurrentMedicareLimitList.Where(e => e.MEDICARE_LIMIT_TYPE_NAME == "Home Health Episode").FirstOrDefault();
+                newHHData.Patient_Account = dbPatientInsurance.Patient_Account;
+                //UpdateHHData(newHHData, dbPatientInsurance.HOME_HEALTH_LIMIT_ID);
+                dbPatientInsurance.HOME_HEALTH_LIMIT_ID = hhInfoChanged ? CreateNewLimit(dbPatientInsurance.HOME_HEALTH_LIMIT_ID, newHHData, "Home Health Episode", profile) : dbPatientInsurance.HOME_HEALTH_LIMIT_ID;
+                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            }
             dbPatientInsurance.ELIG_LOADED_ON = Helper.GetCurrentDate();
             dbPatientInsurance.Modified_By = profile.UserName;
             dbPatientInsurance.Modified_Date = Helper.GetCurrentDate();
@@ -5949,13 +5953,16 @@ namespace FOX.BusinessOperations.PatientServices
             }
             else
             {
-                if (newData.EFFECTIVE_DATE != null || newData.END_DATE != null || newData.ABN_EST_WK_COST != null || !string.IsNullOrWhiteSpace(newData.ABN_COMMENTS))
+                if (newData != null)
                 {
-                    abnInfoChanged = true;
-                    return true;
+                    if (newData.EFFECTIVE_DATE != null || newData.END_DATE != null || newData.ABN_EST_WK_COST != null || !string.IsNullOrWhiteSpace(newData.ABN_COMMENTS))
+                    {
+                        abnInfoChanged = true;
+                        return true;
+                    }
                 }
-            }
-            return false;
+                }
+                return false;
         }
 
         public bool HOS_MedicareLimitDataChanged(long? hos_Id, List<MedicareLimit> currentMedicareLimitList, out bool hosInfoChanged)
@@ -5971,10 +5978,15 @@ namespace FOX.BusinessOperations.PatientServices
             }
             else
             {
-                if (newData.EFFECTIVE_DATE != null || newData.END_DATE != null || !string.IsNullOrWhiteSpace(newData.NPI))
+                if (newData != null)
                 {
-                    hosInfoChanged = true;
-                    return true;
+
+
+                    if (newData.EFFECTIVE_DATE != null || newData.END_DATE != null || !string.IsNullOrWhiteSpace(newData.NPI))
+                    {
+                        hosInfoChanged = true;
+                        return true;
+                    }
                 }
             }
             return false;
@@ -5994,10 +6006,13 @@ namespace FOX.BusinessOperations.PatientServices
             }
             else
             {
-                if (newData.EFFECTIVE_DATE != null || newData.END_DATE != null || !string.IsNullOrWhiteSpace(newData.NPI))
+                if (newData != null)
                 {
-                    hhInfoChanged = true;
-                    return true;
+                    if (newData.EFFECTIVE_DATE != null || newData.END_DATE != null || !string.IsNullOrWhiteSpace(newData.NPI))
+                    {
+                        hhInfoChanged = true;
+                        return true;
+                    }
                 }
             }
             return false;
