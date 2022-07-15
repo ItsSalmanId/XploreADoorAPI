@@ -5961,8 +5961,8 @@ namespace FOX.BusinessOperations.PatientServices
                         return true;
                     }
                 }
-                }
-                return false;
+            }
+            return false;
         }
 
         public bool HOS_MedicareLimitDataChanged(long? hos_Id, List<MedicareLimit> currentMedicareLimitList, out bool hosInfoChanged)
@@ -5980,8 +5980,6 @@ namespace FOX.BusinessOperations.PatientServices
             {
                 if (newData != null)
                 {
-
-
                     if (newData.EFFECTIVE_DATE != null || newData.END_DATE != null || !string.IsNullOrWhiteSpace(newData.NPI))
                     {
                         hosInfoChanged = true;
