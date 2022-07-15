@@ -199,12 +199,12 @@ namespace FOX.BusinessOperations.CaseServices
                     caseObj.POS_ID = model.POS_ID;
                     caseObj.TREATING_REGION_ID = model.TREATING_REGION_ID;
                     caseObj.IS_MANUAL_CHANGE_REGION = model.IS_MANUAL_CHANGE_REGION;
-                    if (!string.IsNullOrEmpty(model.ADMISSION_DATE_String))
-                        caseObj.ADMISSION_DATE = Convert.ToDateTime(model.ADMISSION_DATE_String);
+                    if (!string.IsNullOrEmpty(model.ADMISSION_DATE_String))    
+                        caseObj.ADMISSION_DATE = DateTime.ParseExact(model.ADMISSION_DATE_String, "dd/MM/yyyy", null);
                     if (!string.IsNullOrEmpty(model.END_CARE_DATE_String))
-                        caseObj.END_CARE_DATE = Convert.ToDateTime(model.END_CARE_DATE_String);
+                        caseObj.END_CARE_DATE = DateTime.ParseExact(model.END_CARE_DATE_String, "dd/MM/yyyy", null);
                     if (!string.IsNullOrEmpty(model.START_CARE_DATE_String))
-                        caseObj.START_CARE_DATE = Convert.ToDateTime(model.START_CARE_DATE_String);
+                        caseObj.START_CARE_DATE = DateTime.ParseExact(model.START_CARE_DATE_String, "dd/MM/yyyy", null);
                     caseObj.VISIT_PER_WEEK = model.VISIT_PER_WEEK;
                     caseObj.TOTAL_VISITS = null;
                     caseObj.WORK_ID = model.WORK_ID;
@@ -1047,7 +1047,7 @@ namespace FOX.BusinessOperations.CaseServices
                 List<GetTotalDisciplineRes> DiscpilineList = new List<GetTotalDisciplineRes>();
                 var _patient_Account = Convert.ToInt64(patient_Account);
                 //var FOX_TBL_CASEList = _CaseRepository.GetMany(t => !t.DELETED);
-                var FOX_VW_CASEList = _vwCaseRepository.GetMany(t => !t.DELETED && t.PATIENT_ACCOUNT == _patient_Account).OrderByDescending(t => t.CREATED_DATE).ToList();
+                var FOX_VW_CASEList = _vwCaseRepository.GetMany(t => !t.DELETED && t.PATIENT_ACCOUNT == _patient_Account && t.PRACTICE_CODE == practiceCode).OrderByDescending(t => t.CREATED_DATE).ToList();  
                 if (FOX_VW_CASEList.Count() > 0)
                 {
                     foreach (var rec in FOX_VW_CASEList)
