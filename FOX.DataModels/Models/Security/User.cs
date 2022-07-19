@@ -353,7 +353,7 @@ namespace FOX.DataModels.Models.Security
         public DateTime MODIFIED_DATE { get; set; }
         public string MODIFIED_BY { get; set; }
         public bool DELETED { get; set; }
-        public bool IS_CHECK_DISABLED { get; set; }
+
     }
     public class UserTeamModel
     {
@@ -367,9 +367,6 @@ namespace FOX.DataModels.Models.Security
         public DateTime MODIFIED_DATE { get; set; }
         public string MODIFIED_BY { get; set; }
         public bool DELETED { get; set; }
-        public bool IS_CHECK_DISABLED { get; set; }
-        public long ROLE_ID { get; set; }
-
     }
     public class TeamAddUpdateModel
     {

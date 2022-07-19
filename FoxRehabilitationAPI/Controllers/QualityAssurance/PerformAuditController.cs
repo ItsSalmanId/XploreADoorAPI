@@ -60,7 +60,7 @@ namespace FoxRehabilitationAPI.Controllers.Quality_Assurance
         [HttpPost]
         public HttpResponseMessage GetTeamMemberName(long callScanrioID)
         {
-            if(callScanrioID != 0)
+            if(callScanrioID != null)
             {
                 var result = _PerformAuditService.GetTeamMemberName(callScanrioID, GetProfile());
                 var response = Request.CreateResponse(HttpStatusCode.OK, result);
