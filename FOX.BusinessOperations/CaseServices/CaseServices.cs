@@ -1056,26 +1056,26 @@ namespace FOX.BusinessOperations.CaseServices
                         {
                             if (rec.CERTIFYING_REF_SOURCE_ID == 0 || string.IsNullOrEmpty(rec.CERTIFYING_REF_SOURCE_ID.ToString()))
                             {
-                                var referralsource = _SourceRepository.GetFirst(r => r.SOURCE_ID == rec.ORDERING_REF_SOURCE_ID && r.DELETED == false);
+                                var referralsource = _SourceRepository.GetFirst(r => r.SOURCE_ID == rec.ORDERING_REF_SOURCE_ID && r.DELETED == false && r.PRACTICE_CODE == practiceCode);
                                 rec.ObjReferralSource = referralsource;
                             }
                         }
                     }
                 }
-                var CaseTypeResult = _CaseTypeRepository.GetMany(t => !t.DELETED);
-                var CaseDescplineResult = _CaseDesciplineRepository.GetMany(t => !t.DELETED);
-                var CaseStatusResult = _CaseStatusRepository.GetMany(t => !t.DELETED);
-                var CaseSuffixResult = _CaseSuffixRepository.GetMany(t => !t.DELETED);
-                var CaseGrpIdentifierResult = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED && (t.IS_ACTIVE ?? true));
-                var OrderStatusREsult = _OrderStatusRepository.GetMany(t => !t.DELETED && (t.IS_ACTIVE ?? true));
+                var CaseTypeResult = _CaseTypeRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
+                var CaseDescplineResult = _CaseDesciplineRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
+                var CaseStatusResult = _CaseStatusRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
+                var CaseSuffixResult = _CaseSuffixRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
+                var CaseGrpIdentifierResult = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED && (t.IS_ACTIVE ?? true) && t.PRACTICE_CODE == practiceCode);
+                var OrderStatusREsult = _OrderStatusRepository.GetMany(t => !t.DELETED && (t.IS_ACTIVE ?? true) && t.PRACTICE_CODE == practiceCode);
 
-                var CaseRefSourceResult = _CaseSourceofRefRepository.GetMany(t => !t.DELETED);
+                var CaseRefSourceResult = _CaseSourceofRefRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
                 var WorkOrderResult = _WorkOrderQueueRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode && t.PATIENT_ACCOUNT == _patient_Account);
-                var StatusOfCall = _CallStatusRepository.GetMany(t => !t.DELETED);
-                var StatusOfCare = _StatusofCareRepository.GetMany(t => !t.DELETED);
-                var CallResult = _CallResultRepository.GetMany(t => !t.DELETED);
+                var StatusOfCall = _CallStatusRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
+                var StatusOfCare = _StatusofCareRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
+                var CallResult = _CallResultRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
                 var PatientData = _PatientRepository.GetSingle(t => !(t.DELETED ?? false) && t.Practice_Code == practiceCode && t.Patient_Account == _patient_Account);
-                var CallType = _CallTypeRepository.GetMany(t => !t.DELETED);
+                var CallType = _CallTypeRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
 
 
                 var CaseTreatmentTeamList = _CaseTreatmentTeamRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode && t.PATIENT_ACCOUNT.ToString() == patient_Account);
@@ -1377,13 +1377,13 @@ namespace FOX.BusinessOperations.CaseServices
             {
                 if (profile.isTalkRehab)
                 {
-                    res1 = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED);
-                    res = _CaseSourceofRefRepository.GetMany(t => !t.DELETED);
+                    res1 = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
+                    res = _CaseSourceofRefRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
                 }
                 else
                 {
-                    res1 = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
-                    res = _CaseSourceofRefRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
+                    res1 = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED);
+                    res = _CaseSourceofRefRepository.GetMany(t => !t.DELETED);
                 }
 
                 if (res.Any())

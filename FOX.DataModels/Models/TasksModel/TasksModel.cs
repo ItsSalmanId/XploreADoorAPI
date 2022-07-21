@@ -137,7 +137,7 @@ namespace FOX.DataModels.Models.TasksModel
         [Key]
         public int TASK_SUB_TYPE_ID { get; set; }
         public Nullable<long> PRACTICE_CODE { get; set; }
-        public int TASK_TYPE_ID { get; set; }
+        public int? TASK_TYPE_ID { get; set; }
         public string NAME { get; set; }
         public string DESCRIPTION { get; set; }
         public string CREATED_BY { get; set; }
