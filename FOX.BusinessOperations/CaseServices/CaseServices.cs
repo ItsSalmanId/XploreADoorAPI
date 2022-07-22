@@ -1375,16 +1375,19 @@ namespace FOX.BusinessOperations.CaseServices
             List<FOX_TBL_GROUP_IDENTIFIER> res1 = new List<FOX_TBL_GROUP_IDENTIFIER>();
             try
             {
-                if (profile.isTalkRehab)
-                {
-                    res1 = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
-                    res = _CaseSourceofRefRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
-                }
-                else
-                {
-                    res1 = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED);
-                    res = _CaseSourceofRefRepository.GetMany(t => !t.DELETED);
-                }
+                //if (profile.isTalkRehab)
+                //{
+                //    res1 = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED);
+                //    res = _CaseSourceofRefRepository.GetMany(t => !t.DELETED);
+                //}
+                //else
+                //{
+                //    res1 = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
+                //    res = _CaseSourceofRefRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
+
+                //}
+                res1 = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
+                res = _CaseSourceofRefRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
 
                 if (res.Any())
                 {
