@@ -33,14 +33,15 @@ namespace FOX.BusinessOperations.PatientMaintenanceService.PatientInsuranceServi
 
         public int GetUnmappedInsurancesCount(UserProfile profile)
         {
-            if (profile.isTalkRehab)
-            {
-                return _foxInsurancePayorsRepository.GetMany(row => row.DELETED != true && (row.INSURANCE_ID ?? 0) == 0).Count;
-            }
-            else
-            {
-                return _foxInsurancePayorsRepository.GetMany(row => row.DELETED != true && row.PRACTICE_CODE == profile.PracticeCode && (row.INSURANCE_ID ?? 0) == 0).Count;
-            }
+            //if (profile.isTalkRehab)
+            //{
+            //    return _foxInsurancePayorsRepository.GetMany(row => row.DELETED != true && (row.INSURANCE_ID ?? 0) == 0).Count;
+            //}
+            //else
+            //{
+            //    return _foxInsurancePayorsRepository.GetMany(row => row.DELETED != true && row.PRACTICE_CODE == profile.PracticeCode && (row.INSURANCE_ID ?? 0) == 0).Count;
+            //}
+            return _foxInsurancePayorsRepository.GetMany(row => row.DELETED != true && row.PRACTICE_CODE == profile.PracticeCode && (row.INSURANCE_ID ?? 0) == 0).Count;
         }
 
         public List<FoxInsurancePayers> GetUnmappedInsurances(UnmappedInsuranceRequest unmappedInsuranceRequest, UserProfile profile)
