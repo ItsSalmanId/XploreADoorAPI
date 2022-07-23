@@ -500,15 +500,15 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
         {
             try
             {
-                var List = new List<TeamMemberNameModel>();
+                var list = new List<TeamMemberNameModel>();
                 if (!callScanrioID.Equals(null) && profile != null)
                 {
-                    var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
-                    var _callScanrioID = new SqlParameter { ParameterName = "CALL_SCANRIO_ID", SqlDbType = SqlDbType.BigInt, Value = callScanrioID };
-                    List = SpRepository<TeamMemberNameModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_TEAM_MEMBER_LIST  @PRACTICE_CODE, @CALL_SCANRIO_ID", PracticeCode, _callScanrioID);
-                    return List;
+                    var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                    var callID = new SqlParameter { ParameterName = "CALL_SCANRIO_ID", SqlDbType = SqlDbType.BigInt, Value = callScanrioID };
+                    list = SpRepository<TeamMemberNameModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_TEAM_MEMBER_LIST  @PRACTICE_CODE, @CALL_SCANRIO_ID", practiceCode, callID);
+                    return list;
                 }
-                return List;
+                return list;
             }
             catch (Exception ex)
             {

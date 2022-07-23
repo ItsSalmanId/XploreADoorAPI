@@ -27,7 +27,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         }
 
         [Test]
-        public void UpdateUserTeam_nullArguments_NotUpdateData()
+        public void UpdateUserTeam_NullArguments_NotUpdateData()
         {
             //Arrange
             userProfile.PracticeCode = 0;
@@ -47,7 +47,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         }
 
         [Test]
-        public void UpdateUserTeam_emptyModel_NotUpdateData()
+        public void UpdateUserTeam_EmptyModel_NotUpdateData()
         {
             //Arrange
             userProfile.PracticeCode = 123456;
@@ -67,7 +67,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         }
 
         [Test]
-        public void UpdateUserTeam_emptyUserProfile_NotUpdateData()
+        public void UpdateUserTeam_EmptyUserProfile_NotUpdateData()
         {
             //Arrange
             userProfile.PracticeCode = 0;
@@ -94,7 +94,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         }
 
         [Test]
-        public void UpdateUserTeam_passArguments_UpdateData()
+        public void UpdateUserTeam_PassArguments_UpdateData()
         {
             //Arrange
             userProfile.PracticeCode = 111363;
@@ -163,7 +163,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
 
         }
         [Test]
-        public void AddUserTeam_emptyModel_NotSaveData()
+        public void AddUserTeam_EmptyModel_NotSaveData()
         {
             //Arrange
             userProfile.PracticeCode = 1011163;
@@ -183,7 +183,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
 
         }
         [Test]
-        public void AddUserTeam_emptyProfile_NotSaveData()
+        public void AddUserTeam_EmptyProfile_NotSaveData()
         {
             //Arrange
             userProfile.PracticeCode = 0;
@@ -208,7 +208,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         }
 
         [Test]
-        public void GetTeamList_emptyArguments_NoReturnData()
+        public void GetTeamList_EmptyArguments_NoReturnData()
         {
             //Arrange
             userProfile.PracticeCode = 0;
@@ -226,11 +226,11 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             }
         }
         [Test]
-        public void GetTeamList_passArguments_ReturnData()
+        public void GetTeamList_PassArguments_ReturnData()
         {
             //Arrange
             userProfile.PracticeCode = 1011163;
-            roleID = "5483202";
+            roleID = "5483234";
             //Act
             var result = userManagementService.GetTeamList(roleID, userProfile);
             //Assert
@@ -244,7 +244,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             }
         }
         [Test]
-        public void GetTeamList_emptyRoleId_NoReturnData()
+        public void GetTeamList_EmptyRoleId_NoReturnData()
         {
             //Arrange
             userProfile.PracticeCode = 123;
@@ -262,7 +262,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             }
         }
         [Test]
-        public void GetTeamList_emptyUserProfile_NoReturnData()
+        public void GetTeamList_EmptyUserProfile_NoReturnData()
         {
             //Arrange
             userProfile.PracticeCode = 0;
