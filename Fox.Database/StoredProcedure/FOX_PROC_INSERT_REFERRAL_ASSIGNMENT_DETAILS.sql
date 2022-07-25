@@ -1,0 +1,46 @@
+IF (OBJECT_ID('FOX_PROC_INSERT_REFERRAL_ASSIGNMENT_DETAILS') IS NOT NULL ) DROP PROCEDURE FOX_PROC_INSERT_REFERRAL_ASSIGNMENT_DETAILS  
+GO 
+-- =============================================          
+-- Author:  <Muhammad Imran>          
+-- Create date: <11/08/2019>          
+-- Description: <Description,,>          
+-- =============================================          
+CREATE PROCEDURE FOX_PROC_INSERT_REFERRAL_ASSIGNMENT_DETAILS         
+ @ID BIGINT NULL,        
+ @WORK_ID BIGINT NULL,          
+ @PRACTICE_CODE BIGINT NULL,          
+ @ASSIGNED_BY VARCHAR(70) NULL,          
+ @ASSIGNED_BY_DESIGNATION VARCHAR(100) NULL,          
+ @ASSIGNED_TO VARCHAR(70) NULL,          
+ @ASSIGNED_TO_DESIGNATION VARCHAR(100) NULL,          
+ @USER_NAME VARCHAR(70) NULL          
+AS          
+BEGIN          
+ --DECLARE @ID BIGINT          
+ --EXEC DBO.Web_PROC_GetColumnMaxID_Changed 'FOX_REFRRAL_ASSIGNMENT_ID', @ID output           
+          
+ IF (@ASSIGNED_BY ='')          
+ BEGIN          
+  SET @ASSIGNED_BY = NULL          
+ END          
+ IF (@ASSIGNED_BY_DESIGNATION ='')          
+ BEGIN          
+  SET @ASSIGNED_BY_DESIGNATION = NULL          
+ END          
+ IF (@ASSIGNED_TO ='')          
+ BEGIN          
+  SET @ASSIGNED_TO = NULL          
+ END          
+ IF (@ASSIGNED_TO_DESIGNATION ='')          
+ BEGIN          
+  SET @ASSIGNED_TO_DESIGNATION = NULL          
+ END           
+ INSERT INTO FOX_TBL_REFERRAL_ASSIGNMENT_DETAILS (FOX_REFRRAL_ASSIGNMENT_ID, WORK_ID, PRACTICE_CODE, ASSIGNED_BY, ASSIGNED_BY_DESIGNATION, ASSIGNED_TO, ASSIGNED_TO_DESIGNATION, ASSIGNED_TIME, CREATED_BY, CREATED_DATE, MODIFIED_BY, MODIFIED_DATE, DELETED) 
+
+  
+    
+      
+        
+         
+           VALUES (@ID, @WORK_ID, @PRACTICE_CODE, @ASSIGNED_BY, @ASSIGNED_BY_DESIGNATION, @ASSIGNED_TO, @ASSIGNED_TO_DESIGNATION, GETDATE(), @USER_NAME, GETDATE(), @USER_NAME, GETDATE(), CONVERT(BIT,0))          
+END   
