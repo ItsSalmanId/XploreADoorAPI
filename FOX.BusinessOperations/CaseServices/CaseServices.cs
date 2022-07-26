@@ -247,7 +247,8 @@ namespace FOX.BusinessOperations.CaseServices
                     }
                     caseObj.HOLD_TILL_DATE = model.HOLD_TILL_DATE;
                     if (!string.IsNullOrEmpty(model.HOLD_FOLLOW_UP_DATE_String))
-                        caseObj.HOLD_FOLLOW_UP_DATE = Convert.ToDateTime(model.HOLD_FOLLOW_UP_DATE_String);
+                        caseObj.ADMISSION_DATE = Convert.ToDateTime(model.HOLD_FOLLOW_UP_DATE_String);
+                    //caseObj.HOLD_FOLLOW_UP_DATE = Convert.ToDateTime(model.HOLD_FOLLOW_UP_DATE_String);
                     else if(string.IsNullOrEmpty(model.HOLD_FOLLOW_UP_DATE_String))
                     {
                         caseObj.HOLD_FOLLOW_UP_DATE = null;
