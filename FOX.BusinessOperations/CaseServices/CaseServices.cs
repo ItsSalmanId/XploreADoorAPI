@@ -200,14 +200,11 @@ namespace FOX.BusinessOperations.CaseServices
                     caseObj.TREATING_REGION_ID = model.TREATING_REGION_ID;
                     caseObj.IS_MANUAL_CHANGE_REGION = model.IS_MANUAL_CHANGE_REGION;
                     if (!string.IsNullOrEmpty(model.ADMISSION_DATE_String))
-                        caseObj.ADMISSION_DATE = Convert.ToDateTime(model.ADMISSION_DATE_String);
-                    //caseObj.ADMISSION_DATE = DateTime.ParseExact(model.ADMISSION_DATE_String, "dd/MM/yyyy", null);
+                        caseObj.ADMISSION_DATE = Convert.ToDateTime(model.ADMISSION_DATE_String); //edded by faheem
                     if (!string.IsNullOrEmpty(model.END_CARE_DATE_String))
-                        caseObj.ADMISSION_DATE = Convert.ToDateTime(model.END_CARE_DATE_String);
-                    //caseObj.END_CARE_DATE = DateTime.ParseExact(model.END_CARE_DATE_String, "dd/MM/yyyy", null);
+                        caseObj.END_CARE_DATE = Convert.ToDateTime(model.END_CARE_DATE_String); //edded by faheem
                     if (!string.IsNullOrEmpty(model.START_CARE_DATE_String))
-                        caseObj.ADMISSION_DATE = Convert.ToDateTime(model.ADMISSION_DATE_String);
-                    //caseObj.START_CARE_DATE = DateTime.ParseExact(model.START_CARE_DATE_String, "dd/MM/yyyy", null);
+                        caseObj.START_CARE_DATE = Convert.ToDateTime(model.START_CARE_DATE_String); //edded by faheem
                     caseObj.VISIT_PER_WEEK = model.VISIT_PER_WEEK;
                     caseObj.TOTAL_VISITS = null;
                     caseObj.WORK_ID = model.WORK_ID;
@@ -247,8 +244,7 @@ namespace FOX.BusinessOperations.CaseServices
                     }
                     caseObj.HOLD_TILL_DATE = model.HOLD_TILL_DATE;
                     if (!string.IsNullOrEmpty(model.HOLD_FOLLOW_UP_DATE_String))
-                        caseObj.ADMISSION_DATE = Convert.ToDateTime(model.HOLD_FOLLOW_UP_DATE_String);
-                    //caseObj.HOLD_FOLLOW_UP_DATE = Convert.ToDateTime(model.HOLD_FOLLOW_UP_DATE_String);
+                        caseObj.HOLD_FOLLOW_UP_DATE = Convert.ToDateTime(model.HOLD_FOLLOW_UP_DATE_String); //edded by faheem
                     else if(string.IsNullOrEmpty(model.HOLD_FOLLOW_UP_DATE_String))
                     {
                         caseObj.HOLD_FOLLOW_UP_DATE = null;
