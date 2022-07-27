@@ -251,7 +251,7 @@ namespace FOX.BusinessOperations.CommonService
                 if (originalQueueFiles == null)
                 {
                     //If Work Order files is deleted
-                   originalQueueFiles = _OriginalQueueFiles.Get(t => t.WORK_ID == workId && t.deleted && t.FILE_PATH1.Equals(filePath) && t.FILE_PATH.Equals(logoPath));
+                   originalQueueFiles = _OriginalQueueFiles.GetFirst(t => t.WORK_ID == workId && t.deleted && t.FILE_PATH1.Equals(filePath) && t.FILE_PATH.Equals(logoPath));
                     if (originalQueueFiles == null)
                     {
                         originalQueueFiles = new OriginalQueueFiles();
