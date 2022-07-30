@@ -374,8 +374,5 @@ namespace FOX.DataModels.Models.Security
         public long PHD_CALL_SCENARIO_ID { get; set; }
         public long ROLE_ID { get; set; }
         public long USER_ID { get; set; }
-
     }
-
-
 }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
 {
-    public class UserManagmentTestCases
+    public class UserManagementServiceTest
     {
         UserManagementService userManagementService = new UserManagementService();
         UserProfile userProfile = new UserProfile();

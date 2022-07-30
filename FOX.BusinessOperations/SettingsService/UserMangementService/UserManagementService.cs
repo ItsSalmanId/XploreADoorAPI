@@ -3360,7 +3360,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             var result = new List<GetTeamList>();
             try
             {
-                if (userID != null && profile.PracticeCode != 0)
+                if (!string.IsNullOrEmpty(userID) && profile.PracticeCode != 0)
                 {
                     SqlParameter practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
                     SqlParameter userId = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = userID };
