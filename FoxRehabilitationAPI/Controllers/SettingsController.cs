@@ -587,7 +587,7 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpPost]
         public HttpResponseMessage UpdateUserTeam(List<TeamAddUpdateModel> userTeamModel)
         {
-            if (userTeamModel.Count > 0)
+            if (userTeamModel != null && userTeamModel.Count > 0)
             {
                 return Request.CreateResponse(HttpStatusCode.OK, _userServices.UpdateUserTeam(userTeamModel, GetProfile()));
             }
