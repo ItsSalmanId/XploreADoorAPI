@@ -33,7 +33,7 @@ namespace FoxRehabilitationAPI.Controllers
             RequestUploadFilesModel requestUploadFilesAPIModel = new RequestUploadFilesModel()
             {
                 //AllowedFileExtensions = new List<string> { ".pdf", ".png", ".jpg", ".JPG", ".jpeg", ".tiff", ".tif", ".docx" },
-                AllowedFileExtensions = new List<string> { ".pdf", ".docx", ".jpg", ".jpeg", ".png", ".tif", ".gif", ".txt", ".tiff" },
+                AllowedFileExtensions = new List<string> { ".pdf", ".docx", ".jpg", ".jpeg", ".png", ".tif", ".gif", ".txt", ".tiff", ".bmp" },
                 UploadFilesPath = HttpContext.Current.Server.MapPath("~/" + FOX.BusinessOperations.CommonServices.AppConfiguration.RequestForOrderUploadImages),
                 Files = HttpContext.Current.Request.Files
             };
