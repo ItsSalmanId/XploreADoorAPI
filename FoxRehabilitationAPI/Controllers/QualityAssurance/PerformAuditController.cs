@@ -57,5 +57,20 @@ namespace FoxRehabilitationAPI.Controllers.Quality_Assurance
             var response = Request.CreateResponse(HttpStatusCode.OK, result);
             return response;
         }
+        [HttpPost]
+        public HttpResponseMessage GetTeamMemberName(long callScanrioID)
+        {
+            if(callScanrioID.ToString() != null)
+            {
+                var result = _PerformAuditService.GetTeamMemberName(callScanrioID, GetProfile());
+                var response = Request.CreateResponse(HttpStatusCode.OK, result);
+                return response;
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Call Scanrio ID is Empty");
+            }
+          
+        }
     }
 }
