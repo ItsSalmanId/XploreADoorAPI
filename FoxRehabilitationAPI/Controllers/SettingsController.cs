@@ -19,6 +19,10 @@ using System.Web;
 using System.Web.Http;
 using FOX.BusinessOperations.AccountService;
 using System.Collections.Generic;
+using System.Collections;
+using System.Linq;
+using Microsoft.ApplicationInsights.Extensibility.Implementation;
+using Newtonsoft.Json;
 
 namespace FoxRehabilitationAPI.Controllers
 {
@@ -55,7 +59,7 @@ namespace FoxRehabilitationAPI.Controllers
             bool canUpdateUser = _userServices.CanUserUpdateUser(profile);
             if (userToUpdate == null && !_accountServices.CheckIfEmailAlreadyInUse(new EmailExist() { EMAIL = user.EMAIL }))
             {
-                string password = HttpUtility.UrlDecode( user.PASSWORD);
+                string password = HttpUtility.UrlDecode(user.PASSWORD);
 
                 user.USER_ID = Helper.getMaximumId("USER_ID");
                 user.USER_NAME = $"{user.LAST_NAME.Trim()}_{user.USER_ID}";
@@ -79,7 +83,7 @@ namespace FoxRehabilitationAPI.Controllers
                 //    _userServicess.AddUpdateReferralSourceInfo(user.USER_NAME, profile);
 
                 //}
-                return Request.CreateResponse(HttpStatusCode.OK, profile);
+                return Request.CreateResponse(HttpStatusCode.OK, user);
             }
             else
             {
@@ -393,7 +397,7 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpPost]
         public HttpResponseMessage GetGroupIdentifierList(GroupIdentifierSearch groupIdentifierSearch)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _facilityLocationService.GetGroupIdentifierList(groupIdentifierSearch,GetProfile().PracticeCode));
+            return Request.CreateResponse(HttpStatusCode.OK, _facilityLocationService.GetGroupIdentifierList(groupIdentifierSearch, GetProfile().PracticeCode));
         }
         [HttpPost]
         public HttpResponseMessage ExportToExcelGetGroupIdentifier(GroupIdentifierSearch groupIdentifierSearch)
@@ -506,7 +510,7 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage CheckisTalkrehab(string practiceCode)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _userServices.CheckisTalkrehab(practiceCode));
-        } 
+        }
         [HttpGet]
         [AllowAnonymous]
         public HttpResponseMessage GetTalkrehabDisabedModules()
@@ -552,6 +556,45 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage CheckActiveStatus()
         {
             return Request.CreateResponse(HttpStatusCode.OK, _userServices.CheckActiveStatus(GetProfile()));
+        }
+
+        [HttpPost]
+        public HttpResponseMessage AddUserTeam(List<TeamAddUpdateModel> userTeamModel)
+        {
+            if (userTeamModel.Count > 0)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _userServices.AddUserTeam(userTeamModel, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "User List is Empty");
+            }
+        }
+
+        [HttpGet]
+        public HttpResponseMessage GetTeamList(string roleID)
+        {
+            if (!string.IsNullOrEmpty(roleID))
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _userServices.GetTeamList(roleID, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Role ID is Empty");
+            }
+        }
+
+        [HttpPost]
+        public HttpResponseMessage UpdateUserTeam(List<TeamAddUpdateModel> userTeamModel)
+        {
+            if (userTeamModel != null && userTeamModel.Count > 0)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _userServices.UpdateUserTeam(userTeamModel, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "User List is Empty");
+            }
         }
     }
 }

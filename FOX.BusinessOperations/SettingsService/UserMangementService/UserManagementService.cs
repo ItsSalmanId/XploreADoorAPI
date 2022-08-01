@@ -2516,6 +2516,15 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
 
         public bool UpdateUser(User userToUpdate, dynamic user, UserProfile profile, bool canUpdateUsers)
         {
+            //selective team member for updating pervious teams
+            if (user.ROLE_ID != 0 && userToUpdate.ROLE_ID != 0 && user.ROLE_ID != userToUpdate.ROLE_ID)
+            {
+                if (user.ROLE_NAME.ToString() == "SUPERVISOR")
+                {
+                    SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(userToUpdate.USER_ID) };
+                    SpRepository<UserTeamModel>.GetListWithStoreProcedure(@"exec FOX_PROC_UPDATE_USER_TEAM_DETAILS @USER_ID", userID);
+                }
+            }
             //if (string.IsNullOrWhiteSpace(user.SecurityStamp))
             //{
             //    userToUpdate.SecurityStamp = "EF7A457F-BD28-45C2-AD12-4AD93BEE540A";
@@ -3317,6 +3326,78 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             else
             {
                 return true;
+            }
+        }
+        //  this function ADD User Teams 
+        public bool AddUserTeam(List<TeamAddUpdateModel> userTeamModel, UserProfile profile)
+        {
+            try
+            {
+                if (userTeamModel != null && userTeamModel.Count != 0 && profile.PracticeCode != 0)
+                {
+                    foreach (TeamAddUpdateModel userTeam in userTeamModel)
+                    {
+                        SqlParameter userTeamID = new SqlParameter { ParameterName = "USER_TEAM_ID", SqlDbType = SqlDbType.BigInt, Value = Helper.getMaximumId("USER_TEAM_ID") };
+                        SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(userTeam.USER_ID) };
+                        SqlParameter phdCallScenareioID = new SqlParameter { ParameterName = "PHD_CALL_SCENARIO_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(userTeam.PHD_CALL_SCENARIO_ID) };
+                        SqlParameter practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                        SqlParameter counter = new SqlParameter { ParameterName = "COUNTER", SqlDbType = SqlDbType.BigInt, Value = 0 };
+                        SqlParameter isDeleted = new SqlParameter { ParameterName = "FILTER", SqlDbType = SqlDbType.Bit, Value = Convert.ToInt64(userTeam.DELETED) };
+                        SpRepository<UserTeamModel>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_USER_TEAM @USER_TEAM_ID, @USER_ID, @PHD_CALL_SCENARIO_ID ,@PRACTICE_CODE,@COUNTER,@FILTER", userTeamID, userID, phdCallScenareioID, practiceCode, counter, isDeleted);
+                    }
+                    return true;
+                }
+                return false;
+            }
+                catch (Exception ex)
+            {
+               throw ex;
+            }
+        }
+        //  this function get team list 
+        public List<GetTeamList> GetTeamList(string userID, UserProfile profile)
+        {
+            var result = new List<GetTeamList>();
+            try
+            {
+                if (!string.IsNullOrEmpty(userID) && profile.PracticeCode != 0)
+                {
+                    SqlParameter practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                    SqlParameter userId = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = userID };
+                    result = SpRepository<GetTeamList>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PRACTICE_TEAM @PRACTICE_CODE, @USER_ID", practiceCode, userId);
+                    return result;
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        //  this function Update User Teams 
+        public bool UpdateUserTeam(List<TeamAddUpdateModel> userTeamModel, UserProfile profile)
+        {
+            try
+            {
+                if (userTeamModel != null && userTeamModel.Count != 0 && profile.PracticeCode != 0)
+                {
+                    foreach (TeamAddUpdateModel userTeam in userTeamModel)
+                    {
+                        SqlParameter userTeamID = new SqlParameter { ParameterName = "USER_TEAM_ID", SqlDbType = SqlDbType.BigInt, Value = Helper.getMaximumId("USER_TEAM_ID") };
+                        SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(userTeam.USER_ID) };
+                        SqlParameter phdCallScenareioID = new SqlParameter { ParameterName = "PHD_CALL_SCENARIO_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(userTeam.PHD_CALL_SCENARIO_ID) };
+                        SqlParameter practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                        SqlParameter counter = new SqlParameter { ParameterName = "COUNTER", SqlDbType = SqlDbType.BigInt, Value = 0 };
+                        SqlParameter isDeleted = new SqlParameter { ParameterName = "FILTER", SqlDbType = SqlDbType.Bit, Value = Convert.ToInt64(userTeam.DELETED) };
+                        SpRepository<UserTeamModel>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_USER_TEAM @USER_TEAM_ID, @USER_ID, @PHD_CALL_SCENARIO_ID ,@PRACTICE_CODE,@COUNTER,@FILTER", userTeamID, userID, phdCallScenareioID, practiceCode, counter, isDeleted);
+                    }
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
     }
