@@ -3083,14 +3083,14 @@ namespace FOX.BusinessOperations.PatientServices
         public List<ContactType> GetAllPatientContactTypes(UserProfile profile)
         {
             List<ContactType> conTypes = new List<ContactType>();
-            if (profile.isTalkRehab)
-            {
-                conTypes = _ContactTypeRepository.GetMany(x => !(x.Deleted ?? false)).ToList();
-            }
-            else
-            {
+            //if (profile.isTalkRehab)
+            //{
+            //    conTypes = _ContactTypeRepository.GetMany(x => !(x.Deleted ?? false)).ToList();
+            //}
+            //else
+            //{
                 conTypes = _ContactTypeRepository.GetMany(x => !(x.Deleted ?? false) && x.Practice_Code == profile.PracticeCode).ToList();
-            }
+           // }
 
             if (conTypes.Any())
             {
