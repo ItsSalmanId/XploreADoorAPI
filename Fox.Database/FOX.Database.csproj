@@ -97,8 +97,10 @@
     <Content Include="StoredProcedure\FOX_PROC_AUDTIT_SCORES_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_AUTHENTICATE_USER.sql" />
     <Content Include="StoredProcedure\FOX_PROC_CHANGE_STATUS.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_CHECK_DATE_AN_TASK.sql" />
     <Content Include="StoredProcedure\FOX_PROC_CHECK_DUPLICATE_PATIENT.sql" />
     <Content Include="StoredProcedure\FOX_PROC_CHECK_EXPIRED_TOKEN.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_CHECK_HIGH_BALANCE_OF_PATIENT.sql" />
     <Content Include="StoredProcedure\FOX_PROC_CHECK_REFERRAL_MARK_COMPLETED.sql" />
     <Content Include="StoredProcedure\FOX_PROC_CREATED_TASK_TYPE_DATA_ALTERNATIVE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DASHBOARD_AVERAGE_TREND.sql" />
@@ -109,6 +111,7 @@
     <Content Include="StoredProcedure\FOX_PROC_DELETE_REC_FROM_MTBC_CREDENTIALS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GENERATE_INSERT_TOKEN.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GETMAXCOLUMNID.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_ACTIVE_CATEGORY_DESCRIPTION_CREDENTIAL.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_ACTIVE_INDEXERS_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_ACTIVE_LOCATION_BY_LOCID_FOR_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_ADVANCED_EXPORT_REGIONS.sql" />
@@ -132,6 +135,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_AUDITOR_NAME_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_AUTO_INDEXING_SERCVICE_CONFIG.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_AUTO_INDEXING_SERVICE_LAST_EXECUTION_DATE.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_AUTO_PHR_PATIENT_INVITE_EMAILS_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_AUTO_RECONCILIATION_CP.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_BEST_TIME_TO_CALL.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_CALL_HANDLING_DEFAULT_VALUES.sql" />
@@ -161,6 +165,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_DOCUMENT_TYPE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_DOCUMENT_TYPE_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_DUPLICATE_REFERRAL.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_EMAIL.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_EMAIL_EMERGENCY_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_EMPLOYERS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_FACILITY_BY_ID.sql" />
@@ -177,6 +182,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_IDENTIFIER.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_IDENTIFIERS_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_IDENTIFIER_LIST.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_INCOMMING_CALL_NO_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_INDEXED_QUEUE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_INDEXER.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_INDEXERS.sql" />
@@ -260,6 +266,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_PRACTICE_ORGANIZATION.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PRACTICE_ORGANIZATION_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PRACTICE_ROLE.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_PRACTICE_TEAM.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PRACTICE_USERS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PRIVATE_HOMES_BY_STATE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PROCEDURES_BY_WORKID_FOR_SERVICE.sql" />
@@ -336,6 +343,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_SPECIFIC_ROLE_BY_ROLE_NAME.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SSCM_CASE_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_STATUS_COUNTERS.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_STUDENT_PLACEMENT_MENTOR_EMAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SUBSCRIBERS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SUPERVISOR.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SUPERVISORS_FOR_DROPDOWN.sql" />
@@ -365,12 +373,15 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_TASK_SUB_TYPE_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TASK_TASK_SUB_TYPE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TASK_TYPES.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_TASK_TYPE_AND_SEND_TO_ID.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_TEAM_MEMBER_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TOTAL_PAGES.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TREATMENTLOCATION_BY_ZIP.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TYPE_NAMES_FOR_DASHBOARD.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_UNASSIGNED_QUEUE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_UNASSIGNED_REFERRALS_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_UNMAPPED_CALLS.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_UNMAPPED_INCOMING_NUMBER.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_UNMAPPED_INSURANCES_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_UNPAID_INSURANCE_CLAIMS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_UPDATE_AUTO_RECONCILIATION_CP.sql" />
@@ -394,9 +405,12 @@
     <Content Include="StoredProcedure\FOX_PROC_INSERT_AVAYA_CALL_RECORD.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_CLIENT_EXPERIENCE_SERVICE_LOG.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_DUPLICATE_CALL_RECORD.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_INSERT_DUPLICATE_CALL_RECORDING_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_EMAIL_LOG_OF_AM_NOTIFICATION_FOR_SERVICE.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_INSERT_HBR_TASK_SERVICE_LOG.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_INTERFACE_DATA.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_LOG.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_INSERT_NOT_FOUND_AVAYA_CALL_RECORDINGS_NUMBER.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_ORIGNAL_QUEUE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_ORIGNAL_QUEUE_ADDITIONAL_INFO.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_ORIGNAL_QUEUE_HISTORY.sql" />
@@ -415,8 +429,10 @@
     <Content Include="StoredProcedure\FOX_PROC_INSERT_UPDATE_DIAGNOSIS_INFO.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_UPDATE_NOTES_HISTORY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_UPDATE_SPECIALITY_PROGRAM.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_INSERT_USER_TEAM.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_WORK_FILES_FROM_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_WORK_QUEUE_FROM_SERVICE.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_MARK_INDEXERS_INACTIVE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_PATIENT_SEARCH_ORDER.sql" />
     <Content Include="StoredProcedure\FOX_PROC_REMOVE_REFERRAL_REGION_COUNTY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_REPORT_REFERRAL_LIST.sql" />
@@ -427,6 +443,7 @@
     <Content Include="StoredProcedure\FOX_PROC_UPDATE_ACTIVE_INACTIVE_REGION.sql" />
     <Content Include="StoredProcedure\FOX_PROC_UPDATE_ACTIVE_INDEXER.sql" />
     <Content Include="StoredProcedure\FOX_PROC_UPDATE_AUTO_INDEXING_SERVICE_LAST_EXECUTION_DATE.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_UPDATE_AVAYA_CALL_RECORDING_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_UPDATE_DOCUMENT_TYPE_BY_WORK_ID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_UPDATE_FOX_PHD_CALL_FROM_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_UPDATE_FOX_PHD_CALL_FROM_SERVICE_EMPTY.sql" />
@@ -436,6 +453,7 @@
     <Content Include="StoredProcedure\FOX_PROC_UPDATE_PHD_CALL_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_UPDATE_SURVEY_SERVICE_LAST_EXECUTION_DATE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_UPDATE_TOKEN.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_UPDATE_USER_TEAM_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_UPDATE_WORK_QUEUE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_UPDTAE_PATIENT_INFO.sql" />
     <Content Include="StoredProcedure\FOX_PROC_UPDTAE_PATIENT_SURVEY.sql" />
@@ -451,6 +469,8 @@
     <Content Include="StoredProcedure\GET_NON_HOLD_ISSUE_LIST.sql" />
     <Content Include="StoredProcedure\GET_OPEN_ISSUE_LIST.sql" />
     <Content Include="StoredProcedure\SYNCHED_FAILED_PATIENT_RETRY.sql" />
+    <Content Include="StoredProcedure\UPDATE_CURRENT_FOLDER.sql" />
+    <Content Include="StoredProcedure\UPDATE_FILE_INITIAL_SIZE.sql" />
     <Content Include="StoredProcedure\WEB_GETMAXCOLUMNID.sql" />
     <Content Include="StoredProcedure\WEB_PROC_ADI_VALIDATEUSERIP.sql" />
     <Content Include="StoredProcedure\WEB_PROC_GETCOUNTRYLONG.sql" />
@@ -460,6 +480,7 @@
     <Content Include="Tables\FOX_TBL_ACTIVE_INDEXER_HISTORY.sql" />
     <Content Include="Tables\FOX_TBL_ACTIVE_INDEXER_LOGS.sql" />
     <Content Include="Tables\FOX_TBL_ACTIVE_LOCATIONS.sql" />
+    <Content Include="Tables\FOX_TBL_ADD_HBR_TASK_LOGS.sql" />
     <Content Include="Tables\FOX_TBL_ADJUSTMENT_AMOUNT.sql" />
     <Content Include="Tables\FOX_TBL_ADJUSTMENT_CLAIM_STATUS.sql" />
     <Content Include="Tables\FOX_TBL_ADJUSTMENT_LOGS.sql" />
@@ -651,6 +672,7 @@
     <Content Include="Tables\FOX_TBL_USER_GROUP.sql" />
     <Content Include="Tables\FOX_TBL_USER_RIGHTS.sql" />
     <Content Include="Tables\FOX_TBL_USER_RIGHTS_TYPE.sql" />
+    <Content Include="Tables\FOX_TBL_USER_TEAMS.sql" />
     <Content Include="Tables\FOX_TBL_VISIT_QOUTA_PER_WEEK.sql" />
     <Content Include="Tables\FOX_TBL_VISIT_TYPE.sql" />
     <Content Include="Tables\FOX_TBL_WORK_ORDER_ADDTIONAL_INFO.sql" />
