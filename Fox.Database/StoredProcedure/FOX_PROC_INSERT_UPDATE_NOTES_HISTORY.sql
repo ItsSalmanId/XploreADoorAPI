@@ -1,0 +1,35 @@
+IF (OBJECT_ID('FOX_PROC_INSERT_UPDATE_NOTES_HISTORY') IS NOT NULL ) DROP PROCEDURE FOX_PROC_INSERT_UPDATE_NOTES_HISTORY  
+GO 
+-- =============================================        
+-- Author:  <Muhammad Imran>        
+-- Create date: <09/26/2019>        
+-- Description: <Description,,>        
+-- =============================================          
+CREATE PROCEDURE FOX_PROC_INSERT_UPDATE_NOTES_HISTORY    
+ @NOTE_ID BIGINT NULL,    
+ @WORK_ID BIGINT NULL,    
+ @PRACTICE_CODE BIGINT NULL,    
+ @NOTE_DESC VARCHAR(MAX) NULL,    
+ @USER_NAME VARCHAR(70)  NULL  
+AS        
+BEGIN        
+ -- SET NOCOUNT ON added to prevent extra result sets from        
+ IF EXISTS(SELECT TOP 1 * FROM FOX_TBL_NOTES_HISTORY WHERE NOTE_ID = @NOTE_ID AND ISNULL(DELETED,0) = 0)    
+ BEGIN    
+  UPDATE FOX_TBL_NOTES_HISTORY    
+   SET WORK_ID = @WORK_ID  ,    
+   PRACTICE_CODE = @PRACTICE_CODE,    
+   NOTE_DESC = @NOTE_DESC,    
+   MODIFIED_BY = @USER_NAME,    
+   MODIFIED_DATE = GETDATE()    
+  WHERE NOTE_ID = @NOTE_ID    
+    
+ END    
+ ELSE    
+ BEGIN    
+  DECLARE @ID   BIGINT        
+  EXEC DBO.Web_PROC_GetColumnMaxID_Changed 'NOTE_ID', @ID output     
+  INSERT INTO FOX_TBL_NOTES_HISTORY (NOTE_ID, WORK_ID, PRACTICE_CODE, NOTE_DESC, CREATED_BY, CREATED_DATE, MODIFIED_BY, MODIFIED_DATE, DELETED)    
+        VALUES(@ID, @WORK_ID, @PRACTICE_CODE, @NOTE_DESC, @USER_NAME, GETDATE(), @USER_NAME, GETDATE(), 0)    
+ END    
+END   

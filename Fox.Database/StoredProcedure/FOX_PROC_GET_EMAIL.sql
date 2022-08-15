@@ -1,0 +1,20 @@
+IF (OBJECT_ID('FOX_PROC_GET_EMAIL') IS NOT NULL ) DROP PROCEDURE FOX_PROC_GET_EMAIL  
+GO   
+-- =============================================      
+-- Author:  <Author,Abdur Rafey>      
+-- Create date: <Create Date,07/05/2019>      
+-- DESCRIPTION: <GET EMAIL>      
+  
+--[FOX_PROC_GET_EMAIL] '1163TESTING',1011163  
+  
+CREATE PROCEDURE [dbo].[FOX_PROC_GET_EMAIL]  
+(@USER_NAME VARCHAR(20),   
+@PRACTICE_CODE BIGINT)  
+AS  
+     BEGIN  
+        SELECT EMAIL FROM FOX_TBL_APPLICATION_USER   
+  WHERE USER_NAME = @USER_NAME  
+  AND DELETED = 0  
+  AND PRACTICE_CODE = @PRACTICE_CODE   
+     END;  
+  

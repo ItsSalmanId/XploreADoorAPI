@@ -1,0 +1,60 @@
+IF (OBJECT_ID('FOX_PROC_GET_CALL_HANDLING_DEFAULT_VALUES') IS NOT NULL ) DROP PROCEDURE FOX_PROC_GET_CALL_HANDLING_DEFAULT_VALUES 
+GO
+-----------------------------------------Alter Procedure---------------------------------------------
+--FOX_PROC_GET_CALL_HANDLING_DEFAULT_VALUES  1012714, ''  
+--FOX_PROC_GET_CALL_HANDLING_DEFAULT_VALUES  1012714, ''    
+CREATE PROCEDURE [dbo].[FOX_PROC_GET_CALL_HANDLING_DEFAULT_VALUES]   
+        
+        
+(@PRACTICE_CODE BIGINT,        
+@SEARCH_TEXT  VARCHAR(100) )         
+-- Role_id = 605161  
+AS        
+BEGIN   
+declare   
+ --@PRACTICE_CODE BIGINT = 1012714,  
+ -- @SEARCH_TEXT  VARCHAR(100) = 'honey',  
+  @ROLE_ID VARCHAR(50) = NULL;     
+select u.USER_ID, u.USER_NAME,    
+    
+   
+ CONCAT(UPPER(LEFT(U.FIRST_NAME,1))+LOWER(SUBSTRING(U.FIRST_NAME,2,LEN(U.FIRST_NAME))) ,' ',UPPER(LEFT(U.LAST_NAME,1))+LOWER(SUBSTRING(U.LAST_NAME,2,LEN(U.LAST_NAME)))) AS [CALLER_NAME],    
+    
+ CLH.PHD_CALL_SCENARIO_ID,clh.MODIFIED_BY, clh.MODIFIED_DATE        
+ from FOX_TBL_APPLICATION_USER AS U        
+left join FOX_TBL_DEFAULT_CALL_HANDLING_VALUES as CLH        
+ON U.USER_ID =CLH.USER_ID        
+where (U.USER_NAME in (select distinct CREATED_BY from FOX_TBL_PHD_CALL_DETAILS where DELETED = 0 and practice_code = @PRACTICE_CODE))   
+  
+and U.DELETED = 0        
+AND U.PRACTICE_CODE = @PRACTICE_CODE  
+AND  
+(  
+U.FIRST_NAME LIKE  '%' + @SEARCH_TEXT + '%'      
+ OR U.LAST_NAME LIKE  '%' + @SEARCH_TEXT + '%'    
+ )  
+
+union
+
+select u.USER_ID, u.USER_NAME,    
+    
+   
+ CONCAT(UPPER(LEFT(U.FIRST_NAME,1))+LOWER(SUBSTRING(U.FIRST_NAME,2,LEN(U.FIRST_NAME))) ,' ',UPPER(LEFT(U.LAST_NAME,1))+LOWER(SUBSTRING(U.LAST_NAME,2,LEN(U.LAST_NAME)))) AS [CALLER_NAME],    
+    
+ CLH.PHD_CALL_SCENARIO_ID,clh.MODIFIED_BY, clh.MODIFIED_DATE        
+ from FOX_TBL_APPLICATION_USER AS U        
+left join FOX_TBL_DEFAULT_CALL_HANDLING_VALUES as CLH        
+ON U.USER_ID =CLH.USER_ID        
+where (   
+ U.ROLE_ID =(Select role_id from fox_tbl_role where ROLE_NAME ='Feedback Caller' and practice_code = @PRACTICE_CODE and deleted = 0))   
+  
+and U.DELETED = 0        
+AND U.PRACTICE_CODE = @PRACTICE_CODE
+AND  
+(  
+U.FIRST_NAME LIKE  '%' + @SEARCH_TEXT + '%'      
+ OR U.LAST_NAME LIKE  '%' + @SEARCH_TEXT + '%'    
+ )
+END    
+  
+     

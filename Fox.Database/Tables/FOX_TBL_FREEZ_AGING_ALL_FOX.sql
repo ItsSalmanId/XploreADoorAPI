@@ -1,0 +1,64 @@
+USE [MIS_DB]
+GO
+
+/****** Object:  Table [dbo].[FOX_TBL_FREEZ_AGING_ALL_FOX]    Script Date: 7/21/2022 8:56:50 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+CREATE TABLE [dbo].[FOX_TBL_FREEZ_AGING_ALL_FOX](
+	[PRACTICE_CODE] [int] NOT NULL,
+	[CLAIM_NO] [bigint] NOT NULL,
+	[DOS] [date] NULL,
+	[DOE] [date] NULL,
+	[BILL_DATE] [date] NULL,
+	[FINANCIAL_CLASS] [varchar](300) NULL,
+	[FC_CODE] [varchar](50) NOT NULL,
+	[LOCATION_NAME] [varchar](200) NULL,
+	[STATE] [varchar](2) NULL,
+	[FACILITY_NAME] [varchar](100) NULL,
+	[FACILITY_CODE] [varchar](10) NULL,
+	[PROVIDER_NAME] [varchar](201) NULL,
+	[AGING_DAYS] [int] NULL,
+	[INSURANCE_NAME] [varchar](200) NULL,
+	[REFERRAL_REGION_NAME] [varchar](30) NULL,
+	[PATIENT_ACCOUNT] [bigint] NOT NULL,
+	[PATIENT_NAME] [varchar](8000) NULL,
+	[0-30] [money] NULL,
+	[31-60] [money] NULL,
+	[61-90] [money] NULL,
+	[91-120] [money] NULL,
+	[121-150] [money] NULL,
+	[151-270] [money] NULL,
+	[271-365] [money] NULL,
+	[365+] [money] NULL,
+	[PAID-0-30] [money] NULL,
+	[PAID-31-60] [money] NULL,
+	[PAID-61-90] [money] NULL,
+	[PAID-91-120] [money] NULL,
+	[PAID-121-150] [money] NULL,
+	[PAID-151-270] [money] NULL,
+	[PAID-271-365] [money] NULL,
+	[PAID-365+] [money] NULL,
+	[AMOUNT_ADJUSTED-0-30] [money] NULL,
+	[AMOUNT_ADJUSTED-31-60] [money] NULL,
+	[AMOUNT_ADJUSTED-61-90] [money] NULL,
+	[AMOUNT_ADJUSTED-91-120] [money] NULL,
+	[AMOUNT_ADJUSTED-121-150] [money] NULL,
+	[AMOUNT_ADJUSTED-151-270] [money] NULL,
+	[AMOUNT_ADJUSTED-271-365] [money] NULL,
+	[AMOUNT_ADJUSTED-365+] [money] NULL,
+	[CLAIM_CHARGES_ID] [varchar](1) NOT NULL
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+

@@ -1,0 +1,23 @@
+IF (OBJECT_ID('FOX_PROC_GET_CORRECTED_CLAIM_LOG') IS NOT NULL ) DROP PROCEDURE FOX_PROC_GET_CORRECTED_CLAIM_LOG 
+GO    
+-- =============================================        
+-- AUTHOR:  <DEVELOPER, JOHAR>        
+-- CREATE DATE: <CREATE DATE, 09/24/2018>        
+-- DESCRIPTION: <CORRECTED CLAIM LOG; LIST OF FOX_PROC_GET_CORRECTED_CLAIM_LOG LOG>                
+CREATE PROCEDURE [dbo].[FOX_PROC_GET_CORRECTED_CLAIM_LOG] --1011163, 548160      
+(        
+ @PRACTICE_CODE BIGINT,        
+ @CORRECTED_CLAIM_ID BIGINT        
+)        
+AS        
+BEGIN        
+        
+ SELECT *      
+ FROM  FOX_TBL_CORRECTED_CLAIM_LOG  WHERE  CORRECTED_CLAIM_ID = @CORRECTED_CLAIM_ID    
+   AND PRACTICE_CODE = @PRACTICE_CODE         
+   ORDER BY CREATED_DATE DESC        
+    
+END      
+   
+-- =============================================        
+  
