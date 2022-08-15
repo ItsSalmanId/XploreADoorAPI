@@ -1,0 +1,12 @@
+https://mhealth.mtbc.com/fox_test/api/ADLogin/GetADUserV2  Used to login Active Directory
+mhealth.mtbc.com/Fox/api/User/GetLatLong?Address=    Get Latitude and Longitude
+mhealth.mtbc.com/Fox/api/Fox/GetAccessToken Get access token
+us-street.api.smartystreets.com/street-address   
+http://10.10.30.47:8010/Service.svc Used for Eligibility check
+http://api.rpxfax.com/softlinx/replixfax/wsapi For send Fax
+http://ip-api.com/xml/ Check user IP Details from where user login
+https://npiregistry.cms.hhs.gov/api/?number=     To get user details by NPI
+erx.mtbc.com/ACU-WebAPI/api/FoxSurveyCalls/MakeCall/    Used to dial a call
+us-street.api.smartystreets.com/street-address    Used to get zip city state with 9 digits zip code and other information related to zip code
+https://mhealth.mtbc.com/fox/api/GuestLogin/Send_Notification     Used to send notification to guest users
+https://phr.foxrehab.org/FOXPHR/VerifyID?info=    Redirect to PHR Portal
