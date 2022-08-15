@@ -199,12 +199,12 @@ namespace FOX.BusinessOperations.CaseServices
                     caseObj.POS_ID = model.POS_ID;
                     caseObj.TREATING_REGION_ID = model.TREATING_REGION_ID;
                     caseObj.IS_MANUAL_CHANGE_REGION = model.IS_MANUAL_CHANGE_REGION;
-                    if (!string.IsNullOrEmpty(model.ADMISSION_DATE_String))    
-                        caseObj.ADMISSION_DATE = DateTime.ParseExact(model.ADMISSION_DATE_String, "dd/MM/yyyy", null);
+                    if (!string.IsNullOrEmpty(model.ADMISSION_DATE_String))
+                        caseObj.ADMISSION_DATE = Convert.ToDateTime(model.ADMISSION_DATE_String); //edded by faheem
                     if (!string.IsNullOrEmpty(model.END_CARE_DATE_String))
-                        caseObj.END_CARE_DATE = DateTime.ParseExact(model.END_CARE_DATE_String, "dd/MM/yyyy", null);
+                        caseObj.END_CARE_DATE = Convert.ToDateTime(model.END_CARE_DATE_String); //edded by faheem
                     if (!string.IsNullOrEmpty(model.START_CARE_DATE_String))
-                        caseObj.START_CARE_DATE = DateTime.ParseExact(model.START_CARE_DATE_String, "dd/MM/yyyy", null);
+                        caseObj.START_CARE_DATE = Convert.ToDateTime(model.START_CARE_DATE_String); //edded by faheem
                     caseObj.VISIT_PER_WEEK = model.VISIT_PER_WEEK;
                     caseObj.TOTAL_VISITS = null;
                     caseObj.WORK_ID = model.WORK_ID;
@@ -244,7 +244,7 @@ namespace FOX.BusinessOperations.CaseServices
                     }
                     caseObj.HOLD_TILL_DATE = model.HOLD_TILL_DATE;
                     if (!string.IsNullOrEmpty(model.HOLD_FOLLOW_UP_DATE_String))
-                        caseObj.HOLD_FOLLOW_UP_DATE = Convert.ToDateTime(model.HOLD_FOLLOW_UP_DATE_String);
+                        caseObj.HOLD_FOLLOW_UP_DATE = Convert.ToDateTime(model.HOLD_FOLLOW_UP_DATE_String); //edded by faheem
                     else if(string.IsNullOrEmpty(model.HOLD_FOLLOW_UP_DATE_String))
                     {
                         caseObj.HOLD_FOLLOW_UP_DATE = null;
@@ -1056,26 +1056,26 @@ namespace FOX.BusinessOperations.CaseServices
                         {
                             if (rec.CERTIFYING_REF_SOURCE_ID == 0 || string.IsNullOrEmpty(rec.CERTIFYING_REF_SOURCE_ID.ToString()))
                             {
-                                var referralsource = _SourceRepository.GetFirst(r => r.SOURCE_ID == rec.ORDERING_REF_SOURCE_ID && r.DELETED == false);
+                                var referralsource = _SourceRepository.GetFirst(r => r.SOURCE_ID == rec.ORDERING_REF_SOURCE_ID && r.DELETED == false && r.PRACTICE_CODE == practiceCode);
                                 rec.ObjReferralSource = referralsource;
                             }
                         }
                     }
                 }
-                var CaseTypeResult = _CaseTypeRepository.GetMany(t => !t.DELETED);
-                var CaseDescplineResult = _CaseDesciplineRepository.GetMany(t => !t.DELETED);
-                var CaseStatusResult = _CaseStatusRepository.GetMany(t => !t.DELETED);
-                var CaseSuffixResult = _CaseSuffixRepository.GetMany(t => !t.DELETED);
-                var CaseGrpIdentifierResult = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED && (t.IS_ACTIVE ?? true));
-                var OrderStatusREsult = _OrderStatusRepository.GetMany(t => !t.DELETED && (t.IS_ACTIVE ?? true));
+                var CaseTypeResult = _CaseTypeRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
+                var CaseDescplineResult = _CaseDesciplineRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
+                var CaseStatusResult = _CaseStatusRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
+                var CaseSuffixResult = _CaseSuffixRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
+                var CaseGrpIdentifierResult = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED && (t.IS_ACTIVE ?? true) && t.PRACTICE_CODE == practiceCode);
+                var OrderStatusREsult = _OrderStatusRepository.GetMany(t => !t.DELETED && (t.IS_ACTIVE ?? true) && t.PRACTICE_CODE == practiceCode);
 
-                var CaseRefSourceResult = _CaseSourceofRefRepository.GetMany(t => !t.DELETED);
+                var CaseRefSourceResult = _CaseSourceofRefRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
                 var WorkOrderResult = _WorkOrderQueueRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode && t.PATIENT_ACCOUNT == _patient_Account);
-                var StatusOfCall = _CallStatusRepository.GetMany(t => !t.DELETED);
-                var StatusOfCare = _StatusofCareRepository.GetMany(t => !t.DELETED);
-                var CallResult = _CallResultRepository.GetMany(t => !t.DELETED);
+                var StatusOfCall = _CallStatusRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
+                var StatusOfCare = _StatusofCareRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
+                var CallResult = _CallResultRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
                 var PatientData = _PatientRepository.GetSingle(t => !(t.DELETED ?? false) && t.Practice_Code == practiceCode && t.Patient_Account == _patient_Account);
-                var CallType = _CallTypeRepository.GetMany(t => !t.DELETED);
+                var CallType = _CallTypeRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
 
 
                 var CaseTreatmentTeamList = _CaseTreatmentTeamRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode && t.PATIENT_ACCOUNT.ToString() == patient_Account);
@@ -1375,16 +1375,19 @@ namespace FOX.BusinessOperations.CaseServices
             List<FOX_TBL_GROUP_IDENTIFIER> res1 = new List<FOX_TBL_GROUP_IDENTIFIER>();
             try
             {
-                if (profile.isTalkRehab)
-                {
-                    res1 = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED);
-                    res = _CaseSourceofRefRepository.GetMany(t => !t.DELETED);
-                }
-                else
-                {
-                    res1 = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
-                    res = _CaseSourceofRefRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
-                }
+                //if (profile.isTalkRehab)
+                //{
+                //    res1 = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED);
+                //    res = _CaseSourceofRefRepository.GetMany(t => !t.DELETED);
+                //}
+                //else
+                //{
+                //    res1 = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
+                //    res = _CaseSourceofRefRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
+
+                //}
+                res1 = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
+                res = _CaseSourceofRefRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode);
 
                 if (res.Any())
                 {
@@ -1641,29 +1644,29 @@ namespace FOX.BusinessOperations.CaseServices
                 List<FOX_TBL_NOTES_TYPE> notesTypeList = new List<FOX_TBL_NOTES_TYPE>();
                 List<NotesViewModel> notesList = new List<NotesViewModel>();
                 List<FOX_TBL_ORDER_INFORMATION> OrderInfoResult = new List<FOX_TBL_ORDER_INFORMATION>();
-                if (profile.isTalkRehab)
-                {
-                    notesTypeList = _NotesTypeRepository.GetMany(x => !x.DELETED);
-                    notesList = _NotesRepository.GetMany(x => x.CASE_ID == obj.CASE_ID && !x.DELETED).
-                                         Join(
-                                             notesTypeList,
-                                             n => n.NOTES_TYPE_ID,
-                                             nt => nt.NOTES_TYPE_ID,
-                                             (n, nt) => new NotesViewModel
-                                             {
-                                                 NOTES_ID = n.NOTES_ID,
-                                                 NOTES_TYPE_ID = nt.NOTES_TYPE_ID,
-                                                 NotesType = nt.NAME,
-                                                 Notes = n.NOTES
-                                             }
-                                        ).ToList();
+                //if (profile.isTalkRehab)
+                //{
+                //    notesTypeList = _NotesTypeRepository.GetMany(x => !x.DELETED);
+                //    notesList = _NotesRepository.GetMany(x => x.CASE_ID == obj.CASE_ID && !x.DELETED).
+                //                         Join(
+                //                             notesTypeList,
+                //                             n => n.NOTES_TYPE_ID,
+                //                             nt => nt.NOTES_TYPE_ID,
+                //                             (n, nt) => new NotesViewModel
+                //                             {
+                //                                 NOTES_ID = n.NOTES_ID,
+                //                                 NOTES_TYPE_ID = nt.NOTES_TYPE_ID,
+                //                                 NotesType = nt.NAME,
+                //                                 Notes = n.NOTES
+                //                             }
+                //                        ).ToList();
 
-                    var pRACTICE_CODE = new SqlParameter("@PRACTICE_CODE", SqlDbType.VarChar) { Value = profile.PracticeCode };
-                    var cASE_ID = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = obj.CASE_ID };
-                    OrderInfoResult = SpRepository<FOX_TBL_ORDER_INFORMATION>.GetListWithStoreProcedure(@"exec [FOX_GET_ORDER_INFORMATION] @PRACTICE_CODE,@CASE_ID", pRACTICE_CODE, cASE_ID).ToList();  // TO BE CHANGE
-                }
-                else
-                {
+                //    var pRACTICE_CODE = new SqlParameter("@PRACTICE_CODE", SqlDbType.VarChar) { Value = profile.PracticeCode };
+                //    var cASE_ID = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = obj.CASE_ID };
+                //    OrderInfoResult = SpRepository<FOX_TBL_ORDER_INFORMATION>.GetListWithStoreProcedure(@"exec [FOX_GET_ORDER_INFORMATION] @PRACTICE_CODE,@CASE_ID", pRACTICE_CODE, cASE_ID).ToList();  // TO BE CHANGE
+                //}
+                //else
+                //{
                     notesTypeList = _NotesTypeRepository.GetMany(x => x.PRACTICE_CODE == profile.PracticeCode && !x.DELETED);
                     notesList = _NotesRepository.GetMany(x => x.CASE_ID == obj.CASE_ID && x.PRACTICE_CODE == profile.PracticeCode && !x.DELETED).
                                          Join(
@@ -1682,7 +1685,7 @@ namespace FOX.BusinessOperations.CaseServices
                     var pRACTICE_CODE = new SqlParameter("@PRACTICE_CODE", SqlDbType.VarChar) { Value = profile.PracticeCode };
                     var cASE_ID = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = obj.CASE_ID };
                     OrderInfoResult = SpRepository<FOX_TBL_ORDER_INFORMATION>.GetListWithStoreProcedure(@"exec [FOX_GET_ORDER_INFORMATION] @PRACTICE_CODE,@CASE_ID", pRACTICE_CODE, cASE_ID).ToList();
-                }
+                //}
                 return new OrderInformationAndNotes
                 {
                     Message = "Get Order Information and Cases Notes Successfully.",

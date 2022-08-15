@@ -299,15 +299,15 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetFinancialClassDDValues()
         {
             var profile = GetProfile();
-            if (profile.isTalkRehab)
-            {
-                return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetFinancialClassDDValues(profile.PracticeCode.ToString()));
-              
-            }
-            else
-            {
-                return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetFinancialClassDDValues("0"));
-            }
+            //if (profile.isTalkRehab)
+            //{
+            //    return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetFinancialClassDDValues("0"));
+            //}
+            //else
+            //{
+            //    return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetFinancialClassDDValues(profile.PracticeCode.ToString()));
+            //}
+            return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetFinancialClassDDValues(profile.PracticeCode.ToString()));
         }
 
         [HttpPost]

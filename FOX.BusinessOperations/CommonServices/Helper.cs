@@ -180,7 +180,14 @@ namespace FOX.BusinessOperations.CommonService
                 msg.Body = bodyHTML;
                 msg.IsBodyHtml = true;
                 msg.Priority = MailPriority.Normal;
-                client.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["FoxRehabUserName"], WebConfigurationManager.AppSettings["FoxRehabPassword"]);
+                if (profile.isTalkRehab)
+                {
+                    client.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["NoReplyUserName"], WebConfigurationManager.AppSettings["NoReplyPassword"]);
+                }
+                else
+                {
+                    client.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["FoxRehabUserName"], WebConfigurationManager.AppSettings["FoxRehabPassword"]);
+                }
                 client.Send(msg);
                 LogEmailData(messageTo,"Success",profile,CC,BCC, senderEmail, null, WORK_ID, null);
                 return true;
@@ -224,7 +231,14 @@ namespace FOX.BusinessOperations.CommonService
                                 if (File.Exists(filePth)) { mail.Attachments.Add(new Attachment(filePth)); }
                             }
                         }
-                        smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["FoxRehabUserName"], WebConfigurationManager.AppSettings["FoxRehabPassword"]);
+                        if (profile.isTalkRehab)
+                        {
+                            smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["NoReplyUserName"], WebConfigurationManager.AppSettings["NoReplyPassword"]);
+                        }
+                        else
+                        {
+                            smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["FoxRehabUserName"], WebConfigurationManager.AppSettings["FoxRehabPassword"]);
+                        }
                         smtp.Send(mail);
                         LogEmailData(to,"Success",profile,CC,BCC, from,null,WORK_ID, AttachmentFilePaths);
                         IsMailSent = true;

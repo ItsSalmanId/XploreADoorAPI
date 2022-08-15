@@ -2062,14 +2062,14 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     result.fileSize = Convert.ToDecimal(string.Format("{0:0.00}", size / 1048576));
                     var usr = _User.GetByID(Profile.userID);
                     FOX_TBL_SENDER_TYPE senderType = new FOX_TBL_SENDER_TYPE();
-                    if (Profile.isTalkRehab)
-                    {
-                        senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && !t.DELETED);
-                    }
-                    else
-                    {
+                    //if (Profile.isTalkRehab)
+                    //{
+                    //    senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && !t.DELETED);
+                    //}
+                    //else
+                    //{
                         senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == usr.PRACTICE_CODE) && !t.DELETED);
-                    }
+                   // }
                     result.SENDER_TYPE = senderType != null ? !string.IsNullOrWhiteSpace(senderType.SENDER_TYPE_NAME) ? senderType.SENDER_TYPE_NAME : "" : "";
                     return result;
 
