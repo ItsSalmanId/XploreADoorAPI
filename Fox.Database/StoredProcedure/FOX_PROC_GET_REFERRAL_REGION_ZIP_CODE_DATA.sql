@@ -1,0 +1,23 @@
+IF (OBJECT_ID('FOX_PROC_GET_REFERRAL_REGION_ZIP_CODE_DATA') IS NOT NULL ) DROP PROCEDURE FOX_PROC_GET_REFERRAL_REGION_ZIP_CODE_DATA  
+GO   
+--****************************************************************************15************************************************************************************   
+--EXEC FOX_PROC_GET_REFERRAL_REGION_ZIP_CODE_DATA 1011163,'maui county','hi'      
+CREATE PROCEDURE FOX_PROC_GET_REFERRAL_REGION_ZIP_CODE_DATA   
+@PRACTICE_CODE BIGINT,       
+@COUNTY VARCHAR(50),  
+@STATE  VARCHAR(5)  
+AS      
+     BEGIN      
+         SELECT  
+   RR.REFERRAL_REGION_ID   
+   ,RR.REFERRAL_REGION_CODE  
+   ,RR.REFERRAL_REGION_NAME,ZSC.*      
+         FROM FOX_TBL_ZIP_STATE_COUNTY ZSC  
+   LEFT JOIN FOX_TBL_REFERRAL_REGION RR ON RR.REFERRAL_REGION_ID = ZSC.REFERRAL_REGION_ID  
+             AND RR.PRACTICE_CODE = @PRACTICE_CODE  
+             AND ISNULL(RR.DELETED, 0) =  0  
+         WHERE ZSC.PRACTICE_CODE = @PRACTICE_CODE      
+                   AND ZSC.STATE = @STATE      
+                   AND ZSC.COUNTY = @COUNTY  
+       AND ISNULL(ZSC.DELETED, 0) =  0  
+     END; 

@@ -1,0 +1,23 @@
+IF (OBJECT_ID('FOX_PROC_GET_PROVIDERS_NAME_LIST') IS NOT NULL ) DROP PROCEDURE FOX_PROC_GET_PROVIDERS_NAME_LIST  
+GO
+CREATE PROCEDURE [dbo].[FOX_PROC_GET_PROVIDERS_NAME_LIST] --1011163, 'LILLY JACKSON'    
+	(
+	@PRACTICE_CODE BIGINT
+	,@SEARCH_TEXT VARCHAR(30)
+	)
+AS
+BEGIN
+	SELECT *
+	FROM (
+		SELECT Provider_Code
+			,Practice_Code
+			,Provid_FName
+			,Provid_MName
+			,Provid_LName
+			,(Provid_FName + ' ' + Provid_LName) AS Provid_Name
+		FROM PROVIDERS
+		) AS p
+	WHERE Practice_Code = @PRACTICE_CODE
+		AND (Provid_Name LIKE '%' + @SEARCH_TEXT + '%')
+END
+

@@ -982,14 +982,14 @@ namespace FOX.BusinessOperations.SettingsService.FacilityLocationService
         }
         public List<IdentifierType> GetIdentifierTypes(UserProfile profile)
         {
-            if (profile.isTalkRehab)
-            {
-                return _identifierTypeRepository.GetMany(t => !t.DELETED).OrderBy(t => t.NAME).ToList();
-            }
-            else
-            {
+            //if (profile.isTalkRehab)
+            //{
+            //    return _identifierTypeRepository.GetMany(t => !t.DELETED).OrderBy(t => t.NAME).ToList();
+            //}
+            //else
+            //{
                 return _identifierTypeRepository.GetMany(t => t.PRACTICE_CODE == profile.PracticeCode && !t.DELETED).OrderBy(t => t.NAME).ToList();
-            }
+           // }
         }
     }
    

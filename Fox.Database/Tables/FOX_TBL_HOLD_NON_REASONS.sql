@@ -1,0 +1,33 @@
+USE [MIS_DB]
+GO
+
+/****** Object:  Table [dbo].[FOX_TBL_HOLD_NON_REASONS]    Script Date: 7/21/2022 9:52:36 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+CREATE TABLE [dbo].[FOX_TBL_HOLD_NON_REASONS](
+	[HOLD_NON_REASONS_ID] [int] NOT NULL,
+	[PRACTICE_CODE] [bigint] NULL,
+	[TYPE] [varchar](50) NULL,
+	[NAME] [varchar](200) NULL,
+	[DESCRIPTION] [varchar](200) NULL,
+	[CREATED_BY] [varchar](70) NOT NULL,
+	[CREATED_DATE] [datetime] NOT NULL,
+	[MODIFIED_BY] [varchar](70) NOT NULL,
+	[MODIFIED_DATE] [datetime] NOT NULL,
+	[DELETED] [bit] NOT NULL,
+	[RT_CODE] [varchar](50) NULL
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+

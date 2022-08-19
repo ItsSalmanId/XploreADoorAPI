@@ -1,0 +1,26 @@
+IF (OBJECT_ID('FOX_PROC_GET_RANDOM_PATIENT_SURVEY') IS NOT NULL ) DROP PROCEDURE FOX_PROC_GET_RANDOM_PATIENT_SURVEY  
+GO
+-- =============================================              
+-- AUTHOR:  <DEVELOPER, YOUSAF>              
+-- CREATE DATE: <CREATE DATE, 06/23/2018>              
+-- DESCRIPTION: <GET RANDOM PATIENT SURVEY>              
+              
+--[DBO].[FOX_PROC_GET_RANDOM_PATIENT_SURVEY] 1012714 ,'07/20/2021','08/20/2021'              
+--[DBO].[FOX_PROC_GET_RANDOM_PATIENT_SURVEY] 1012714 ,'07/21/2021','08/20/2021'              
+CREATE PROCEDURE [DBO].[FOX_PROC_GET_RANDOM_PATIENT_SURVEY] --1011163              
+ @PRACTICE_CODE BIGINT,              
+ @DATE_FROM       DATETIME,                 
+    @DATE_TO         DATETIME              
+AS              
+BEGIN              
+ SELECT TOP 1  SURVEY_STATUS_CHILD, *              
+  ,CONVERT(INT, ROUND(DATEDIFF(hour, PATIENT_DATE_OF_BIRTH, GETDATE()) / 8766.0, 0)) AS PATIENT_AGE            
+ FROM FOX_TBL_PATIENT_SURVEY              
+ WHERE ISNULL(DELETED, 0) = 0              
+  AND ISNULL(IN_PROGRESS, 0) = 0              
+  AND PRACTICE_CODE = @PRACTICE_CODE              
+  --AND ISNULL(IS_SURVEYED, 0) = 0              
+  AND CONVERT(DATE, CREATED_DATE) BETWEEN CONVERT(DATE, @DATE_FROM) AND CONVERT(DATE, @DATE_TO)             
+  AND (SURVEY_STATUS_CHILD = 'Callback' or ISNULL(SURVEY_STATUS_CHILD,'') = '')            
+ ORDER BY NEWID()              
+END 
