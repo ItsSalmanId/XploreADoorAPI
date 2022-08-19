@@ -100,6 +100,26 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public long? FOLLOWED_SCRIPTED_SURVEY_TOTAL { get; set; }
         public long? FOLLOWED_CLOSING_SCRIPT_TOTAL { get; set; }
         public string SCORING_CRITERIA { get; set; }
+        public long? APPROPRIATE_GREETING { get; set; }
+        public long? APPROPRIATE_GREETING_TOTAL { get; set; }
+        public long? TONE_OF_PATIENT { get; set; }
+        public long? TONE_OF_PATIENT_TOTAL { get; set; }
+        public long? COMPASSION_AND_EMPATHY { get; set; }
+        public long? COMPASSION_AND_EMPATHY_TOTAL { get; set; }
+        public long? GRAMMAR_AND_PRONUNCIATION { get; set; }
+        public long? GRAMMAR_AND_PRONUNCIATION_TOTAL { get; set; }
+        public long? PATIENT_IDENTITY { get; set; }
+        public long? PATIENT_IDENTITY_TOTAL { get; set; }
+        public long? ANSWER_PATIENT_QUESTIONS { get; set; }
+        public long? ANSWER_PATIENT_QUESTIONS_TOTAL { get; set; }
+        public long? STRONG_PRODUCT_KNOWLEDGE { get; set; }
+        public long? STRONG_PRODUCT_KNOWLEDGE_TOTAL { get; set; }
+        public long? COMMUNICATE_INFORMATION { get; set; }
+        public long? COMMUNICATE_INFORMATION_TOTAL { get; set; }
+        public long? DOCUMENTATION_COMPLETED_COMMUNICATED { get; set; }
+        public long? DOCUMENTATION_COMPLETED_COMMUNICATED_TOTAL { get; set; }
+        public long? APPROPRIATE_CLOSING { get; set; }
+        public long? APPROPRIATE_CLOSING_TOTAL { get; set; }
     }
 
     //public class CallLogModel : BaseModel
