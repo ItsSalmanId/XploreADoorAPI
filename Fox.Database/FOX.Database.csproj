@@ -44,7 +44,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="TableScripts\" />
+    <Folder Include="DevScripts\DataModifications\" />
+    <Folder Include="DevScripts\TableModifications\" />
+    <Folder Include="SupportScripts\DataModifications\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Functions\F_SPLIT.sql" />
