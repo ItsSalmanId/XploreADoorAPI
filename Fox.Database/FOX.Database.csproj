@@ -43,12 +43,10 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="DevScripts\DataModifications\" />
-    <Folder Include="DevScripts\TableModifications\" />
-    <Folder Include="SupportScripts\DataModifications\" />
-  </ItemGroup>
-  <ItemGroup>
+    <Content Include="DevScripts\DataModifications\DataModifications.sql" />
+    <Content Include="DevScripts\TableModifications\TableModifications.sql" />
     <Content Include="Functions\F_SPLIT.sql" />
     <Content Include="Functions\SPLITSTRINGS_CTE.sql" />
     <Content Include="StoredProcedure\AF_PROC_GETINTERFAXDETAILS.sql" />
@@ -478,6 +476,7 @@
     <Content Include="StoredProcedure\WEB_PROC_GETCOUNTRYLONG.sql" />
     <Content Include="StoredProcedure\WEB_PROC_GETMAXID.sql" />
     <Content Include="StoredProcedure\WEB_PROC_ONLYISB_VALIDATEUSERIP.sql" />
+    <Content Include="SupportScripts\DataModifications\DataModifications.sql" />
     <Content Include="Tables\FOX_TBL_ACTIVE_INDEXER.sql" />
     <Content Include="Tables\FOX_TBL_ACTIVE_INDEXER_HISTORY.sql" />
     <Content Include="Tables\FOX_TBL_ACTIVE_INDEXER_LOGS.sql" />
