@@ -1644,29 +1644,29 @@ namespace FOX.BusinessOperations.CaseServices
                 List<FOX_TBL_NOTES_TYPE> notesTypeList = new List<FOX_TBL_NOTES_TYPE>();
                 List<NotesViewModel> notesList = new List<NotesViewModel>();
                 List<FOX_TBL_ORDER_INFORMATION> OrderInfoResult = new List<FOX_TBL_ORDER_INFORMATION>();
-                if (profile.isTalkRehab)
-                {
-                    notesTypeList = _NotesTypeRepository.GetMany(x => !x.DELETED);
-                    notesList = _NotesRepository.GetMany(x => x.CASE_ID == obj.CASE_ID && !x.DELETED).
-                                         Join(
-                                             notesTypeList,
-                                             n => n.NOTES_TYPE_ID,
-                                             nt => nt.NOTES_TYPE_ID,
-                                             (n, nt) => new NotesViewModel
-                                             {
-                                                 NOTES_ID = n.NOTES_ID,
-                                                 NOTES_TYPE_ID = nt.NOTES_TYPE_ID,
-                                                 NotesType = nt.NAME,
-                                                 Notes = n.NOTES
-                                             }
-                                        ).ToList();
+                //if (profile.isTalkRehab)
+                //{
+                //    notesTypeList = _NotesTypeRepository.GetMany(x => !x.DELETED);
+                //    notesList = _NotesRepository.GetMany(x => x.CASE_ID == obj.CASE_ID && !x.DELETED).
+                //                         Join(
+                //                             notesTypeList,
+                //                             n => n.NOTES_TYPE_ID,
+                //                             nt => nt.NOTES_TYPE_ID,
+                //                             (n, nt) => new NotesViewModel
+                //                             {
+                //                                 NOTES_ID = n.NOTES_ID,
+                //                                 NOTES_TYPE_ID = nt.NOTES_TYPE_ID,
+                //                                 NotesType = nt.NAME,
+                //                                 Notes = n.NOTES
+                //                             }
+                //                        ).ToList();
 
-                    var pRACTICE_CODE = new SqlParameter("@PRACTICE_CODE", SqlDbType.VarChar) { Value = profile.PracticeCode };
-                    var cASE_ID = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = obj.CASE_ID };
-                    OrderInfoResult = SpRepository<FOX_TBL_ORDER_INFORMATION>.GetListWithStoreProcedure(@"exec [FOX_GET_ORDER_INFORMATION] @PRACTICE_CODE,@CASE_ID", pRACTICE_CODE, cASE_ID).ToList();  // TO BE CHANGE
-                }
-                else
-                {
+                //    var pRACTICE_CODE = new SqlParameter("@PRACTICE_CODE", SqlDbType.VarChar) { Value = profile.PracticeCode };
+                //    var cASE_ID = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = obj.CASE_ID };
+                //    OrderInfoResult = SpRepository<FOX_TBL_ORDER_INFORMATION>.GetListWithStoreProcedure(@"exec [FOX_GET_ORDER_INFORMATION] @PRACTICE_CODE,@CASE_ID", pRACTICE_CODE, cASE_ID).ToList();  // TO BE CHANGE
+                //}
+                //else
+                //{
                     notesTypeList = _NotesTypeRepository.GetMany(x => x.PRACTICE_CODE == profile.PracticeCode && !x.DELETED);
                     notesList = _NotesRepository.GetMany(x => x.CASE_ID == obj.CASE_ID && x.PRACTICE_CODE == profile.PracticeCode && !x.DELETED).
                                          Join(
@@ -1685,7 +1685,7 @@ namespace FOX.BusinessOperations.CaseServices
                     var pRACTICE_CODE = new SqlParameter("@PRACTICE_CODE", SqlDbType.VarChar) { Value = profile.PracticeCode };
                     var cASE_ID = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = obj.CASE_ID };
                     OrderInfoResult = SpRepository<FOX_TBL_ORDER_INFORMATION>.GetListWithStoreProcedure(@"exec [FOX_GET_ORDER_INFORMATION] @PRACTICE_CODE,@CASE_ID", pRACTICE_CODE, cASE_ID).ToList();
-                }
+                //}
                 return new OrderInformationAndNotes
                 {
                     Message = "Get Order Information and Cases Notes Successfully.",

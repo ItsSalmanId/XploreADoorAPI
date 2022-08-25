@@ -1,0 +1,71 @@
+USE [MIS_DB]
+GO
+
+/****** Object:  Table [dbo].[FOX_TBL_FREEZ_AGING_DETAIL_CPT_WISE]    Script Date: 7/21/2022 8:57:44 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+CREATE TABLE [dbo].[FOX_TBL_FREEZ_AGING_DETAIL_CPT_WISE](
+	[CLAIM_CHARGES_ID] [int] NOT NULL,
+	[PRACTICE_CODE] [varchar](30) NULL,
+	[CLAIM_NO] [bigint] NULL,
+	[FINANCIAL_CLASS] [varchar](300) NULL,
+	[FC_CODE] [varchar](50) NULL,
+	[PAYER] [varchar](50) NULL,
+	[PATIENT] [varchar](100) NULL,
+	[PATIENT_ACCOUNT] [varchar](30) NULL,
+	[DATE_OF_SERVICE] [varchar](30) NULL,
+	[BILL_DATE] [smalldatetime] NULL,
+	[LOCATION_CODE] [nvarchar](255) NOT NULL,
+	[ATTENDING_PHYSICIAN] [bigint] NULL,
+	[BILLING_PHYSICIAN] [bigint] NULL,
+	[CODE] [varchar](15) NULL,
+	[BILLED_CHARGES] [money] NULL,
+	[EXPECTED_CHARGES] [money] NULL,
+	[PAID_TO_CHARGES] [money] NULL,
+	[ADJUSTED_TO_CHARGES] [money] NULL,
+	[LESS_THIRTY] [money] NULL,
+	[THIRTY_TO_SIXTY] [money] NULL,
+	[SIXTY_TO_NINTY] [money] NULL,
+	[NINTY_TO_ONEEIGHTY] [money] NULL,
+	[ONEEIGHTY_TO_TWOSEVENTY] [money] NULL,
+	[TWOSEVENTY_TO_THREESIXTYFIVE] [money] NULL,
+	[THREESIXTYFIVE_PLUS] [money] NULL,
+	[BALANCE] [money] NULL,
+	[BILLED_UNITS] [int] NULL,
+	[FOXUNITS] [varchar](4) NOT NULL,
+	[VISITS] [int] NULL,
+	[TOTAL_PATIENTS] [varchar](1) NOT NULL,
+	[NEW_PATIENTS] [varchar](1) NOT NULL,
+	[RETURNING_PATIENTS] [varchar](1) NOT NULL,
+	[AVG_CHARGE_PAT] [varchar](1) NOT NULL,
+	[AVG_PAID_PAT] [varchar](1) NOT NULL,
+	[RENDERING_PROVIDER] [varchar](10) NULL,
+	[BILLING_PROVIDER] [varchar](10) NULL,
+	[REGION_CODE] [varchar](30) NULL,
+	[REGION_NAME] [varchar](50) NULL,
+	[LOCATION] [nvarchar](255) NOT NULL,
+	[Location_Name] [varchar](200) NULL,
+	[POSTINGDATE] [smalldatetime] NULL,
+	[BC] [varchar](1) NOT NULL,
+	[LASTBILLED] [smalldatetime] NULL,
+	[LASTPAID] [date] NULL,
+	[DAYS] [int] NULL,
+	[BUCKET] [varchar](7) NULL,
+	[DOE] [date] NULL,
+	[ACTUAL_AMOUNT] [varchar](1) NOT NULL,
+	[ACTIVE_LOCATION_CODE] [varchar](10) NULL
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+

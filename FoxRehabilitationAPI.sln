@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoxRehabilitationAPI", "Fox
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoxRehabilitation.UnitTest", "FoxRehabilitation.UnitTest\FoxRehabilitation.UnitTest.csproj", "{86B3294C-9933-481F-AFE6-070C9808A7CC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FOX.Database", "Fox.Database\FOX.Database.csproj", "{CCEAC39C-4DED-4BE2-ABFE-83F9FC75DF59}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{86B3294C-9933-481F-AFE6-070C9808A7CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86B3294C-9933-481F-AFE6-070C9808A7CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86B3294C-9933-481F-AFE6-070C9808A7CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCEAC39C-4DED-4BE2-ABFE-83F9FC75DF59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCEAC39C-4DED-4BE2-ABFE-83F9FC75DF59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCEAC39C-4DED-4BE2-ABFE-83F9FC75DF59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCEAC39C-4DED-4BE2-ABFE-83F9FC75DF59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,33 @@
+USE [MIS_DB]
+GO
+
+/****** Object:  Table [dbo].[FOX_TBL_COUNTRY]    Script Date: 7/21/2022 9:48:08 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+CREATE TABLE [dbo].[FOX_TBL_COUNTRY](
+	[FOX_TBL_COUNTRY_ID] [bigint] NULL,
+	[CODE] [varchar](2) NULL,
+	[NAME] [varchar](50) NULL,
+	[DESCRIPTION] [varchar](50) NULL,
+	[CREATED_BY] [varchar](70) NOT NULL CONSTRAINT [DF_Table_1_Created_By1]  DEFAULT ('FOX TEAM'),
+	[CREATED_DATE] [datetime] NOT NULL CONSTRAINT [DF_Table_1_Created_On]  DEFAULT (getdate()),
+	[MODIFIED_BY] [varchar](70) NOT NULL CONSTRAINT [DF_Table_1_Modified_By]  DEFAULT ('FOX TEAM'),
+	[MODIFIED_DATE] [datetime] NOT NULL CONSTRAINT [DF_Table_1_Modified_On]  DEFAULT (getdate()),
+	[DELETED] [bit] NULL CONSTRAINT [DF_FOX_TBL_COUNTRY_DELETED]  DEFAULT ((0)),
+	[PRACTICE_CODE] [bigint] NULL,
+	[IS_ACTIVE] [bit] NULL DEFAULT ((0))
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+
