@@ -495,5 +495,25 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                 throw ex;
             }
         }
+        //  this function get team member name list on the bases of team ID
+        public List<TeamMemberNameModel> GetTeamMemberName(long callScanrioID, UserProfile profile)
+        {
+            try
+            {
+                var list = new List<TeamMemberNameModel>();
+                if (!callScanrioID.Equals(null) && profile != null)
+                {
+                    var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                    var callID = new SqlParameter { ParameterName = "CALL_SCANRIO_ID", SqlDbType = SqlDbType.BigInt, Value = callScanrioID };
+                    list = SpRepository<TeamMemberNameModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_TEAM_MEMBER_LIST  @PRACTICE_CODE, @CALL_SCANRIO_ID", practiceCode, callID);
+                    return list;
+                }
+                return list;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }
