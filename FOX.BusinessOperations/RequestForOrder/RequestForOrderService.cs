@@ -230,23 +230,34 @@ namespace FOX.BusinessOperations.RequestForOrder
                         }
                     }
 
-                    //var encryptedWorkId = StringCipher.Encrypt(requestSendEmailModel.WorkId.ToString());
+                    //var encryptedWorkId = StringCipher.Encrypt(requestSendEmailModel.WorkId.ToString()); talkRehabLogin
                     var encryptedWorkId = requestSendEmailModel.WorkId.ToString();
-                    string link = AppConfiguration.ClientURL + @"#/VerifyWorkOrder?value=" + HttpUtility.UrlEncode(encryptedWorkId);
+                    string link = "";
+                    if(Profile.isTalkRehab)
+                    {
+                        link = AppConfiguration.ClientURL + @"#/account/login?talkRehabEmail="+ Profile.PracticeCode;
+                    }
+                    else
+                    {
+                        link = AppConfiguration.ClientURL + @"#/VerifyWorkOrder?value=" + HttpUtility.UrlEncode(encryptedWorkId);
+                        link += "&name=" + requestSendEmailModel.EmailAddress;
+                    }
+                    
                     //if (!string.IsNullOrWhiteSpace(orderingRefSourceFullName))
                     //{
                     //    link += "&name=" + orderingRefSourceFullName;
                     //    link += "&name=" + requestSendEmailModel.EmailAddress;
                     //}
-                    link += "&name=" + requestSendEmailModel.EmailAddress;
+                    
                     string linkMessage = @"
                                 <p>Please <a href='" + link + @"'>click here for signing</a> to confirm that you have reviewed and are an agreement of this request.   Once you click, the document will electronically be signed by you with the current date and time.  Thank you for your confidence in our practice.
                                 ";
 
                     ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestSendEmailModel.AttachmentHTML, requestSendEmailModel.FileName.Replace(' ', '_'), "email", linkMessage);
                     AddHtmlToDB(requestSendEmailModel.WorkId, requestSendEmailModel.AttachmentHTML, Profile.UserName);
-                    if (responseHTMLToPDF != null && (responseHTMLToPDF?.Success ?? false))
-                    {
+                    //if (responseHTMLToPDF != null && (responseHTMLToPDF?.Success ?? false))
+                        if (true)
+                        {
                         //string attachmentPath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
                         string attachmentPath = "";
                         //For Live

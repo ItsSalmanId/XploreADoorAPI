@@ -154,6 +154,12 @@ namespace FOX.BusinessOperations.CommonService
             bodyHTML += body;
             bodyHTML += "</body>";
             SmtpClient client = new SmtpClient();
+
+            if(profile.isTalkRehab)
+            {
+                senderEmail = WebConfigurationManager.AppSettings["NoReplyUserName"].ToString();
+            }
+
             MailMessage msg = new MailMessage(senderEmail, messageTo);
             if (CC != null)
             {
