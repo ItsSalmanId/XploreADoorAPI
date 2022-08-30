@@ -1,0 +1,8 @@
+--------------------------------------------------------
+----- Folder Name: DevScripts > TableModifications
+----- File Name: TableModifications.sql	
+----- Created By: Muhammad Arslan Tufail
+----- Created Date: 08/25/2022
+----- Modified By: Muhammad Arslan Tufail
+----- Modified Date: 08/25/2022
+--------------------------------------------------------

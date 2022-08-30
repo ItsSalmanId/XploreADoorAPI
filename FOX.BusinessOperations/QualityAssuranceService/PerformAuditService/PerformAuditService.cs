@@ -254,6 +254,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                 Obj = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.PHD_CALL_ID == req.PHD_CALL_ID /* && x.AUDITOR_NAME == profile.UserName*/);
                 existingScores = _auditScoresRepository.GetFirst(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.PHD_CALL_ID == req.PHD_CALL_ID /* && x.AUDITOR_NAME == profile.UserName*/);
                 req.CALL_TYPE = "phd";
+                req.SCORING_CRITERIA = "new";
                 req.SURVEY_CALL_ID = null;
             }
             if (req.EDIT_AUDIT_REPORT)
@@ -282,10 +283,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                 existingScores.PRACTICE_CODE = profile.PracticeCode;
                 existingScores.AUDITOR_NAME = profile.UserName;
                 existingScores.GRADE = getGrade(req.TOTAL_POINTS);
-                if (req.CALL_TYPE == "survey")
-                {
-                    existingScores.SCORING_CRITERIA = "new";
-                }
+                existingScores.SCORING_CRITERIA = "new";              
                 existingScores.CREATED_BY = createdBy;
                 existingScores.CREATED_DATE = createdDate;
                 existingScores.MODIFIED_BY = profile.UserName;
