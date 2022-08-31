@@ -255,8 +255,7 @@ namespace FOX.BusinessOperations.RequestForOrder
 
                     ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestSendEmailModel.AttachmentHTML, requestSendEmailModel.FileName.Replace(' ', '_'), "email", linkMessage);
                     AddHtmlToDB(requestSendEmailModel.WorkId, requestSendEmailModel.AttachmentHTML, Profile.UserName);
-                    //if (responseHTMLToPDF != null && (responseHTMLToPDF?.Success ?? false))
-                        if (true)
+                    if (responseHTMLToPDF != null && (responseHTMLToPDF?.Success ?? false))
                         {
                         //string attachmentPath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
                         string attachmentPath = "";

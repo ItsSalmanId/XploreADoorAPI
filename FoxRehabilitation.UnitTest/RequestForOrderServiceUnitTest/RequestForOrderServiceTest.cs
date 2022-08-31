@@ -11,51 +11,62 @@ using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.RequestForOrderServiceUnitTest
 {
-    class RequestForOrderServiceTest
+    [TestFixture]
+    public class RequestForOrderServiceTest
     {
         private RequestForOrderService _requestForOrderService;
         private UserProfile _userProfile;
-        RequestSendEmailModel _requestSendEmailModel;
+        private RequestSendEmailModel _requestSendEmailModel;
+        private ResponseModel _result;
         [SetUp]
         public void Setup()
         {
             _requestForOrderService = new RequestForOrderService();
             _userProfile = new UserProfile();
+            _result = new ResponseModel();
         }
 
+        [Test]
+        public void SendEmail_CheckRehabUser_ResponseFalse()
+        {
+            //Arrange
+            _userProfile.PracticeCode = 5110459;
+            _userProfile.isTalkRehab = false;
+            _requestSendEmailModel.WorkId = 123;
+            _requestSendEmailModel.AttachmentHTML = "";
+            _requestSendEmailModel.EmailAddress = "faheemjaved@carecloud.com";
+
+            //Act            
+            _result = _requestForOrderService.SendEmail(_requestSendEmailModel, _userProfile);
+
+            //Assert
+            Assert.AreEqual(_result.Success,false);
+        }
 
         [Test]
-        public void SendEmailCheckSuccess()
+        public void SendEmail_CheckEmail_ResponseFalse()
         {
             //Arrange
             _userProfile.PracticeCode = 5110459;
             _userProfile.isTalkRehab = true;
-            RequestSendEmailModel userTeamModelobj = new RequestSendEmailModel();
-            userTeamModelobj.WorkId = 123;
-            userTeamModelobj.AttachmentHTML = "";
-            userTeamModelobj.EmailAddress = "faheemjaved@carecloud.com";
-            //Act
-            ResponseModel result = new ResponseModel();
-            result = _requestForOrderService.SendEmail(userTeamModelobj, _userProfile);
-            //Assert
-            Assert.AreEqual(result.Success,false);
-        }
+            _requestSendEmailModel.WorkId = 123;
+            _requestSendEmailModel.AttachmentHTML = "";
+            _requestSendEmailModel.EmailAddress = "";
 
-        [Test]
-        public void SendEmailCheckFailed()
-        {
-            //Arrange
-            _userProfile.PracticeCode = 5110459;
-            _userProfile.isTalkRehab = true;
-            RequestSendEmailModel userTeamModelobj = new RequestSendEmailModel();
-            userTeamModelobj.WorkId = 123;
-            userTeamModelobj.AttachmentHTML = "";
-            userTeamModelobj.EmailAddress = "";
             //Act
-            ResponseModel result = new ResponseModel();
-            result = _requestForOrderService.SendEmail(userTeamModelobj, _userProfile);
+            _result = _requestForOrderService.SendEmail(_requestSendEmailModel, _userProfile);
+
             //Assert
-            Assert.AreEqual(result.Success, false);
+            Assert.AreEqual(_result.Success, false);
+        }
+        [TearDown]
+        public void Teardown()
+        {
+            // Optionally dispose or cleanup objects
+            _requestForOrderService = null;
+            _userProfile = null;
+            _requestSendEmailModel = null;
+            _result = null;
         }
     }
 }
