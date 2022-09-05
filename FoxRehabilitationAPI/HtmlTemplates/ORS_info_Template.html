@@ -1,10 +1,11 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
+    <title>FOX Rehabilitation Portal</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
     <style>
         body, table, td {
-            font-family: 'Roboto' !important;
+            font-family: 'Roboto', sans-serif !important;
             margin: 0px;
             padding: 0px;
             border: none;
@@ -17,11 +18,19 @@
         p {
             color: #333;
             margin: 0px;
-            font-family: 'Roboto' !important;
+            font-family: 'Roboto' !important, sans-serif;
         }
 
         img {
             border: 0px;
+        }
+
+        .d-none{
+            display: none;
+        }
+
+        .text-center{
+            text-align: center;
         }
     </style>
 </head>
@@ -31,16 +40,28 @@
 
 
             <div class="encounter-print-body" id="PrintBody">
-                <table style="width:100%;">
+                <span id="mydesc" class="d-none">My Table</span>
+                <table style="width:100%;" aria-describedby="mydesc">
+                    <thead class="d-none">
+                        <tr>
+                            <th></th>
+                        </tr>
+                    </thead>
                     <tr>
                         <td>
-                            <table style="border-bottom:5px solid #e45e21;width:100%;">
+                            <table style="border-bottom:5px solid #e45e21;width:100%;" aria-describedby="mydesc">
+                                <thead class="d-none">
+                                    <tr>
+                                        <th></th>
+                                    </tr>
+                                </thead>
                                 <tbody>
+
                                     <tr style="font-size:13pt !important;">
-                                        <td width="14%" align="center">
+                                        <td style="width:14%" class="text-center">
                                             <img style="width: 100px;" src="https://fox.mtbc.com/assets/images/logo.png" alt="Logo Image" />
                                         </td>
-                                       
+
                                     </tr>
 
                                 </tbody>
@@ -52,20 +73,27 @@
                     </tr>
                     <tr>
                         <td>
-                            <table style="width:100%;">
+                            <span id="ors" class="d-none">My Table</span>
+                            <table style="width:100%;" aria-describedby="ors">
+                                <thead class="d-none">
+                                    <tr>
+                                        <th></th>
+                                    </tr>
+                                </thead>
                                 <tbody>
+
                                     <tr>
                                         <td>
-                                            <b>Ordering Referral Source Information:</b> <br /><br />
+                                            <strong>Ordering Referral Source Information:</strong> <br /><br />
 
-                                            <b>Provider Name:</b> [[provider_name]] <br />
+                                            <strong>Provider Name:</strong> [[provider_name]] <br />
 
-                                            <b>NPI: </b> [[provider_NPI]]<br />
+                                            <strong>NPI: </strong> [[provider_NPI]]<br />
 
-                                            <b>Phone:</b> [[provider_phone]]<br />
+                                            <strong>Phone:</strong> [[provider_phone]]<br />
 
-                                            <b>Fax:</b> [[provider_fax]]<br />
-                                       </td>
+                                            <strong>Fax:</strong> [[provider_fax]]<br />
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -78,8 +106,3 @@
 </body>
 
 </html>
-
-
-
-
-

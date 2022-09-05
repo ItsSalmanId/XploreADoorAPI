@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
-
+    <title>FOX Rehabilitation Portal</title>
     <!-- Roboto Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
 
@@ -18,11 +18,28 @@
         }
 
         table {
-            border-collapse: separate;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        th, td {
+            padding: 0;
         }
 
         .table-float table {
             float: left;
+        }
+
+        .text-center{
+            text-align: center;
+        }
+
+        .text-left{
+            text-align: left;
+        }
+
+        .text-right{
+            text-align: right;
         }
 
         p {
@@ -36,6 +53,10 @@
 
         .padding-15px {
             padding: 15px;
+        }
+
+        .d-none {
+            display: none;
         }
 
         @media screen and (max-width:740px) {
@@ -228,19 +249,31 @@
 
     <!-- 3 column layout with 10px spacing -->
 
-    <table class="table-main" style="width:720px;" cellpadding="0" cellspacing="0">
+    <table class="table-main" style="width:720px;">
+        <caption>  </caption>
+        <tr>
+            <th></th>
+        </tr>
         <tr>
             <td>
-                 
-                <table style="width:100%; padding:0px;background:#fff;" cellpadding="0" cellspacing="0">
+
+                <table style="width:100%; padding:0px;background:#fff;">
+                    <caption>  </caption>
+                    <tr>
+                        <th></th>
+                    </tr>
                     <tr>
                         <td style="height:15px;width:100%;"></td>
                     </tr>
                     <tr>
-                        <td align="center" style="padding: 0px 20px;">
-                            <table style="width:100%;margin:0 auto;background:#fff;" cellpadding="0" cellspacing="0">
+                        <td class="text-center" style="padding: 0px 20px;">
+                            <table style="width:100%;margin:0 auto;background:#fff;">
+                                <caption>  </caption>
                                 <tr>
-                                    <td align="left" style="color:#ff671f; font-size:18pt;">
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <td class="text-left" style="color:#ff671f; font-size:18pt;">
                                         Fox Patient Portal
                                     </td>
                                 </tr>
@@ -251,10 +284,14 @@
                         <td style="height:15px;width:100%;"></td>
                     </tr>
                     <tr>
-                        <td align="center" style="padding: 0px 20px;">
-                            <table style="width:100%;margin:0 auto;background:#fff;" cellpadding="0" cellspacing="0">
+                        <td class="text-center" style="padding: 0px 20px;">
+                            <table style="width:100%;margin:0 auto;background:#fff;">
+                                <caption>  </caption>
                                 <tr>
-                                    <td align="left" style="color:#fff">
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <td class="text-left" style="color:#fff">
                                         <img src="https://fox.mtbc.com/assets/images/email-logo.png" alt="Fox logo" />
                                     </td>
                                 </tr>
@@ -269,10 +306,18 @@
                     </tr>
                     <tr>
                         <td style="background:#fff;">
-                            <table style="width:100%;margin:0 auto;background:transparent;" cellpadding="0" cellspacing="0">
+                            <table style="width:100%;margin:0 auto;background:transparent;">
+                                <caption>  </caption>
+                                <tr>
+                                    <th></th>
+                                </tr>
                                 <tr>
                                     <td style="padding:0px 20px;">
-                                        <table style="width:100%;margin:0 auto;" cellpadding="0" cellspacing="0">
+                                        <table style="width:100%;margin:0 auto;">
+                                            <caption>  </caption>
+                                            <tr>
+                                                <th></th>
+                                            </tr>
                                             <tr>
                                                 <td style="width:100%;font-size:14px;">
                                                     Hi [[FIRST_NAME]] [[LAST_NAME]]
@@ -289,18 +334,23 @@
                     </tr>
                     <tr>
                         <td style="background:#fff;">
-                            <table style="width:100%;margin:0 auto;background:transparent;" cellpadding="0" cellspacing="0">
+                            <table style="width:100%;margin:0 auto;background:transparent;">
+                                <caption>   </caption>
+                                <caption>  </caption>
+                                <tr>
+                                    <th></th>
+                                </tr>
                                 <tr>
                                     <td style="padding:0px 20px;">
-                                        <table style="width:100%;margin:0 auto;" cellpadding="0" cellspacing="0">
+                                        <table style="width:100%;margin:0 auto;">
+                                            <caption>  </caption>
+                                            <tr>
+                                                <th></th>
+                                            </tr>
                                             <tr>
                                                 <td style="width:100%;font-size:14px;">
-                                                   <!--<b>*This is an automated email – Please do not reply.*</b>--><br />
                                                     <p>FOX REHABILITATION SERVICES, INC. would like to connect with you via the patient portal. The Fox Patient Portal provides updates and allows for convenient access to your healthcare information including paying your claims.</p><br />
                                                     <p>Click on the button below to create your account.</p>
-                                                    <!--<p>Your access PIN code is [[PIN_CODE]]. You will need this PIN to complete your account activation.</p><br />
-                                                    <p>Create an online patient profile by clicking on the link below:</p>-->
-
                                                 </td>
                                             </tr>
                                         </table>
@@ -313,15 +363,24 @@
                         <td style="height:15px;width:100%;"></td>
                     </tr>
                     <tr>
-                        <td align="center" style="padding: 0px 20px;">
-                            <table style="width:100%;margin:0 auto;background:#fff;" cellpadding="0" cellspacing="0">
+                        <td class="text-center" style="padding: 0px 20px;">
+                            <table style="width:100%;margin:0 auto;background:#fff;">
+                                <caption>  </caption>
                                 <tr>
-                                    <td align="left" style="padding: 0px;">
-                                        <table class="table-auto" style="border:none;height:30px;">
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <td class="text-left" style="padding: 0px;">
+                                        <table class="table-auto" style="border:none;height:30px;" aria-describedby="mydesc">
+                                            <thead class="d-none">
+                                                <tr>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
                                             <tbody>
                                                 <tr>
                                                     <td></td>
-                                                    <td align="center" style="background-color:#ff671f; border:1px solid #ff671f; vertical-align:middle; line-height:normal; padding:5px 15px 5px 15px;">
+                                                    <td class="text-center" style="background-color:#ff671f; border:1px solid #ff671f; vertical-align:middle; line-height:normal; padding:5px 15px 5px 15px;">
                                                         <a style="color:#fff; font-size:16px;text-decoration:none; outline:none;" target="_blank" href="[[Link]]">Create a free Fox Patient Portal Account</a>
                                                     </td>
                                                     <td></td>
@@ -336,32 +395,29 @@
                         </td>
                     </tr>
                     <tr>
-                        <td align="center" style="padding: 0px 20px;">
-                            <table style="width:100%;margin:0 auto;background:#fff;" cellpadding="0" cellspacing="0">
+                        <td class="text-center" style="padding: 0px 20px;">
+                            <table style="width:100%;margin:0 auto;background:#fff;">
+                                <caption>  </caption>
                                 <tr>
-                                    <td align="left" style="padding: 0px;">
-                                        <table class="table-auto" style="border:none;height:30px;">
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <td class="text-left" style="padding: 0px;">
+                                        <table class="table-auto" style="border:none;height:30px;" aria-describedby="mydesc">
+                                            <thead class="d-none">
+                                                <tr>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
                                             <tbody>
                                                 <tr>
                                                     <td></td>
                                                     <td style="width:100%;font-size:14px;">
-                                                       <!--<p>Use the PIN code below to activate your account</p> 
-                                                       <p>PIN Code: [[PIN_Code]]</p>
-                                                       <br />-->
-                                                       <!--<p>With your personalized Fox Client Portal account, you can conveniently</p>
-                                                        <br />-->
-                                                        <!--<ul style="margin-left:20px">
-                                                            <li>Access your medical history</li>
-                                                            <li>View and update your personal / demographic information</li>
-                                                            <li>View appointments</li>
-                                                            <li>View insurance claims</li>
-                                                            <li>Contact your physician FOMBUH, NINA</li>
-                                                        </ul>-->
                                                         <br />
                                                         <br />
                                                         <p>Need technical support? Contact us at (877) 215-3768 (Mon-Fri) from 8 A.M - 5 P.M EST.</p>
                                                         <br />
-                                                        <p><b>***This is an automated email - Please do not reply.***</b></p>
+                                                        <p><strong>***This is an automated email - Please do not reply.***</strong></p>
                                                     </td>
                                                     <td></td>
                                                 </tr>
@@ -377,13 +433,21 @@
                     </tr>
                     <tr>
                         <td style="height:15px;width:100%;"></td>
-                    </tr>                   
+                    </tr>
                     <tr>
                         <td style="background:#fff;">
-                            <table style="width:100%;margin:0 auto;background:transparent;" cellpadding="0" cellspacing="0">
+                            <table style="width:100%;margin:0 auto;background:transparent;">
+                                <caption>  </caption>
+                                <tr>
+                                    <th></th>
+                                </tr>
                                 <tr>
                                     <td style="padding:0px 20px;">
-                                        <table style="width:100%;margin:0 auto;" cellpadding="0" cellspacing="0">
+                                        <table style="width:100%;margin:0 auto;">
+                                            <caption>  </caption>
+                                            <tr>
+                                                <th></th>
+                                            </tr>
                                             <tr>
                                                 <td style="width:100%;font-size:14px;">
                                                     Regards,<br /><br />Fox Patient Portal Team<br /><br />
@@ -392,7 +456,7 @@
                                             <tr>
                                                 <td style="height:5px;width:100%;background-color:#ff671f; "></td>
                                             </tr>
-                                            
+
                                         </table>
                                     </td>
                                 </tr>
@@ -400,12 +464,6 @@
                         </td>
                     </tr>
                     <tr></tr>
-                    <!--<tr>
-                        <td style="text-align:center">For more details, please contact our support team</td>
-                    </tr>
-                    <tr>
-                        <td style="text-align:center"><a href="mailto:phr@foxrehab.org">phr@foxrehab.org</a></td>
-                    </tr>-->
                     <tr>
                         <td style="height:20px;width:100%;"></td>
                     </tr>
