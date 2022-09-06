@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"  lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
     <title>FOX Rehablitation Web Portal</title>
     <!-- Roboto Fonts -->
@@ -18,7 +18,12 @@
         }
 
         table {
-            border-collapse: separate;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        th, td {
+            padding: 0;
         }
 
         .table-float table {
@@ -220,6 +225,18 @@
                 margin-bottom: 20px;
             }
         }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
     </style>
 
 </head>
@@ -228,18 +245,29 @@
 
     <!-- 3 column layout with 10px spacing -->
 
-    <table class="table-main" style="width:720px;" cellpadding="0" cellspacing="0" aria-label="Fox Rehablitation">
+    <table class="table-main" style="width:720px;" aria-label="Fox Rehablitation">
+        <tr>
+            <th></th>
+        </tr>
         <tr>
             <td>
-                <table style="width:100%; padding:0px;background:#fff;" aria-label="Fox Rehablitation" cellpadding="0" cellspacing="0">
+                <table style="width:100%; padding:0px;background:#fff;" aria-label="Fox Rehablitation">
+                    <tr>
+                        <th></th>
+                    </tr>
                     <tr>
                         <td style="height:15px;width:100%;"></td>
                     </tr>
                     <tr>
-                        <td align="center" style="padding: 0px 20px;">
-                            <table style="width:100%;margin:0 auto;background:#fff;" cellpadding="0" aria-label="Fox Rehablitation" cellspacing="0">
+                        <td class="text-center" style="padding: 0px 20px;">
+                            <table style="width:100%;margin:0 auto;background:#fff;" aria-label="Fox Rehablitation">
                                 <tr>
-                                    <td align="left" style="">
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                </tr>
+                                <tr>
+                                    <td class="text-left">
                                         <img src="https://fox.mtbc.com/assets/images/email-logo.png" alt="Fox logo" />
                                     </td>
                                 </tr>
@@ -254,10 +282,16 @@
                     </tr>
                     <tr>
                         <td style="background:#fff;">
-                            <table style="width:100%;margin:0 auto;background:transparent;" aria-label="Fox Rehablitation" cellpadding="0" cellspacing="0">
+                            <table style="width:100%;margin:0 auto;background:transparent;" aria-label="Fox Rehablitation">
+                                <tr>
+                                    <th></th>
+                                </tr>
                                 <tr>
                                     <td style="padding:0px 20px;">
-                                        <table style="width:100%;margin:0 auto;" aria-label="Fox Rehablitation" cellpadding="0" cellspacing="0">
+                                        <table style="width:100%;margin:0 auto;" aria-label="Fox Rehablitation">
+                                            <tr>
+                                                <th></th>
+                                            </tr>
                                             <tr>
                                                 <td style="width:100%;font-size:14px;">
                                                     Dear [[LAST_NAME]], [[FIRST_NAME]]
@@ -274,14 +308,22 @@
                     </tr>
                     <tr>
                         <td style="background:#fff;">
-                            <table style="width:100%;margin:0 auto;background:transparent;" aria-label="Fox Rehablitation" cellpadding="0" cellspacing="0">
+                            <table style="width:100%;margin:0 auto;background:transparent;" aria-label="Fox Rehablitation">
+                                <tr>
+                                    <th></th>
+                                </tr>
+
                                 <tr>
                                     <td style="padding:0px 20px;">
-                                        <table style="width:100%;margin:0 auto;" aria-label="Fox Rehablitation" cellpadding="0" cellspacing="0">
+                                        <table style="width:100%;margin:0 auto;" aria-label="Fox Rehablitation">
+                                            <tr>
+                                                <th></th>
+                                            </tr>
+
                                             <tr>
                                                 <td style="width:100%;font-size:14px;">
                                                     Your sign-up request for Fox Rehab portal has been approved. You may now login to your account using your email address and start sending patient referrals right away!<br /><br />
-                                                    Also, if you agreed to receiving Electronic Plans of Care. Please see your email for final security step. 
+                                                    Also, if you agreed to receiving Electronic Plans of Care. Please see your email for final security step.
                                                 </td>
                                             </tr>
                                         </table>
@@ -294,18 +336,22 @@
                         <td style="height:15px;width:100%;"></td>
                     </tr>
                     <tr>
-                        <td align="center" style="padding: 0px 20px;">
-                            <table style="width:100%;margin:0 auto;background:#fff;" aria-label="Fox Rehablitation" cellpadding="0" cellspacing="0">
+                        <td class="text-center" style="padding: 0px 20px;">
+                            <table style="width:100%;margin:0 auto;background:#fff;" aria-label="Fox Rehablitation">
                                 <tr>
-                                    <td align="left" style="padding: 0px;">
+                                    <th></th>
+                                </tr>
+
+                                <tr>
+                                    <td class="text-left" style="padding: 0px;">
                                         <table class="table-auto" aria-label="Fox Rehablitation" style="border:none; height:30px;">
+                                            <tr>
+                                                <th></th>
+                                            </tr>
                                             <tbody>
                                                 <tr>
                                                     <td></td>
-                                                    <td align="center" style="background-color:#ff671f; border:1px solid #ff671f; vertical-align:middle; line-height:normal; padding:5px 15px 5px 15px;">
-                                                        <!--<a style="color:#fff; font-size:16px;text-decoration:none; outline:none;" target="_blank" href="http://localhost:14479/#/account/login">Login to FOX Rehab Portal</a>-->
-                                                        <!--<a style="color:#fff; font-size:16px;text-decoration:none; outline:none;" target="_blank" href="http://172.16.0.207:7930/#/account/login">login to fox rehab portal</a>-->
-                                                        <!--<a style="color:#fff; font-size:16px;text-decoration:none; outline:none;" target="_blank" href="http://uatfox.mtbc.com/#/account/login">Login to FOX Rehab Portal</a>-->
+                                                    <td class="text-center" style="background-color:#ff671f; border:1px solid #ff671f; vertical-align:middle; line-height:normal; padding:5px 15px 5px 15px;">
                                                         <a style="color:#fff; font-size:16px;text-decoration:none; outline:none;" target="_blank" href="https://fox.mtbc.com/#/account/login">Login to FOX Rehab Portal</a>
                                                     </td>
                                                     <td></td>
@@ -322,10 +368,16 @@
                     </tr>
                     <tr>
                         <td style="background:#fff;">
-                            <table style="width:100%;margin:0 auto;background:transparent;" aria-label="Fox Rehablitation" cellpadding="0" cellspacing="0">
+                            <table style="width:100%;margin:0 auto;background:transparent;" aria-label="Fox Rehablitation">
+                                <tr>
+                                    <th></th>
+                                </tr>
                                 <tr>
                                     <td style="padding:0px 20px;">
-                                        <table style="width:100%;margin:0 auto;"  aria-label="Fox Rehablitation" cellpadding="0" cellspacing="0">
+                                        <table style="width:100%;margin:0 auto;" aria-label="Fox Rehablitation">
+                                            <tr>
+                                                <th></th>
+                                            </tr>
                                             <tr>
                                                 <td style="width:100%;font-size:14px;">
                                                     You can also send referrals using our mobile app.
@@ -341,10 +393,13 @@
                         <td style="height:15px;width:100%;"></td>
                     </tr>
                     <tr>
-                        <td align="center" style="padding: 0px 20px;">
-                            <table style="width:100%;margin:0 auto;background:#fff;" aria-label="Fox Rehablitation" cellpadding="0" cellspacing="0">
+                        <td class="text-center" style="padding: 0px 20px;">
+                            <table style="width:100%;margin:0 auto;background:#fff;" aria-label="Fox Rehablitation">
                                 <tr>
-                                    <td align="left" style="">
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <td class="text-left">
                                         <a href="https://itunes.apple.com/us/app/mtbc-fox/id1384823410?mt=8 " target="_blank"><img src="https://fox.mtbc.com/assets/images/apple-app-store-sm.png" alt="Apple App Store" /></a>&nbsp;<a href="https://play.google.com/store/apps/details?id=com.mtbc.fox&hl=en" target="_blank"><img src="https://fox.mtbc.com/assets/images/android-play-store-sm.png" alt="Android Play Store" /></a>
                                     </td>
                                 </tr>
@@ -356,13 +411,19 @@
                     </tr>
                     <tr>
                         <td style="background:#fff;">
-                            <table style="width:100%;margin:0 auto;background:transparent;" aria-label="Fox Rehablitation" cellpadding="0" cellspacing="0">
+                            <table style="width:100%;margin:0 auto;background:transparent;" aria-label="Fox Rehablitation">
+                                <tr>
+                                    <th></th>
+                                </tr>
                                 <tr>
                                     <td style="padding:0px 20px;">
-                                        <table style="width:100%;margin:0 auto;" aria-label="Fox Rehablitation" cellpadding="0" cellspacing="0">
+                                        <table style="width:100%;margin:0 auto;" aria-label="Fox Rehablitation">
+                                            <tr>
+                                                <th></th>
+                                            </tr>
                                             <tr>
                                                 <td style="width:100%;font-size:14px;">
-                                                    <b>For Treatment Inquiries:</b>
+                                                    <strong>For Treatment Inquiries:</strong>
                                                     <br />
                                                     Clients or caregivers interested in treatment, call us at (877) 407-3422.
                                                 </td>
@@ -378,13 +439,19 @@
                     </tr>
                     <tr>
                         <td style="background:#fff;">
-                            <table style="width:100%;margin:0 auto;background:transparent;" aria-label="Fox Rehablitation" cellpadding="0" cellspacing="0">
+                            <table style="width:100%;margin:0 auto;background:transparent;" aria-label="Fox Rehablitation">
+                                <tr>
+                                    <th></th>
+                                </tr>
                                 <tr>
                                     <td style="padding:0px 20px;">
-                                        <table style="width:100%;margin:0 auto;" aria-label="Fox Rehablitation" cellpadding="0" cellspacing="0">
+                                        <table style="width:100%;margin:0 auto;" aria-label="Fox Rehablitation">
+                                            <tr>
+                                                <th></th>
+                                            </tr>
                                             <tr>
                                                 <td style="width:100%;font-size:14px;">
-                                                    <b>General Inquiries & Billing Questions</b>
+                                                    <strong>General Inquiries & Billing Questions</strong>
                                                     <br />
                                                     Call us at (877) 407-3422 for immediate assistance.
                                                 </td>
@@ -400,10 +467,16 @@
                     </tr>
                     <tr>
                         <td style="background:#fff;">
-                            <table style="width:100%;margin:0 auto;background:transparent;" aria-label="Fox Rehablitation" cellpadding="0" cellspacing="0">
+                            <table style="width:100%;margin:0 auto;background:transparent;" aria-label="Fox Rehablitation">
+                                <tr>
+                                    <th></th>
+                                </tr>
                                 <tr>
                                     <td style="padding:0px 20px;">
-                                        <table style="width:100%;margin:0 auto;" aria-label="Fox Rehablitation" cellpadding="0" cellspacing="0">
+                                        <table style="width:100%;margin:0 auto;" aria-label="Fox Rehablitation">
+                                            <tr>
+                                                <th></th>
+                                            </tr>
                                             <tr>
                                                 <td style="width:100%;font-size:14px;">
                                                     Regards,<br />FOX Rehab team.

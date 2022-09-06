@@ -1,10 +1,11 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
+    <title>FOX Rehablitation Web Portal</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
     <style>
         body, table, td {
-           /* font-family: 'Roboto' !important;*/
+            /* font-family: 'Roboto' !important;*/
             margin: 0px;
             padding: 0px;
             border: none;
@@ -17,12 +18,29 @@
         p {
             color: #333;
             margin: 0px;
-         /* font-family: 'Roboto' !important;*/
+            /* font-family: 'Roboto' !important;*/
         }
 
         img {
             border: 0px;
         }
+
+        .d-none{
+            display: none;
+        }
+
+        .text-center{
+            text-align: center;
+        }
+
+        .text-right{
+            text-align: right;
+        }
+
+        .text-left{
+            text-align: left;
+        }
+
     </style>
 </head>
 <body>
@@ -32,43 +50,65 @@
 
             <div class="encounter-print-body" id="PrintBody">
                 <table style="width:100%;">
+                    <caption>  </caption>
+                    <thead class="d-none">
+                        <tr>
+                            <th></th>
+                        </tr>
+                    </thead>
+
                     <tr>
                         <td>
                             <table style="border-bottom:1px solid #12222E;width:100%;">
+                                <caption>  </caption>
+                                <thead class="d-none">
+                                    <tr>
+                                        <th></th>
+                                    </tr>
+                                </thead>
                                 <tbody>
+
                                     <tr style="font-size:13pt !important;">
-                                        <td width="43%" style="vertical-align:top; margin-top:15px;">
-                                            <b>Fox Rehabilitation</b> <br />
+                                        <td style="vertical-align:top; margin-top:15px;width:43%">
+                                            <strong>Fox Rehabilitation</strong> <br />
                                             7 Carnegie Plaza, Cherry Hill<br />
                                             NJ 08003-1000, USA<br />
-                                            <b>Phone:</b> +1(877) 407-3422
+                                            <strong>Phone:</strong> +1(877) 407-3422
                                         </td>
-                                        <td width="14%" align="center">
+                                        <td style="width:14%" class="text-center">
                                             <img style="width: 100px;" src="https://fox.mtbc.com/assets/images/logo.png" alt="Logo Image" />
                                         </td>
-                                        <td width="43%" align="right">
-                                            <b>[[PATIENT_NAME]]</b><br />
-                                            <b>DOB:</b>  [[PATIENT_DOB]]<br />
-                                            <b>MRN:</b>  [[PATIENT_MRN]]<br />
-                                            <b>Home Address:</b>  [[PATIENT_HOME_ADDRESS]]<br />
+                                        <td style="width:43%" class="text-right">
+                                            <strong>[[PATIENT_NAME]]</strong><br />
+                                            <strong>DOB:</strong>  [[PATIENT_DOB]]<br />
+                                            <strong>MRN:</strong>  [[PATIENT_MRN]]<br />
+                                            <strong>Home Address:</strong>  [[PATIENT_HOME_ADDRESS]]<br />
                                             [[PATIENT_HOME_ADDRESS_2]]<br />
-                                            <span id="PRIMARY_INSURANCE"><b>Pri. Ins:</b>  [[PATIENT_PRI_INS]] </span><br />
+                                            <span id="PRIMARY_INSURANCE"><strong>Pri. Ins:</strong>  [[PATIENT_PRI_INS]] </span><br />
                                         </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">
                                             <table style="width:100%;">
-                                                <tbody>
+                                                <caption>  </caption>
+                                                <thead class="d-none">
                                                     <tr>
-                                                        <td width="70px">
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    <tr>
+                                                        <td style="width:70px">
                                                             <img id="QRImage" style="width: 70px; height: 70px;margin:6px;" src="[[QRCode]]" alt="QR Image" />
                                                         </td>
-                                                        <td align="center">
+                                                        <td class="text-center">
                                                             <div style="font-size: 20pt; font-weight: bold!important;">THERAPY TREATMENT REFERRAL</div>
                                                             <div style="font-size: 16pt; font-weight:bold; color:#FF7F50;">[[Home_Health]]</div>
                                                             <div style="font-size: 16pt; font-weight: bold!important;">***REQUEST***</div>
                                                         </td>
-                                                        <td width="70px"></td>
+                                                        <td style="width:70px"></td>
+                                                    </tr>
                                                 </tbody>
                                             </table>
                                         </td>
@@ -83,10 +123,17 @@
                     <tr>
                         <td>
                             <table style="width:100%;">
+                                <caption>  </caption>
+                                <thead class="d-none">
+                                    <tr>
+                                        <th></th>
+                                    </tr>
+                                </thead>
                                 <tbody>
+
                                     <tr>
                                         <td>
-                                            <b>Source</b> <br />
+                                            <strong>Source</strong> <br />
                                             Document Type:  [[DOCUMENT_TYPE]]<br />
                                             Ordering Referral Source:  [[ORS]] <br />
                                             Sender:  [[SENDER]] <br />
@@ -100,8 +147,8 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <b>Diagnosis Information</b> <br />
-                                           
+                                            <strong>Diagnosis Information</strong> <br />
+
                                             <span></span>[[Diagnosis_Information]] <br />
 
                                         </td>
@@ -111,9 +158,9 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <b>Procedure Information</b> <br />
+                                            <strong>Procedure Information</strong> <br />
                                             <span style="font-weight: bold!important;">Disciplines:  [[discipline]]</span> <br />
-                                           
+
                                             Urgent referral:  [[is_urgent_Referral]]<br />
                                             <span id="URGENT">
                                                 Reason for urgency:  [[reason_urgency]]<br />
@@ -122,9 +169,9 @@
                                                 Home Health & Hospice Name (where patient id to be treated/evaluated):  [[HHH_NAME]] <br />
                                                 Home Health & Hospice Contact Number:  [[HHH_NUMBER]] <br />
                                             </span>
-                                            <span id="VerbalOrder"> 
-						                        Verbal Order:  [[is_verbal_order]]<br />
-					                        </span>
+                                            <span id="VerbalOrder">
+                                                Verbal Order:  [[is_verbal_order]]<br />
+                                            </span>
                                             <span id="VERBAL">
                                                 Verbal Order Details: On Behalf Of:  [[on_behalf_of]]. Received By:  [[received_by]]. Date:  [[verbal_date]] <span>Time:  [[verbal_time]] </span>
                                             </span>
@@ -135,9 +182,9 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <b>Additional Notes / Reason for Referral:  </b> [[additional_notes]]
+                                            <strong>Additional Notes / Reason for Referral:  </strong> [[additional_notes]]
                                             <br />
-											<b style="font-size:13px; color:#FF7F50;">[[Home_Health_Description]]</b><br />
+                                            <strong style="font-size:13px; color:#FF7F50;">[[Home_Health_Description]]</strong><br />
                                             <br />
 
                                         </td>
@@ -174,7 +221,7 @@
                                             Date: <span style="display:inline-block;border-bottom:1px solid #12222E;width:auto;"> [[current_Date]]</span>
                                         </td>
                                     </tr>
-									  <tr>
+                                    <tr>
                                         <td>
                                             Comments: [[Comments]]</span>
                                         </td>
