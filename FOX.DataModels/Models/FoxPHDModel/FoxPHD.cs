@@ -537,6 +537,7 @@ namespace FOX.DataModels.Models.FoxPHD
     public class DropdownLists
     {
         public List<PhdCallScenario> PhdCallScenarios { get; set; }
+        public List<PhdFaqsDetail> PhdFaqsDetail { get; set; }
         public List<PhdCallReason> PhdCallReasons { get; set; }
         public List<PhdCallRequest> PhdCallRequests { get; set; }
         public List<FoxApplicationUsersViewModel> foxApplicationUsersViewModel { get; set; }
@@ -604,6 +605,20 @@ namespace FOX.DataModels.Models.FoxPHD
         public long DAEAULT_HANDLING_ID { get; set; }
         public long USER_ID { get; set; }
         public long? PHD_CALL_SCENARIO_ID { get; set; }
+        public long PRACTICE_CODE { get; set; }
+        public bool DELETED { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime? CREATED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public DateTime? MODIFIED_DATE { get; set; }
+    }
+    [Table("FOX_TBL_PHD_FAQS_DETAILS")]
+    public class PhdFaqsDetail : BaseModel
+    {
+        [Key]
+        public long FAQS_ID { get; set; }
+        public string QUESTIONS { get; set; }
+        public string ANSWERS { get; set; }
         public long PRACTICE_CODE { get; set; }
         public bool DELETED { get; set; }
         public string CREATED_BY { get; set; }

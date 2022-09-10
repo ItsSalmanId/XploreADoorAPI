@@ -12,7 +12,8 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
         private UserProfile _userProfile;
         private PHDCallDetail _phdCallDetail;
         private UnmappedCallsSearchRequest _unMappedCallRequest;
-        
+        private PhdFaqsDetail _phdFaqsDetail;
+
         [SetUp]
         public void Setup()
         {
@@ -20,6 +21,7 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             _userProfile = new UserProfile();
             _phdCallDetail = new PHDCallDetail();
             _unMappedCallRequest = new UnmappedCallsSearchRequest();
+            _phdFaqsDetail = new PhdFaqsDetail();
         }
         [Test]
         [TestCase(true)]
@@ -346,6 +348,59 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             //Assert
             Assert.That(result.PHD_CALL_SCENARIO_ID, Is.Not.Null);
         }
+        [Test]
+        [TestCase(1011163, "test", 548144)]
+        [TestCase(1011163, "test", 548121)]
+        [TestCase(1011163, "", 548121)]
+
+        public void AddUpdatePHDFAQsDetail_FaqsAddUpdateModel_ReturnsData(long practiceCode, string Paramter, long faqsId)
+        {
+            //Arrange
+            _userProfile.PracticeCode = practiceCode;
+            _phdFaqsDetail.QUESTIONS = Paramter;
+            _phdFaqsDetail.ANSWERS = Paramter;
+            _phdFaqsDetail.FAQS_ID = faqsId;
+
+            //Act
+            _foxPHDService.AddUpdatePhdFaqsDetail(_phdFaqsDetail, _userProfile);
+
+            //Assert
+
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase(1011163, 548144)]
+
+
+        public void DeletePhdFaqs_DeletePhdFaqsModel_ReturnsData(long practiceCode, long faqsId)
+        {
+            //Arrange
+            _userProfile.PracticeCode = practiceCode;
+            _phdFaqsDetail.FAQS_ID = faqsId;
+
+            //Act
+            _foxPHDService.DeletePhdFaqs(_phdFaqsDetail, _userProfile);
+
+            //Assert
+
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase(1011163, 548144)]
+        public void GetPHDFaqsDetailsInformation_GetModel_ReturnsData(long practiceCode, long faqsId)
+        {
+            //Arrange
+            _userProfile.PracticeCode = practiceCode;
+            _phdFaqsDetail.FAQS_ID = faqsId;
+
+            //Act
+            _foxPHDService.GetPHDFaqsDetailsInformation(_phdFaqsDetail, _userProfile);
+
+            //Assert
+
+            Assert.IsTrue(true);
+        }
+        ///GetPHDFaqsDetailsInformation
         [TearDown]
         public void Teardown()
         {
@@ -354,6 +409,7 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             _userProfile = null;
             _phdCallDetail = null;
             _unMappedCallRequest = null;
+            _phdFaqsDetail = null;
         }
     }
 }
