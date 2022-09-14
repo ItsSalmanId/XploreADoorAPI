@@ -3,14 +3,15 @@
 ----- File Name: TableModifications.sql	
 ----- Created By: Muhammad Arslan Tufail
 ----- Created Date: 08/25/2022
------ Modified By: Muhammad Arslan Tufail
------ Modified Date: 08/25/2022
+----- Modified By: Muhammad Taseer Iqbal
+----- Modified Date: 09/15/2022
 --------------------------------------------------------
 
 --------------------------------------------------------
 ----- JIRA ID: FOX-6593
 ----- Task Name: Item P504 | Quality Assurance Scoring Enhancements - development
 ----- Assignee: Muhammad Taseer Iqbal
+----  Non Replication Table
 --------------------------------------------------------
 
 ALTER TABLE FOX_TBL_SURVEY_AUDIT_SCORES

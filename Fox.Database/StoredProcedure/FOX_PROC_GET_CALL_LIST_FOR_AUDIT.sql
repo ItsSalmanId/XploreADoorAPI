@@ -3,7 +3,7 @@ GO
 -- =============================================                                    
 -- AUTHOR:  <DEVELOPER, USAMA BIN AHMED>                                    
 -- CREATE DATE: <CREATE DATE, 01/04/2020>      
--- Modified By : <Muhammad Taseer Iqbal, 08/20/2022>      
+-- Modified By : <Muhammad Taseer Iqbal, 09/15/2022>      
 -- DESCRIPTION: <GET ALL CALL LIST FOR AUDIT>                      
               
 -- EXEC [FOX_PROC_GET_CALL_LIST_FOR_AUDIT] 1012714,'Admin_5651352','survey',NULL,NULL,0                                   
@@ -31,10 +31,10 @@ BEGIN
  ,P.First_Name                                  
  ,P.Last_Name                                  
  , sas.SCORING_CRITERIA AS SCORING_CRITERIA                         
-  FROM FOX_TBL_PATIENT_SURVEY_CALL_LOG AS PSL                                  
-  LEFT JOIN Patient AS P                                  
+  FROM FOX_TBL_PATIENT_SURVEY_CALL_LOG AS PSL    with (nolock)                              
+  LEFT JOIN Patient AS P         with (nolock)                          
   ON PSL.PATIENT_ACCOUNT = P.Patient_Account               
-  left join FOX_TBL_SURVEY_AUDIT_SCORES as sas                    
+  left join FOX_TBL_SURVEY_AUDIT_SCORES as sas with (nolock)                    
 on PSL.SURVEY_CALL_ID = sas.SURVEY_CALL_ID               
  WHERE PSL.MODIFIED_BY = @CALL_BY                
   AND ISNULL(sas.DELETED, 0) = 0             
@@ -57,11 +57,11 @@ on PSL.SURVEY_CALL_ID = sas.SURVEY_CALL_ID
  ,P.First_Name                                  
  ,P.Last_Name                    
  , null AS SCORING_CRITERIA                                    
- FROM FOX_TBL_PHD_CALL_DETAILS C                                    
- left join FOX_TBL_PHD_CALL_REASON R on C.CALL_REASON = R.PHD_CALL_REASON_ID                               
- left join FOX_TBL_PHD_CALL_SCENARIO AS SR                                  
+ FROM FOX_TBL_PHD_CALL_DETAILS C     with (nolock)                                
+ left join FOX_TBL_PHD_CALL_REASON R with (nolock)  on C.CALL_REASON = R.PHD_CALL_REASON_ID                               
+ left join FOX_TBL_PHD_CALL_SCENARIO AS SR   with (nolock)                                
  ON C.CALL_SCENARIO = SR.PHD_CALL_SCENARIO_ID                                  
- LEFT JOIN Patient AS P ON C.PATIENT_ACCOUNT = P.Patient_Account                                   
+ LEFT JOIN Patient AS P with (nolock)  ON C.PATIENT_ACCOUNT = P.Patient_Account                                   
  WHERE C.CREATED_BY = @CALL_BY                                    
   AND ISNULL(C.DELETED, 0) = 0           
   AND ISNULL(CALL_RECORDING_PATH , '') <> ''                                    
@@ -89,10 +89,10 @@ on PSL.SURVEY_CALL_ID = sas.SURVEY_CALL_ID
  ,Ps.PATIENT_LAST_NAME  AS LAST_NAME              
  , sas.SCORING_CRITERIA AS SCORING_CRITERIA          
  , ps.SURVEY_FLAG              
-  FROM FOX_TBL_PATIENT_SURVEY_CALL_LOG AS PSL                                  
-  left join FOX_TBL_PATIENT_SURVEY as ps                    
+  FROM FOX_TBL_PATIENT_SURVEY_CALL_LOG AS PSL  with (nolock)                                 
+  left join FOX_TBL_PATIENT_SURVEY as ps      with (nolock)               
 on ps.SURVEY_ID = psl.SURVEY_ID     -- ps.PATIENT_ACCOUNT_NUMBER = psl.PATIENT_ACCOUNT  AND              
-left join FOX_TBL_SURVEY_AUDIT_SCORES as sas                    
+left join FOX_TBL_SURVEY_AUDIT_SCORES as sas with (nolock)                    
 on PSL.SURVEY_CALL_ID = sas.SURVEY_CALL_ID               
                   
  WHERE PSL.MODIFIED_BY = @CALL_BY                                    
@@ -148,13 +148,13 @@ on PSL.SURVEY_CALL_ID = sas.SURVEY_CALL_ID
   ,SR.PHD_CALL_SCENARIO_ID                        
   ,sr.NAME AS CALL_SCANARIO              
   , SCR.SCORING_CRITERIA AS SCORING_CRITERIA                  
- FROM FOX_TBL_PHD_CALL_DETAILS C                                    
- left join FOX_TBL_PHD_CALL_REASON R on C.CALL_REASON = R.PHD_CALL_REASON_ID                               
- left join FOX_TBL_PHD_CALL_SCENARIO AS SR                                  
+ FROM FOX_TBL_PHD_CALL_DETAILS C     with (nolock)                                
+ left join FOX_TBL_PHD_CALL_REASON R with (nolock) on C.CALL_REASON = R.PHD_CALL_REASON_ID                               
+ left join FOX_TBL_PHD_CALL_SCENARIO AS SR with (nolock)                                  
  ON C.CALL_SCENARIO = SR.PHD_CALL_SCENARIO_ID                                  
-  LEFT JOIN Patient AS P                                   
+  LEFT JOIN Patient AS P with (nolock)                                    
  ON C.PATIENT_ACCOUNT = P.Patient_Account                              
- left join FOX_TBL_SURVEY_AUDIT_SCORES AS SCR                              
+ left join FOX_TBL_SURVEY_AUDIT_SCORES AS SCR     with (nolock)                          
  ON SCR.PHD_CALL_ID = c.FOX_PHD_CALL_DETAILS_ID                                     
                                    AND ISNULL(SCR.DELETED, 0)=0
  WHERE C.CREATED_BY = @CALL_BY                                    
