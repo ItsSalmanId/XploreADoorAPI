@@ -86,10 +86,10 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _checkDuplicatePatientsReq = new CheckDuplicatePatientsReq();
 
         }
-    [   Test]
-        [TestCase( 1011163,true)]
+        [Test]
+        [TestCase( 1011163, true)]
         [TestCase(1011163, false)]
-        public void GetPatientList_PatientListModel_ReturnData(long practiceCode,bool isTalkRehab)
+        public void GetPatientList_PatientListModel_ReturnData(long practiceCode, bool isTalkRehab)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -208,10 +208,10 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase("06404", 1011163)]
         [TestCase("-00544", 1011163)]
         [TestCase("", 1011163)]
-        public void GetRegionByZip_RegionByZipModel_ReturnData(string zipCode,long PracticeCode)
+        public void GetRegionByZip_RegionByZipModel_ReturnData(string zipCode, long practiceCode)
         {
             //Arrange
-            _userProfile.PracticeCode = PracticeCode;
+            _userProfile.PracticeCode = practiceCode;
 
             //Act
             var result = _patientService.GetRegionByZip(zipCode,_userProfile);
@@ -240,10 +240,10 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase("AUTO CLUB INSURANCE ASSOC")]
         [TestCase("AMERICAN CASUALTY COMPANY OF READING PA")]
-        public void GetInsurancePayers_InsurancePayersModel_ReturnData(string Insurance_Name)
+        public void GetInsurancePayers_InsurancePayersModel_ReturnData(string insurance_Name)
         {
             //Arrange
-            _smartSearchInsuranceReq.Insurance_Name = Insurance_Name;
+            _smartSearchInsuranceReq.Insurance_Name = insurance_Name;
             _smartSearchInsuranceReq.Patient_Account = "101116354412334";
 
             //Act
@@ -276,10 +276,10 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(101116354816561)]
         [TestCase(101116354610685)]
-        public void GetRestOfPatientData_ReturnPatientDetails_ReturnData(long Patient_Account)
+        public void GetRestOfPatientData_ReturnPatientDetails_ReturnData(long patientAccount)
         {
             //Arrange
-            _patient.Patient_Account = Patient_Account;
+            _patient.Patient_Account = patientAccount;
 
             //Act
             var result = _patientService.GetRestOfPatientData(_patient);
@@ -293,17 +293,17 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(true)]
         [TestCase(false)]
-        public void SetFlags_Flags_ReturnData(bool Flag)
+        public void SetFlags_Flags_ReturnData(bool flag)
         {
             //Arrange
-            _patientContact.Flag_Financially_Responsible_Party = Flag;
-            _patientContact.Flag_Emergency_Contact = Flag;
-            _patientContact.Flag_Lives_In_Household_SLC = Flag;
-            _patientContact.Flag_Power_Of_Attorney = Flag;
-            _patientContact.Flag_Power_Of_Attorney_Financial = Flag;
-            _patientContact.Flag_Power_Of_Attorney_Medical = Flag;
-            _patientContact.Flag_Preferred_Contact = Flag;
-            _patientContact.Flag_Service_Location = Flag;
+            _patientContact.Flag_Financially_Responsible_Party = flag;
+            _patientContact.Flag_Emergency_Contact = flag;
+            _patientContact.Flag_Lives_In_Household_SLC = flag;
+            _patientContact.Flag_Power_Of_Attorney = flag;
+            _patientContact.Flag_Power_Of_Attorney_Financial = flag;
+            _patientContact.Flag_Power_Of_Attorney_Medical = flag;
+            _patientContact.Flag_Preferred_Contact = flag;
+            _patientContact.Flag_Service_Location = flag;
 
             //Act
             var result = _patientService.SetFlags(_patientContact);
@@ -348,7 +348,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase(1011163,true)]
         [TestCase(1011163, false)]
         [TestCase(102, false)]
-        public void GetAllPatientContactTypes_AllPatientContactTypesModel_ReturnData(long practiceCode,bool isTalkRehab)
+        public void GetAllPatientContactTypes_AllPatientContactTypesModel_ReturnData(long practiceCode, bool isTalkRehab)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -380,11 +380,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(1011163, "101116354816561")]
         [TestCase(1011163, "101116354412338")]
-        public void SsnExists_SsnExistsModel_ReturnData(long PracticeCode,string Patient_Account)
+        public void SsnExists_SsnExistsModel_ReturnData(long practiceCode, string patientAccount)
         {
             //Arrange
-            _userProfile.PracticeCode = PracticeCode;
-            _ssnExist.Patient_Account = Patient_Account;
+            _userProfile.PracticeCode = practiceCode;
+            _ssnExist.Patient_Account = patientAccount;
 
             //Act
             var result = _patientService.SSNExists(_ssnExist,_userProfile);
@@ -402,11 +402,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(1011163, "101116354816561")]
         [TestCase(1011163, "101116354412338")]
-        public void PatientExists_PatientExistsModel_ReturnData(long PracticeCode, string Patient_Account)
+        public void PatientExists_PatientExistsModel_ReturnData(long practiceCode, string patientAccount)
         {
             //Arrange
-            _userProfile.PracticeCode = PracticeCode;
-            _patientExist.Patient_Account = Patient_Account;
+            _userProfile.PracticeCode = practiceCode;
+            _patientExist.Patient_Account = patientAccount;
             _patientExist.First_Name = "";
             _patientExist.Middle_Name = "";
             _patientExist.Last_Name = "";
@@ -427,11 +427,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(1011163, "101116354816561")]
         [TestCase(1011163, "101116354412338")]
-        public void PatientDemographicsExists_PatientDemographicsExistsModel_ReturnData(long PracticeCode, string Patient_Account)
+        public void PatientDemographicsExists_PatientDemographicsExistsModel_ReturnData(long practiceCode, string patientAccount)
         {
             //Arrange
-            _userProfile.PracticeCode = PracticeCode;
-            _patientExist.Patient_Account = Patient_Account;
+            _userProfile.PracticeCode = practiceCode;
+            _patientExist.Patient_Account = patientAccount;
             _patientExist.First_Name = "one";
             _patientExist.Middle_Name = "one";
             _patientExist.Last_Name = "one";
@@ -452,11 +452,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(544101)]
         [TestCase(00000000)]
-        public void GetFoxPayorName_ReturnFoxPayorName_ReturnData(long insurance_Id)
+        public void GetFoxPayorName_ReturnFoxPayorName_ReturnData(long insuranceId)
         {
             //Arrange
             //Act
-            var result = _patientService.GetFoxPayorName(insurance_Id);
+            var result = _patientService.GetFoxPayorName(insuranceId);
 
             //Assert
             if (result != null)
@@ -467,11 +467,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(101116354815798)]
         [TestCase(101116354813344)]
-        public void GetPrimaryInsurance_PrimaryInsuranceName_ReturnData(long patient_Account)
+        public void GetPrimaryInsurance_PrimaryInsuranceName_ReturnData(long patientAccount)
         {
             //Arrange
             //Act
-            var result = _patientService.GetPrimaryInsurance(patient_Account);
+            var result = _patientService.GetPrimaryInsurance(patientAccount);
 
             //Assert
             if (result != null)
@@ -482,11 +482,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(101116354815798)]
         [TestCase(101116354813344)]
-        public void GetLatestPrimaryInsurance_LatestPrimaryInsuranceName_ReturnData(long patient_Account)
+        public void GetLatestPrimaryInsurance_LatestPrimaryInsuranceName_ReturnData(long patientAccount)
         {
             //Arrange
             //Act
-            var result = _patientService.GetLatestPrimaryInsurance(patient_Account);
+            var result = _patientService.GetLatestPrimaryInsurance(patientAccount);
 
             //Assert
             if (result != null)
@@ -495,13 +495,13 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             }
         }
         [Test]
-        [TestCase(1011163,"")]
+        [TestCase(1011163, "")]
         [TestCase(1011163,"test")]
-        public void GetSubscribers_SubscribersModel_ReturnData(long PracticeCode,string SEARCHVALUE)
+        public void GetSubscribers_SubscribersModel_ReturnData(long practiceCode, string searchValue)
         {
             //Arrange
-            _userProfile.PracticeCode = PracticeCode;
-            _subscriberSearchReq.SEARCHVALUE = SEARCHVALUE;
+            _userProfile.PracticeCode = practiceCode;
+            _subscriberSearchReq.SEARCHVALUE = searchValue;
 
             //Act
             var result = _patientService.GetSubscribers(_subscriberSearchReq,_userProfile);
@@ -515,11 +515,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(1011163, "")]
         [TestCase(1011163, "test")]
-        public void GetEmployers_EmployersModel_ReturnData(long PracticeCode, string SEARCHVALUE)
+        public void GetEmployers_EmployersModel_ReturnData(long practiceCode, string searchValue)
         {
             //Arrange
-            _userProfile.PracticeCode = PracticeCode;
-            _employerSearchReq.SEARCHVALUE = SEARCHVALUE;
+            _userProfile.PracticeCode = practiceCode;
+            _employerSearchReq.SEARCHVALUE = searchValue;
 
             //Act
             var result = _patientService.GetEmployers(_employerSearchReq, _userProfile);
@@ -533,11 +533,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(101116354815798)]
         [TestCase(101116354813344)]
-        public void GetPatientCasesForDD_PatientCasesForDDModel_ReturnData(long patient_Account)
+        public void GetPatientCasesForDD_PatientCasesForDDModel_ReturnData(long patientAccount)
         {
             //Arrange
             //Act
-            var result = _patientService.GetPatientCasesForDD(patient_Account);
+            var result = _patientService.GetPatientCasesForDD(patientAccount);
 
             //Assert
             if (result != null)
@@ -548,11 +548,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(101116354815798)]
         [TestCase(101116354813344)]
-        public void GetPatientCasesForPR_PatientCasesForPRModel_ReturnData(long patient_Account)
+        public void GetPatientCasesForPR_PatientCasesForPRModel_ReturnData(long patientAccount)
         {
             //Arrange
             //Act
-            var result = _patientService.GetPatientCasesForPR(patient_Account);
+            var result = _patientService.GetPatientCasesForPR(patientAccount);
 
             //Assert
             if (result != null)
@@ -568,11 +568,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase("PR", true)]
         [TestCase("PR", false)]
         [TestCase("default", false)]
-        public void GetInsuraneTypeName_InsuraneTypeNameRModel_ReturnData(string pri_Sec_Oth_Type, bool is_PP)
+        public void GetInsuraneTypeName_InsuraneTypeNameRModel_ReturnData(string priSecOthType, bool isPP)
         {
             //Arrange
             //Act
-            var result = _patientService.GetInsuraneTypeName(pri_Sec_Oth_Type, is_PP);
+            var result = _patientService.GetInsuraneTypeName(priSecOthType, isPP);
 
             //Assert
             if (result != null)
@@ -599,16 +599,16 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase(1011163, "Connecticut Claims", "Indianapolis", "IN", "462066185")]
         [TestCase(1011163, "", "", "", "")]
         [TestCase(1011163, "PO Box 3030", "Mechanicsburg", "PA", "170551802")]
-        public void GetFinancialClassDDValues_InsurancePayersForAdvanceSearchModel_ReturnData(long practiceCode,string Insurance_Address, string Insurance_City, string Insurance_State, string Insurance_Zip)
+        public void GetFinancialClassDDValues_InsurancePayersForAdvanceSearchModel_ReturnData(long practiceCode,string insuranceAddress, string insuranceCity, string insuranceState, string insuranceZip)
         {
             //Arrange
             _advanceInsuranceSearch.Practice_Code = practiceCode;
             _advanceInsuranceSearch.CurrentPage = 1;
             _advanceInsuranceSearch.RecordPerPage = 10;
-            _advanceInsuranceSearch.Insurance_Address = Insurance_Address;
-            _advanceInsuranceSearch.Insurance_City = Insurance_City;
-            _advanceInsuranceSearch.Insurance_State = Insurance_State;
-            _advanceInsuranceSearch.Insurance_Zip = Insurance_Zip;
+            _advanceInsuranceSearch.Insurance_Address = insuranceAddress;
+            _advanceInsuranceSearch.Insurance_City = insuranceCity;
+            _advanceInsuranceSearch.Insurance_State = insuranceState;
+            _advanceInsuranceSearch.Insurance_Zip = insuranceZip;
             _advanceInsuranceSearch.SearchString = "test";
             _advanceInsuranceSearch.FINANCIAL_CLASS_ID = 1;
 
@@ -625,14 +625,14 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase(1011163, "One", "Test")]
         [TestCase(1011163, "", "")]
         [TestCase(1011163, "Test", "Test")]
-        public void GetPatientsForAdvanceSearch_PatientsForAdvanceSearchModel_ReturnData(long practiceCode, string First_Name, string Last_Name)
+        public void GetPatientsForAdvanceSearch_PatientsForAdvanceSearchModel_ReturnData(long practiceCode, string firstName, string lastName)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
             _advancePatientSearch.CurrentPage = 1;
             _advancePatientSearch.RecordPerPage = 10;
-            _advancePatientSearch.First_Name = First_Name;
-            _advancePatientSearch.Last_Name = Last_Name;
+            _advancePatientSearch.First_Name = firstName;
+            _advancePatientSearch.Last_Name = lastName;
             _advancePatientSearch.Date_Of_Birth_In_String = Convert.ToString(DateTime.Today);
             _advancePatientSearch.Created_Date_Str = Convert.ToString(DateTime.Today);
 
@@ -648,11 +648,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(101116354816561)]
         [TestCase(10111635481861)]
-        public void GetPatientDetail_PatientDetailModel_ReturnData(long patient_Account)
+        public void GetPatientDetail_PatientDetailModel_ReturnData(long patientAccount)
         {
             //Arrange
             //Act
-            var result = _patientService.GetPatientDetail(patient_Account);
+            var result = _patientService.GetPatientDetail(patientAccount);
 
             //Assert
             if (result != null)
@@ -667,10 +667,10 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(1011163,"")]
         [TestCase(1011163, "Test")]
-        public void GetSmartPatient_SmartPatientModel_ReturnData(long PracticeCode, string searchText)
+        public void GetSmartPatient_SmartPatientModel_ReturnData(long practiceCode, string searchText)
         {
             //Arrange
-            _userProfile.PracticeCode = PracticeCode;
+            _userProfile.PracticeCode = practiceCode;
 
             //Act
             var result = _patientService.GetSmartPatient(searchText, _userProfile);
@@ -688,10 +688,10 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(1011163, "")]
         [TestCase(1011163, "Test")]
-        public void GetSmartPatientForTask_SmartPatientForTaskModel_ReturnData(long PracticeCode, string searchText)
+        public void GetSmartPatientForTask_SmartPatientForTaskModel_ReturnData(long practiceCode, string searchText)
         {
             //Arrange
-            _userProfile.PracticeCode = PracticeCode;
+            _userProfile.PracticeCode = practiceCode;
 
             //Act
             var result = _patientService.GetSmartPatientForTask(searchText, _userProfile);
@@ -709,10 +709,10 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(1011163, " - ")]
         [TestCase(1011163, "Test")]
-        public void GetSmartModifiedBy_SmartModifiedByModel_ReturnData(long PracticeCode, string searchText)
+        public void GetSmartModifiedBy_SmartModifiedByModel_ReturnData(long practiceCode, string searchText)
         {
             //Arrange
-            _userProfile.PracticeCode = PracticeCode;
+            _userProfile.PracticeCode = practiceCode;
 
             //Act
             var result = _patientService.getSmartModifiedBy(searchText, _userProfile);
@@ -730,15 +730,15 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(1011163, "170551802", "PA")]
         [TestCase(1011163, "462066185", "IN")]
-        public void GetDefaultPrimaryInsurance_EmptyModel_ReturnData(long PracticeCode, string ZIP, string State)
+        public void GetDefaultPrimaryInsurance_EmptyModel_ReturnData(long practiceCode, string zip, string state)
         {
             //Arrange
-            _defaultInsuranceParameters.ZIP = ZIP; 
-            _defaultInsuranceParameters.State = State; 
+            _defaultInsuranceParameters.ZIP = zip; 
+            _defaultInsuranceParameters.State = state; 
             _defaultInsuranceParameters.patientAccount = 101116354816561;
 
             //Act
-            var result = _patientService.GetDefaultPrimaryInsurance(_defaultInsuranceParameters, PracticeCode);
+            var result = _patientService.GetDefaultPrimaryInsurance(_defaultInsuranceParameters, practiceCode);
 
             //Assert
             if (result == null)
@@ -774,11 +774,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase("101116354816561", 1011163, "Aetna Medicare Advantage")]
         [TestCase("10111635481861", 1011163, "Novitas Medicare NJ1")]
-        public void GetSmartInsurancePayers_SmartInsurancePayersModel_ReturnData(string patientAccount, long PracticeCode, string Insurance_Name)
+        public void GetSmartInsurancePayers_SmartInsurancePayersModel_ReturnData(string patientAccount, long practiceCode, string insuranceName)
         {
             //Arrange
-            _userProfile.PracticeCode = PracticeCode;
-            _smartSearchInsuranceReq.Insurance_Name = Insurance_Name;
+            _userProfile.PracticeCode = practiceCode;
+            _smartSearchInsuranceReq.Insurance_Name = insuranceName;
             _smartSearchInsuranceReq.Patient_Account = patientAccount;
             _smartSearchInsuranceReq.FINANCIAL_CLASS_ID = 0;
             _smartSearchInsuranceReq.Pri_Sec_Oth_Type = "";
@@ -796,10 +796,10 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         }
         [Test]
         [TestCase( 1011163)]
-        public void GetAutoPopulateInsurance_GetAutoPopulateInsuranceModel_ReturnData( long PracticeCode)
+        public void GetAutoPopulateInsurance_GetAutoPopulateInsuranceModel_ReturnData(long practiceCode)
         {
             //Arrange
-            _userProfile.PracticeCode = PracticeCode;
+            _userProfile.PracticeCode = practiceCode;
             _autoPopulateModel.patientAccount = "101116354412362";
             _autoPopulateModel.CASE_ID = 544107;
             _autoPopulateModel.patientAccount = "0";
@@ -843,12 +843,12 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase(1011163, "99503", "AK")]
         [TestCase(1011163, "10968", "NY")]
         [TestCase(1011163, "85339", "AZ")]
-        public void GetSuggestedMCPayer_SuggestedMCPayerModel_ReturnData(long PracticeCode,string Zip,string State)
+        public void GetSuggestedMCPayer_SuggestedMCPayerModel_ReturnData(long practiceCode, string zip,string state)
         {
             //Arrange
-            _userProfile.PracticeCode = PracticeCode;
-            _suggestedMCPayer.Zip = Zip;
-            _suggestedMCPayer.State = State;
+            _userProfile.PracticeCode = practiceCode;
+            _suggestedMCPayer.Zip = zip;
+            _suggestedMCPayer.State = state;
    
             //Act
             var result = _patientService.GetSuggestedMCPayer(_suggestedMCPayer, _userProfile);
@@ -867,10 +867,10 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase(1011163, "101116354816561")]
         [TestCase(1011163, "101116354412309")]
         [TestCase(1011163, "10111635441309")]
-        public void GetPatientInsurancesInIndexInfo_PatientInsurancesInIndexInfoModel_ReturnData(long PracticeCode, string patientAccountStr)
+        public void GetPatientInsurancesInIndexInfo_PatientInsurancesInIndexInfoModel_ReturnData(long practiceCode, string patientAccountStr)
         {
             //Arrange
-            _userProfile.PracticeCode = PracticeCode;
+            _userProfile.PracticeCode = practiceCode;
 
             //Act
             var result = _patientService.GetPatientInsurancesInIndexInfo(patientAccountStr, _userProfile);
@@ -889,10 +889,10 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase(1011163, "101116354816561")]
         [TestCase(1011163, "101116354412309")]
         [TestCase(1011163, "10111635441309")]
-        public void GetWorkOrderDocs_WorkOrderDocsModel_ReturnData(long PracticeCode, string patientAccountStr)
+        public void GetWorkOrderDocs_WorkOrderDocsModel_ReturnData(long practiceCode, string patientAccountStr)
         {
             //Arrange
-            _userProfile.PracticeCode = PracticeCode;
+            _userProfile.PracticeCode = practiceCode;
 
             //Act
             var result = _patientService.GetWorkOrderDocs(patientAccountStr, _userProfile);
@@ -911,13 +911,13 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase(1011163, "101116354812860")]
         [TestCase(1011163, "101116354813049")]
         [TestCase(1011163, "101116354813475")]
-        public void GetPatientInviteStatus_PatientInviteStatusModel_ReturnData(long PracticeCode, string PatientAccount)
+        public void GetPatientInviteStatus_PatientInviteStatusModel_ReturnData(long practiceCode, string patientAccount)
         {
             //Arrange
-            _userProfile.PracticeCode = PracticeCode;
+            _userProfile.PracticeCode = practiceCode;
 
             //Act
-            var result = _patientService.GetPatientInviteStatus(PatientAccount, _userProfile);
+            var result = _patientService.GetPatientInviteStatus(patientAccount, _userProfile);
 
             //Assert
             if (result != null)
@@ -933,11 +933,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase(101116354814556)]
         [TestCase(101116354814574)]
         [TestCase(101116354814575)]
-        public void GetPatientAliasListForSpecificPatient_PatientAliasListForSpecificPatientModel_ReturnData(long patient_Account)
+        public void GetPatientAliasListForSpecificPatient_PatientAliasListForSpecificPatientModel_ReturnData(long patientAccount)
         {
             //Arrange
             //Act
-            var result = _patientService.GetPatientAliasListForSpecificPatient(patient_Account);
+            var result = _patientService.GetPatientAliasListForSpecificPatient(patientAccount);
 
             //Assert
             if (result != null)
@@ -954,10 +954,10 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase("Austria")]
         [TestCase(null)]
         [TestCase("-Austria")]
-        public void GetCountries_CountriesModel_ReturnData(string SEARCHVALUE)
+        public void GetCountries_CountriesModel_ReturnData(string searchValue)
         {
             //Arrange
-            _smartSearchCountriesReq.SEARCHVALUE = SEARCHVALUE;
+            _smartSearchCountriesReq.SEARCHVALUE = searchValue;
 
             //Act
             var result = _patientService.getCountries(_smartSearchCountriesReq);
@@ -994,11 +994,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(544101)]
         [TestCase(6002572)]
-        public void GetInsuranc_InsurancModel_ReturnData(long ID)
+        public void GetInsuranc_InsurancModel_ReturnData(long id)
         {
             //Arrange
             //Act
-            var result = _patientService.GetInsuranc(ID,_userProfile);
+            var result = _patientService.GetInsuranc(id, _userProfile);
 
             //Assert
             if (result != null)
@@ -1013,17 +1013,17 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         //[TestCase(1011163, 101116354816561)] else part  face exception
         [TestCase(1011163, 101116354816000)]
-        public void AddUpdatePatient_AddToPatientTable_ReturnData(long PracticeCode, long Patient_Account )
+        public void AddUpdatePatient_AddToPatientTable_ReturnData(long practiceCode, long patientAccount)
         {
             //Arrange
            
-            _userProfile.PracticeCode = PracticeCode;
+            _userProfile.PracticeCode = practiceCode;
             _userProfile.UserName = "1163testing";
             _patient.PCP = 544100;
             _patient.PCP_Name = "Test";
             _patient.Date_Of_Birth_In_String = "8/12/2000";
             _patient.Expiry_Date_In_Str = "8/12/2024";
-            _patient.Patient_Account = Patient_Account;
+            _patient.Patient_Account = patientAccount;
             _userProfile.isTalkRehab = true;
 
             _patient.FROM_INDEXINFO = true;
@@ -1085,7 +1085,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _userProfile.PracticeCode = 1011163;
             _userProfile.UserName = "1163testing";
             //Act
-            var result = _patientService.GetPatientInsurance(patientAccount,_userProfile);
+            var result = _patientService.GetPatientInsurance(patientAccount, _userProfile);
 
             //Assert
             if (result != null)
@@ -1119,12 +1119,12 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase("101116354816561", 5482085)]
         [TestCase("1012629500548", 5482085)]
-        [TestCase("101116354816562",null)]
-        public void CheckNecessaryDataForLoadEligibility_DataEligibilityCheck_ReturnData(string patientAccount, long Patient_Insurance_id)
+        [TestCase("101116354816562", null)]
+        public void CheckNecessaryDataForLoadEligibility_DataEligibilityCheck_ReturnData(string patientAccount, long patientInsuranceId)
         {
             //Arrange
             _patientEligibilitySearchModel.Patient_Account_Str = patientAccount;
-            _patientEligibilitySearchModel.Patient_Insurance_id = Patient_Insurance_id;
+            _patientEligibilitySearchModel.Patient_Insurance_id = patientInsuranceId;
             
             //Act
             var result = _patientService.CheckNecessaryDataForLoadEligibility(_patientEligibilitySearchModel);
@@ -1142,11 +1142,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase("")]
         [TestCase("Test")]
-        public void RemoveStyleNodeFromHtmlForMVP_RemoveStyle_ReturnData(string HTML)
+        public void RemoveStyleNodeFromHtmlForMVP_RemoveStyle_ReturnData(string html)
         {
             //Arrange
             //Act
-            var result = _patientService.RemoveStyleNodeFromHtmlForMVP(HTML);
+            var result = _patientService.RemoveStyleNodeFromHtmlForMVP(html);
 
             //Assert
             if (result != null)
@@ -1161,11 +1161,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase("*//div[contains(@id,'main-container-eligibility')]//div[contains(@class,'custom-panel-head')][1]//h3[1]")]
         [TestCase("Test")]
-        public void UpdatePayerNameInHTML_UpdatePayerNameInHTML_ReturnData(string HTML)
+        public void UpdatePayerNameInHTML_UpdatePayerNameInHTML_ReturnData(string html)
         {
             //Arrange
             //Act
-            var result = _patientService.UpdatePayerNameInHTML(HTML, _patientInsuranceInformation);
+            var result = _patientService.UpdatePayerNameInHTML(html, _patientInsuranceInformation);
 
             //Assert
             if (result != null)
@@ -1180,15 +1180,15 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(112562)]
         [TestCase(600102)]
-        public void GetCoordinates_Coordinates_ReturnData(long LOC_ID)
+        public void GetCoordinates_Coordinates_ReturnData(long locId)
         {
             //Arrange
             _userProfile.PracticeCode=1011163;
             _userProfile.UserName = "1163testing";
-            _facilityLocation.LOC_ID = LOC_ID;
+            _facilityLocation.LOC_ID = locId;
 
             //Act
-            var result = _patientService.AddFacilityLocation(_facilityLocation , _userProfile);
+            var result = _patientService.AddFacilityLocation(_facilityLocation, _userProfile);
 
             //Assert
             if (result != 0)
@@ -1203,7 +1203,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(123456)]
         [TestCase(544101)]        
-        public void SaveContact_Contact_ReturnData(long Contact_ID)
+        public void SaveContact_Contact_ReturnData(long contactID)
         {
             //Arrange
             _userProfile.PracticeCode = 1011163;
@@ -1213,7 +1213,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _patientContact.Patient_Account_Str = "";
             _patientContact.STATEMENT_ADDRESS_MARKED = false;
             _patientContact.Flag_Financially_Responsible_Party = false;
-            _patientContact.Contact_ID = Contact_ID;
+            _patientContact.Contact_ID = contactID;
             _userProfile.isTalkRehab = true;
 
             //Act
@@ -1231,11 +1231,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         }
         [Test]
         [TestCase(101116354412336)]
-        public void GetPatientContacts_PatientContactsModel_ReturnData(long patient_Account)
+        public void GetPatientContacts_PatientContactsModel_ReturnData(long patientAccount)
         {
             //Arrange
             //Act
-            var result = _patientService.GetPatientContacts(patient_Account);
+            var result = _patientService.GetPatientContacts(patientAccount);
 
             //Assert
             if (result != null)
@@ -1249,11 +1249,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         }
         [Test]
         [TestCase(101116354412336)]
-        public void GetPatientContactsForInsurance_PatientContactsForInsuranceModel_ReturnData(long patient_Account)
+        public void GetPatientContactsForInsurance_PatientContactsForInsuranceModel_ReturnData(long patientAccount)
         {
             //Arrange
             //Act
-            var result = _patientService.GetPatientContactsForInsurance(patient_Account);
+            var result = _patientService.GetPatientContactsForInsurance(patientAccount);
 
             //Assert
             if (result != null)
@@ -1268,11 +1268,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(101116354412336)]
         [TestCase(101116354816561)]   
-        public void GetCurrentPatientInsurances_CurrentPatientInsurancesModel_ReturnData(long patient_Account)
+        public void GetCurrentPatientInsurances_CurrentPatientInsurancesModel_ReturnData(long patientAccount)
         {
             //Arrange
             //Act
-            var result = _patientService.GetCurrentPatientInsurances(patient_Account,_userProfile);
+            var result = _patientService.GetCurrentPatientInsurances(patientAccount, _userProfile);
 
             //Assert
             if (result != null)
@@ -1287,7 +1287,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(101116354412336)]
         [TestCase(101116354816561)]
-        public void CreateUpdateInsuranceInMTBC_UpdateModel_ReturnData(long patient_Account)
+        public void CreateUpdateInsuranceInMTBC_UpdateModel_ReturnData(long patientAccount)
         {
             //Arrange
             _patientInsurance.MTBC_Patient_Insurance_Id = 5174;
@@ -1302,7 +1302,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _patientInsurance.Eligibility_Status = "test";
 
             //Act
-            var result = _patientService.CreateUpdateInsuranceInMTBC(_patientInsurance, patient_Account, _userProfile);
+            var result = _patientService.CreateUpdateInsuranceInMTBC(_patientInsurance, patientAccount, _userProfile);
 
             //Assert
             if (result != null)
@@ -1315,10 +1315,10 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             }
         }
         [Test]
-        [TestCase(true, 548101, "101116351010069" , "")]
-        [TestCase(true, 548101, "101116351010069", "Q")]
-        [TestCase(true , 548101 , "101116354816562" , "Q")]
-        public void SaveInsuranceAndEligibilityDetails_SaveModel_ReturnData(bool FromIndexInfo , long Patient_Insurance_Id , string Patient_Account_Str , string Pri_Sec_Oth_Type)
+        [TestCase(true, 548101, "101116351010069")]
+        [TestCase(true, 548101, "101116351010069")]
+        [TestCase(true, 548101, "101116354816562")]
+        public void SaveInsuranceAndEligibilityDetails_SaveModel_ReturnData(bool fromIndexInfo, long patientInsuranceId, string patientAccountStr)
         {
             //Arrange
             _userProfile.PracticeCode = 1011163;
@@ -1327,7 +1327,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             {
                 InsuranceToCreateUpdate = new PatientInsurance()
                 {
-                    Patient_Insurance_Id = Patient_Insurance_Id,
+                    Patient_Insurance_Id = patientInsuranceId,
                     Pri_Sec_Oth_Type = "",
                     Effective_Date_In_String = Convert.ToString(DateTime.Today),
                     Termination_Date_In_String = Convert.ToString(DateTime.Today),
@@ -1352,10 +1352,10 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
                     Employer_Code = 54896825423992
                 },
             };
-            _patientInsuranceEligibilityDetail.Patient_Account_Str = Patient_Account_Str;
+            _patientInsuranceEligibilityDetail.Patient_Account_Str = patientAccountStr;
 
             //Act
-            var result = _patientService.SaveInsuranceAndEligibilityDetails(_patientInsuranceEligibilityDetail, _userProfile, FromIndexInfo);
+            var result = _patientService.SaveInsuranceAndEligibilityDetails(_patientInsuranceEligibilityDetail, _userProfile, fromIndexInfo);
 
             //Assert
             if (result != null)
@@ -1370,8 +1370,8 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(123456, "ABN")]
         [TestCase(123456, "Hospice")]
-        [TestCase(544100 , "ABN")]
-        public void CreateNewLimit_NewLimit_ReturnData(long? old_Lim_ID, string lim_Type)
+        [TestCase(544100, "ABN")]
+        public void CreateNewLimit_NewLimit_ReturnData(long? oldLimID, string limType)
         {
             //Arrange
             _medicareLimit.Patient_Account = 101116354815798;
@@ -1383,7 +1383,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
 
             // EFFECTIVE_DATE_IN_STRING
             //Act
-            var result = _patientService.CreateNewLimit(old_Lim_ID, _medicareLimit, lim_Type, _userProfile);
+            var result = _patientService.CreateNewLimit(oldLimID, _medicareLimit, limType, _userProfile);
 
             //Assert
             if (result != null)
@@ -1399,11 +1399,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase(544100, "ABN")]
         [TestCase(544100, "Hospice")]
         [TestCase(544100, "")]
-        public void ABN_MedicareLimitDataChanged_DataChanged_ReturnData(long? newCaseId , string MEDICARE_LIMIT_TYPE_NAME)
+        public void ABN_MedicareLimitDataChanged_DataChanged_ReturnData(long? newCaseId , string medicareLimitTypeName)
         {
             //Arrange
 
-            _medicareLimit.MEDICARE_LIMIT_TYPE_NAME = MEDICARE_LIMIT_TYPE_NAME;
+            _medicareLimit.MEDICARE_LIMIT_TYPE_NAME = medicareLimitTypeName;
             _medicareLimit.CASE_ID = 544100 ;
             _medicareLimit.EFFECTIVE_DATE = DateTime.Today;
             _medicareLimit.END_DATE = DateTime.Today;
@@ -1448,13 +1448,13 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(548350)]
         [TestCase(544139)] 
-        public void Getsplitauthorizations_splitauthorization_ReturnData(long parent_id)
+        public void Getsplitauthorizations_splitauthorization_ReturnData(long parentid)
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
 
             //Act
-            var result = _patientService.getsplitauthorization(parent_id, _userProfile);
+            var result = _patientService.getsplitauthorization(parentid, _userProfile);
 
             //Assert
             if (result != null)
@@ -1549,14 +1549,14 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(548158)]
         [TestCase(123456)]
-        public void UnBlockPatientFromPHR_UnBlockPatient_ReturnData(long USER_ID)
+        public void UnBlockPatientFromPHR_UnBlockPatient_ReturnData(long userId)
         {
             //Arrange 
             _phr.EMAIL_ADDRESS = "babarazam@mailinator.com";
             _phr.PRACTICE_CODE = 1011163;
             _userProfile.PracticeCode = 1011163;
-            _phr.USER_ID = USER_ID;
-            _userProfile.userID = USER_ID;
+            _phr.USER_ID = userId;
+            _userProfile.userID = userId;
             _userProfile.UserName = "1163testing";
 
             //Act
@@ -1575,14 +1575,14 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(548158)]
         [TestCase(123456)]
-        public void BlockPatientFromPHR_BlockPatient_ReturnData(long USER_ID)
+        public void BlockPatientFromPHR_BlockPatient_ReturnData(long userId)
         {
             //Arrange 
             _phr.EMAIL_ADDRESS = "babarazam@mailinator.com";
             _phr.PRACTICE_CODE = 1011163;
             _userProfile.PracticeCode = 1011163;
-            _phr.USER_ID = USER_ID;
-            _userProfile.userID = USER_ID;
+            _phr.USER_ID = userId;
+            _userProfile.userID = userId;
             _userProfile.UserName = "1163testing";
 
             //Act
@@ -1601,14 +1601,14 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(548158)]
         [TestCase(123456)]
-        public void CancelPatientRequestFromPHR_CancelRequest_ReturnData(long USER_ID)
+        public void CancelPatientRequestFromPHR_CancelRequest_ReturnData(long userId)
         {
             //Arrange 
             _phr.EMAIL_ADDRESS = "babarazam@mailinator.com";
             _phr.PRACTICE_CODE = 1011163;
             _userProfile.PracticeCode = 1011163;
-            _phr.USER_ID = USER_ID;
-            _userProfile.userID = USER_ID;
+            _phr.USER_ID = userId;
+            _userProfile.userID = userId;
             _userProfile.UserName = "1163testing";
 
             //Act
@@ -1626,7 +1626,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         }
         [Test]
         [TestCase("test")]
-        public void AddUpdateTask_TaskAddToDb_ReturnData(string Eligibility_MSP_Data)
+        public void AddUpdateTask_TaskAddToDb_ReturnData(string eligibilityMspData)
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
@@ -1636,7 +1636,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _fOX_TBL_TASK.TASK_ID = 123456;
  
             //Act
-            var result = _patientService.AddUpdateTask(_fOX_TBL_TASK , _userProfile , Eligibility_MSP_Data);
+            var result = _patientService.AddUpdateTask(_fOX_TBL_TASK , _userProfile , eligibilityMspData);
 
             //Assert
             if (result != null)
@@ -1673,13 +1673,13 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(null)]
         [TestCase(548100)]
-        public void SavePatientAlias_AddData_ReturnData(long PATIENT_ALIAS_ID )
+        public void SavePatientAlias_AddData_ReturnData(long patientAliasId)
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
             _userProfile.UserName = "1163testing";
             _patientAlias.PATIENT_ACCOUNT_STR = "101116354814556";
-            _patientAlias.PATIENT_ALIAS_ID = PATIENT_ALIAS_ID;
+            _patientAlias.PATIENT_ALIAS_ID = patientAliasId;
 
             //Act
             var result = _patientService.SavePatientAlias(_patientAlias, _userProfile);
@@ -1695,9 +1695,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             }
         }
         [Test]
-        [TestCase(null)]
-        [TestCase(548100)]
-        public void CheckDuplicatePatients_CheckDuplicate_ReturnData(long PATIENT_ALIAS_ID)
+        public void CheckDuplicatePatients_CheckDuplicate_ReturnData()
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
