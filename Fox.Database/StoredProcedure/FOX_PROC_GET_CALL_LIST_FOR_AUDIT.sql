@@ -156,12 +156,13 @@ on PSL.SURVEY_CALL_ID = sas.SURVEY_CALL_ID
  ON C.PATIENT_ACCOUNT = P.Patient_Account                              
  left join FOX_TBL_SURVEY_AUDIT_SCORES AS SCR                              
  ON SCR.PHD_CALL_ID = c.FOX_PHD_CALL_DETAILS_ID                                     
-                                  
+                                   AND ISNULL(SCR.DELETED, 0)=0
  WHERE C.CREATED_BY = @CALL_BY                                    
      AND ISNULL(C.DELETED, 0) = 0                            
   --AND ISNULL(R.DELETED,0) = 0 AND ISNULL(SR.DELETED,0) = 0                                    
   AND ISNULL(C.CALL_RECORDING_PATH , '') <> ''                                    
-  AND C.PRACTICE_CODE = @PRACTICE_CODE                        AND (@PHD_CALL_SCENARIO_ID = 0 OR SR.PHD_CALL_SCENARIO_ID  = @PHD_CALL_SCENARIO_ID)                                    
+  AND C.PRACTICE_CODE = @PRACTICE_CODE                        
+  AND (@PHD_CALL_SCENARIO_ID = 0 OR SR.PHD_CALL_SCENARIO_ID  = @PHD_CALL_SCENARIO_ID)                                    
   AND (@DATE_FROM IS NULL                                      
               OR @DATE_TO IS NULL                                      
               OR CONVERT(DATE, C.CREATED_DATE)                                     
