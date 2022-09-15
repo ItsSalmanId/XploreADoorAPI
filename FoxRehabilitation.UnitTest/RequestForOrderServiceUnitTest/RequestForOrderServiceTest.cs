@@ -40,7 +40,7 @@ namespace FoxRehabilitation.UnitTest.RequestForOrderServiceUnitTest
             _result = _requestForOrderService.SendEmail(_requestSendEmailModel, _userProfile);
 
             //Assert
-            Assert.AreEqual(_result.Success,false);
+            Assert.AreEqual(false, _result.Success);
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace FoxRehabilitation.UnitTest.RequestForOrderServiceUnitTest
             _result = _requestForOrderService.SendEmail(_requestSendEmailModel, _userProfile);
 
             //Assert
-            Assert.AreEqual(_result.Success, false);
+            Assert.AreEqual(false, _result.Success);
         }
         [TearDown]
         public void Teardown()
