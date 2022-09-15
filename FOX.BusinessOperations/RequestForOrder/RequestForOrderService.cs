@@ -233,7 +233,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                     //var encryptedWorkId = StringCipher.Encrypt(requestSendEmailModel.WorkId.ToString());
                     var encryptedWorkId = requestSendEmailModel.WorkId.ToString();
                     string link = "";
-                    if(Profile.isTalkRehab)
+                    if(Profile!= null && Profile.isTalkRehab)
                     {
                         link = AppConfiguration.ClientURL + @"#/account/login?talkRehabEmail="+ Profile.PracticeCode;
                     }
