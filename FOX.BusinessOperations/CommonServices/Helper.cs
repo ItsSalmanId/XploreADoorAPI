@@ -186,7 +186,7 @@ namespace FOX.BusinessOperations.CommonService
                 msg.Body = bodyHTML;
                 msg.IsBodyHtml = true;
                 msg.Priority = MailPriority.Normal;
-                if (profile.isTalkRehab)
+                if (profile != null && profile.isTalkRehab)
                 {
                     client.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["NoReplyUserName"], WebConfigurationManager.AppSettings["NoReplyPassword"]);
                 }
@@ -236,8 +236,8 @@ namespace FOX.BusinessOperations.CommonService
                             {
                                 if (File.Exists(filePth)) { mail.Attachments.Add(new Attachment(filePth)); }
                             }
-                        }
-                        if (profile.isTalkRehab)
+                        }                     
+                        if (profile != null && profile.isTalkRehab)
                         {
                             smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["NoReplyUserName"], WebConfigurationManager.AppSettings["NoReplyPassword"]);
                         }
