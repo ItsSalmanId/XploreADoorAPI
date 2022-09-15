@@ -1,0 +1,25 @@
+IF (OBJECT_ID('FOX_PROC_GET_INTERNEE_ASSIGNMENT_COUNT') IS NOT NULL ) DROP PROCEDURE FOX_PROC_GET_INTERNEE_ASSIGNMENT_COUNT  
+GO 
+  -- =============================================                    
+-- Author:  <Author,Abdur Rafay>                    
+-- Create date: <Create Date,07/29/2021>                    
+-- DESCRIPTION: <GET INTERNEE ASSIGNMENT COUNT>                
+              
+-- [FOX_PROC_GET_INTERNEE_ASSIGNMENT_COUNT] '07/30/2021',1011163 , 'sdfsdfsdfsdfsdfsdfsdfsdfs_544563'                    
+CREATE PROCEDURE [dbo].[FOX_PROC_GET_INTERNEE_ASSIGNMENT_COUNT](        
+@DATE DATETIME,        
+@PRACTICE_CODE BIGINT,      
+@INDEXER VARCHAR(50))              
+AS                
+BEGIN                
+SELECT COUNT(*) AS TOTAL_COUNT      
+FROM FOX_TBL_ACTIVE_INDEXER_HISTORY HIS      
+JOIN FOX_TBL_ACTIVE_INDEXER IND on HIS.INDEXER = IND.INDEXER AND (IND.DEFAULT_VALUE = 'Trainee Indexer') AND ISNULL(IND.IS_ACTIVE, 0) = 1      
+WHERE  (CONVERT(DATE, HIS.CREATED_DATE ) BETWEEN CONVERT(DATE,@DATE) AND CONVERT(DATE,@DATE))       
+AND HIS.PRACTICE_CODE = @PRACTICE_CODE       
+AND HIS.INDEXER = @INDEXER      
+GROUP BY HIS.INDEXER      
+HAVING COUNT(*) < 21      
+ORDER BY  COUNT(HIS.INDEXER) ASC      
+END;     
+    

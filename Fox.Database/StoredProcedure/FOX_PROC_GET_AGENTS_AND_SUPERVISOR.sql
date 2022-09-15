@@ -1,0 +1,29 @@
+IF (OBJECT_ID('FOX_PROC_CREATED_TASK_TYPE_DATA_ALTERNATIVE') IS NOT NULL ) DROP PROCEDURE FOX_PROC_CREATED_TASK_TYPE_DATA_ALTERNATIVE
+GO
+ --[dbo].[FOX_PROC_GET_AGENTS_AND_SUPERVISOR] 1011163, '1163testing', 102            
+CREATE Procedure [dbo].[FOX_PROC_GET_AGENTS_AND_SUPERVISOR] --1011163, '1163testing', 102      
+(        
+ @PRACTICE_CODE BIGINT,        
+ @CURRENT_USER varchar(225),      
+ @ROLE_ID bigint      
+)        
+AS        
+BEGIN        
+SET NOCOUNT ON;        
+      
+if(@ROLE_ID = 100)      
+ begin      
+  SELECT USER_NAME, upper(FIRST_NAME +' - '+ r.ROLE_NAME) FIRST_NAME, upper(LAST_NAME) LAST_NAME, upper(r.ROLE_NAME) ROLE_NAME, r.ROLE_ID ROLE_ID FROM FOX_TBL_APPLICATION_USER au        
+  inner join FOX_TBL_ROLE r on au.ROLE_ID=r.ROLE_ID        
+  WHERE au.PRACTICE_CODE = @PRACTICE_CODE AND AU.ROLE_ID IN (102) AND IS_ACTIVE=1 AND  USER_NAME not like  @CURRENT_USER   AND  AU.DELETED=0       
+  order by LAST_NAME asc     
+ end      
+else      
+begin      
+  SELECT USER_NAME, upper(FIRST_NAME +' - '+ r.ROLE_NAME) FIRST_NAME, upper(LAST_NAME) LAST_NAME, upper(r.ROLE_NAME) ROLE_NAME, r.ROLE_ID ROLE_ID FROM FOX_TBL_APPLICATION_USER au        
+  inner join FOX_TBL_ROLE r on au.ROLE_ID=r.ROLE_ID        
+  WHERE au.PRACTICE_CODE = @PRACTICE_CODE AND AU.ROLE_ID IN (100,102) AND IS_ACTIVE=1 AND  USER_NAME not like  @CURRENT_USER   AND  AU.DELETED=0    
+  order by LAST_NAME asc        
+end      
+        
+END 

@@ -112,14 +112,14 @@ namespace FOX.BusinessOperations.RequestForOrder
 
             var usr = _UserRepository.GetByID(userId);
             FOX_TBL_SENDER_TYPE senderType = new FOX_TBL_SENDER_TYPE();
-            if (Profile.isTalkRehab)
-            {
-                senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && !t.DELETED);
-            }
-            else
-            {
+            //if (Profile.isTalkRehab)
+            //{
+            //    senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && !t.DELETED);
+            //}
+            //else
+            //{
                 senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == practiceCode) && !t.DELETED);
-            }
+           // }
             if (usr != null)
             {
                 originalQueue.FOX_TBL_SENDER_TYPE_ID = usr.FOX_TBL_SENDER_TYPE_ID;
@@ -457,8 +457,8 @@ namespace FOX.BusinessOperations.RequestForOrder
                     }
                     else
                     {
-                        return new ResponseModel() { Message = "Email sent successfully, our admission team is processing your referral", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
-                        //return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
+                        //return new ResponseModel() { Message = "Email sent successfully, our admission team is processing your referral", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
+                        return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
                     }
                 }
                 else
