@@ -1703,9 +1703,6 @@ namespace FOX.BusinessOperations.FoxPHDService
                     var existingDetailInfo = _phdFaqsDetailRepository.GetFirst(r => r.FAQS_ID == objPHDFAQsDetail.FAQS_ID && r.DELETED == false);
                     if (existingDetailInfo == null)
                     {
-                        //if (!string.IsNullOrEmpty(ObjPHDFAQsDetail.QUESTIONS.ToString()) && !string.IsNullOrEmpty(ObjPHDFAQsDetail.ANSWERS.ToString()))
-                        //{
-
                             phdFAQsDetail.FAQS_ID = Helper.getMaximumId("FAQS_ID");
                             phdFAQsDetail.QUESTIONS = objPHDFAQsDetail.QUESTIONS.ToString();
                             phdFAQsDetail.ANSWERS = objPHDFAQsDetail.ANSWERS.ToString();
@@ -1715,19 +1712,11 @@ namespace FOX.BusinessOperations.FoxPHDService
                             phdFAQsDetail.CREATED_DATE = objPHDFAQsDetail.MODIFIED_DATE = Helper.GetCurrentDate();
                             _phdFaqsDetailRepository.Insert(phdFAQsDetail);
                             _phdFaqsDetailRepository.Save();
-                            response.Message = "Record insert successfully";
-                            response.Success = true;
-                        //}
-                        //else
-                        //{
-                        //    response.ErrorMessage = "Please Entre Questions or Answers";
-                        //    response.Success = false;
-                        //}
+                            response.Message = "FAQ inserted successfully";
+                            response.Success = true;                     
                     }
                     else
                     {
-                        //if (!string.IsNullOrEmpty(ObjPHDFAQsDetail.QUESTIONS.ToString()) && !string.IsNullOrEmpty(ObjPHDFAQsDetail.ANSWERS.ToString()))
-                        //{
                         existingDetailInfo.FAQS_ID = objPHDFAQsDetail.FAQS_ID;
                         existingDetailInfo.QUESTIONS = objPHDFAQsDetail.QUESTIONS.ToString();
                         existingDetailInfo.ANSWERS = objPHDFAQsDetail.ANSWERS.ToString();
@@ -1737,20 +1726,14 @@ namespace FOX.BusinessOperations.FoxPHDService
                         existingDetailInfo.MODIFIED_DATE = objPHDFAQsDetail.MODIFIED_DATE = Helper.GetCurrentDate();
                             _phdFaqsDetailRepository.Update(existingDetailInfo);
                             _phdFaqsDetailRepository.Save();
-                            response.Message = "Record update successfully";
+                            response.Message = "FAQ updated successfully";
                             response.Success = true;
-                        //}
-                        //else
-                        //{
-                        //    response.ErrorMessage = "Please Entre Questions or Answers";
-                        //    response.Success = false;
-                        //}
                     }
 
                 }
                 else
                 {
-                    response.ErrorMessage = "Please Entre Question or Answer";
+                    response.ErrorMessage = "Please Entre a Question or Answer";
                     response.Success = false;
                 }
                
@@ -1766,6 +1749,7 @@ namespace FOX.BusinessOperations.FoxPHDService
         {
             try
             {
+                ResponseModel response = new ResponseModel();
                 var existingDetailInfo = _phdFaqsDetailRepository.GetFirst(r => r.FAQS_ID == objPhdFaqsDetail.FAQS_ID && r.DELETED == false);
                 if (existingDetailInfo != null)
                 {
@@ -1774,13 +1758,18 @@ namespace FOX.BusinessOperations.FoxPHDService
                     existingDetailInfo.DELETED = true;
                     _phdFaqsDetailRepository.Update(existingDetailInfo);
                     _phdFaqsDetailRepository.Save();
+
+                    response.ErrorMessage = "";
+                    response.Message = "FAQ deleted successfully";
+                    response.Success = true;
                 }
-                ResponseModel response = new ResponseModel()
+                else
                 {
-                    ErrorMessage = "",
-                    Message = "Record deleted successfully",
-                    Success = true
-                };
+                    response.ErrorMessage = "";
+                    response.Message = "FAQ deleted successfully";
+                    response.Success = true;
+                }
+
                 return response;
             }
             catch (Exception)
@@ -1801,8 +1790,7 @@ namespace FOX.BusinessOperations.FoxPHDService
             if(profile != null && profile.PracticeCode != 0)
             {
                 var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
-               // var CaseStatment = "GetFaqsDetails";
-                FAQsInfoList = SpRepository<PhdFaqsDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_FAQS_LIST  @PRACTICE_CODE ", PracticeCode );
+                FAQsInfoList = SpRepository<PhdFaqsDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_FAQS_LIST  @PRACTICE_CODE ", PracticeCode);
             }
             return FAQsInfoList;
         }
@@ -1810,14 +1798,17 @@ namespace FOX.BusinessOperations.FoxPHDService
         public List<PhdFaqsDetail> GetPHDFaqsDetailsInformation(PhdFaqsDetail ObjPHDFAQsDetail, UserProfile profile)
         {
             try
-            {   
-                
+            {
+                List<PhdFaqsDetail> PHDDetailsList = new List<PhdFaqsDetail>();
+                if (!string.IsNullOrEmpty(ObjPHDFAQsDetail.QUESTIONS.ToString()) && profile.PracticeCode != 0)
+                {
+
                     var PracticeCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
                     var SearchText = new SqlParameter { ParameterName = "@SEARCH_TEXT", SqlDbType = SqlDbType.VarChar, Value = string.IsNullOrEmpty(ObjPHDFAQsDetail.QUESTIONS) ? "" : ObjPHDFAQsDetail.QUESTIONS };
-                    var PHDDetailsList = SpRepository<PhdFaqsDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_FAQs_DETAILS    @PRACTICE_CODE,@SEARCH_TEXT ",
+                    PHDDetailsList = SpRepository<PhdFaqsDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_FAQs_DETAILS @PRACTICE_CODE,@SEARCH_TEXT ",
                     PracticeCode, SearchText);
+                }
                     return PHDDetailsList;
-  
             }
             catch (Exception ex)
             {
