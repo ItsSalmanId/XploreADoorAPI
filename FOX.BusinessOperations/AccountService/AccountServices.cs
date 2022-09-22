@@ -676,12 +676,12 @@ namespace FOX.BusinessOperations.AccountService
                                    .Replace("[[SENDER_TYPE]]", senderType)
                                    .Replace("[[LAST_NAME]]", user.LAST_NAME)
                                    .Replace("[[EMAIL]]", user.EMAIL)
-                                   .Replace("[[PRACTICE_NAME]]", practiceOrganizationName)
-                                   .Replace("[[ACO]]", user.ACO_NAME)
-                                   .Replace("[[SPECIALITY]]", user.SPECIALITY_NAME)
-                                   .Replace("[[SNF]]", user.SNF_NAME)
-                                   .Replace("[[HOSPITAL]]", user.HOSPITAL_NAME)
-                                   .Replace("[[HHH]]", user.HHH_NAME)
+                                   .Replace("[[PRACTICE_NAME]]", user.PRACTICE_ORGANIZATION_TEXT)
+                                   .Replace("[[ACO]]", user.ACO_TEXT)
+                                   .Replace("[[SPECIALITY]]", user.SPECIALITY_TEXT)
+                                   .Replace("[[SNF]]", user.SNF_TEXT)
+                                   .Replace("[[HOSPITAL]]", user.HOSPITAL_TEXT)
+                                   .Replace("[[HHH]]", user.HHH_TEXT)
                                    .Replace("[[COMMENTS]]", user.COMMENTS);
             }
             string subjectOfAdminEmail = "New signup request: " + user.LAST_NAME + ", " + user.FIRST_NAME + ", " + user.USER_TYPE;
