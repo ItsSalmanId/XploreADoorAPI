@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest.SurveyReportsServiceUnitTest
 {
     [TestFixture]
-    class SurveyReportsServiceTest
+    public class SurveyReportsServiceTest
     {
         private SurveyReportsService _surveyReportsService;
         private PatientSurveySearchRequest _patientSurveySearchRequest;
