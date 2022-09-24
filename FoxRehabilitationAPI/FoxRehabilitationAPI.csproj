@@ -347,6 +347,7 @@
     <Compile Include="Controllers\Scheduler\SchedulerController.cs" />
     <Compile Include="Controllers\SearchOrderController.cs" />
     <Compile Include="Controllers\SettingsController.cs" />
+    <Compile Include="Controllers\Settings\Announcement\AnnouncementController.cs" />
     <Compile Include="Controllers\Settings\ClinicianSetup\ClinicianSetupController.cs" />
     <Compile Include="Controllers\Settings\PracticeOrganization\PracticeOrganizationController.cs" />
     <Compile Include="Controllers\Settings\ReferralRegion\ReferralRegionController.cs" />

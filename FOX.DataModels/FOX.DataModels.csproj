@@ -155,6 +155,7 @@
     <Compile Include="Models\SenderName\SenderNameModel.cs" />
     <Compile Include="Models\SenderType\SenderTypeModel.cs" />
     <Compile Include="Models\ServiceConfiguration\ServiceConfiguration.cs" />
+    <Compile Include="Models\Settings\Announcement\Announcement.cs" />
     <Compile Include="Models\Settings\ClinicianSetup\ClinicianSetup.cs" />
     <Compile Include="Models\Settings\EmailConfig\EmailConfig.cs" />
     <Compile Include="Models\Settings\FacilityLocation\FacilityLocation.cs" />
