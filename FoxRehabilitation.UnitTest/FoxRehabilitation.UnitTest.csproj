@@ -66,9 +66,13 @@
     <Compile Include="AccountServiceUnitTest\AccountServiceTest.cs" />
     <Compile Include="CommonServiceUnitTest\CommonServiceTest.cs" />
     <Compile Include="FoxPHDServiceUnitTest\FoxPHDServiceTest.cs" />
+    <Compile Include="PatientServicesUnitTest\PatientServicesTest.cs" />
+    <Compile Include="PatientSurveyServiceUnitTest\SurveyReportsServiceUnitTest\SurveyReportsServiceTest.cs" />
     <Compile Include="PerformAuditServiceUnitTest\PerormAuditServiceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QualityAssuranceServiceUnitTest\EvaluationSetupServiceTest.cs" />
+    <Compile Include="RequestForOrderUnitTest\RequestForOrderServiceTest.cs" />
+    <Compile Include="RequestForOrderUnitTest\IndexInformationServiceUnitTest\IndexInformationServiceTest.cs" />
     <Compile Include="UserManagementServiceUnitTest\UserManagementServiceTest.cs" />
     <Compile Include="SignatureRequiredServiceUnitTest\SignatureRequiredServiceTest.cs" />
   </ItemGroup>
