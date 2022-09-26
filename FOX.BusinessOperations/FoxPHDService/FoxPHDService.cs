@@ -1705,8 +1705,8 @@ namespace FOX.BusinessOperations.FoxPHDService
                         phdFaqsDetail.ANSWERS = objPHDFAQsDetail.ANSWERS.ToString();
                         phdFaqsDetail.PRACTICE_CODE = profile.PracticeCode;
                         phdFaqsDetail.DELETED = false;
-                        phdFaqsDetail.CREATED_BY = objPHDFAQsDetail.MODIFIED_BY = profile.UserName;
-                        phdFaqsDetail.CREATED_DATE = objPHDFAQsDetail.MODIFIED_DATE = Helper.GetCurrentDate();
+                        phdFaqsDetail.CREATED_BY = phdFaqsDetail.MODIFIED_BY = profile.UserName;
+                        phdFaqsDetail.CREATED_DATE = phdFaqsDetail.MODIFIED_DATE = Helper.GetCurrentDate();
                         _phdFaqsDetailRepository.Insert(phdFaqsDetail);
                         _phdFaqsDetailRepository.Save();
                         response.Message = "FAQ inserted successfully";
@@ -1719,14 +1719,13 @@ namespace FOX.BusinessOperations.FoxPHDService
                         existingDetailInfo.ANSWERS = objPHDFAQsDetail.ANSWERS.ToString();
                         existingDetailInfo.PRACTICE_CODE = profile.PracticeCode;
                         existingDetailInfo.DELETED = false;
-                        existingDetailInfo.MODIFIED_BY = objPHDFAQsDetail.MODIFIED_BY = profile.UserName;
-                        existingDetailInfo.MODIFIED_DATE = objPHDFAQsDetail.MODIFIED_DATE = Helper.GetCurrentDate();
+                        existingDetailInfo.MODIFIED_BY = profile.UserName;
+                        existingDetailInfo.MODIFIED_DATE = Helper.GetCurrentDate();
                         _phdFaqsDetailRepository.Update(existingDetailInfo);
                         _phdFaqsDetailRepository.Save();
                         response.Message = "FAQ updated successfully";
                         response.Success = true;
                     }
-
                 }
                 else
                 {
