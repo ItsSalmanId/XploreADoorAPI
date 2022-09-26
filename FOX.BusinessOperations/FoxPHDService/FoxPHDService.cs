@@ -1782,7 +1782,7 @@ namespace FOX.BusinessOperations.FoxPHDService
         public List<PhdFaqsDetail> GetPHDFaqsDetailsInformation(PhdFaqsDetail objPhdFaqsDetail, UserProfile profile)
         {
             List<PhdFaqsDetail> phdDetailsList = new List<PhdFaqsDetail>();
-            if (objPhdFaqsDetail != null && !string.IsNullOrEmpty(objPhdFaqsDetail.QUESTIONS.ToString()) && profile.PracticeCode != 0)
+            if (objPhdFaqsDetail != null && !string.IsNullOrEmpty(objPhdFaqsDetail.QUESTIONS?.ToString()) && profile.PracticeCode != 0)
             {
                 var PracticeCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
                 var SearchText = new SqlParameter { ParameterName = "@SEARCH_TEXT", SqlDbType = SqlDbType.VarChar, Value = string.IsNullOrEmpty(objPhdFaqsDetail.QUESTIONS) ? "" : objPhdFaqsDetail.QUESTIONS };
