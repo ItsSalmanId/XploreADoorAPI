@@ -90,7 +90,6 @@ namespace FOX.BusinessOperations.FoxPHDService
                 //}
                 //else
                 //{
-                    ObjDropdownLists.PhdFaqsDetail = _phdFaqsDetailRepository.GetMany(s => s.PRACTICE_CODE == profile.PracticeCode && s.DELETED == false).OrderBy(o => o.QUESTIONS).ToList();
                     ObjDropdownLists.PhdCallScenarios = _PhdCallScenarioRepository.GetMany(s => s.PRACTICE_CODE == profile.PracticeCode && s.DELETED == false).OrderBy(o => o.NAME).ToList();
                     ObjDropdownLists.PhdCallReasons = _PhdCallReasonRepository.GetMany(s => s.PRACTICE_CODE == profile.PracticeCode && s.DELETED == false).OrderBy(o => o.NAME).ToList();
                     ObjDropdownLists.PhdCallRequests = _PhdCallRequestRepository.GetMany(s => s.PRACTICE_CODE == profile.PracticeCode && s.DELETED == false).OrderBy(o => o.NAME).ToList();
@@ -116,7 +115,6 @@ namespace FOX.BusinessOperations.FoxPHDService
             }
 
         }
-  
         public List<Patient> GetPatientInformation(PatientsSearchRequest ObjPatientSearchRequest, UserProfile profile)
         {
             try
@@ -865,7 +863,6 @@ namespace FOX.BusinessOperations.FoxPHDService
                 return response;
             }
         }
- 
         public ResponseModel AddUpdateVerificationInformation(PhdPatientVerification ObjPhdPatientVerification, UserProfile profile)
         {
             try
@@ -1691,29 +1688,29 @@ namespace FOX.BusinessOperations.FoxPHDService
             return phdSanarios;
 
         }
-
+        //Description:  This function is trigger to Add faqs
         public ResponseModel AddUpdatePhdFaqsDetail(PhdFaqsDetail objPHDFAQsDetail, UserProfile profile)
         {
             ResponseModel response = new ResponseModel();
             try
             {
-                PhdFaqsDetail phdFAQsDetail = new PhdFaqsDetail();
-                if (!string.IsNullOrEmpty(objPHDFAQsDetail.QUESTIONS.ToString()) && !string.IsNullOrEmpty(objPHDFAQsDetail.ANSWERS.ToString()) && profile.PracticeCode != 0)
+                PhdFaqsDetail phdFaqsDetail = new PhdFaqsDetail();
+                if (objPHDFAQsDetail != null && !string.IsNullOrEmpty(objPHDFAQsDetail.QUESTIONS.ToString()) && !string.IsNullOrEmpty(objPHDFAQsDetail.ANSWERS.ToString()) && profile.PracticeCode != 0 && !string.IsNullOrEmpty(objPHDFAQsDetail.FAQS_ID.ToString()))
                 {
                     var existingDetailInfo = _phdFaqsDetailRepository.GetFirst(r => r.FAQS_ID == objPHDFAQsDetail.FAQS_ID && r.DELETED == false);
                     if (existingDetailInfo == null)
                     {
-                            phdFAQsDetail.FAQS_ID = Helper.getMaximumId("FAQS_ID");
-                            phdFAQsDetail.QUESTIONS = objPHDFAQsDetail.QUESTIONS.ToString();
-                            phdFAQsDetail.ANSWERS = objPHDFAQsDetail.ANSWERS.ToString();
-                            phdFAQsDetail.PRACTICE_CODE = profile.PracticeCode;
-                            phdFAQsDetail.DELETED = false;
-                            phdFAQsDetail.CREATED_BY = objPHDFAQsDetail.MODIFIED_BY = profile.UserName;
-                            phdFAQsDetail.CREATED_DATE = objPHDFAQsDetail.MODIFIED_DATE = Helper.GetCurrentDate();
-                            _phdFaqsDetailRepository.Insert(phdFAQsDetail);
-                            _phdFaqsDetailRepository.Save();
-                            response.Message = "FAQ inserted successfully";
-                            response.Success = true;                     
+                        phdFaqsDetail.FAQS_ID = Helper.getMaximumId("FAQS_ID");
+                        phdFaqsDetail.QUESTIONS = objPHDFAQsDetail.QUESTIONS.ToString();
+                        phdFaqsDetail.ANSWERS = objPHDFAQsDetail.ANSWERS.ToString();
+                        phdFaqsDetail.PRACTICE_CODE = profile.PracticeCode;
+                        phdFaqsDetail.DELETED = false;
+                        phdFaqsDetail.CREATED_BY = objPHDFAQsDetail.MODIFIED_BY = profile.UserName;
+                        phdFaqsDetail.CREATED_DATE = objPHDFAQsDetail.MODIFIED_DATE = Helper.GetCurrentDate();
+                        _phdFaqsDetailRepository.Insert(phdFaqsDetail);
+                        _phdFaqsDetailRepository.Save();
+                        response.Message = "FAQ inserted successfully";
+                        response.Success = true;                     
                     }
                     else
                     {
@@ -1724,16 +1721,16 @@ namespace FOX.BusinessOperations.FoxPHDService
                         existingDetailInfo.DELETED = false;
                         existingDetailInfo.MODIFIED_BY = objPHDFAQsDetail.MODIFIED_BY = profile.UserName;
                         existingDetailInfo.MODIFIED_DATE = objPHDFAQsDetail.MODIFIED_DATE = Helper.GetCurrentDate();
-                            _phdFaqsDetailRepository.Update(existingDetailInfo);
-                            _phdFaqsDetailRepository.Save();
-                            response.Message = "FAQ updated successfully";
-                            response.Success = true;
+                        _phdFaqsDetailRepository.Update(existingDetailInfo);
+                        _phdFaqsDetailRepository.Save();
+                        response.Message = "FAQ updated successfully";
+                        response.Success = true;
                     }
 
                 }
                 else
                 {
-                    response.ErrorMessage = "Please Entre a Question or Answer";
+                    response.ErrorMessage = "Please Enter a Question or Answer";
                     response.Success = false;
                 }
                
@@ -1744,76 +1741,56 @@ namespace FOX.BusinessOperations.FoxPHDService
             }
             return response;
         }
-
+        //Description:  This function is trigger to soft delete faqs
         public ResponseModel DeletePhdFaqs(PhdFaqsDetail objPhdFaqsDetail, UserProfile profile)
         {
-            try
-            {
                 ResponseModel response = new ResponseModel();
-                var existingDetailInfo = _phdFaqsDetailRepository.GetFirst(r => r.FAQS_ID == objPhdFaqsDetail.FAQS_ID && r.DELETED == false);
-                if (existingDetailInfo != null)
-                {
-                    existingDetailInfo.MODIFIED_BY = profile.UserName;
-                    existingDetailInfo.MODIFIED_DATE = Helper.GetCurrentDate();
-                    existingDetailInfo.DELETED = true;
-                    _phdFaqsDetailRepository.Update(existingDetailInfo);
-                    _phdFaqsDetailRepository.Save();
-
-                    response.ErrorMessage = "";
-                    response.Message = "FAQ deleted successfully";
-                    response.Success = true;
+                if (objPhdFaqsDetail != null && profile.PracticeCode != 0 && !string.IsNullOrEmpty(objPhdFaqsDetail.FAQS_ID.ToString()))
+                { 
+                    var existingDetailInfo = _phdFaqsDetailRepository.GetFirst(r => r.FAQS_ID == objPhdFaqsDetail.FAQS_ID && r.DELETED == false);
+                    if (existingDetailInfo != null)
+                    {
+                        existingDetailInfo.MODIFIED_BY = profile.UserName;
+                        existingDetailInfo.MODIFIED_DATE = Helper.GetCurrentDate();
+                        existingDetailInfo.DELETED = true;
+                        _phdFaqsDetailRepository.Update(existingDetailInfo);
+                        _phdFaqsDetailRepository.Save();
+                        response.ErrorMessage = "";
+                        response.Message = "FAQ deleted successfully";
+                        response.Success = true;
+                    }
+                    else
+                    {
+                        response.ErrorMessage = "";
+                        response.Message = "FAQ deleted successfully";
+                        response.Success = true;
+                    }
                 }
-                else
-                {
-                    response.ErrorMessage = "";
-                    response.Message = "FAQ deleted successfully";
-                    response.Success = true;
-                }
-
                 return response;
-            }
-            catch (Exception)
-            {
-                ResponseModel response = new ResponseModel()
-                {
-                    ErrorMessage = "",
-                    Message = "Not Deleted",
-                    Success = false
-                };
-                return response;
-            }
         }
-
+        //Description:  This function is trigger to get dropdown list of faqs
         public List<PhdFaqsDetail> GetDropdownListFaqs(UserProfile profile)
         {
-            List < PhdFaqsDetail > FAQsInfoList = new List<PhdFaqsDetail>();
+            List <PhdFaqsDetail> faqsInfoList = new List<PhdFaqsDetail>();
             if(profile != null && profile.PracticeCode != 0)
             {
                 var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
-                FAQsInfoList = SpRepository<PhdFaqsDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_FAQS_LIST  @PRACTICE_CODE ", PracticeCode);
+                faqsInfoList = SpRepository<PhdFaqsDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_FAQS_LIST  @PRACTICE_CODE ", PracticeCode);
             }
-            return FAQsInfoList;
+            return faqsInfoList;
         }
-
-        public List<PhdFaqsDetail> GetPHDFaqsDetailsInformation(PhdFaqsDetail ObjPHDFAQsDetail, UserProfile profile)
+        //Description:  This function is trigger for smart search 
+        public List<PhdFaqsDetail> GetPHDFaqsDetailsInformation(PhdFaqsDetail objPhdFaqsDetail, UserProfile profile)
         {
-            try
+            List<PhdFaqsDetail> phdDetailsList = new List<PhdFaqsDetail>();
+            if (objPhdFaqsDetail != null && !string.IsNullOrEmpty(objPhdFaqsDetail.QUESTIONS.ToString()) && profile.PracticeCode != 0)
             {
-                List<PhdFaqsDetail> PHDDetailsList = new List<PhdFaqsDetail>();
-                if (!string.IsNullOrEmpty(ObjPHDFAQsDetail.QUESTIONS.ToString()) && profile.PracticeCode != 0)
-                {
-
-                    var PracticeCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
-                    var SearchText = new SqlParameter { ParameterName = "@SEARCH_TEXT", SqlDbType = SqlDbType.VarChar, Value = string.IsNullOrEmpty(ObjPHDFAQsDetail.QUESTIONS) ? "" : ObjPHDFAQsDetail.QUESTIONS };
-                    PHDDetailsList = SpRepository<PhdFaqsDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_FAQs_DETAILS @PRACTICE_CODE,@SEARCH_TEXT ",
-                    PracticeCode, SearchText);
-                }
-                    return PHDDetailsList;
+                var PracticeCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                var SearchText = new SqlParameter { ParameterName = "@SEARCH_TEXT", SqlDbType = SqlDbType.VarChar, Value = string.IsNullOrEmpty(objPhdFaqsDetail.QUESTIONS) ? "" : objPhdFaqsDetail.QUESTIONS };
+                phdDetailsList = SpRepository<PhdFaqsDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_FAQs_DETAILS @PRACTICE_CODE, @SEARCH_TEXT ",
+                PracticeCode, SearchText);
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return phdDetailsList;
         }
     }
 }

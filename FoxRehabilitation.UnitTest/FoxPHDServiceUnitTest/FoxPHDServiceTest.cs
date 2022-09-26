@@ -344,7 +344,6 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             
             //Act
             var result = _foxPHDService.GetDefaultHandlingValue(_userProfile);
-
             //Assert
             Assert.That(result.PHD_CALL_SCENARIO_ID, Is.Not.Null);
         }
@@ -352,7 +351,6 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
         [TestCase(1011163, "test", 548144)]
         [TestCase(1011163, "test", 548121)]
         [TestCase(1011163, "", 548121)]
-
         public void AddUpdatePHDFAQsDetail_FaqsAddUpdateModel_ReturnsData(long practiceCode, string Paramter, long faqsId)
         {
             //Arrange
@@ -365,13 +363,10 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             _foxPHDService.AddUpdatePhdFaqsDetail(_phdFaqsDetail, _userProfile);
 
             //Assert
-
             Assert.IsTrue(true);
         }
         [Test]
         [TestCase(1011163, 548144)]
-
-
         public void DeletePhdFaqs_DeletePhdFaqsModel_ReturnsData(long practiceCode, long faqsId)
         {
             //Arrange
@@ -382,7 +377,6 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             _foxPHDService.DeletePhdFaqs(_phdFaqsDetail, _userProfile);
 
             //Assert
-
             Assert.IsTrue(true);
         }
         [Test]
@@ -397,7 +391,6 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             _foxPHDService.GetPHDFaqsDetailsInformation(_phdFaqsDetail, _userProfile);
 
             //Assert
-
             Assert.IsTrue(true);
         }
         ///GetPHDFaqsDetailsInformation

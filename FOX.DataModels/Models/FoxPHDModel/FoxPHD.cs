@@ -537,7 +537,6 @@ namespace FOX.DataModels.Models.FoxPHD
     public class DropdownLists
     {
         public List<PhdCallScenario> PhdCallScenarios { get; set; }
-        public List<PhdFaqsDetail> PhdFaqsDetail { get; set; }
         public List<PhdCallReason> PhdCallReasons { get; set; }
         public List<PhdCallRequest> PhdCallRequests { get; set; }
         public List<FoxApplicationUsersViewModel> foxApplicationUsersViewModel { get; set; }
