@@ -142,21 +142,42 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetDefaultHandlingValue(GetProfile()));
         }
-        //change by salman 
+
         [HttpPost]
-        public HttpResponseMessage GetPHDFaqsDetailsInformation(PhdFaqsDetail ObjPHDFAQsDetail)
+        public HttpResponseMessage GetPHDFaqsDetailsInformation(PhdFaqsDetail objPhdFaqsDetail)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetPHDFaqsDetailsInformation(ObjPHDFAQsDetail, GetProfile()));
+            if (objPhdFaqsDetail != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetPHDFaqsDetailsInformation(objPhdFaqsDetail, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Faq model is empty");
+            }
         }
         [HttpPost]
-        public HttpResponseMessage AddUpdatePhdFAsDetail(PhdFaqsDetail ObjPHDFAQsDetail)
+        public HttpResponseMessage AddUpdatePhdFAsDetail(PhdFaqsDetail objPhdFaqsDetail)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.AddUpdatePhdFaqsDetail(ObjPHDFAQsDetail, GetProfile()));
+            if (objPhdFaqsDetail != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.AddUpdatePhdFaqsDetail(objPhdFaqsDetail, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Faq model is empty");
+            }
         }
         [HttpPost]
-        public HttpResponseMessage DeletePhdFaqs(PhdFaqsDetail ObjPHDFAQsDetail)
+        public HttpResponseMessage DeletePhdFaqs(PhdFaqsDetail objPhdFaqsDetail)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.DeletePhdFaqs(ObjPHDFAQsDetail, GetProfile()));
+            if (objPhdFaqsDetail != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.DeletePhdFaqs(objPhdFaqsDetail, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Faq model is empty");
+            }
         }
         [HttpGet]
         public HttpResponseMessage GetDropdownListFaqs()
