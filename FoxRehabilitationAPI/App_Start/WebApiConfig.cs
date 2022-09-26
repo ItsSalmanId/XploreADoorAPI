@@ -30,7 +30,7 @@ namespace FoxRehabilitationAPI
             config.Filters.Add(new AuthorizationHandlerAttribute());
 
             string Origins = @"
-                                http://172.16.0.207:15187,
+                                http://localhost:14479,
                                 https://ccremote.carecloud.com,
                                 https://uatfox.mtbc.com,
                                 https://stagingfox.mtbc.com,
