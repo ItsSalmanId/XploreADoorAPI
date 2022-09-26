@@ -35,7 +35,7 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage DeleteCallDetailRecordInformation(PHDCallDetail ObjPHDCallDetailRequest)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.DeleteCallDetailRecordInformation(ObjPHDCallDetailRequest, GetProfile()));
-        }
+        }   
         [HttpPost]
         public HttpResponseMessage GetPHDCallDetailsInformation(CallDetailsSearchRequest ObjCallDetailsSearchRequest)
         {
@@ -50,7 +50,7 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage AddUpdatePHDCallDetailInformation(PHDCallDetail ObjPHDCallDetailRequest)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.AddUpdatePHDCallDetailInformation(ObjPHDCallDetailRequest, GetProfile()));
-        }
+        }       
         [HttpPost]
         public HttpResponseMessage AddUpdateVerificationInformation(PhdPatientVerification ObjPhdPatientVerification)
         {
@@ -141,6 +141,27 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetDefaultPhdScanarios()
         {
             return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetDefaultHandlingValue(GetProfile()));
+        }
+        //change by salman 
+        [HttpPost]
+        public HttpResponseMessage GetPHDFaqsDetailsInformation(PhdFaqsDetail ObjPHDFAQsDetail)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetPHDFaqsDetailsInformation(ObjPHDFAQsDetail, GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage AddUpdatePhdFAsDetail(PhdFaqsDetail ObjPHDFAQsDetail)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.AddUpdatePhdFaqsDetail(ObjPHDFAQsDetail, GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage DeletePhdFaqs(PhdFaqsDetail ObjPHDFAQsDetail)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.DeletePhdFaqs(ObjPHDFAQsDetail, GetProfile()));
+        }
+        [HttpGet]
+        public HttpResponseMessage GetDropdownListFaqs()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetDropdownListFaqs(GetProfile()));
         }
     }
 }
