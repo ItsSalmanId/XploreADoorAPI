@@ -12,13 +12,14 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
 {
     public class AnnouncementService : IAnnouncementService
     {
-        private readonly DbContextSettings _settings = new DbContextSettings();
+        private readonly DbContextSettings _settingsContext = new DbContextSettings();
         private readonly GenericRepository<FoxRoles> _foxRolesRepository;
 
         public AnnouncementService()
         {
-            _foxRolesRepository = new GenericRepository<FoxRoles>(_settings);
+            _foxRolesRepository = new GenericRepository<FoxRoles>(_settingsContext);
         }
+        // Description: This function is trigger to get role names
         public List<FoxRoles> GetFoxRoles(UserProfile userProfile)
         {
             List<FoxRoles> result = new List<FoxRoles>();
