@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 namespace FOX.DataModels.Models.Settings.Announcement
 {
     [Table("FOX_TBL_ANNOUNCEMENT")]
-    public class Announcement
+    public class Announcements
     {
         [Key]
         public long ANNOUNCEMENT_ID { get; set; }
+        public string ANNOUNCEMENT_TITLE { get; set; }
         public DateTime ANNOUNCEMENT_DATE_FROM { get; set; }
         public DateTime ANNOUNCEMENT_DATE_TO { get; set; }
-        public string ANNOUNCEMENT_TITLE { get; set; }
         public string ANNOUNCEMENT_DETAILS { get; set; }
         public long PRACTICE_CODE { get; set; }
         public string CREATED_BY { get; set; }
