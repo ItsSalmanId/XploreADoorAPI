@@ -1,0 +1,111 @@
+USE [MIS_DB]
+GO
+
+/****** Object:  Table [dbo].[FOX_TBL_APPLICATION_USER]    Script Date: 7/21/2022 8:42:24 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+CREATE TABLE [dbo].[FOX_TBL_APPLICATION_USER](
+	[Id] [varchar](128) NOT NULL CONSTRAINT [DF_FOX_TBL_APPLICATION_USER_Id]  DEFAULT (newid()),
+	[PasswordHash] [varchar](255) NULL,
+	[SecurityStamp] [varchar](100) NULL,
+	[Discriminator] [varchar](128) NOT NULL CONSTRAINT [DF_FOX_TBL_APPLICATION_USER_Discriminator]  DEFAULT ('ApplicationUser'),
+	[USER_ID] [bigint] NULL,
+	[PRACTICE_CODE] [bigint] NULL,
+	[USER_NAME] [varchar](70) NOT NULL,
+	[PASSWORD] [varchar](255) NULL,
+	[PASSWORD_CHANGED_DATE] [datetime] NULL,
+	[FIRST_NAME] [varchar](50) NULL,
+	[LAST_NAME] [varchar](50) NULL,
+	[MIDDLE_NAME] [varchar](1) NULL,
+	[USER_DISPLAY_NAME] [varchar](100) NULL,
+	[DESIGNATION] [varchar](50) NULL,
+	[DATE_OF_BIRTH] [datetime] NULL,
+	[EMAIL] [varchar](255) NULL,
+	[RESET_PASS] [int] NULL,
+	[SECURITY_QUESTION] [varchar](100) NULL,
+	[SECURITY_QUESTION_ANSWER] [varchar](100) NULL,
+	[LOCKEDBY] [varchar](70) NULL,
+	[LAST_LOGIN_DATE] [datetime] NULL,
+	[FAILED_PASSWORD_ATTEMPT_COUNT] [int] NULL CONSTRAINT [DF_FAILED_PASSWORD_ATTEMPT_COUNT]  DEFAULT ((0)),
+	[IS_LOCKED_OUT] [bit] NULL,
+	[COMMENTS] [varchar](500) NULL,
+	[PASS_RESET_CODE] [varchar](50) NULL,
+	[ACTIVATION_CODE] [varchar](50) NULL,
+	[IS_ACTIVE] [bit] NULL,
+	[IS_ADMIN] [bit] NULL,
+	[PHONE_NO] [varchar](10) NULL,
+	[ROLE_ID] [bigint] NULL,
+	[ADDRESS_1] [varchar](500) NULL,
+	[ADDRESS_2] [varchar](500) NULL,
+	[CITY] [varchar](50) NULL,
+	[STATE] [varchar](2) NULL,
+	[ZIP] [varchar](9) NULL,
+	[CREATED_DATE] [datetime] NULL,
+	[CREATED_BY] [varchar](70) NOT NULL CONSTRAINT [DF_FOX_TBL_APPLICATION_USER_CREATED_BY]  DEFAULT ('FOX TEAM'),
+	[MODIFIED_DATE] [datetime] NULL,
+	[MODIFIED_BY] [varchar](70) NOT NULL CONSTRAINT [DF_FOX_TBL_APPLICATION_USER_MODIFIED_BY]  DEFAULT ('FOX TEAM'),
+	[DELETED] [bit] NULL,
+	[MANAGER_ID] [bigint] NULL,
+	[EMAILVERIFIED] [bit] NULL,
+	[USER_TYPE] [varchar](50) NULL,
+	[PRACTICE_NAME] [varchar](150) NULL,
+	[SENDER_TYPE] [varchar](100) NULL,
+	[NPI] [varchar](10) NULL,
+	[MOBILE_PHONE] [varchar](50) NULL,
+	[FAX] [varchar](10) NULL,
+	[LANGUAGE] [varchar](100) NULL,
+	[TIME_ZONE] [varchar](100) NULL,
+	[TERMINATION_DATE] [datetime] NULL,
+	[GENDER] [varchar](20) NULL,
+	[SIGNATURE_PATH] [varchar](500) NULL,
+	[FOX_TBL_SENDER_TYPE_ID] [bigint] NULL,
+	[PASSWORD_RESET_TICKS] [varchar](255) NULL,
+	[PRACTICE_ORGANIZATION_ID] [bigint] NULL,
+	[WORK_PHONE] [varchar](50) NULL,
+	[NOTE_ID] [bigint] NULL,
+	[ACO] [bigint] NULL,
+	[SPECIALITY] [bigint] NULL,
+	[SNF] [bigint] NULL,
+	[HOSPITAL] [bigint] NULL,
+	[HHH] [bigint] NULL,
+	[THIRD_PARTY_REFERRAL_SOURCE] [varchar](100) NULL,
+	[IS_APPROVED] [bit] NULL,
+	[EXTENSION] [varchar](5) NULL,
+	[IS_ACTIVE_EXTENSION] [bit] NULL,
+	[PRACTICE_ORGANIZATION_TEXT] [varchar](100) NULL,
+	[ACO_TEXT] [varchar](100) NULL,
+	[SPECIALITY_TEXT] [varchar](100) NULL,
+	[SNF_TEXT] [varchar](100) NULL,
+	[HOSPITAL_TEXT] [varchar](100) NULL,
+	[HHH_TEXT] [varchar](100) NULL,
+	[ENFORCE_PASSWORD_CHANGE] [bit] NULL,
+	[LAST_PASSWORD_CHANGE_DATE] [datetime] NULL,
+	[USR_REFERRAL_SOURCE_ID_old] [bigint] NULL,
+	[USR_REFERRAL_SOURCE_ID] [bigint] NULL,
+	[rowguid] [uniqueidentifier] ROWGUIDCOL  NOT NULL CONSTRAINT [MSmerge_df_rowguid_349450C89EA149D386ADED5975954307]  DEFAULT (newsequentialid()),
+	[IS_AD_USER] [bit] NULL,
+	[REFERRAL_REGION_ID] [bigint] NULL,
+	[RT_USER_ID] [varchar](20) NULL,
+	[FAX_2] [varchar](10) NULL,
+	[FAX_3] [varchar](10) NULL,
+	[FULL_ACCESS_OVER_APP] [bit] NULL,
+	[AUTO_LOCK_TIME_SPAN] [int] NULL,
+ CONSTRAINT [PK_dbo.FOX_TBL_APPLICATION_USER] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 75) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+

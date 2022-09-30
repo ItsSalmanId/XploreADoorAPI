@@ -35,11 +35,8 @@ namespace FOX.BusinessOperations.QualityAssuranceService.EvaluationSetupService
             response.EvaluationCriteriaCategories = _evaluationCriteriaCategoriesRepository.GetMany(t => t.PRACTICE_CODE == practiceCode && !t.DELETED && t.CALL_TYPE == obj.Call_Type).ToList();
             response.WowFactor = _wowFactorRepository.GetMany(t => t.PRACTICE_CODE == practiceCode && !t.DELETED && t.CALL_TYPE == obj.Call_Type).ToList();
             response.GradingSetup = _gradingSetupRepository.GetMany(t => t.PRACTICE_CODE == practiceCode && !t.DELETED && t.CALL_TYPE == obj.Call_Type).ToList();
-
             return response;
-
         }
-
         public List<EvaluationCriteria> onSaveOverallWeightageCriteria(RequestModelOverallWeightage obj, UserProfile profile)
         {
 
@@ -81,17 +78,21 @@ namespace FOX.BusinessOperations.QualityAssuranceService.EvaluationSetupService
             {
                 if (obj.CALL_TYPE.ToLower() == "phd")
                 {
-                    tempObj[0].CATEGORIES_POINTS = obj.GREETINGS;
+                    tempObj[0].CATEGORIES_POINTS = obj.APPROPRIATE_GREETING;
                     tempObj[0].MODIFIED_BY = profile.UserName;
                     tempObj[0].MODIFIED_DATE = Helper.GetCurrentDate();
 
-                    tempObj[1].CATEGORIES_POINTS = obj.CALL_HANDLING_SKILLS;
+                    tempObj[1].CATEGORIES_POINTS = obj.TONE_OF_PATIENT;
                     tempObj[1].MODIFIED_BY = profile.UserName;
                     tempObj[1].MODIFIED_DATE = Helper.GetCurrentDate();
 
-                    tempObj[2].CATEGORIES_POINTS = obj.GRAMMER_PRONOUNCIATION_VOCABULARY;
+                    tempObj[2].CATEGORIES_POINTS = obj.COMPASSION_AND_EMPATHY;
                     tempObj[2].MODIFIED_BY = profile.UserName;
                     tempObj[2].MODIFIED_DATE = Helper.GetCurrentDate();
+
+                    tempObj[3].CATEGORIES_POINTS = obj.GRAMMAR_AND_PRONUNCIATION;
+                    tempObj[3].MODIFIED_BY = profile.UserName;
+                    tempObj[3].MODIFIED_DATE = Helper.GetCurrentDate();
                 }
                 else
                 {
@@ -162,7 +163,6 @@ namespace FOX.BusinessOperations.QualityAssuranceService.EvaluationSetupService
             }
 
         }
-
         public List<EvaluationCriteriaCategories> onSaveSystemProductprocess(RequestModelSystemProcess obj, UserProfile profile)
         {
             var tempObj = new List<EvaluationCriteriaCategories>();
@@ -177,22 +177,30 @@ namespace FOX.BusinessOperations.QualityAssuranceService.EvaluationSetupService
             {
                 if (obj.CALL_TYPE.ToLower() == "phd")
                 {
-                    tempObj[0].CATEGORIES_POINTS = obj.VERIFIED_PATIENT_ACCOUNT;
+                    tempObj[0].CATEGORIES_POINTS = obj.PATIENT_IDENTITY;
                     tempObj[0].MODIFIED_BY = profile.UserName;
                     tempObj[0].MODIFIED_DATE = Helper.GetCurrentDate();
 
-                    tempObj[1].CATEGORIES_POINTS = obj.PRODUCT_KNOWLEDGE;
+                    tempObj[1].CATEGORIES_POINTS = obj.ANSWER_PATIENT_QUESTIONS;
                     tempObj[1].MODIFIED_BY = profile.UserName;
                     tempObj[1].MODIFIED_DATE = Helper.GetCurrentDate();
 
-                    tempObj[2].CATEGORIES_POINTS = obj.CORRECT_NOTES_AND_TRACKING;
+                    tempObj[2].CATEGORIES_POINTS = obj.STRONG_PRODUCT_KNOWLEDGE;
                     tempObj[2].MODIFIED_BY = profile.UserName;
                     tempObj[2].MODIFIED_DATE = Helper.GetCurrentDate();
 
 
-                    tempObj[3].CATEGORIES_POINTS = obj.EMAIL_TO_STAKE_HOLDERS;
+                    tempObj[3].CATEGORIES_POINTS = obj.COMMUNICATE_INFORMATION;
                     tempObj[3].MODIFIED_BY = profile.UserName;
                     tempObj[3].MODIFIED_DATE = Helper.GetCurrentDate();
+
+                    tempObj[4].CATEGORIES_POINTS = obj.DOCUMENTATION_COMPLETED_COMMUNICATED;
+                    tempObj[4].MODIFIED_BY = profile.UserName;
+                    tempObj[4].MODIFIED_DATE = Helper.GetCurrentDate();
+
+                    tempObj[5].CATEGORIES_POINTS = obj.APPROPRIATE_CLOSING;
+                    tempObj[5].MODIFIED_BY = profile.UserName;
+                    tempObj[5].MODIFIED_DATE = Helper.GetCurrentDate();
                 }
                 else
                 {
@@ -281,7 +289,6 @@ namespace FOX.BusinessOperations.QualityAssuranceService.EvaluationSetupService
             }
 
         }
-
         public WowFactor onSaveWowFactor(RequestModelWowfactor obj, UserProfile profile)
         {
             var tempObj = _wowFactorRepository.GetFirst(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode && t.CALL_TYPE == obj.CALL_TYPE);
@@ -332,7 +339,6 @@ namespace FOX.BusinessOperations.QualityAssuranceService.EvaluationSetupService
             {
                 return new List<GradingSetup>();
             }
-
         }
     }
 }

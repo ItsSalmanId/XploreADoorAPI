@@ -4441,6 +4441,10 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("AGENT_NAME");
                 }
+                if (dc.Contains("WOW_FACTOR"))
+                {
+                    dc.Remove("WOW_FACTOR");
+                }
             }
             if (CalledFrom.Equals("QA_Report_AUD"))
             {
@@ -7524,10 +7528,10 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["TOTAL_POINTS"].ColumnName = "Overall Score";
                 }
-                if (dtcol.Contains("WOW_FACTOR"))
-                {
-                    dtcol["WOW_FACTOR"].ColumnName = "Wow Factor or Negative Feedback";
-                }
+                //if (dtcol.Contains("WOW_FACTOR"))
+                //{
+                //    dtcol["WOW_FACTOR"].ColumnName = "Wow Factor or Negative Feedback";
+                //}
             }
             else if (dt.TableName == "QA_Report_AUD")
             {
