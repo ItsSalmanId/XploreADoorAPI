@@ -1,6 +1,7 @@
 ﻿using FOX.BusinessOperations.SettingsService.AnnouncementService;
 using FOX.DataModels.Models.Settings.Announcement;
 using FoxRehabilitationAPI.Filters;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -22,9 +23,9 @@ namespace FoxRehabilitationAPI.Controllers.Settings.Announcement
             return Request.CreateResponse(HttpStatusCode.OK, _announcementService.GetFoxRoles(GetProfile()));
         }
         [HttpPost]
-        public HttpResponseMessage InsertAnnouncement(Announcements objAnnouncement, AnnouncementRoles announcementRoles)
+        public HttpResponseMessage InsertAnnouncement(Announcements objAnnouncement)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _announcementService.InsertAnnouncement(objAnnouncement, announcementRoles, GetProfile()));
+            return Request.CreateResponse(HttpStatusCode.OK, _announcementService.InsertAnnouncement(objAnnouncement, GetProfile()));
         }
 
         [HttpPost]
@@ -33,9 +34,9 @@ namespace FoxRehabilitationAPI.Controllers.Settings.Announcement
             return Request.CreateResponse(HttpStatusCode.OK, _announcementService.GetAnnouncement(objAnnouncement, GetProfile()));
         }
         [HttpPost]
-        public HttpResponseMessage AddAnnouncementRole(AnnouncementRoles announcementRoles)
+        public HttpResponseMessage AddAnnouncementRole(List<AnnouncementRoles> objAnnouncementRoles)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _announcementService.AddAnnouncementRole(announcementRoles, GetProfile()));
+            return Request.CreateResponse(HttpStatusCode.OK, _announcementService.AddAnnouncementRole(objAnnouncementRoles, GetProfile()));
         }
     }
 }
