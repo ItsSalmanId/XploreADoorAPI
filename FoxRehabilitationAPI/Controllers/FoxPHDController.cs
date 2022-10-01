@@ -35,7 +35,7 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage DeleteCallDetailRecordInformation(PHDCallDetail ObjPHDCallDetailRequest)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.DeleteCallDetailRecordInformation(ObjPHDCallDetailRequest, GetProfile()));
-        }
+        }   
         [HttpPost]
         public HttpResponseMessage GetPHDCallDetailsInformation(CallDetailsSearchRequest ObjCallDetailsSearchRequest)
         {
@@ -50,7 +50,7 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage AddUpdatePHDCallDetailInformation(PHDCallDetail ObjPHDCallDetailRequest)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.AddUpdatePHDCallDetailInformation(ObjPHDCallDetailRequest, GetProfile()));
-        }
+        }       
         [HttpPost]
         public HttpResponseMessage AddUpdateVerificationInformation(PhdPatientVerification ObjPhdPatientVerification)
         {
@@ -141,6 +141,48 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetDefaultPhdScanarios()
         {
             return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetDefaultHandlingValue(GetProfile()));
+        }
+
+        [HttpPost]
+        public HttpResponseMessage GetPHDFaqsDetailsInformation(PhdFaqsDetail objPhdFaqsDetail)
+        {
+            if (objPhdFaqsDetail != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetPHDFaqsDetailsInformation(objPhdFaqsDetail, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Faq model is empty");
+            }
+        }
+        [HttpPost]
+        public HttpResponseMessage AddUpdatePhdFAsDetail(PhdFaqsDetail objPhdFaqsDetail)
+        {
+            if (objPhdFaqsDetail != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.AddUpdatePhdFaqsDetail(objPhdFaqsDetail, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Faq model is empty");
+            }
+        }
+        [HttpPost]
+        public HttpResponseMessage DeletePhdFaqs(PhdFaqsDetail objPhdFaqsDetail)
+        {
+            if (objPhdFaqsDetail != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.DeletePhdFaqs(objPhdFaqsDetail, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Faq model is empty");
+            }
+        }
+        [HttpGet]
+        public HttpResponseMessage GetDropdownListFaqs()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IFoxPHDService.GetDropdownListFaqs(GetProfile()));
         }
     }
 }

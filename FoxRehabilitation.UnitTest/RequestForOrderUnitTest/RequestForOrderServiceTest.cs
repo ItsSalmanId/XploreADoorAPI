@@ -24,6 +24,7 @@ namespace FoxRehabilitation.UnitTest.RequestForOrderServiceUnitTest
             _requestForOrderService = new RequestForOrderService();
             _userProfile = new UserProfile();
             _result = new ResponseModel();
+            _requestSendEmailModel = new RequestSendEmailModel();
         }
 
         [Test]
