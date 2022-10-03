@@ -5971,7 +5971,9 @@ namespace FOX.BusinessOperations.PatientServices
             var newData = currentMedicareLimitList.Where(e => e.MEDICARE_LIMIT_TYPE_NAME == "Hospice").FirstOrDefault();
             if (hos_Id != null)
             {
-                var oldData = _MedicareLimitRepository.GetByID(hos_Id.Value);
+                //var oldData = _MedicareLimitRepository.GetByID(hos_Id.Value);
+                var oldData = _MedicareLimitRepository.GetFirst(l => l.MEDICARE_LIMIT_ID == hos_Id.Value);
+                if (oldData != null && oldData.EFFECTIVE_DATE != newData.EFFECTIVE_DATE) { hosInfoChanged = true; return true; }
                 if (oldData.EFFECTIVE_DATE != newData.EFFECTIVE_DATE) { hosInfoChanged = true; return true; }
                 if (oldData.END_DATE != newData.END_DATE) { hosInfoChanged = true; return true; }
                 if (!String.Equals(oldData.NPI ?? "", newData.NPI ?? "", StringComparison.Ordinal)) { hosInfoChanged = true; return true; }
