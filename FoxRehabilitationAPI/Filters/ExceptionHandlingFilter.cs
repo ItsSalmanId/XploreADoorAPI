@@ -17,6 +17,10 @@ namespace FoxRehabilitationAPI.Filters
                 var excpParam = JsonConvert.SerializeObject(context.ActionContext.ActionArguments.Values);
                 var uri = context.ActionContext.Request.RequestUri.OriginalString;
                 var excpMsg = context.Exception.Message;
+                if (excpMsg.Contains("it is being used by another process"))
+                {
+                    return;
+                }
                 var excpStackTrace = context.Exception.StackTrace;
                 var excpInnerMessage = ((context.Exception.InnerException != null && context.Exception.InnerException.Message != null) ? (context.Exception.InnerException.Message.ToLower().Contains("inner exception") ? context.Exception.InnerException.InnerException.Message : context.Exception.InnerException.Message) : "NULL");
 
