@@ -34,9 +34,19 @@ namespace FoxRehabilitationAPI.Controllers.Settings.Announcement
             return Request.CreateResponse(HttpStatusCode.OK, _announcementService.GetAnnouncement(objAnnouncement, GetProfile()));
         }
         [HttpPost]
+        public HttpResponseMessage GetAnnouncementDetails(Announcements objAnnouncement)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _announcementService.GetAnnouncementDetails(objAnnouncement, GetProfile()));
+        }
+        [HttpPost]
         public HttpResponseMessage AddAnnouncementRole(List<AnnouncementRoles> objAnnouncementRoles)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _announcementService.AddAnnouncementRole(objAnnouncementRoles, GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage DeleteAnnouncement(Announcements objAnnouncementRoles)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _announcementService.DeleteAnnouncement(objAnnouncementRoles, GetProfile()));
         }
     }
 }

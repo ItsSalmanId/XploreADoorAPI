@@ -13,12 +13,14 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
     {
         List<FoxRoles> GetFoxRoles(UserProfile userProfile);
         //ResponseModel InsertAnnouncement(Announcements objAnnouncement, UserProfile profile);
-        List<Announcements> GetAnnouncement(Announcements objAnnouncement, UserProfile profile);
+        List<Announcement> GetAnnouncement(Announcements objAnnouncement, UserProfile profile);
+        List<Announcement> GetAnnouncementDetails(Announcements objAnnouncement, UserProfile profile);
         //List<Announcement> GetAnnouncement(Announcements objAnnouncement, UserProfile profile);
         //List<AnnouncementRoles> AddAnnouncementRole(AnnouncementRoles announcementRoles, UserProfile profile);
         //ResponseModel AddAnnouncementRole(List<AnnouncementRoles> objAnnouncementRoles, UserProfile profile);
         ResponseModel AddAnnouncementRole(List<AnnouncementRoles> objAnnouncementRoles, UserProfile profile);
-        Announcements InsertAnnouncement(Announcements objAnnouncement, UserProfile profile);
+        ResponseModel InsertAnnouncement(Announcements objAnnouncement, UserProfile profile);
+        ResponseModel DeleteAnnouncement(Announcements objAnnouncement, UserProfile profile);
         //PSSearchData GetPSSearchData(long practiceCode);
     }
 }
