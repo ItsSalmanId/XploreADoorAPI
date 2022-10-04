@@ -175,20 +175,6 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                     objAnnouncement.ANNOUNCEMENT_DATE_FROM = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR);
                     objAnnouncement.ANNOUNCEMENT_DATE_TO = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR);
                 }
-                //if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR))
-                //{
-                //    objAnnouncement.ANNOUNCEMENT_DATE_TO = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR);
-                //}
-                //if (profile != null && profile.PracticeCode != 0)
-                //    {
-                        //if (objAnnouncement.ANNOUNCEMENT_DATE_FROM != null)
-                        //{
-                        //    objAnnouncement.ANNOUNCEMENT_DATE_FROM = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_FROM);
-                        //}
-                        //if (objAnnouncement.ANNOUNCEMENT_DATE_TO != null)
-                        //{
-                        //    objAnnouncement.ANNOUNCEMENT_DATE_TO = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_TO);
-                        //}
                         var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
                         SqlParameter AnnouncementsDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", objAnnouncement.ANNOUNCEMENT_DATE_FROM);
                         SqlParameter AnnouncementsDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO", objAnnouncement.ANNOUNCEMENT_DATE_TO);
@@ -366,10 +352,10 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
             try
             {
 
-                if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DETAILS.ToString()))
+                if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_ID.ToString()))
                 {
                     var ExistingDetailInfo = _announcementRepository.GetFirst(r => r.ANNOUNCEMENT_ID == objAnnouncement.ANNOUNCEMENT_ID && r.DELETED == false);
-                    if (ExistingDetailInfo == null)
+                    if (ExistingDetailInfo != null)
                     {
                         
                         SqlParameter ANNOUNCEMENT_ID = new SqlParameter("ANNOUNCEMENT_ID", objAnnouncement.ANNOUNCEMENT_ID);

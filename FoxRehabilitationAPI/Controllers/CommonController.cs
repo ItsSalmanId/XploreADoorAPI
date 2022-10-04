@@ -9,6 +9,7 @@ using FoxRehabilitationAPI.Models;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
@@ -209,10 +210,21 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _CommonService.IsShowSplash(GetProfile()));
         }
+
+        [HttpGet]
+        public HttpResponseMessage GetAlertWindowsDetails()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _CommonService.IsShowAlertWindow(GetProfile()));
+        }
         [HttpGet]
         public HttpResponseMessage SaveSplashDetails()
         {
             return Request.CreateResponse(HttpStatusCode.OK, _CommonService.SaveSplashDetails(GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage SaveAlertWindowsDetails(List<CommonAnnouncements> objCommonAnnouncements)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _CommonService.SaveAlertWindowsDetails(objCommonAnnouncements, GetProfile()));
         }
         [HttpGet]
         public HttpResponseMessage DeleteDownloadedFile(string fileLocation)

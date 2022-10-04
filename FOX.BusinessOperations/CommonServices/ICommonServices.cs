@@ -34,7 +34,9 @@ namespace FOX.BusinessOperations.CommonServices
         List<States> GetStates();
         Provider GetProvider(long providerId, UserProfile profile);
         bool IsShowSplash(UserProfile userProfile);
+        List<CommonAnnouncements> IsShowAlertWindow(UserProfile userProfile);
         bool SaveSplashDetails(UserProfile userProfile);
+        ResponseModel SaveAlertWindowsDetails(List<CommonAnnouncements> objCommonAnnouncements, UserProfile userProfile);
         ResponseModel DeleteDownloadedFile(string fileLocation);
     }
 }

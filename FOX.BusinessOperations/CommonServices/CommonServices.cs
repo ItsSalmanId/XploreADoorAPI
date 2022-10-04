@@ -43,6 +43,9 @@ namespace FOX.BusinessOperations.CommonServices
         private readonly GenericRepository<Provider> _providerRepository;
         private readonly GenericRepository<EmailFaxLog> _emailfaxlogRepository;
         private readonly GenericRepository<Splash> _splashRepository;
+        private readonly GenericRepository<CommonAnnouncements> _announcementsRepository;
+        private readonly GenericRepository<AnnouncementsHistory> _announcementsHistoryRepository;
+        
 
         public CommonServices()
         {
@@ -58,6 +61,8 @@ namespace FOX.BusinessOperations.CommonServices
             _providerRepository = new GenericRepository<Provider>(_DbContextCommon);
             _emailfaxlogRepository = new GenericRepository<EmailFaxLog>(_DbContextCommon);
             _splashRepository = new GenericRepository<Splash>(_DbContextCommon);
+            _announcementsRepository = new GenericRepository<CommonAnnouncements>(_DbContextCommon);
+            _announcementsHistoryRepository = new GenericRepository<AnnouncementsHistory>(_DbContextCommon);
         }
 
     public string GeneratePdf(long WorkId, string practiceDocumentDirectory)
@@ -539,7 +544,7 @@ namespace FOX.BusinessOperations.CommonServices
         }
         // Splash will be showing on the basics of user id 
         public bool IsShowSplash(UserProfile userProfile)
-        {
+            {
             if (userProfile != null && !string.IsNullOrEmpty(userProfile.UserName))
             {
                 var splashType = WebConfigurationManager.AppSettings["SplashType"];
@@ -564,6 +569,69 @@ namespace FOX.BusinessOperations.CommonServices
                 }
             }
             return true;
+        }
+        // Splash will be showing on the basics of user id 
+        public List<CommonAnnouncements> IsShowAlertWindow(UserProfile userProfile)
+        {
+            ResponseModel response = new ResponseModel();
+            List<CommonAnnouncements> announcementsList = new List<CommonAnnouncements>();
+            SqlParameter PracticeCode = new SqlParameter("PRACTICE_CODE", userProfile.PracticeCode);
+            //SqlParameter RoleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = tempRoleIds };
+            announcementsList = SpRepository<CommonAnnouncements>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_HISTORY_DETAILS @PRACTICE_CODE",
+            PracticeCode);
+            return announcementsList;
+        }
+        // Data of Alert Window will be save to db
+        public ResponseModel SaveAlertWindowsDetails(List<CommonAnnouncements> objCommonAnnouncements,UserProfile userProfile)
+        {
+            ResponseModel response = new ResponseModel();
+            //List<CommonAnnouncements> announcementsList = new List<CommonAnnouncements>();
+            if (userProfile != null && !string.IsNullOrEmpty(userProfile.UserName))
+            {
+                var getAlertWindowResponse = _announcementsHistoryRepository.GetFirst(s => s.DELETED == false && s.USER_ID == userProfile.userID && s.USER_NAME == userProfile.UserName);
+                if (getAlertWindowResponse == null)
+                {
+                    long primaryKey = Helper.getMaximumId("FOX_TBL_ANNOUNCEMENT_HISTORY");
+                    SqlParameter AnnouncmentHistoryId = new SqlParameter("ANNOUNCEMENT_HISTORY_ID", primaryKey);
+                    SqlParameter AnnouncmentId = new SqlParameter("ANNOUNCEMENT_ID", objCommonAnnouncements[0].ANNOUNCEMENT_ID);
+                    SqlParameter UserId = new SqlParameter("USER_ID", userProfile.userID);
+                    SqlParameter UserName = new SqlParameter("USER_NAME", userProfile.UserName);
+                    //getAlertWindowResponse.SHOW_COUNT = 1;
+                    SqlParameter ShowCount = new SqlParameter("SHOW_COUNT", 1 );
+                    SqlParameter ModifiedDate = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
+                    SqlParameter CreatedDate = new SqlParameter("CREATED_DATE", Helper.GetCurrentDate());
+                    //SqlParameter ROLE_ID = new SqlParameter("ROLE_ID", objAnnouncement.ROLE_ID);
+                    SqlParameter PracticeCode = new SqlParameter("PRACTICE_CODE", userProfile.PracticeCode);
+                    SqlParameter Deleted = new SqlParameter("DELETED", false);
+                    SqlParameter CreatedBy = new SqlParameter("CREATED_BY", userProfile.PracticeCode);
+                    SqlParameter Operation = new SqlParameter("OPERATION", "ADD");
+                    //SqlParameter CREATED_DATE = new SqlParameter("CREATED_DATE", Helper.GetCurrentDate());
+                    //SqlParameter Add = new SqlParameter("Add", "Add");
+
+                    SpRepository<AnnouncementsHistory>.GetListWithStoreProcedure(@"exec FOX_PROC_CRUD_ANNOUNCEMENT_HISTORY @ANNOUNCEMENT_HISTORY_ID, @ANNOUNCEMENT_ID, @USER_ID, @USER_NAME, @SHOW_COUNT 
+                         ,@MODIFIED_DATE, @CREATED_DATE, @PRACTICE_CODE, @DELETED, @CREATED_BY, @Operation", AnnouncmentHistoryId, AnnouncmentId, UserId, UserName, ShowCount, ModifiedDate, CreatedDate,
+                     PracticeCode, Deleted, CreatedBy, Operation);
+
+                    //AnnouncementsHistory objannouncementsHistory = new AnnouncementsHistory();
+                    //objannouncementsHistory.ANNOUNCEMENT_HISTORY_ID = Helper.getMaximumId("FOX_TBL_ANNOUNCEMENT_HISTORY");
+                    //objannouncementsHistory.USER_ID = userProfile.userID;
+                    //objannouncementsHistory.USER_NAME = userProfile.UserName;
+                    //objannouncementsHistory.CREATED_BY = objannouncementsHistory.MODIFIED_BY = "FOX_TEAM";
+                    //objannouncementsHistory.CREATED_DATE = objannouncementsHistory.MODIFIED_DATE = Helper.GetCurrentDate();
+                    //objannouncementsHistory.SHOW_COUNT = 1;
+                    //_announcementsHistoryRepository.Insert(objannouncementsHistory);
+                    //_announcementsHistoryRepository.Save();
+                }
+                else
+                {
+                    getAlertWindowResponse.SHOW_COUNT = getAlertWindowResponse.SHOW_COUNT + 1;
+                    _announcementsHistoryRepository.Update(getAlertWindowResponse);
+                    _announcementsHistoryRepository.Save();
+                }
+            }
+            return response;
+
+
         }
         // Data of splash screen will be save to db
         public bool SaveSplashDetails(UserProfile userProfile)
