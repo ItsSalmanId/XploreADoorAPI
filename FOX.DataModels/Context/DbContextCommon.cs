@@ -48,6 +48,7 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<Splash>().Property(t => t.FOX_SPLASH_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<CommonAnnouncements>().Property(t => t.ANNOUNCEMENT_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<AnnouncementsHistory>().Property(t => t.ANNOUNCEMENT_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+
         }
         public virtual DbSet<Maintenance_Counter> Maintenance_Counter { get; set; }
         public virtual DbSet<WorkOrderHistory> WorkOrderHistory { get; set; }

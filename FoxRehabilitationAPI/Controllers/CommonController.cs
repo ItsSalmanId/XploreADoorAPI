@@ -222,7 +222,7 @@ namespace FoxRehabilitationAPI.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, _CommonService.SaveSplashDetails(GetProfile()));
         }
         [HttpPost]
-        public HttpResponseMessage SaveAlertWindowsDetails(List<CommonAnnouncements> objCommonAnnouncements)
+        public HttpResponseMessage SaveAlertWindowsDetails(CommonAnnouncements objCommonAnnouncements)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _CommonService.SaveAlertWindowsDetails(objCommonAnnouncements, GetProfile()));
         }

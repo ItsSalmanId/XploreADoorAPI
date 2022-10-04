@@ -81,17 +81,17 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                             SqlParameter ANNOUNCEMENT_ROLE_ID = new SqlParameter("ANNOUNCEMENT_ROLE_ID", primaryKeyRol);
                             SqlParameter ROLE_ID = new SqlParameter("ROLE_ID", item.ROLE_ID.ToString() ?? (object)DBNull.Value);
                             SqlParameter ROLE_NAME = new SqlParameter("ROLE_NAME", item.ROLE_NAME.ToString() ?? (object)DBNull.Value);
-                            SqlParameter ANNOUNCEMENT_ID_ROLE = new SqlParameter("ANNOUNCEMENT_ID_ROLE", primaryKey);
+                            SqlParameter ANNOUNCEMENT_ID_ROLE = new SqlParameter("ANNOUNCEMENT_ID", primaryKey);
                             SqlParameter ROLE_MODIFIED_DATE = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
                             //SqlParameter ROLE_ID = new SqlParameter("ROLE_ID", objAnnouncement.ROLE_ID);
                             SqlParameter ROLE_PRACTICE_CODE = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
-                            SqlParameter ROLE_DELETED = new SqlParameter("DELETED", false);
-                            SqlParameter ROLE_CREATED_BY = new SqlParameter("CREATED_BY", profile.PracticeCode);
+                            //SqlParameter ROLE_DELETED = new SqlParameter("DELETED", false);
+                            //SqlParameter ROLE_CREATED_BY = new SqlParameter("CREATED_BY", profile.PracticeCode);
                             //SqlParameter ROLE_CREATED_DATE = new SqlParameter("CREATED_DATE", Helper.GetCurrentDate());
 
-                            SpRepository<AnnouncementRoles>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT_ROLE @ANNOUNCEMENT_ROLE_ID, @ROLE_ID, @ROLE_NAME, @ANNOUNCEMENT_ID_ROLE 
-                         , @MODIFIED_DATE, @PRACTICE_CODE, @DELETED, @CREATED_BY", ANNOUNCEMENT_ROLE_ID,
-                             ROLE_ID, ROLE_NAME, ANNOUNCEMENT_ID_ROLE, ROLE_MODIFIED_DATE, ROLE_PRACTICE_CODE, ROLE_DELETED, ROLE_CREATED_BY);
+                            SpRepository<AnnouncementRoles>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT_ROLE @ANNOUNCEMENT_ROLE_ID, @ROLE_ID, @ROLE_NAME, @ANNOUNCEMENT_ID 
+                         , @PRACTICE_CODE", ANNOUNCEMENT_ROLE_ID,
+                             ROLE_ID, ROLE_NAME, ANNOUNCEMENT_ID_ROLE, ROLE_PRACTICE_CODE);
                         }
 
                             response.ErrorMessage = "Record insert successfully";
@@ -125,17 +125,33 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                             SqlParameter ANNOUNCEMENT_ROLE_ID = new SqlParameter("ANNOUNCEMENT_ROLE_ID", primaryKeyRol);
                             SqlParameter ROLE_ID = new SqlParameter("ROLE_ID", item.ROLE_ID.ToString() ?? (object)DBNull.Value);
                             SqlParameter ROLE_NAME = new SqlParameter("ROLE_NAME", item.ROLE_NAME.ToString() ?? (object)DBNull.Value);
-                            SqlParameter ANNOUNCEMENT_ID_ROLE = new SqlParameter("ANNOUNCEMENT_ID_ROLE", objAnnouncement.ANNOUNCEMENT_ID);
+                            SqlParameter ANNOUNCEMENT_ID_ROLE = new SqlParameter("ANNOUNCEMENT_ID", objAnnouncement.ANNOUNCEMENT_ID);
                             SqlParameter ROLE_MODIFIED_DATE = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
                             //SqlParameter ROLE_ID = new SqlParameter("ROLE_ID", objAnnouncement.ROLE_ID);
                             SqlParameter ROLE_PRACTICE_CODE = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
-                            SqlParameter ROLE_DELETED = new SqlParameter("DELETED", false);
-                            SqlParameter ROLE_CREATED_BY = new SqlParameter("CREATED_BY", profile.PracticeCode);
+                            //SqlParameter ROLE_DELETED = new SqlParameter("DELETED", false);
+                            //SqlParameter ROLE_CREATED_BY = new SqlParameter("CREATED_BY", profile.PracticeCode);
                             //SqlParameter ROLE_CREATED_DATE = new SqlParameter("CREATED_DATE", Helper.GetCurrentDate());
 
-                            SpRepository<AnnouncementRoles>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT_ROLE @ANNOUNCEMENT_ROLE_ID, @ROLE_ID, @ROLE_NAME, @ANNOUNCEMENT_ID_ROLE 
-                         , @MODIFIED_DATE, @PRACTICE_CODE, @DELETED, @CREATED_BY", ANNOUNCEMENT_ROLE_ID,
-                             ROLE_ID, ROLE_NAME, ANNOUNCEMENT_ID_ROLE, ROLE_MODIFIED_DATE, ROLE_PRACTICE_CODE, ROLE_DELETED, ROLE_CREATED_BY);
+                            SpRepository<AnnouncementRoles>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT_ROLE @ANNOUNCEMENT_ROLE_ID, @ROLE_ID, @ROLE_NAME, @ANNOUNCEMENT_ID 
+                         , @PRACTICE_CODE", ANNOUNCEMENT_ROLE_ID,
+                             ROLE_ID, ROLE_NAME, ANNOUNCEMENT_ID_ROLE, ROLE_PRACTICE_CODE);
+
+                         //   long primaryKeyRol = Helper.getMaximumId("ANNOUNCEMENT_ROLE_ID");
+                         //   SqlParameter ANNOUNCEMENT_ROLE_ID = new SqlParameter("ANNOUNCEMENT_ROLE_ID", primaryKeyRol);
+                         //   SqlParameter ROLE_ID = new SqlParameter("ROLE_ID", item.ROLE_ID.ToString() ?? (object)DBNull.Value);
+                         //   SqlParameter ROLE_NAME = new SqlParameter("ROLE_NAME", item.ROLE_NAME.ToString() ?? (object)DBNull.Value);
+                         //   SqlParameter ANNOUNCEMENT_ID_ROLE = new SqlParameter("ANNOUNCEMENT_ID_ROLE", objAnnouncement.ANNOUNCEMENT_ID);
+                         //   SqlParameter ROLE_MODIFIED_DATE = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
+                         //   //SqlParameter ROLE_ID = new SqlParameter("ROLE_ID", objAnnouncement.ROLE_ID);
+                         //   SqlParameter ROLE_PRACTICE_CODE = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
+                         //   SqlParameter ROLE_DELETED = new SqlParameter("DELETED", false);
+                         //   SqlParameter ROLE_CREATED_BY = new SqlParameter("CREATED_BY", profile.PracticeCode);
+                         //   //SqlParameter ROLE_CREATED_DATE = new SqlParameter("CREATED_DATE", Helper.GetCurrentDate());
+
+                         //   SpRepository<AnnouncementRoles>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT_ROLE @ANNOUNCEMENT_ROLE_ID, @ROLE_ID, @ROLE_NAME, @ANNOUNCEMENT_ID_ROLE 
+                         //, @MODIFIED_DATE, @PRACTICE_CODE, @DELETED, @CREATED_BY", ANNOUNCEMENT_ROLE_ID,
+                         //    ROLE_ID, ROLE_NAME, ANNOUNCEMENT_ID_ROLE, ROLE_MODIFIED_DATE, ROLE_PRACTICE_CODE, ROLE_DELETED, ROLE_CREATED_BY);
                         }
                         response.ErrorMessage = "Record update successfully";
                         response.Success = true;

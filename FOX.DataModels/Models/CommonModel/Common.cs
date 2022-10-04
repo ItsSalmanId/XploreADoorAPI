@@ -1,6 +1,7 @@
 ﻿using FOX.DataModels.HelperClasses;
 using FOX.DataModels.Models.SenderName;
 using FOX.DataModels.Models.SenderType;
+using FOX.DataModels.Models.Settings.Announcement;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -270,17 +271,21 @@ namespace FOX.DataModels.Models.CommonModel
         public DateTime ANNOUNCEMENT_DATE_FROM { get; set; }
         [NotMapped]
         public string ANNOUNCEMENT_DATE_FROM_STR { get; set; }
+        [NotMapped]
+        public long ROLE_ID { get; set; }
         public DateTime ANNOUNCEMENT_DATE_TO { get; set; }
         public string ANNOUNCEMENT_DATE_TO_STR { get; set; }
         public string ANNOUNCEMENT_DETAILS { get; set; }
-        //[NotMapped]
-        //public List<FoxRoles> DIAGNOSIS { get; set; }
+        [NotMapped]
+        public List<FoxRoles> DIAGNOSIS { get; set; }
         public long PRACTICE_CODE { get; set; }
         public string CREATED_BY { get; set; }
         public DateTime CREATED_DATE { get; set; }
         public string MODIFIED_BY { get; set; }
         public DateTime MODIFIED_DATE { get; set; }
         public bool DELETED { get; set; }
+        [NotMapped]
+        public List<string> SplittedBulletsPoints { get; set; }
     }
     [Table("FOX_TBL_ANNOUNCEMENT_HISTORY")]
     public class AnnouncementsHistory

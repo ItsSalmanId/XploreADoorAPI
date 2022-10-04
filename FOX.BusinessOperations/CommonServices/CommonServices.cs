@@ -24,6 +24,7 @@ using FOX.BusinessOperations.CommonService;
 using FOX.DataModels.Models.StatesModel;
 using FOX.DataModels.Models.ServiceConfiguration;
 using System.Web.Configuration;
+using FOX.DataModels.Models.Settings.Announcement;
 
 namespace FOX.BusinessOperations.CommonServices
 {
@@ -45,7 +46,8 @@ namespace FOX.BusinessOperations.CommonServices
         private readonly GenericRepository<Splash> _splashRepository;
         private readonly GenericRepository<CommonAnnouncements> _announcementsRepository;
         private readonly GenericRepository<AnnouncementsHistory> _announcementsHistoryRepository;
-        
+        private readonly GenericRepository<FoxRoles> _foxRolesRepository;
+
 
         public CommonServices()
         {
@@ -63,6 +65,7 @@ namespace FOX.BusinessOperations.CommonServices
             _splashRepository = new GenericRepository<Splash>(_DbContextCommon);
             _announcementsRepository = new GenericRepository<CommonAnnouncements>(_DbContextCommon);
             _announcementsHistoryRepository = new GenericRepository<AnnouncementsHistory>(_DbContextCommon);
+            _foxRolesRepository = new GenericRepository<FoxRoles>(_DbContextCommon);
         }
 
     public string GeneratePdf(long WorkId, string practiceDocumentDirectory)
@@ -571,18 +574,36 @@ namespace FOX.BusinessOperations.CommonServices
             return true;
         }
         // Splash will be showing on the basics of user id 
-        public List<CommonAnnouncements> IsShowAlertWindow(UserProfile userProfile)
+        public CommonAnnouncements IsShowAlertWindow(UserProfile userProfile)
         {
             ResponseModel response = new ResponseModel();
-            List<CommonAnnouncements> announcementsList = new List<CommonAnnouncements>();
-            SqlParameter PracticeCode = new SqlParameter("PRACTICE_CODE", userProfile.PracticeCode);
-            //SqlParameter RoleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = tempRoleIds };
-            announcementsList = SpRepository<CommonAnnouncements>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_HISTORY_DETAILS @PRACTICE_CODE",
-            PracticeCode);
-            return announcementsList;
+            CommonAnnouncements announcementsListWithData = new CommonAnnouncements();
+            var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = userProfile.PracticeCode };   
+            SqlParameter RoleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = userProfile.RoleId };
+            var announcement = SpRepository<CommonAnnouncements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS_FOR_POPUP  @PRACTICE_CODE, @ROLE_ID ", PracticeCode, RoleId);
+            if(announcement != null)
+            {
+                SqlParameter AnnouncmentID = new SqlParameter("ANNOUNCEMENT_ID", announcement.ANNOUNCEMENT_ID);
+                SqlParameter PracticeCodeHistory = new SqlParameter("PRACTICE_CODE", userProfile.PracticeCode);
+                SqlParameter roleId = new SqlParameter("ROLE_ID", userProfile.RoleId);
+                announcementsListWithData = SpRepository<CommonAnnouncements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_HISTORY_DETAILS @PRACTICE_CODE, @ANNOUNCEMENT_ID, @ROLE_ID", PracticeCodeHistory, AnnouncmentID, roleId);
+            }
+            if(announcementsListWithData == null)
+            {
+                announcement.ANNOUNCEMENT_DETAILS = !string.IsNullOrEmpty(announcement.ANNOUNCEMENT_DETAILS) ? announcement.ANNOUNCEMENT_DETAILS.TrimStart().Replace("• ", "") : "";
+                List<string> splitted = announcement.ANNOUNCEMENT_DETAILS.Split('\n').ToList();
+                announcement.SplittedBulletsPoints = splitted;
+                return announcement;
+            }
+            else
+            {
+                //CommonAnnouncements announcementsListEmpty = new CommonAnnouncements();
+                return announcementsListWithData;
+            }
+            
         }
         // Data of Alert Window will be save to db
-        public ResponseModel SaveAlertWindowsDetails(List<CommonAnnouncements> objCommonAnnouncements,UserProfile userProfile)
+        public ResponseModel SaveAlertWindowsDetails(CommonAnnouncements objCommonAnnouncements,UserProfile userProfile)
         {
             ResponseModel response = new ResponseModel();
             //List<CommonAnnouncements> announcementsList = new List<CommonAnnouncements>();
@@ -593,8 +614,8 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     long primaryKey = Helper.getMaximumId("FOX_TBL_ANNOUNCEMENT_HISTORY");
                     SqlParameter AnnouncmentHistoryId = new SqlParameter("ANNOUNCEMENT_HISTORY_ID", primaryKey);
-                    SqlParameter AnnouncmentId = new SqlParameter("ANNOUNCEMENT_ID", objCommonAnnouncements[0].ANNOUNCEMENT_ID);
-                    SqlParameter UserId = new SqlParameter("USER_ID", userProfile.userID);
+                    SqlParameter AnnouncmentId = new SqlParameter("ANNOUNCEMENT_ID", objCommonAnnouncements.ANNOUNCEMENT_ID);
+                    SqlParameter UserId = new SqlParameter("USER_ID", objCommonAnnouncements.ROLE_ID);
                     SqlParameter UserName = new SqlParameter("USER_NAME", userProfile.UserName);
                     //getAlertWindowResponse.SHOW_COUNT = 1;
                     SqlParameter ShowCount = new SqlParameter("SHOW_COUNT", 1 );
