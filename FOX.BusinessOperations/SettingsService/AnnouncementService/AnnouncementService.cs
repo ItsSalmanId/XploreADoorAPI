@@ -176,15 +176,37 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
         {
            
             List<Announcement> announcementsList = new List<Announcement>();
+            //if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR))
+            //{
+            //    objAnnouncement.ANNOUNCEMENT_DATE_FROM = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR);
+            //}
+            //else
+            //{
+            //    objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR = "";
+            //}
+            //if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR))
+            //{
+            //    objAnnouncement.ANNOUNCEMENT_DATE_TO = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR);
+            //}
+            //else
+            //{
+            //    objAnnouncement.ANNOUNCEMENT_DATE_TO = ;
+            //}
             if (objAnnouncement != null && objAnnouncement.DIAGNOSIS != null && !string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR.ToString()) && !string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR.ToString()) && profile.PracticeCode != 0)
             {
                 string tempRoleIds = "";
                 string tempRoleId = "";
-
-                for (int i = 0; i < objAnnouncement.DIAGNOSIS.Count; i++)
+                if (objAnnouncement.DIAGNOSIS != null)
                 {
-                    tempRoleId = (objAnnouncement.DIAGNOSIS[i].ROLE_ID).ToString();
-                    tempRoleIds = tempRoleIds + "," + tempRoleId;
+                    for (int i = 0; i < objAnnouncement.DIAGNOSIS.Count; i++)
+                    {
+                        tempRoleId = (objAnnouncement.DIAGNOSIS[i].ROLE_ID).ToString();
+                        tempRoleIds = tempRoleIds + "," + tempRoleId;
+                    }
+                }
+                else
+                {
+
                 }
                 if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR) && !string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR))
                 {
@@ -192,13 +214,20 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                     objAnnouncement.ANNOUNCEMENT_DATE_TO = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR);
                 }
                         var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
-                        SqlParameter AnnouncementsDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", objAnnouncement.ANNOUNCEMENT_DATE_FROM);
-                        SqlParameter AnnouncementsDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO", objAnnouncement.ANNOUNCEMENT_DATE_TO);
+                        SqlParameter AnnouncementsDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", objAnnouncement.ANNOUNCEMENT_DATE_FROM.ToString());
+                        SqlParameter AnnouncementsDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO", objAnnouncement.ANNOUNCEMENT_DATE_TO.ToString());
                         SqlParameter RoleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = tempRoleIds };
                         announcementsList = SpRepository<Announcement>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS  @PRACTICE_CODE, @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @ROLE_ID ",
                             PracticeCode, AnnouncementsDateFrom, AnnouncementsDateTo, RoleId);
                 //}
             }
+            else
+            {
+                var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }; 
+                announcementsList = SpRepository<Announcement>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS_ALL  @PRACTICE_CODE", PracticeCode);
+
+            }
+           
             return announcementsList;
         }
 
