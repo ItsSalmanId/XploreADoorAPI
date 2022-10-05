@@ -14,10 +14,10 @@ namespace FOX.DataModels.Models.Settings.Announcement
         [Key]
         public long ANNOUNCEMENT_ID { get; set; }
         public string ANNOUNCEMENT_TITLE { get; set; }
-        public DateTime ANNOUNCEMENT_DATE_FROM { get; set; }
+        public DateTime? ANNOUNCEMENT_DATE_FROM { get; set; }
         [NotMapped]
         public string ANNOUNCEMENT_DATE_FROM_STR { get; set; }
-        public DateTime ANNOUNCEMENT_DATE_TO { get; set; }
+        public DateTime? ANNOUNCEMENT_DATE_TO { get; set; }
         public string ANNOUNCEMENT_DATE_TO_STR { get; set; }
         public string ANNOUNCEMENT_DETAILS { get; set; }
         [NotMapped]
