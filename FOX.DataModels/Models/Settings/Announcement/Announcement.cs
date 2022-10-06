@@ -26,6 +26,8 @@ namespace FOX.DataModels.Models.Settings.Announcement
         public string CREATED_BY { get; set; }
         public DateTime CREATED_DATE { get; set; }
         public string MODIFIED_BY { get; set; }
+        [NotMapped]
+        public string ROLE_ID { get; set; }
         public DateTime MODIFIED_DATE { get; set; }
         public bool DELETED { get; set; }
     }

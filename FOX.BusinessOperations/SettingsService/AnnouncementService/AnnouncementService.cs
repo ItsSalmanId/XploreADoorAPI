@@ -221,20 +221,7 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
             }
             if (objAnnouncement != null && profile.PracticeCode != 0)
             {
-                string tempRoleIds = "";
-                string tempRoleId = "";
-                if (objAnnouncement.DIAGNOSIS != null && objAnnouncement.DIAGNOSIS.Count != 0)
-                {
-                    for (int i = 0; i < objAnnouncement.DIAGNOSIS.Count; i++)
-                    {
-                        tempRoleId = (objAnnouncement.DIAGNOSIS[i].ROLE_ID).ToString();
-                        tempRoleIds = tempRoleIds + "," + tempRoleId;
-                    }
-                }
-                else
-                {
-                    tempRoleIds = null;
-                }
+             
                 if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR) && !string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR))
                 {
                     objAnnouncement.ANNOUNCEMENT_DATE_FROM = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR);
@@ -243,7 +230,7 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                 var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
                 SqlParameter AnnouncementsDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", objAnnouncement.ANNOUNCEMENT_DATE_FROM ?? (object)DBNull.Value);
                 SqlParameter AnnouncementsDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO", objAnnouncement.ANNOUNCEMENT_DATE_TO ?? (object)DBNull.Value);
-                SqlParameter RoleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = tempRoleIds ?? (object)DBNull.Value };
+                SqlParameter RoleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = objAnnouncement.ROLE_ID ?? (object)DBNull.Value };
                 announcementsList = SpRepository<Announcement>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS  @PRACTICE_CODE, @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @ROLE_ID ",
                     PracticeCode, AnnouncementsDateFrom, AnnouncementsDateTo, RoleId);
                 //}
