@@ -12,15 +12,10 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
     public interface IAnnouncementService
     {
         List<FoxRoles> GetFoxRoles(UserProfile userProfile);
-        //ResponseModel InsertAnnouncement(Announcements objAnnouncement, UserProfile profile);
-        List<Announcement> GetAnnouncement(Announcements objAnnouncement, UserProfile profile);
-        List<Announcement> GetAnnouncementDetails(Announcements objAnnouncement, UserProfile profile);
-        //List<Announcement> GetAnnouncement(Announcements objAnnouncement, UserProfile profile);
-        //List<AnnouncementRoles> AddAnnouncementRole(AnnouncementRoles announcementRoles, UserProfile profile);
-        //ResponseModel AddAnnouncementRole(List<AnnouncementRoles> objAnnouncementRoles, UserProfile profile);
+        List<Announcements> GetAnnouncement(Announcements objAnnouncement, UserProfile profile);
+        Announcements GetAnnouncementDetails(Announcements objAnnouncement, UserProfile profile);
         ResponseModel AddAnnouncementRole(List<AnnouncementRoles> objAnnouncementRoles, UserProfile profile);
-        ResponseModel InsertAnnouncement(Announcements objAnnouncement, UserProfile profile);
+        ResponseModel InsertAnnouncement(AddEditFoxAnnouncement objAnnouncement, UserProfile profile);
         ResponseModel DeleteAnnouncement(Announcements objAnnouncement, UserProfile profile);
-        //PSSearchData GetPSSearchData(long practiceCode);
     }
 }

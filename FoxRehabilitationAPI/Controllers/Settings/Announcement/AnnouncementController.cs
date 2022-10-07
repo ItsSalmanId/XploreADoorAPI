@@ -23,7 +23,7 @@ namespace FoxRehabilitationAPI.Controllers.Settings.Announcement
             return Request.CreateResponse(HttpStatusCode.OK, _announcementService.GetFoxRoles(GetProfile()));
         }
         [HttpPost]
-        public HttpResponseMessage InsertAnnouncement(Announcements objAnnouncement)
+        public HttpResponseMessage InsertAnnouncement(AddEditFoxAnnouncement objAnnouncement)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _announcementService.InsertAnnouncement(objAnnouncement, GetProfile()));
         }

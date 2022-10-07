@@ -36,59 +36,52 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
             }
             return result;
         }
-        public ResponseModel InsertAnnouncement(Announcements objAnnouncement, UserProfile profile)
+        public ResponseModel InsertAnnouncement(AddEditFoxAnnouncement objAddEditAnnouncement, UserProfile profile)
         {
             ResponseModel response = new ResponseModel();
-            //Announcements announcements = new Announcements();
-            if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR))
-            {
-                objAnnouncement.ANNOUNCEMENT_DATE_FROM = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR);
-            }
-            if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR))
-            {
-                objAnnouncement.ANNOUNCEMENT_DATE_TO = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR);
-            }
-
             try
             {
-                if (objAnnouncement != null && objAnnouncement.DIAGNOSIS != null && objAnnouncement.ANNOUNCEMENT_TITLE != null && objAnnouncement.ANNOUNCEMENT_DETAILS != null && objAnnouncement.ANNOUNCEMENT_DATE_TO != null && objAnnouncement.ANNOUNCEMENT_DATE_FROM != null)
+                if (!string.IsNullOrEmpty(objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM_STR))
+                {
+                    objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM = Convert.ToDateTime(objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM_STR);
+                }
+                if (!string.IsNullOrEmpty(objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO_STR))
+                {
+                    objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO = Convert.ToDateTime(objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO_STR);
+                }
+                if (objAddEditAnnouncement != null && objAddEditAnnouncement.ANNOUNCEMENT_TITLE != null && objAddEditAnnouncement.ANNOUNCEMENT_DETAILS != null && objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO != null && objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM != null)
                 {
 
-                    DateTime TODAY = (DateTime)objAnnouncement.ANNOUNCEMENT_DATE_TO;
-                    double TOTAL_DATS = TODAY.Subtract((DateTime)objAnnouncement.ANNOUNCEMENT_DATE_FROM).TotalDays + 1;
+                    DateTime TODAY = (DateTime)objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO;
+                    double TOTAL_DATS = TODAY.Subtract((DateTime)objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM).TotalDays + 1;
 
-                    if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DETAILS.ToString()))
+                    if (!string.IsNullOrEmpty(objAddEditAnnouncement.ANNOUNCEMENT_DETAILS.ToString()))
                     {
-                        //var DuplicationCheckInAnnouncment = _announcementRepository.GetFirst(r => r.ANNOUNCEMENT_DATE_FROM == objAnnouncement.ANNOUNCEMENT_DATE_FROM && r.DELETED == false);
-                        var ExistingDetailInfo = _announcementRepository.GetFirst(r => r.ANNOUNCEMENT_ID == objAnnouncement.ANNOUNCEMENT_ID && r.DELETED == false);
+                        var ExistingDetailInfo = _announcementRepository.GetFirst(r => r.ANNOUNCEMENT_ID == objAddEditAnnouncement.ANNOUNCEMENT_ID && r.DELETED == false);
                         if (ExistingDetailInfo == null)
                         {
-                            var DuplicationCheckInAnnouncment = _announcementRepository.GetFirst(r => r.ANNOUNCEMENT_DATE_FROM <= objAnnouncement.ANNOUNCEMENT_DATE_FROM && r.ANNOUNCEMENT_DATE_TO >= objAnnouncement.ANNOUNCEMENT_DATE_TO && r.DELETED == false);
+                            var DuplicationCheckInAnnouncment = _announcementRepository.GetFirst(r => r.ANNOUNCEMENT_DATE_FROM <= objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM && r.ANNOUNCEMENT_DATE_TO >= objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO && r.DELETED == false);
                             if (DuplicationCheckInAnnouncment == null)
                             {
                                 for (int i = 0; i < TOTAL_DATS; i++)
                                 {
-                                    DateTime ANNOUNCEMENT_DATE_FROM_UPDATED = (DateTime)objAnnouncement.ANNOUNCEMENT_DATE_FROM;
+                                    DateTime ANNOUNCEMENT_DATE_FROM_UPDATED = (DateTime)objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM;
                                     ANNOUNCEMENT_DATE_FROM_UPDATED = ANNOUNCEMENT_DATE_FROM_UPDATED.AddDays(i);
                                     long primaryKey = Helper.getMaximumId("ANNOUNCEMENT_ID");
                                     SqlParameter ANNOUNCEMENT_ID = new SqlParameter("ANNOUNCEMENT_ID", primaryKey);
-                                    SqlParameter ANNOUNCEMENT_DETAILS = new SqlParameter("ANNOUNCEMENT_DETAILS", objAnnouncement.ANNOUNCEMENT_DETAILS.ToString() ?? (object)DBNull.Value);
-                                    SqlParameter ANNOUNCEMENT_TITLE = new SqlParameter("ANNOUNCEMENT_TITLE", objAnnouncement.ANNOUNCEMENT_TITLE.ToString() ?? (object)DBNull.Value);
+                                    SqlParameter ANNOUNCEMENT_DETAILS = new SqlParameter("ANNOUNCEMENT_DETAILS", objAddEditAnnouncement.ANNOUNCEMENT_DETAILS.ToString() ?? (object)DBNull.Value);
+                                    SqlParameter ANNOUNCEMENT_TITLE = new SqlParameter("ANNOUNCEMENT_TITLE", objAddEditAnnouncement.ANNOUNCEMENT_TITLE.ToString() ?? (object)DBNull.Value);
                                     SqlParameter ANNOUNCEMENT_DATE_FROM = new SqlParameter("ANNOUNCEMENT_DATE_FROM", Convert.ToDateTime(ANNOUNCEMENT_DATE_FROM_UPDATED));
                                     SqlParameter ANNOUNCEMENT_DATE_TO = new SqlParameter("ANNOUNCEMENT_DATE_TO", ANNOUNCEMENT_DATE_FROM_UPDATED);
                                     SqlParameter MODIFIED_DATE = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
-                                    //SqlParameter ROLE_ID = new SqlParameter("ROLE_ID", objAnnouncement.ROLE_ID);
                                     SqlParameter PRACTICE_CODE = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
                                     SqlParameter DELETED = new SqlParameter("DELETED", false);
                                     SqlParameter CREATED_BY = new SqlParameter("CREATED_BY", profile.PracticeCode);
                                     SqlParameter OPERATION = new SqlParameter("OPERATION", "ADD");
-                                    //SqlParameter CREATED_DATE = new SqlParameter("CREATED_DATE", Helper.GetCurrentDate());
-                                    //SqlParameter Add = new SqlParameter("Add", "Add");
+                                    SpRepository<Announcements>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT @ANNOUNCEMENT_ID, @ANNOUNCEMENT_DETAILS, @ANNOUNCEMENT_TITLE, @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @MODIFIED_DATE, @PRACTICE_CODE, @DELETED, @CREATED_BY, @OPERATION", ANNOUNCEMENT_ID, ANNOUNCEMENT_DETAILS, ANNOUNCEMENT_TITLE, ANNOUNCEMENT_DATE_FROM, ANNOUNCEMENT_DATE_TO, MODIFIED_DATE, PRACTICE_CODE, DELETED, CREATED_BY, OPERATION);
 
-                                    SpRepository<Announcements>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT @ANNOUNCEMENT_ID, @ANNOUNCEMENT_DETAILS, @ANNOUNCEMENT_TITLE 
-                                         ,@ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @MODIFIED_DATE, @PRACTICE_CODE, @DELETED, @CREATED_BY, @OPERATION", ANNOUNCEMENT_ID, ANNOUNCEMENT_DETAILS,
-                                     ANNOUNCEMENT_TITLE, ANNOUNCEMENT_DATE_FROM, ANNOUNCEMENT_DATE_TO, MODIFIED_DATE, PRACTICE_CODE, DELETED, CREATED_BY, OPERATION);
-                                    foreach (var item in objAnnouncement.DIAGNOSIS)
+
+                                    foreach (var item in objAddEditAnnouncement.RoleRequest)
                                     {
                                         long primaryKeyRol = Helper.getMaximumId("ANNOUNCEMENT_ROLE_ID");
                                         SqlParameter ANNOUNCEMENT_ROLE_ID = new SqlParameter("ANNOUNCEMENT_ROLE_ID", primaryKeyRol);
@@ -96,14 +89,8 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                                         SqlParameter ROLE_NAME = new SqlParameter("ROLE_NAME", item.ROLE_NAME.ToString() ?? (object)DBNull.Value);
                                         SqlParameter ANNOUNCEMENT_ID_ROLE = new SqlParameter("ANNOUNCEMENT_ID", primaryKey);
                                         SqlParameter ROLE_MODIFIED_DATE = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
-                                        //SqlParameter ROLE_ID = new SqlParameter("ROLE_ID", objAnnouncement.ROLE_ID);
                                         SqlParameter ROLE_PRACTICE_CODE = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
-                                        //SqlParameter ROLE_DELETED = new SqlParameter("DELETED", false);
-                                        //SqlParameter ROLE_CREATED_BY = new SqlParameter("CREATED_BY", profile.PracticeCode);
-                                        //SqlParameter ROLE_CREATED_DATE = new SqlParameter("CREATED_DATE", Helper.GetCurrentDate());
-
-                                        SpRepository<AnnouncementRoles>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT_ROLE @ANNOUNCEMENT_ROLE_ID, @ROLE_ID, @ROLE_NAME, @ANNOUNCEMENT_ID 
-                                            , @PRACTICE_CODE", ANNOUNCEMENT_ROLE_ID,
+                                        SpRepository<AnnouncementRoles>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT_ROLE @ANNOUNCEMENT_ROLE_ID, @ROLE_ID, @ROLE_NAME, @ANNOUNCEMENT_ID, @PRACTICE_CODE", ANNOUNCEMENT_ROLE_ID,
                                          ROLE_ID, ROLE_NAME, ANNOUNCEMENT_ID_ROLE, ROLE_PRACTICE_CODE);
                                     }
                                 }
@@ -122,13 +109,13 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                         else
                         {
                             //long primaryKey = Helper.getMaximumId("ANNOUNCEMENT_ID");
-                            SqlParameter ANNOUNCEMENT_ID = new SqlParameter("ANNOUNCEMENT_ID", objAnnouncement.ANNOUNCEMENT_ID);
-                            SqlParameter ANNOUNCEMENT_DETAILS = new SqlParameter("ANNOUNCEMENT_DETAILS", objAnnouncement.ANNOUNCEMENT_DETAILS.ToString() ?? (object)DBNull.Value);
-                            SqlParameter ANNOUNCEMENT_TITLE = new SqlParameter("ANNOUNCEMENT_TITLE", objAnnouncement.ANNOUNCEMENT_TITLE.ToString() ?? (object)DBNull.Value);
+                            SqlParameter ANNOUNCEMENT_ID = new SqlParameter("ANNOUNCEMENT_ID", objAddEditAnnouncement.ANNOUNCEMENT_ID);
+                            SqlParameter ANNOUNCEMENT_DETAILS = new SqlParameter("ANNOUNCEMENT_DETAILS", objAddEditAnnouncement.ANNOUNCEMENT_DETAILS.ToString() ?? (object)DBNull.Value);
+                            SqlParameter ANNOUNCEMENT_TITLE = new SqlParameter("ANNOUNCEMENT_TITLE", objAddEditAnnouncement.ANNOUNCEMENT_TITLE.ToString() ?? (object)DBNull.Value);
                             //SqlParameter ANNOUNCEMENT_DATE_FROM = new SqlParameter("ANNOUNCEMENT_DATE_FROM", Helper.GetCurrentDate());
                             //SqlParameter ANNOUNCEMENT_DATE_TO = new SqlParameter("ANNOUNCEMENT_DATE_TO", Helper.GetCurrentDate());
-                            SqlParameter ANNOUNCEMENT_DATE_FROM = new SqlParameter("ANNOUNCEMENT_DATE_FROM", Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_FROM));
-                            SqlParameter ANNOUNCEMENT_DATE_TO = new SqlParameter("ANNOUNCEMENT_DATE_TO", objAnnouncement.ANNOUNCEMENT_DATE_TO);
+                            SqlParameter ANNOUNCEMENT_DATE_FROM = new SqlParameter("ANNOUNCEMENT_DATE_FROM", Convert.ToDateTime(objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM));
+                            SqlParameter ANNOUNCEMENT_DATE_TO = new SqlParameter("ANNOUNCEMENT_DATE_TO", objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO);
                             SqlParameter MODIFIED_DATE = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
                             //SqlParameter ROLE_ID = new SqlParameter("ROLE_ID", objAnnouncement.ROLE_ID);
                             SqlParameter PRACTICE_CODE = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
@@ -140,13 +127,13 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                             SpRepository<Announcements>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT @ANNOUNCEMENT_ID, @ANNOUNCEMENT_DETAILS, @ANNOUNCEMENT_TITLE 
                         ,@ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @MODIFIED_DATE, @PRACTICE_CODE, @DELETED, @CREATED_BY, @OPERATION", ANNOUNCEMENT_ID,
                              ANNOUNCEMENT_DETAILS, ANNOUNCEMENT_TITLE, ANNOUNCEMENT_DATE_FROM, ANNOUNCEMENT_DATE_TO, MODIFIED_DATE, PRACTICE_CODE, DELETED, CREATED_BY, OPERATION);
-                            foreach (var item in objAnnouncement.DIAGNOSIS)
+                            foreach (var item in objAddEditAnnouncement.RoleRequest)
                             {
                                 long primaryKeyRol = Helper.getMaximumId("ANNOUNCEMENT_ROLE_ID");
                                 SqlParameter ANNOUNCEMENT_ROLE_ID = new SqlParameter("ANNOUNCEMENT_ROLE_ID", primaryKeyRol);
                                 SqlParameter ROLE_ID = new SqlParameter("ROLE_ID", item.ROLE_ID.ToString() ?? (object)DBNull.Value);
                                 SqlParameter ROLE_NAME = new SqlParameter("ROLE_NAME", item.ROLE_NAME.ToString() ?? (object)DBNull.Value);
-                                SqlParameter ANNOUNCEMENT_ID_ROLE = new SqlParameter("ANNOUNCEMENT_ID", objAnnouncement.ANNOUNCEMENT_ID);
+                                SqlParameter ANNOUNCEMENT_ID_ROLE = new SqlParameter("ANNOUNCEMENT_ID", objAddEditAnnouncement.ANNOUNCEMENT_ID);
                                 SqlParameter ROLE_MODIFIED_DATE = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
                                 //SqlParameter ROLE_ID = new SqlParameter("ROLE_ID", objAnnouncement.ROLE_ID);
                                 SqlParameter ROLE_PRACTICE_CODE = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
@@ -154,25 +141,7 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                                 //SqlParameter ROLE_CREATED_BY = new SqlParameter("CREATED_BY", profile.PracticeCode);
                                 //SqlParameter ROLE_CREATED_DATE = new SqlParameter("CREATED_DATE", Helper.GetCurrentDate());
 
-                                SpRepository<AnnouncementRoles>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT_ROLE @ANNOUNCEMENT_ROLE_ID, @ROLE_ID, @ROLE_NAME, @ANNOUNCEMENT_ID 
-                         , @PRACTICE_CODE", ANNOUNCEMENT_ROLE_ID,
-                                 ROLE_ID, ROLE_NAME, ANNOUNCEMENT_ID_ROLE, ROLE_PRACTICE_CODE);
-
-                                //   long primaryKeyRol = Helper.getMaximumId("ANNOUNCEMENT_ROLE_ID");
-                                //   SqlParameter ANNOUNCEMENT_ROLE_ID = new SqlParameter("ANNOUNCEMENT_ROLE_ID", primaryKeyRol);
-                                //   SqlParameter ROLE_ID = new SqlParameter("ROLE_ID", item.ROLE_ID.ToString() ?? (object)DBNull.Value);
-                                //   SqlParameter ROLE_NAME = new SqlParameter("ROLE_NAME", item.ROLE_NAME.ToString() ?? (object)DBNull.Value);
-                                //   SqlParameter ANNOUNCEMENT_ID_ROLE = new SqlParameter("ANNOUNCEMENT_ID_ROLE", objAnnouncement.ANNOUNCEMENT_ID);
-                                //   SqlParameter ROLE_MODIFIED_DATE = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
-                                //   //SqlParameter ROLE_ID = new SqlParameter("ROLE_ID", objAnnouncement.ROLE_ID);
-                                //   SqlParameter ROLE_PRACTICE_CODE = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
-                                //   SqlParameter ROLE_DELETED = new SqlParameter("DELETED", false);
-                                //   SqlParameter ROLE_CREATED_BY = new SqlParameter("CREATED_BY", profile.PracticeCode);
-                                //   //SqlParameter ROLE_CREATED_DATE = new SqlParameter("CREATED_DATE", Helper.GetCurrentDate());
-
-                                //   SpRepository<AnnouncementRoles>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT_ROLE @ANNOUNCEMENT_ROLE_ID, @ROLE_ID, @ROLE_NAME, @ANNOUNCEMENT_ID_ROLE 
-                                //, @MODIFIED_DATE, @PRACTICE_CODE, @DELETED, @CREATED_BY", ANNOUNCEMENT_ROLE_ID,
-                                //    ROLE_ID, ROLE_NAME, ANNOUNCEMENT_ID_ROLE, ROLE_MODIFIED_DATE, ROLE_PRACTICE_CODE, ROLE_DELETED, ROLE_CREATED_BY);
+                                SpRepository<AnnouncementRoles>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT_ROLE @ANNOUNCEMENT_ROLE_ID, @ROLE_ID, @ROLE_NAME, @ANNOUNCEMENT_ID , @PRACTICE_CODE", ANNOUNCEMENT_ROLE_ID, ROLE_ID, ROLE_NAME, ANNOUNCEMENT_ID_ROLE, ROLE_PRACTICE_CODE);
                             }
                             response.ErrorMessage = "Record update successfully";
                             response.Success = true;
@@ -199,10 +168,9 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
             }
             return response;
         }
-        public List<Announcement> GetAnnouncement(Announcements objAnnouncement, UserProfile profile)
+        public List<Announcements> GetAnnouncement(Announcements objAnnouncement, UserProfile profile)
         {
-
-            List<Announcement> announcementsList = new List<Announcement>();
+            List<Announcements> announcementsList = new List<Announcements>();
             if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR))
             {
                 objAnnouncement.ANNOUNCEMENT_DATE_FROM = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR);
@@ -221,7 +189,6 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
             }
             if (objAnnouncement != null && profile.PracticeCode != 0)
             {
-             
                 if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR) && !string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR))
                 {
                     objAnnouncement.ANNOUNCEMENT_DATE_FROM = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR);
@@ -231,17 +198,8 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                 SqlParameter AnnouncementsDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", objAnnouncement.ANNOUNCEMENT_DATE_FROM ?? (object)DBNull.Value);
                 SqlParameter AnnouncementsDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO", objAnnouncement.ANNOUNCEMENT_DATE_TO ?? (object)DBNull.Value);
                 SqlParameter RoleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = objAnnouncement.ROLE_ID ?? (object)DBNull.Value };
-                announcementsList = SpRepository<Announcement>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS  @PRACTICE_CODE, @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @ROLE_ID ",
-                    PracticeCode, AnnouncementsDateFrom, AnnouncementsDateTo, RoleId);
-                //}
+                announcementsList = SpRepository<Announcements>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS  @PRACTICE_CODE, @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @ROLE_ID ", PracticeCode, AnnouncementsDateFrom, AnnouncementsDateTo, RoleId);
             }
-            //else
-            //{
-            //    var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode }; 
-            //    announcementsList = SpRepository<Announcement>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS_ALL  @PRACTICE_CODE", PracticeCode);
-
-            //}
-
             return announcementsList;
         }
 
@@ -326,12 +284,6 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                         //GetExportAdvancedDailyReports(profile, exportAdvancedDailyReport.CALL_USER_ID);
                         response.ErrorMessage = "Record insert successfully";
                         response.Success = true;
-                        //}
-                        //else
-                        //{
-                        //    response.ErrorMessage = "Please Entre Questions or Answers";
-                        //    response.Success = false;
-                        //}
                     }
                     else
                     {
@@ -354,12 +306,6 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                          ANNOUNCEMENT_DETAILS, ANNOUNCEMENT_TITLE, ANNOUNCEMENT_DATE_FROM, ANNOUNCEMENT_DATE_TO, MODIFIED_DATE, PRACTICE_CODE, DELETED, CREATED_BY, CREATED_DATE);
                         response.ErrorMessage = "Record update successfully";
                         response.Success = true;
-                        //}
-                        //else
-                        //{
-                        //    response.ErrorMessage = "Please Entre Questions or Answers";
-                        //    response.Success = false;
-                        //}
                     }
 
                 }
@@ -377,14 +323,11 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
             return announcements;
         }
 
-        public List<Announcement> GetAnnouncementDetails(Announcements objAnnouncement, UserProfile profile)
+        public Announcements GetAnnouncementDetails(Announcements objAnnouncement, UserProfile profile)
         {
-            ResponseModel response = new ResponseModel();
-            List<Announcement> announcementsList = new List<Announcement>();
+            Announcements announcementsList = new Announcements();
             if (objAnnouncement != null)
             {
-                //foreach (var item in objAnnouncement.DIAGNOSIS)
-                //{
                 if (profile != null && profile.PracticeCode != 0)
                 {
                     if (objAnnouncement.ANNOUNCEMENT_DATE_FROM != null)
@@ -397,8 +340,11 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                     }
                     var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
                     var AccouncmentId = new SqlParameter { ParameterName = "ANNOUNCEMENT_ID", SqlDbType = SqlDbType.BigInt, Value = objAnnouncement.ANNOUNCEMENT_ID };
-                    announcementsList = SpRepository<Announcement>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS_FOR_UPDATE  @PRACTICE_CODE, @ANNOUNCEMENT_ID",
-                       PracticeCode, AccouncmentId);
+                    announcementsList = SpRepository<Announcements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS_FOR_UPDATE  @PRACTICE_CODE, @ANNOUNCEMENT_ID", PracticeCode, AccouncmentId);
+                    if (announcementsList != null)
+                    {
+                        announcementsList.AnnouncementRoles = _announcementRoleRepository.GetMany(x => x.ANNOUNCEMENT_ID == announcementsList.ANNOUNCEMENT_ID && !(x.DELETED) && x.PRACTICE_CODE == profile.PracticeCode);
+                    }
                 }
             }
             return announcementsList;
@@ -413,19 +359,20 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
 
                 if (existingDetailInfo != null)
                 {
+                    existingDetailInfo.ANNOUNCEMENT_ID = existingDetailInfo.ANNOUNCEMENT_ID;
                     existingDetailInfo.MODIFIED_BY = profile.UserName;
                     existingDetailInfo.MODIFIED_DATE = Helper.GetCurrentDate();
                     existingDetailInfo.DELETED = true;
                     _announcementRepository.Update(existingDetailInfo);
                     _announcementRepository.Save();
                     response.ErrorMessage = "";
-                    response.Message = "Announcment deleted successfully";
+                    response.ErrorMessage = "Announcment deleted successfully";
                     response.Success = true;
                 }
                 else
                 {
                     response.ErrorMessage = "";
-                    response.Message = "Announcment deleted successfully";
+                   // response.Message = "Announcment deleted successfully";
                     response.Success = true;
                 }
             }
@@ -470,6 +417,5 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
             //}
             //return response;
         }
-
     }
 }
