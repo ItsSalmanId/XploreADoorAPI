@@ -59,7 +59,7 @@ namespace FOX.DataModels.Models.Settings.Announcement
         [Key]
         public long ROLE_ID { get; set; }
         public string ROLE_NAME { get; set; }
-        public long PRACTICE_CODE { get; set; }
+        public long? PRACTICE_CODE { get; set; }
         public string CREATED_BY { get; set; }
         public DateTime CREATED_DATE { get; set; }
         public string MODIFIED_BY { get; set; }

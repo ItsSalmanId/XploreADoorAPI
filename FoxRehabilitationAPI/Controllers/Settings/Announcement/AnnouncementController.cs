@@ -25,28 +25,62 @@ namespace FoxRehabilitationAPI.Controllers.Settings.Announcement
         [HttpPost]
         public HttpResponseMessage InsertAnnouncement(AddEditFoxAnnouncement objAnnouncement)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _announcementService.InsertAnnouncement(objAnnouncement, GetProfile()));
+            if(objAnnouncement != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _announcementService.InsertAnnouncement(objAnnouncement, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Announcement is empty");
+            }
         }
-
         [HttpPost]
         public HttpResponseMessage GetAnnouncement(Announcements objAnnouncement)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _announcementService.GetAnnouncement(objAnnouncement, GetProfile()));
+            if(objAnnouncement != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _announcementService.GetAnnouncement(objAnnouncement, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Announcement is empty");
+            }
         }
         [HttpPost]
         public HttpResponseMessage GetAnnouncementDetails(Announcements objAnnouncement)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _announcementService.GetAnnouncementDetails(objAnnouncement, GetProfile()));
+            if(objAnnouncement != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _announcementService.GetAnnouncementDetails(objAnnouncement, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Announcement is empty");
+            }
         }
         [HttpPost]
         public HttpResponseMessage AddAnnouncementRole(List<AnnouncementRoles> objAnnouncementRoles)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _announcementService.AddAnnouncementRole(objAnnouncementRoles, GetProfile()));
+            if(objAnnouncementRoles != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _announcementService.AddAnnouncementRole(objAnnouncementRoles, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Announcement is empty");
+            }
         }
         [HttpPost]
         public HttpResponseMessage DeleteAnnouncement(Announcements objAnnouncementRoles)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _announcementService.DeleteAnnouncement(objAnnouncementRoles, GetProfile()));
+            if(objAnnouncementRoles != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _announcementService.DeleteAnnouncement(objAnnouncementRoles, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Announcement is empty");
+            }
         }
     }
 }

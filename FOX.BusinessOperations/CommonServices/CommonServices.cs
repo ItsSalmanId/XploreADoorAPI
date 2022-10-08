@@ -580,13 +580,14 @@ namespace FOX.BusinessOperations.CommonServices
             CommonAnnouncements announcementsListWithData = new CommonAnnouncements();
             var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = userProfile.PracticeCode };   
             SqlParameter RoleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = userProfile.RoleId };
-            var announcement = SpRepository<CommonAnnouncements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS_FOR_POPUP  @PRACTICE_CODE, @ROLE_ID ", PracticeCode, RoleId);
+            var announcement = SpRepository<CommonAnnouncements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS_FOR_POPUP  @PRACTICE_CODE, @ROLE_ID", PracticeCode, RoleId);
             if(announcement != null)
             {
                 SqlParameter AnnouncmentID = new SqlParameter("ANNOUNCEMENT_ID", announcement.ANNOUNCEMENT_ID);
                 SqlParameter PracticeCodeHistory = new SqlParameter("PRACTICE_CODE", userProfile.PracticeCode);
                 SqlParameter roleId = new SqlParameter("ROLE_ID", userProfile.RoleId);
-                announcementsListWithData = SpRepository<CommonAnnouncements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_HISTORY_DETAILS @PRACTICE_CODE, @ANNOUNCEMENT_ID, @ROLE_ID", PracticeCodeHistory, AnnouncmentID, roleId);
+                SqlParameter UserName = new SqlParameter { ParameterName = "USER_NAME", SqlDbType = SqlDbType.VarChar, Value = userProfile.UserName };
+                announcementsListWithData = SpRepository<CommonAnnouncements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_HISTORY_DETAILS @PRACTICE_CODE, @ANNOUNCEMENT_ID, @ROLE_ID, @USER_NAME", PracticeCodeHistory, AnnouncmentID, roleId, UserName);
             }
             if(announcementsListWithData == null)
             {
@@ -597,7 +598,6 @@ namespace FOX.BusinessOperations.CommonServices
             }
             else
             {
-                //CommonAnnouncements announcementsListEmpty = new CommonAnnouncements();
                 return announcementsListWithData;
             }
             
