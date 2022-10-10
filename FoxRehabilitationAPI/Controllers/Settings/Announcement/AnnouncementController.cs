@@ -59,18 +59,6 @@ namespace FoxRehabilitationAPI.Controllers.Settings.Announcement
             }
         }
         [HttpPost]
-        public HttpResponseMessage AddAnnouncementRole(List<AnnouncementRoles> objAnnouncementRoles)
-        {
-            if(objAnnouncementRoles != null)
-            {
-                return Request.CreateResponse(HttpStatusCode.OK, _announcementService.AddAnnouncementRole(objAnnouncementRoles, GetProfile()));
-            }
-            else
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Announcement is empty");
-            }
-        }
-        [HttpPost]
         public HttpResponseMessage DeleteAnnouncement(Announcements objAnnouncementRoles)
         {
             if(objAnnouncementRoles != null)

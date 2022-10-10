@@ -10,7 +10,6 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
         List<FoxRoles> GetFoxRoles(UserProfile userProfile);
         List<Announcements> GetAnnouncement(Announcements objAnnouncement, UserProfile profile);
         Announcements GetAnnouncementDetails(Announcements objAnnouncement, UserProfile profile);
-        ResponseModel AddAnnouncementRole(List<AnnouncementRoles> objAnnouncementRoles, UserProfile profile);
         ResponseModel InsertAnnouncement(AddEditFoxAnnouncement objAnnouncement, UserProfile profile);
         ResponseModel DeleteAnnouncement(Announcements objAnnouncement, UserProfile profile);
     }
