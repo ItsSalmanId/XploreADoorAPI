@@ -578,10 +578,10 @@ namespace FOX.BusinessOperations.CommonServices
         {
             ResponseModel response = new ResponseModel();
             CommonAnnouncements announcementsListWithData = new CommonAnnouncements();
-            var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = userProfile.PracticeCode };   
+            var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = userProfile.PracticeCode };
             SqlParameter RoleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = userProfile.RoleId };
             var announcement = SpRepository<CommonAnnouncements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS_FOR_POPUP  @PRACTICE_CODE, @ROLE_ID", PracticeCode, RoleId);
-            if(announcement != null)
+            if (announcement != null)
             {
                 SqlParameter AnnouncmentID = new SqlParameter("ANNOUNCEMENT_ID", announcement.ANNOUNCEMENT_ID);
                 SqlParameter PracticeCodeHistory = new SqlParameter("PRACTICE_CODE", userProfile.PracticeCode);
@@ -589,17 +589,23 @@ namespace FOX.BusinessOperations.CommonServices
                 SqlParameter UserName = new SqlParameter { ParameterName = "USER_NAME", SqlDbType = SqlDbType.VarChar, Value = userProfile.UserName };
                 announcementsListWithData = SpRepository<CommonAnnouncements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_HISTORY_DETAILS @PRACTICE_CODE, @ANNOUNCEMENT_ID, @ROLE_ID, @USER_NAME", PracticeCodeHistory, AnnouncmentID, roleId, UserName);
             }
-            if(announcementsListWithData == null)
+            if (announcementsListWithData == null)
             {
-                announcement.ANNOUNCEMENT_DETAILS = !string.IsNullOrEmpty(announcement.ANNOUNCEMENT_DETAILS) ? announcement.ANNOUNCEMENT_DETAILS.TrimStart().Replace("• ", "") : "";
-                List<string> splitted = announcement.ANNOUNCEMENT_DETAILS.Split('\n').ToList();
-                announcement.SplittedBulletsPoints = splitted;
+                //announcement.ANNOUNCEMENT_DETAILS = !string.IsNullOrEmpty(announcement.ANNOUNCEMENT_DETAILS) ? announcement.ANNOUNCEMENT_DETAILS.TrimStart().Replace("• ", "") : "";
+                announcement.ANNOUNCEMENT_DETAILS = announcement.ANNOUNCEMENT_DETAILS;
+
+                //List<string> splitted = announcement.ANNOUNCEMENT_DETAILS.Split('\n').ToList();
+                //announcement.SplittedBulletsPoints = splitted;
                 return announcement;
             }
             else
             {
-                return announcementsListWithData;
+             announcementsListWithData = null;
+            return announcementsListWithData;
+
             }
+
+         
             
         }
         // Data of Alert Window will be save to db
