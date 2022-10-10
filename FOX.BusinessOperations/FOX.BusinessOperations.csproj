@@ -260,6 +260,8 @@
     <Compile Include="QualityAssuranceService\EvaluationSetupService\IEvaluationSetupService.cs" />
     <Compile Include="QualityAssuranceService\PerformAuditService\IPerformAuditService.cs" />
     <Compile Include="QualityAssuranceService\PerformAuditService\PerformAuditService.cs" />
+    <Compile Include="QualityAssuranceService\QADashboardService\IQADashboardService.cs" />
+    <Compile Include="QualityAssuranceService\QADashboardService\QADashboardService.cs" />
     <Compile Include="QualityAssuranceService\QAReportService\IQAReportService.cs" />
     <Compile Include="QualityAssuranceService\QAReportService\QAReportService..cs" />
     <Compile Include="ReconciliationService\IReconciliationService.cs" />

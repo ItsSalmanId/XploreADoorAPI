@@ -340,6 +340,7 @@
     <Compile Include="Controllers\PatientSurvey\UploadData\UploadDataController.cs" />
     <Compile Include="Controllers\QualityAssurance\EvaluationSetupController.cs" />
     <Compile Include="Controllers\QualityAssurance\PerformAuditController.cs" />
+    <Compile Include="Controllers\QualityAssurance\QADashboardController.cs" />
     <Compile Include="Controllers\QualityAssurance\QAReportController.cs" />
     <Compile Include="Controllers\ReconciliationController.cs" />
     <Compile Include="Controllers\ReportingController.cs" />
@@ -456,8 +457,11 @@
     <Folder Include="Views\EvaluationSetup\" />
     <Folder Include="Views\Group\" />
     <Folder Include="Views\PerformAudit\" />
+    <Folder Include="Views\QADashboard\" />
     <Folder Include="Views\QAReport\" />
     <Folder Include="Views\SignatureRequired\" />
+    <Folder Include="Views\Taseer\" />
+    <Folder Include="Views\Testnew\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
