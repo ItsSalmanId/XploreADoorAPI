@@ -591,11 +591,13 @@ namespace FOX.BusinessOperations.CommonServices
             }
             if (announcementsListWithData == null)
             {
-                //announcement.ANNOUNCEMENT_DETAILS = !string.IsNullOrEmpty(announcement.ANNOUNCEMENT_DETAILS) ? announcement.ANNOUNCEMENT_DETAILS.TrimStart().Replace("• ", "") : "";
+                announcement.ANNOUNCEMENT_DETAILS = !string.IsNullOrEmpty(announcement.ANNOUNCEMENT_DETAILS) ? announcement.ANNOUNCEMENT_DETAILS.TrimStart().Replace("• ", "") : "";
                 announcement.ANNOUNCEMENT_DETAILS = announcement.ANNOUNCEMENT_DETAILS;
+                //var numLines = announcement.ANNOUNCEMENT_DETAILS.Length;
+                //numLines += (announcement.ANNOUNCEMENT_DETAILS.Split('\n').Length) * 30;
 
-                //List<string> splitted = announcement.ANNOUNCEMENT_DETAILS.Split('\n').ToList();
-                //announcement.SplittedBulletsPoints = splitted;
+                List<string> splitted = announcement.ANNOUNCEMENT_DETAILS.Split('\n').ToList();
+                announcement.SplittedBulletsPoints = splitted;
                 return announcement;
             }
             else
