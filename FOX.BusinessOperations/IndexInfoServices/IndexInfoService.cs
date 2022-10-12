@@ -4918,7 +4918,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             }
             catch (Exception ex)
             { 
-                if (retrycatch <= 2 && ex.InnerException.Message.Contains("Violation of PRIMARY KEY constraint"))
+                if (retrycatch <= 2 && !string.IsNullOrEmpty(ex.Message) && ex.Message.Contains("Violation of PRIMARY KEY constraint"))
                 {
                     retrycatch = retrycatch + 1;
                     InsertTaskLog(taskId, tasklog, profile);
