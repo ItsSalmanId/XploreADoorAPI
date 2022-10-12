@@ -2382,7 +2382,7 @@ namespace FOX.BusinessOperations.PatientServices
             string zipCode = string.Empty;
             if (!string.IsNullOrEmpty(loc.Zip))
             {
-                if (loc.Zip.Length > 5)
+               if (loc.Zip.Length > 5)
                 { 
                     zipCode = loc.Zip.Insert(5, "-");
                 }               
@@ -2393,7 +2393,7 @@ namespace FOX.BusinessOperations.PatientServices
             }
             
             
-            //string zipCode = string.IsNullOrEmpty(loc.Zip) ? "" : loc.Zip;
+                      //string zipCode = string.IsNullOrEmpty(loc.Zip) ? "" : loc.Zip;
 
             string address = add + " " + city + " " + state + " " + zipCode;
 
