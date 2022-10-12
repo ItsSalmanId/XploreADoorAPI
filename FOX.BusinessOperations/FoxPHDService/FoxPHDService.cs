@@ -9,6 +9,7 @@ using FOX.DataModels.Models.GeneralNotesModel;
 using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.Patient;
 using FOX.DataModels.Models.PatientDocuments;
+using FOX.DataModels.Models.PatientSurvey;
 using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.ServiceConfiguration;
 using SautinSoft;
@@ -30,6 +31,7 @@ namespace FOX.BusinessOperations.FoxPHDService
     // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "FoxPHDService" in both code and config file together.
     public class FoxPHDService : IFoxPHDService
     {
+        private long retrycatch = 0;
         private readonly DBContextFoxPHD _DBContextFoxPHD = new DBContextFoxPHD();
         private readonly DbContextPatient _PatientContext = new DbContextPatient();
         private readonly DbContextCases _CaseContext = new DbContextCases();
@@ -158,9 +160,18 @@ namespace FOX.BusinessOperations.FoxPHDService
             }
             catch (Exception ex)
             {
-                throw ex;
-            }
 
+                if (retrycatch <= 2 && ex.InnerException.Message.Contains("deadlocked on lock resources with another process"))
+                {
+                    retrycatch = retrycatch + 1;
+                    return GetPatientInformation(ObjPatientSearchRequest, profile);
+                }
+                else
+                {
+                    throw ex;
+                }
+                
+            }
         }
         public ResponseModel DeleteCallDetailRecordInformation(PHDCallDetail ObjPHDCallDetailRequest, UserProfile profile)
         {
