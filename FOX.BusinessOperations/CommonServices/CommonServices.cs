@@ -593,9 +593,12 @@ namespace FOX.BusinessOperations.CommonServices
             {
                 announcement.ANNOUNCEMENT_DETAILS = !string.IsNullOrEmpty(announcement.ANNOUNCEMENT_DETAILS) ? announcement.ANNOUNCEMENT_DETAILS.TrimStart().Replace("• ", "") : "";
                 announcement.ANNOUNCEMENT_DETAILS = announcement.ANNOUNCEMENT_DETAILS;
-                //var numLines = announcement.ANNOUNCEMENT_DETAILS.Length;
-                //numLines += (announcement.ANNOUNCEMENT_DETAILS.Split('\n').Length) * 30;
-
+                announcement.ANNOUNCEMENT_DETAILS = announcement.ANNOUNCEMENT_DETAILS.Replace("\n\n", "\n");
+                if (announcement.ANNOUNCEMENT_DETAILS.EndsWith("\n") )
+                {
+                    announcement.ANNOUNCEMENT_DETAILS =  announcement.ANNOUNCEMENT_DETAILS.TrimEnd('\n');
+                    
+                }
                 List<string> splitted = announcement.ANNOUNCEMENT_DETAILS.Split('\n').ToList();
                 announcement.SplittedBulletsPoints = splitted;
                 return announcement;
@@ -625,31 +628,16 @@ namespace FOX.BusinessOperations.CommonServices
                     SqlParameter AnnouncmentId = new SqlParameter("ANNOUNCEMENT_ID", objCommonAnnouncements.ANNOUNCEMENT_ID);
                     SqlParameter UserId = new SqlParameter("USER_ID", objCommonAnnouncements.ROLE_ID);
                     SqlParameter UserName = new SqlParameter("USER_NAME", userProfile.UserName);
-                    //getAlertWindowResponse.SHOW_COUNT = 1;
                     SqlParameter ShowCount = new SqlParameter("SHOW_COUNT", 1 );
                     SqlParameter ModifiedDate = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
                     SqlParameter CreatedDate = new SqlParameter("CREATED_DATE", Helper.GetCurrentDate());
-                    //SqlParameter ROLE_ID = new SqlParameter("ROLE_ID", objAnnouncement.ROLE_ID);
                     SqlParameter PracticeCode = new SqlParameter("PRACTICE_CODE", userProfile.PracticeCode);
                     SqlParameter Deleted = new SqlParameter("DELETED", false);
                     SqlParameter CreatedBy = new SqlParameter("CREATED_BY", userProfile.PracticeCode);
                     SqlParameter Operation = new SqlParameter("OPERATION", "ADD");
-                    //SqlParameter CREATED_DATE = new SqlParameter("CREATED_DATE", Helper.GetCurrentDate());
-                    //SqlParameter Add = new SqlParameter("Add", "Add");
-
                     SpRepository<AnnouncementsHistory>.GetListWithStoreProcedure(@"exec FOX_PROC_CRUD_ANNOUNCEMENT_HISTORY @ANNOUNCEMENT_HISTORY_ID, @ANNOUNCEMENT_ID, @USER_ID, @USER_NAME, @SHOW_COUNT 
                          ,@MODIFIED_DATE, @CREATED_DATE, @PRACTICE_CODE, @DELETED, @CREATED_BY, @Operation", AnnouncmentHistoryId, AnnouncmentId, UserId, UserName, ShowCount, ModifiedDate, CreatedDate,
                      PracticeCode, Deleted, CreatedBy, Operation);
-
-                    //AnnouncementsHistory objannouncementsHistory = new AnnouncementsHistory();
-                    //objannouncementsHistory.ANNOUNCEMENT_HISTORY_ID = Helper.getMaximumId("FOX_TBL_ANNOUNCEMENT_HISTORY");
-                    //objannouncementsHistory.USER_ID = userProfile.userID;
-                    //objannouncementsHistory.USER_NAME = userProfile.UserName;
-                    //objannouncementsHistory.CREATED_BY = objannouncementsHistory.MODIFIED_BY = "FOX_TEAM";
-                    //objannouncementsHistory.CREATED_DATE = objannouncementsHistory.MODIFIED_DATE = Helper.GetCurrentDate();
-                    //objannouncementsHistory.SHOW_COUNT = 1;
-                    //_announcementsHistoryRepository.Insert(objannouncementsHistory);
-                    //_announcementsHistoryRepository.Save();
                 }
                 else
                 {

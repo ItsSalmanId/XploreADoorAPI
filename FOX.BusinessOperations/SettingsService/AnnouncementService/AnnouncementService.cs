@@ -105,7 +105,7 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                                 }
                                 else
                                 {
-                                    response.ErrorMessage = "Can not be added more than one announcment in same day";
+                                    response.ErrorMessage = "Can't add more than one announcement for one day.";
                                     response.Success = false;
                                 }
                             }
@@ -146,7 +146,7 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                     }
                     else
                     {
-                        response.ErrorMessage = "Can't be added announcement more than 10 days";
+                        response.ErrorMessage = "Can't add announcement for more than 10 days.";
                         response.Success = false;
                     }
                 }
@@ -165,33 +165,34 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
         // Description: 
         public List<Announcements> GetAnnouncement(Announcements objAnnouncement, UserProfile profile)
         {
-            List<Announcements> announcementsList = new List<Announcements>();
-            if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR))
-            {
-                objAnnouncement.ANNOUNCEMENT_DATE_FROM = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR);
-            }
-            else
-            {
-                objAnnouncement.ANNOUNCEMENT_DATE_FROM = Helper.GetCurrentDate().Date;
-            }
-            if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR))
-            {
-                objAnnouncement.ANNOUNCEMENT_DATE_TO = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR);
-            }
-            else
-            {
-                objAnnouncement.ANNOUNCEMENT_DATE_TO = null;
-            }
-            if (objAnnouncement != null && profile.PracticeCode != 0)
-            {
-                var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
-                SqlParameter AnnouncementsDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", objAnnouncement.ANNOUNCEMENT_DATE_FROM ?? (object)DBNull.Value);
-                SqlParameter AnnouncementsDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO", objAnnouncement.ANNOUNCEMENT_DATE_TO ?? (object)DBNull.Value);
-                SqlParameter RoleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = objAnnouncement.ROLE_ID ?? (object)DBNull.Value };
-                SqlParameter AnnouncementTitle = new SqlParameter { ParameterName = "ANNOUNCEMENT_TITLE", SqlDbType = SqlDbType.VarChar, Value = objAnnouncement.ANNOUNCEMENT_TITLE == null ? null : objAnnouncement.ANNOUNCEMENT_TITLE };
-               // SqlParameter AnnouncementTitle = new SqlParameter("ANNOUNCEMENT_TITLE", objAnnouncement.ANNOUNCEMENT_TITLE.ToString() ?? (object)DBNull.Value);
-                announcementsList = SpRepository<Announcements>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS  @PRACTICE_CODE, @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @ROLE_ID", PracticeCode, AnnouncementsDateFrom, AnnouncementsDateTo, RoleId);
-            }
+                List<Announcements> announcementsList = new List<Announcements>();
+                if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR))
+                {
+                    objAnnouncement.ANNOUNCEMENT_DATE_FROM = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR);
+                }
+                else
+                {
+                    objAnnouncement.ANNOUNCEMENT_DATE_FROM = Helper.GetCurrentDate().Date;
+                }
+                if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR))
+                {
+                    objAnnouncement.ANNOUNCEMENT_DATE_TO = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR);
+                }
+                else
+                {
+                    objAnnouncement.ANNOUNCEMENT_DATE_TO = null;
+                }
+                if (objAnnouncement != null && profile.PracticeCode != 0)
+                {
+                    var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                    SqlParameter AnnouncementsDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", objAnnouncement.ANNOUNCEMENT_DATE_FROM ?? (object)DBNull.Value);
+                    SqlParameter AnnouncementsDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO", objAnnouncement.ANNOUNCEMENT_DATE_TO ?? (object)DBNull.Value);
+                    SqlParameter RoleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = objAnnouncement.ROLE_ID ?? (object)DBNull.Value };
+                    SqlParameter AnnouncementTitle = new SqlParameter { ParameterName = "ANNOUNCEMENT_TITLE", SqlDbType = SqlDbType.VarChar, Value = objAnnouncement.ANNOUNCEMENT_TITLE == null ? null : objAnnouncement.ANNOUNCEMENT_TITLE };
+                    // SqlParameter AnnouncementTitle = new SqlParameter("ANNOUNCEMENT_TITLE", objAnnouncement.ANNOUNCEMENT_TITLE.ToString() ?? (object)DBNull.Value);
+                    announcementsList = SpRepository<Announcements>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS  @PRACTICE_CODE, @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @ROLE_ID", PracticeCode, AnnouncementsDateFrom, AnnouncementsDateTo, RoleId);
+                }
+           
             return announcementsList;
         }
         // Description: 
