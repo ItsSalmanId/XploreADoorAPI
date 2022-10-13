@@ -170,10 +170,10 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                 {
                     objAnnouncement.ANNOUNCEMENT_DATE_FROM = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR);
                 }
-                else
-                {
-                    objAnnouncement.ANNOUNCEMENT_DATE_FROM = Helper.GetCurrentDate().Date;
-                }
+                //else
+                //{
+                //    objAnnouncement.ANNOUNCEMENT_DATE_FROM = Helper.GetCurrentDate().Date;
+                //}
                 if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR))
                 {
                     objAnnouncement.ANNOUNCEMENT_DATE_TO = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR);
