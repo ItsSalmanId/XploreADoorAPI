@@ -68,7 +68,7 @@ namespace FOX.BusinessOperations.CommonServices
             _foxRolesRepository = new GenericRepository<FoxRoles>(_DbContextCommon);
         }
 
-    public string GeneratePdf(long WorkId, string practiceDocumentDirectory)
+        public string GeneratePdf(long WorkId, string practiceDocumentDirectory)
         {
             var queue = _QueueRepository.GetByID(WorkId);
             if (queue != null && queue.FILE_PATH != null && queue.FILE_PATH != "")
@@ -298,11 +298,11 @@ namespace FOX.BusinessOperations.CommonServices
                 //}
                 //else
                 //{
-                    senderTypeList = _FOX_TBL_SENDER_TYPE.GetMany(t => t.PRACTICE_CODE == profile.PracticeCode && !t.DELETED && t.DISPLAY_ORDER != null)
-                    .OrderBy(t => t.DISPLAY_ORDER)
-                    //.OrderBy(t => t.SENDER_TYPE_NAME)
-                    .ToList();
-               // }
+                senderTypeList = _FOX_TBL_SENDER_TYPE.GetMany(t => t.PRACTICE_CODE == profile.PracticeCode && !t.DELETED && t.DISPLAY_ORDER != null)
+                .OrderBy(t => t.DISPLAY_ORDER)
+                //.OrderBy(t => t.SENDER_TYPE_NAME)
+                .ToList();
+                // }
                 return new ResponseGetSenderTypesModel() { SenderTypeList = senderTypeList, ErrorMessage = "", Message = "Get Sender Types List Successfully.", Success = true };
             }
             catch (Exception exception)
@@ -461,10 +461,12 @@ namespace FOX.BusinessOperations.CommonServices
 
         public List<CityStateModel> GetSmartCities(string city)
         {
-            try { 
-            return _zipCityStateRepository.GetManyQueryable(e => e.City_Name.Contains(city) && !e.Deleted).GroupBy(g=>g.City_Name).Select(w=> new CityStateModel { NAME = w.Key }).ToList();
+            try
+            {
+                return _zipCityStateRepository.GetManyQueryable(e => e.City_Name.Contains(city) && !e.Deleted).GroupBy(g => g.City_Name).Select(w => new CityStateModel { NAME = w.Key }).ToList();
             }
-            catch(Exception ex){
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }
@@ -491,7 +493,7 @@ namespace FOX.BusinessOperations.CommonServices
                 //Set all previous notes of this task to inactive.
                 if (dbTaskNotes.Count > 0)
                 {
-                    foreach(var dbTaskNote in dbTaskNotes)
+                    foreach (var dbTaskNote in dbTaskNotes)
                     {
                         dbTaskNote.IS_ACTIVE = false;
                         _notesRepository.Update(dbTaskNote);
@@ -501,7 +503,7 @@ namespace FOX.BusinessOperations.CommonServices
 
                 if (!string.IsNullOrEmpty(notes.NOTES))
                 {
-                    if(activeTaskNotes != null && activeTaskNotes.NOTES == notes.NOTES) //Do unchange last commment.
+                    if (activeTaskNotes != null && activeTaskNotes.NOTES == notes.NOTES) //Do unchange last commment.
                     {
                         activeTaskNotes.IS_ACTIVE = true;
                         _notesRepository.Update(activeTaskNotes);
@@ -538,7 +540,7 @@ namespace FOX.BusinessOperations.CommonServices
 
         public List<States> GetStates()
         {
-            return _statesRepository.GetMany(row => row.Deleted != true).OrderBy(r=>r.State_Code).ToList();
+            return _statesRepository.GetMany(row => row.Deleted != true).OrderBy(r => r.State_Code).ToList();
         }
 
         public Provider GetProvider(long providerId, UserProfile profile)
@@ -547,7 +549,7 @@ namespace FOX.BusinessOperations.CommonServices
         }
         // Splash will be showing on the basics of user id 
         public bool IsShowSplash(UserProfile userProfile)
-            {
+        {
             if (userProfile != null && !string.IsNullOrEmpty(userProfile.UserName))
             {
                 var splashType = WebConfigurationManager.AppSettings["SplashType"];
@@ -573,52 +575,54 @@ namespace FOX.BusinessOperations.CommonServices
             }
             return true;
         }
-        // Splash will be showing on the basics of user id 
+        // Description: This function is trigger to Splash will be showing on the basics of user id 
         public CommonAnnouncements IsShowAlertWindow(UserProfile userProfile)
         {
             ResponseModel response = new ResponseModel();
             CommonAnnouncements announcementsListWithData = new CommonAnnouncements();
-            var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = userProfile.PracticeCode };
-            SqlParameter RoleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = userProfile.RoleId };
-            var announcement = SpRepository<CommonAnnouncements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS_FOR_POPUP  @PRACTICE_CODE, @ROLE_ID", PracticeCode, RoleId);
-            if (announcement != null)
+            if (userProfile != null && userProfile.PracticeCode != 0 && !string.IsNullOrEmpty(userProfile.UserName))
             {
-                SqlParameter AnnouncmentID = new SqlParameter("ANNOUNCEMENT_ID", announcement.ANNOUNCEMENT_ID);
-                SqlParameter PracticeCodeHistory = new SqlParameter("PRACTICE_CODE", userProfile.PracticeCode);
-                SqlParameter roleId = new SqlParameter("ROLE_ID", userProfile.RoleId);
-                SqlParameter UserName = new SqlParameter { ParameterName = "USER_NAME", SqlDbType = SqlDbType.VarChar, Value = userProfile.UserName };
-                announcementsListWithData = SpRepository<CommonAnnouncements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_HISTORY_DETAILS @PRACTICE_CODE, @ANNOUNCEMENT_ID, @ROLE_ID, @USER_NAME", PracticeCodeHistory, AnnouncmentID, roleId, UserName);
-            }
-            if (announcementsListWithData == null)
-            {
-                announcement.ANNOUNCEMENT_DETAILS = !string.IsNullOrEmpty(announcement.ANNOUNCEMENT_DETAILS) ? announcement.ANNOUNCEMENT_DETAILS.TrimStart().Replace("• ", "") : "";
-                announcement.ANNOUNCEMENT_DETAILS = announcement.ANNOUNCEMENT_DETAILS;
-                announcement.ANNOUNCEMENT_DETAILS = announcement.ANNOUNCEMENT_DETAILS.Replace("\n\n", "\n");
-                if (announcement.ANNOUNCEMENT_DETAILS.EndsWith("\n") )
+                var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = userProfile.PracticeCode };
+                SqlParameter RoleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = userProfile.RoleId };
+                var announcement = SpRepository<CommonAnnouncements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS_FOR_POPUP  @PRACTICE_CODE, @ROLE_ID", PracticeCode, RoleId);
+                if (announcement != null)
                 {
-                    announcement.ANNOUNCEMENT_DETAILS =  announcement.ANNOUNCEMENT_DETAILS.TrimEnd('\n');
-                    
+                    SqlParameter AnnouncmentID = new SqlParameter("ANNOUNCEMENT_ID", announcement.ANNOUNCEMENT_ID);
+                    SqlParameter PracticeCodeHistory = new SqlParameter("PRACTICE_CODE", userProfile.PracticeCode);
+                    SqlParameter roleId = new SqlParameter("ROLE_ID", userProfile.RoleId);
+                    SqlParameter UserName = new SqlParameter { ParameterName = "USER_NAME", SqlDbType = SqlDbType.VarChar, Value = userProfile.UserName };
+                    announcementsListWithData = SpRepository<CommonAnnouncements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_HISTORY_DETAILS @PRACTICE_CODE, @ANNOUNCEMENT_ID, @ROLE_ID, @USER_NAME", PracticeCodeHistory, AnnouncmentID, roleId, UserName);
                 }
-                List<string> splitted = announcement.ANNOUNCEMENT_DETAILS.Split('\n').ToList();
-                announcement.SplittedBulletsPoints = splitted;
-                return announcement;
+                if (announcementsListWithData == null)
+                {
+                    announcement.ANNOUNCEMENT_DETAILS = !string.IsNullOrEmpty(announcement.ANNOUNCEMENT_DETAILS) ? announcement.ANNOUNCEMENT_DETAILS.TrimStart().Replace("• ", "") : "";
+                    announcement.ANNOUNCEMENT_DETAILS = announcement.ANNOUNCEMENT_DETAILS;
+                    announcement.ANNOUNCEMENT_DETAILS = announcement.ANNOUNCEMENT_DETAILS.Replace("\n\n", "\n");
+                    if (announcement.ANNOUNCEMENT_DETAILS.EndsWith("\n"))
+                    {
+                        announcement.ANNOUNCEMENT_DETAILS = announcement.ANNOUNCEMENT_DETAILS.TrimEnd('\n');
+                    }
+                    List<string> splitted = announcement.ANNOUNCEMENT_DETAILS.Split('\n').ToList();
+                    announcement.SplittedBulletsPoints = splitted;
+                    return announcement;
+                }
+                else
+                {
+                    announcementsListWithData = null;
+                    return announcementsListWithData;
+                }
             }
             else
             {
-             announcementsListWithData = null;
-            return announcementsListWithData;
-
+                announcementsListWithData = null;
+                return announcementsListWithData;
             }
-
-         
-            
         }
-        // Data of Alert Window will be save to db
-        public ResponseModel SaveAlertWindowsDetails(CommonAnnouncements objCommonAnnouncements,UserProfile userProfile)
+        // Description: This function is trigger to data of alert window will be save to db
+        public ResponseModel SaveAlertWindowsDetails(CommonAnnouncements objCommonAnnouncements, UserProfile userProfile)
         {
             ResponseModel response = new ResponseModel();
-            //List<CommonAnnouncements> announcementsList = new List<CommonAnnouncements>();
-            if (userProfile != null && !string.IsNullOrEmpty(userProfile.UserName))
+            if (userProfile != null && !string.IsNullOrEmpty(userProfile.UserName) && userProfile.PracticeCode != 0)
             {
                 var getAlertWindowResponse = _announcementsHistoryRepository.GetFirst(s => s.DELETED == false && s.USER_ID == userProfile.userID && s.USER_NAME == userProfile.UserName);
                 if (getAlertWindowResponse == null)
@@ -628,16 +632,14 @@ namespace FOX.BusinessOperations.CommonServices
                     SqlParameter AnnouncmentId = new SqlParameter("ANNOUNCEMENT_ID", objCommonAnnouncements.ANNOUNCEMENT_ID);
                     SqlParameter UserId = new SqlParameter("USER_ID", objCommonAnnouncements.ROLE_ID);
                     SqlParameter UserName = new SqlParameter("USER_NAME", userProfile.UserName);
-                    SqlParameter ShowCount = new SqlParameter("SHOW_COUNT", 1 );
+                    SqlParameter ShowCount = new SqlParameter("SHOW_COUNT", 1);
                     SqlParameter ModifiedDate = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
                     SqlParameter CreatedDate = new SqlParameter("CREATED_DATE", Helper.GetCurrentDate());
                     SqlParameter PracticeCode = new SqlParameter("PRACTICE_CODE", userProfile.PracticeCode);
                     SqlParameter Deleted = new SqlParameter("DELETED", false);
                     SqlParameter CreatedBy = new SqlParameter("CREATED_BY", userProfile.PracticeCode);
                     SqlParameter Operation = new SqlParameter("OPERATION", "ADD");
-                    SpRepository<AnnouncementsHistory>.GetListWithStoreProcedure(@"exec FOX_PROC_CRUD_ANNOUNCEMENT_HISTORY @ANNOUNCEMENT_HISTORY_ID, @ANNOUNCEMENT_ID, @USER_ID, @USER_NAME, @SHOW_COUNT 
-                         ,@MODIFIED_DATE, @CREATED_DATE, @PRACTICE_CODE, @DELETED, @CREATED_BY, @Operation", AnnouncmentHistoryId, AnnouncmentId, UserId, UserName, ShowCount, ModifiedDate, CreatedDate,
-                     PracticeCode, Deleted, CreatedBy, Operation);
+                    SpRepository<AnnouncementsHistory>.GetListWithStoreProcedure(@"exec FOX_PROC_CRUD_ANNOUNCEMENT_HISTORY @ANNOUNCEMENT_HISTORY_ID, @ANNOUNCEMENT_ID, @USER_ID, @USER_NAME, @SHOW_COUNT ,@MODIFIED_DATE, @CREATED_DATE, @PRACTICE_CODE, @DELETED, @CREATED_BY, @Operation", AnnouncmentHistoryId, AnnouncmentId, UserId, UserName, ShowCount, ModifiedDate, CreatedDate,PracticeCode, Deleted, CreatedBy, Operation);
                 }
                 else
                 {
@@ -647,16 +649,14 @@ namespace FOX.BusinessOperations.CommonServices
                 }
             }
             return response;
-
-
         }
         // Data of splash screen will be save to db
         public bool SaveSplashDetails(UserProfile userProfile)
         {
-            if(userProfile != null && !string.IsNullOrEmpty(userProfile.UserName))
+            if (userProfile != null && !string.IsNullOrEmpty(userProfile.UserName))
             {
                 var getSplashResponse = _splashRepository.GetFirst(s => s.DELETED == false && s.USER_ID == userProfile.userID && s.USER_NAME == userProfile.UserName);
-                if(getSplashResponse == null)
+                if (getSplashResponse == null)
                 {
                     Splash splashObj = new Splash();
                     splashObj.FOX_SPLASH_ID = Helper.getMaximumId("FOX_SPLASH_ID");

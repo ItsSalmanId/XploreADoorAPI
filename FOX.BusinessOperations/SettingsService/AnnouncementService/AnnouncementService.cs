@@ -39,15 +39,13 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
             }
             return result;
         }
-        // Description: 
+        // Description: This function is trigger to add and update announcement and roles to db
         public ResponseModel InsertAnnouncement(AddEditFoxAnnouncement objAddEditAnnouncement, UserProfile profile)
         {
             ResponseModel response = new ResponseModel();
             try
             {
-                
-                if (objAddEditAnnouncement != null && objAddEditAnnouncement.RoleRequest.Count != 0 && !string.IsNullOrEmpty(objAddEditAnnouncement.ANNOUNCEMENT_TITLE) && !string.IsNullOrEmpty(objAddEditAnnouncement.ANNOUNCEMENT_DETAILS) 
-                    && objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO != null && objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM != null)
+                if (objAddEditAnnouncement != null && objAddEditAnnouncement.RoleRequest.Count != 0 && !string.IsNullOrEmpty(objAddEditAnnouncement.ANNOUNCEMENT_TITLE) && !string.IsNullOrEmpty(objAddEditAnnouncement.ANNOUNCEMENT_DETAILS) && objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO != null && objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM != null && profile.PracticeCode != 0 && profile != null)
                 {
                     if (!string.IsNullOrEmpty(objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM_STR))
                     {
@@ -61,8 +59,6 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                     double TotalDays = Today.Subtract((DateTime)objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM).TotalDays + 1;
                     if (TotalDays <= 10)
                     {
-
-
                         if (!string.IsNullOrEmpty(objAddEditAnnouncement.ANNOUNCEMENT_DETAILS.ToString()))
                         {
                             var ExistingDetailInfo = _announcementRepository.GetFirst(r => r.ANNOUNCEMENT_ID == objAddEditAnnouncement.ANNOUNCEMENT_ID && r.DELETED == false);
@@ -90,8 +86,8 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                                         SpRepository<Announcements>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT @ANNOUNCEMENT_ID, @ANNOUNCEMENT_DETAILS, @ANNOUNCEMENT_TITLE, @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @MODIFIED_DATE, @MODIFIED_BY, @PRACTICE_CODE, @DELETED, @CREATED_BY, @OPERATION", AnnouncementId, AnnouncementDetails, AnnouncementTitle, AnnouncementDateFrom, AnnouncementDateTo, ModifiedDate, ModifiedBy, PracticeCode, Deleted, CreatedBy, Operaton);
                                         foreach (var item in objAddEditAnnouncement.RoleRequest)
                                         {
-                                            long primaryKeyRol = Helper.getMaximumId("ANNOUNCEMENT_ROLE_ID");
-                                            SqlParameter AnnouncementRoleId = new SqlParameter("ANNOUNCEMENT_ROLE_ID", primaryKeyRol);
+                                            long primaryKeyRole = Helper.getMaximumId("ANNOUNCEMENT_ROLE_ID");
+                                            SqlParameter AnnouncementRoleId = new SqlParameter("ANNOUNCEMENT_ROLE_ID", primaryKeyRole);
                                             SqlParameter RoleId = new SqlParameter("ROLE_ID", item.ROLE_ID.ToString() ?? (object)DBNull.Value);
                                             SqlParameter RoleName = new SqlParameter("ROLE_NAME", item.ROLE_NAME.ToString() ?? (object)DBNull.Value);
                                             SqlParameter AnnouncementIdRole = new SqlParameter("ANNOUNCEMENT_ID", primaryKey);
@@ -125,8 +121,8 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                                 SpRepository<Announcements>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT @ANNOUNCEMENT_ID, @ANNOUNCEMENT_DETAILS, @ANNOUNCEMENT_TITLE, @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @MODIFIED_DATE, @MODIFIED_BY, @PRACTICE_CODE, @DELETED, @CREATED_BY, @OPERATION", AnnouncementId, AnnouncementDetails, AnnouncementTitle, AnnouncementDateFrom, AnnouncementDateTo, ModifiedDate, ModifiedBy, PracticeCode, Deleted, CreatedBy, Operaton);
                                 foreach (var item in objAddEditAnnouncement.RoleRequest)
                                 {
-                                    long primaryKeyRol = Helper.getMaximumId("ANNOUNCEMENT_ROLE_ID");
-                                    SqlParameter AnnouncementRoleId = new SqlParameter("ANNOUNCEMENT_ROLE_ID", primaryKeyRol);
+                                    long primaryKeyRole = Helper.getMaximumId("ANNOUNCEMENT_ROLE_ID");
+                                    SqlParameter AnnouncementRoleId = new SqlParameter("ANNOUNCEMENT_ROLE_ID", primaryKeyRole);
                                     SqlParameter RoleId = new SqlParameter("ROLE_ID", item.ROLE_ID.ToString() ?? (object)DBNull.Value);
                                     SqlParameter RoleName = new SqlParameter("ROLE_NAME", item.ROLE_NAME.ToString() ?? (object)DBNull.Value);
                                     SqlParameter AnnouncementIdRole = new SqlParameter("ANNOUNCEMENT_ID", objAddEditAnnouncement.ANNOUNCEMENT_ID);
@@ -162,18 +158,16 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
             }
             return response;
         }
-        // Description: 
+        // Description: This function is trigger to get announcement and roles details to db
         public List<Announcements> GetAnnouncement(Announcements objAnnouncement, UserProfile profile)
         {
-                List<Announcements> announcementsList = new List<Announcements>();
+            List<Announcements> announcementsList = new List<Announcements>();
+            if (objAnnouncement != null && profile.PracticeCode != 0 && profile != null)
+            { 
                 if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR))
                 {
                     objAnnouncement.ANNOUNCEMENT_DATE_FROM = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR);
                 }
-                //else
-                //{
-                //    objAnnouncement.ANNOUNCEMENT_DATE_FROM = Helper.GetCurrentDate().Date;
-                //}
                 if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR))
                 {
                     objAnnouncement.ANNOUNCEMENT_DATE_TO = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_TO_STR);
@@ -189,17 +183,16 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                     SqlParameter AnnouncementsDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO", objAnnouncement.ANNOUNCEMENT_DATE_TO ?? (object)DBNull.Value);
                     SqlParameter RoleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = objAnnouncement.ROLE_ID ?? (object)DBNull.Value };
                     SqlParameter AnnouncementTitle = new SqlParameter { ParameterName = "ANNOUNCEMENT_TITLE", SqlDbType = SqlDbType.VarChar, Value = objAnnouncement.ANNOUNCEMENT_TITLE == null ? null : objAnnouncement.ANNOUNCEMENT_TITLE };
-                    // SqlParameter AnnouncementTitle = new SqlParameter("ANNOUNCEMENT_TITLE", objAnnouncement.ANNOUNCEMENT_TITLE.ToString() ?? (object)DBNull.Value);
                     announcementsList = SpRepository<Announcements>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS  @PRACTICE_CODE, @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @ROLE_ID", PracticeCode, AnnouncementsDateFrom, AnnouncementsDateTo, RoleId);
                 }
-           
+            }
             return announcementsList;
         }
-        // Description: 
+        // Description: This function is trigger to get announcement details to db
         public Announcements GetAnnouncementDetails(Announcements objAnnouncement, UserProfile profile)
         {
             Announcements announcementsList = new Announcements();
-            if (objAnnouncement != null)
+            if (objAnnouncement != null && profile.PracticeCode != 0 && profile != null && !string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_ID.ToString())
             {
                 if (profile != null && profile.PracticeCode != 0)
                 {
@@ -222,11 +215,11 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
             }
             return announcementsList;
         }
-        // Description: 
+        // Description: This function is trigger to delete announcement and announcementroles to db
         public ResponseModel DeleteAnnouncement(Announcements objAnnouncement, UserProfile profile)
         {
             ResponseModel response = new ResponseModel();
-            if (objAnnouncement != null && profile.PracticeCode != 0 && !string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_ID.ToString()))
+            if (objAnnouncement != null && profile != null && profile.PracticeCode != 0 && !string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_ID.ToString()))
             {
                 var existingAnnouncmentDetailInfo = _announcementRepository.GetFirst(r => r.ANNOUNCEMENT_ID == objAnnouncement.ANNOUNCEMENT_ID && r.DELETED == false);
                 var existingRolesDetailInfo = _announcementRoleRepository.GetMany(r => r.ANNOUNCEMENT_ID == objAnnouncement.ANNOUNCEMENT_ID && r.DELETED == false);
