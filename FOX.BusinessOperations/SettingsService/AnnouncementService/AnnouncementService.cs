@@ -45,7 +45,7 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
             ResponseModel response = new ResponseModel();
             try
             {
-                if (objAddEditAnnouncement != null && objAddEditAnnouncement.RoleRequest.Count != 0 && !string.IsNullOrEmpty(objAddEditAnnouncement.ANNOUNCEMENT_TITLE) && !string.IsNullOrEmpty(objAddEditAnnouncement.ANNOUNCEMENT_DETAILS) && objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO != null && objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM != null && profile.PracticeCode != 0 && profile != null)
+                if (objAddEditAnnouncement != null && objAddEditAnnouncement.RoleRequest.Count != 0 && !string.IsNullOrEmpty(objAddEditAnnouncement.ANNOUNCEMENT_TITLE) && !string.IsNullOrEmpty(objAddEditAnnouncement.ANNOUNCEMENT_DETAILS) && objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO != null && objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM != null && profile.PracticeCode != 0 && profile != null && profile.UserName != null)
                 {
                     if (!string.IsNullOrEmpty(objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM_STR))
                     {
@@ -192,10 +192,8 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
         public Announcements GetAnnouncementDetails(Announcements objAnnouncement, UserProfile profile)
         {
             Announcements announcementsList = new Announcements();
-            if (objAnnouncement != null && profile.PracticeCode != 0 && profile != null && !string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_ID.ToString())
+            if (objAnnouncement != null && profile.PracticeCode != 0 && profile != null && !string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_ID.ToString()))
             {
-                if (profile != null && profile.PracticeCode != 0)
-                {
                     if (objAnnouncement.ANNOUNCEMENT_DATE_FROM != null)
                     {
                         objAnnouncement.ANNOUNCEMENT_DATE_FROM = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_FROM);
@@ -211,7 +209,6 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                     {
                         announcementsList.AnnouncementRoles = _announcementRoleRepository.GetMany(x => x.ANNOUNCEMENT_ID == announcementsList.ANNOUNCEMENT_ID && !(x.DELETED) && x.PRACTICE_CODE == profile.PracticeCode);
                     }
-                }
             }
             return announcementsList;
         }
