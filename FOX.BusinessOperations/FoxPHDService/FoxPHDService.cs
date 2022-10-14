@@ -209,8 +209,6 @@ namespace FOX.BusinessOperations.FoxPHDService
         {
             try
             {
-             
-
                 if (!string.IsNullOrEmpty(ObjCallDetailsSearchRequest.CALL_DATE_FROM_STR))
                 {
                     ObjCallDetailsSearchRequest.CALL_DATE_FROM = Convert.ToDateTime(ObjCallDetailsSearchRequest.CALL_DATE_FROM_STR);
