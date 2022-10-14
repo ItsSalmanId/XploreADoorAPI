@@ -622,7 +622,7 @@ namespace FOX.BusinessOperations.CommonServices
         public ResponseModel SaveAlertWindowsDetails(CommonAnnouncements objCommonAnnouncements, UserProfile userProfile)
         {
             ResponseModel response = new ResponseModel();
-            if (userProfile != null && !string.IsNullOrEmpty(userProfile.UserName) && userProfile.PracticeCode != 0)
+            if (userProfile != null && !string.IsNullOrEmpty(userProfile.UserName) && userProfile.PracticeCode != 0 && userProfile.userID != 0)
             {
                 var getAlertWindowResponse = _announcementsHistoryRepository.GetFirst(s => s.DELETED == false && s.USER_ID == userProfile.userID && s.USER_NAME == userProfile.UserName);
                 if (getAlertWindowResponse == null)
