@@ -100,7 +100,7 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                                             SpRepository<AnnouncementRoles>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT_ROLE @ANNOUNCEMENT_ROLE_ID, @ROLE_ID, @ROLE_NAME, @ANNOUNCEMENT_ID, @PRACTICE_CODE", AnnouncementRoleId, RoleId, RoleName, AnnouncementIdRole, RolePracticeCode);
                                         }
                                     }
-                                    response.ErrorMessage = "Record insert successfully";
+                                    response.ErrorMessage = "Announcement added successfully.";
                                     response.Success = true;
                                 }
                                 else
@@ -134,7 +134,7 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                                     SqlParameter RolePracticeCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
                                     SpRepository<AnnouncementRoles>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT_ROLE @ANNOUNCEMENT_ROLE_ID, @ROLE_ID, @ROLE_NAME, @ANNOUNCEMENT_ID , @PRACTICE_CODE", AnnouncementRoleId, RoleId, RoleName, AnnouncementIdRole, RolePracticeCode);
                                 }
-                                response.ErrorMessage = "Record updated successfully";
+                                response.ErrorMessage = "Announcement updated  successfully.";
                                 response.Success = true;
                             }
                         }
@@ -246,7 +246,7 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                         _announcementRoleRepository.Update(item);
                         _announcementRoleRepository.Save();
                     }
-                    response.ErrorMessage = "Announcment and Announcement Roles deleted successfully";
+                    response.ErrorMessage = "Announcement deleted successfully.";
                     response.Success = true;
                 }
             }
