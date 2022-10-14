@@ -214,6 +214,7 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpGet]
         public HttpResponseMessage GetAlertWindowsDetails()
         {
+
             return Request.CreateResponse(HttpStatusCode.OK, _CommonService.IsShowAlertWindow(GetProfile()));
         }
         [HttpGet]
@@ -224,7 +225,14 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpPost]
         public HttpResponseMessage SaveAlertWindowsDetails(CommonAnnouncements objCommonAnnouncements)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _CommonService.SaveAlertWindowsDetails(objCommonAnnouncements, GetProfile()));
+            if (objCommonAnnouncements != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _CommonService.SaveAlertWindowsDetails(objCommonAnnouncements, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Alert Windows is empty");
+            }
         }
         [HttpGet]
         public HttpResponseMessage DeleteDownloadedFile(string fileLocation)
