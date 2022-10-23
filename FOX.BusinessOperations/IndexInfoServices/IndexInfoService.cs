@@ -118,6 +118,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private long talkRehabWorkID = 0;
         private long talkRehabInterfaceID = 0;
         private long talkRehabTaskID = 0;
+        private long retrycatch = 0;
         public IndexInfoService()
         {
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
@@ -4886,29 +4887,47 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
         private void InsertTaskLog(long? taskId, List<TaskLog> tasklog, UserProfile profile)
         {
-            if (taskId != null && taskId.Value > 0)
+            try
             {
-                foreach (var item in tasklog)
-                {
-                    List<TaskLog> lstTaskLog = new List<TaskLog>();
-                    lstTaskLog.Add(item);
-                    DataTable _dataTable = GetTaskLogTable(lstTaskLog);
 
-                    if (_dataTable.Rows.Count > 0)
+
+                if (taskId != null && taskId.Value > 0)
+                {
+                    foreach (var item in tasklog)
                     {
-                        long primaryKey = Helper.getMaximumId("FOX_TASK_LOG_ID");
-                        SqlParameter id = new SqlParameter("ID", primaryKey);
-                        SqlParameter task_log = new SqlParameter("TASK_LOG", SqlDbType.Structured);
-                        task_log.TypeName = "TASK_LOG_HISTORY";
-                        task_log.Value = _dataTable;
-                        SqlParameter practice_Code = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
-                        SqlParameter Task_Id = new SqlParameter("TASK_ID", taskId);
-                        //SqlParameter pAction = new SqlParameter("ACTION", string.IsNullOrEmpty(Action) ? string.Empty : Action);
-                        //SqlParameter Action_Detail = new SqlParameter("ACTION_DETAIL", string.IsNullOrEmpty(ActionDetail) ? string.Empty : ActionDetail);
-                        SqlParameter user_Name = new SqlParameter("USER_NAME", profile.UserName);
-                        SpRepository<TaskLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_INSERT_TASK_LOG @ID, @PRACTICE_CODE, @TASK_ID, @TASK_LOG, @USER_NAME", id, practice_Code, Task_Id, task_log, user_Name);
+                        List<TaskLog> lstTaskLog = new List<TaskLog>();
+                        lstTaskLog.Add(item);
+                        DataTable _dataTable = GetTaskLogTable(lstTaskLog);
+
+                        if (_dataTable.Rows.Count > 0)
+                        {
+                            long primaryKey = Helper.getMaximumId("FOX_TASK_LOG_ID");
+                            SqlParameter id = new SqlParameter("ID", primaryKey);
+                            SqlParameter task_log = new SqlParameter("TASK_LOG", SqlDbType.Structured);
+                            task_log.TypeName = "TASK_LOG_HISTORY";
+                            task_log.Value = _dataTable;
+                            SqlParameter practice_Code = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
+                            SqlParameter Task_Id = new SqlParameter("TASK_ID", taskId);
+                            //SqlParameter pAction = new SqlParameter("ACTION", string.IsNullOrEmpty(Action) ? string.Empty : Action);
+                            //SqlParameter Action_Detail = new SqlParameter("ACTION_DETAIL", string.IsNullOrEmpty(ActionDetail) ? string.Empty : ActionDetail);
+                            SqlParameter user_Name = new SqlParameter("USER_NAME", profile.UserName);
+                            SpRepository<TaskLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_INSERT_TASK_LOG @ID, @PRACTICE_CODE, @TASK_ID, @TASK_LOG, @USER_NAME", id, practice_Code, Task_Id, task_log, user_Name);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                if (retrycatch <= 2 && !string.IsNullOrEmpty(ex.Message) && ex.Message.Contains("Violation of PRIMARY KEY constraint"))
+                {
+                    retrycatch = retrycatch + 1;
+                    InsertTaskLog(taskId, tasklog, profile);
+                }
+                else
+                {
+                    throw ex;
+                }
+
             }
         }
 
@@ -5386,7 +5405,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                             if (item != null)
                                             {
                                                 //var DepartIDs = ite.DEPARTMENT_ID.Split(',');
-                                                if (ite.DEPARTMENT_ID.Contains(item.ToString()))
+                                                if (!string.IsNullOrEmpty(ite.DEPARTMENT_ID) && ite.DEPARTMENT_ID.Contains(item.ToString()))
                                                 {
                                                     if (MainList != null)
                                                     {

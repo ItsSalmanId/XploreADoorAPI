@@ -2383,7 +2383,7 @@ namespace FOX.BusinessOperations.PatientServices
             {
                 if (loc.Zip.Length > 5)
                 {
-                    zipCode = loc.Zip.Substring(0, 5);
+                    zipCode = loc.Zip.Insert(5, "-");
                 }
                 else
                 {
@@ -5971,10 +5971,15 @@ namespace FOX.BusinessOperations.PatientServices
             var newData = currentMedicareLimitList.Where(e => e.MEDICARE_LIMIT_TYPE_NAME == "Hospice").FirstOrDefault();
             if (hos_Id != null)
             {
-                var oldData = _MedicareLimitRepository.GetByID(hos_Id.Value);
-                if (oldData.EFFECTIVE_DATE != newData.EFFECTIVE_DATE) { hosInfoChanged = true; return true; }
-                if (oldData.END_DATE != newData.END_DATE) { hosInfoChanged = true; return true; }
-                if (!String.Equals(oldData.NPI ?? "", newData.NPI ?? "", StringComparison.Ordinal)) { hosInfoChanged = true; return true; }
+                //var oldData = _MedicareLimitRepository.GetByID(hos_Id.Value);
+                var oldData = _MedicareLimitRepository.GetFirst(l => l.MEDICARE_LIMIT_ID == hos_Id.Value);
+                if (oldData != null)
+                {
+                    if (oldData.EFFECTIVE_DATE != newData.EFFECTIVE_DATE) { hosInfoChanged = true; return true; }
+                    if (oldData.EFFECTIVE_DATE != newData.EFFECTIVE_DATE) { hosInfoChanged = true; return true; }
+                    if (oldData.END_DATE != newData.END_DATE) { hosInfoChanged = true; return true; }
+                    if (!String.Equals(oldData.NPI ?? "", newData.NPI ?? "", StringComparison.Ordinal)) { hosInfoChanged = true; return true; }
+                }
             }
             else
             {
@@ -5996,11 +6001,14 @@ namespace FOX.BusinessOperations.PatientServices
             var newData = currentMedicareLimitList.Where(e => e.MEDICARE_LIMIT_TYPE_NAME == "Home Health Episode").FirstOrDefault();
             if (hh_Id != null)
             {
-                var oldData = _MedicareLimitRepository.GetByID(hh_Id ?? 0);
-
-                if (oldData.EFFECTIVE_DATE != newData.EFFECTIVE_DATE) { hhInfoChanged = true; return true; }
-                if (oldData.END_DATE != newData.END_DATE) { hhInfoChanged = true; return true; }
-                if (!String.Equals(oldData.NPI ?? "", newData.NPI ?? "", StringComparison.Ordinal)) { hhInfoChanged = true; return true; }
+               // var oldData = _MedicareLimitRepository.GetByID(hh_Id ?? 0);
+                var oldData = _MedicareLimitRepository.GetFirst(l => l.MEDICARE_LIMIT_ID == hh_Id);
+                if (oldData != null)
+                {
+                    if (oldData.EFFECTIVE_DATE != newData.EFFECTIVE_DATE) { hhInfoChanged = true; return true; }
+                    if (oldData.END_DATE != newData.END_DATE) { hhInfoChanged = true; return true; }
+                    if (!String.Equals(oldData.NPI ?? "", newData.NPI ?? "", StringComparison.Ordinal)) { hhInfoChanged = true; return true; }
+                }
             }
             else
             {
