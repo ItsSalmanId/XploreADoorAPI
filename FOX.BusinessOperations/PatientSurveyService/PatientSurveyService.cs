@@ -21,6 +21,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
 {
     public class PatientSurveyService : IPatientSurveyService
     {
+        private long retrycatch = 0;
         private readonly DbContextPatientSurvey _patientSurveyContext = new DbContextPatientSurvey();
         private readonly GenericRepository<PatientSurvey> _patientSurveyRepository;
         private readonly GenericRepository<PatientSurveyHistory> _patientSurveyHistoryRepository;
@@ -672,21 +673,44 @@ namespace FOX.BusinessOperations.PatientSurveyService
 
         public List<PatientSurvey> GetPatientSurveytList(PatientSurveySearchRequest patientSurveySearchRequest, long practiceCode)
         {
-            var surveyId = new SqlParameter { ParameterName = "SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = patientSurveySearchRequest.SURVEY_ID };
-            var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
-            var patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = patientSurveySearchRequest.PATIENT_ACCOUNT_NUMBER };
-            var SearchText = new SqlParameter { ParameterName = "SEARCH_TEXT", Value = patientSurveySearchRequest.SEARCH_TEXT };
-            var patientFirstName = new SqlParameter { ParameterName = "PATIENT_FIRST_NAME", Value = patientSurveySearchRequest.PATIENT_FIRST_NAME };
-            var patientLastName = new SqlParameter { ParameterName = "PATIENT_LAST_NAME", Value = patientSurveySearchRequest.PATIENT_LAST_NAME };
-            var patientMiddleInitial = new SqlParameter { ParameterName = "PATIENT_MIDDLE_INITIAL", Value = patientSurveySearchRequest.PATIENT_MIDDLE_INITIAL };
-            var isSurveyed = new SqlParameter { ParameterName = "IS_SURVEYED", SqlDbType = SqlDbType.Int, Value = patientSurveySearchRequest.IS_SURVEYED };
+            try
+            {
+                var surveyId = new SqlParameter { ParameterName = "SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = patientSurveySearchRequest.SURVEY_ID };
+                var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
+                var patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = patientSurveySearchRequest.PATIENT_ACCOUNT_NUMBER };
+                var SearchText = new SqlParameter { ParameterName = "SEARCH_TEXT", Value = patientSurveySearchRequest.SEARCH_TEXT };
+                var patientFirstName = new SqlParameter { ParameterName = "PATIENT_FIRST_NAME", Value = patientSurveySearchRequest.PATIENT_FIRST_NAME };
+                var patientLastName = new SqlParameter { ParameterName = "PATIENT_LAST_NAME", Value = patientSurveySearchRequest.PATIENT_LAST_NAME };
+                var patientMiddleInitial = new SqlParameter { ParameterName = "PATIENT_MIDDLE_INITIAL", Value = patientSurveySearchRequest.PATIENT_MIDDLE_INITIAL };
+                var isSurveyed = new SqlParameter { ParameterName = "IS_SURVEYED", SqlDbType = SqlDbType.Int, Value = patientSurveySearchRequest.IS_SURVEYED };
 
-            var PatientSurveyList = SpRepository<PatientSurvey>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_SURVEY_LIST
+                var PatientSurveyList = SpRepository<PatientSurvey>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_SURVEY_LIST
                                     @PRACTICE_CODE, @PATIENT_ACCOUNT, @IS_SURVEYED", PracticeCode, patientAccount, isSurveyed);
-            PatientSurveyList.ForEach(x => x.ACTIVE_FORMAT = GetPSFormat(practiceCode));
-            return PatientSurveyList;
-        }
+                PatientSurveyList.ForEach(x => x.ACTIVE_FORMAT = GetPSFormat(practiceCode));
+                return PatientSurveyList;
+            }
+            catch (Exception ex)
+            {
+                if (retrycatch <= 2 && (!string.IsNullOrEmpty(ex.Message) &&
+                    ex.Message.Contains("deadlocked on lock resources with another process"))
+                    || ((ex.InnerException != null) &&
+                    !string.IsNullOrEmpty(ex.InnerException.Message)
+                    &&
+                    ex.InnerException.Message.Contains("deadlocked on lock resources with another process")))
+                {
+                    retrycatch = retrycatch + 1;
+                    return GetPatientSurveytList(patientSurveySearchRequest, practiceCode);
 
+
+                }
+                else
+                {
+                    throw ex;
+                }
+
+            }
+
+        }
         public List<string> GetPatientSurveytProviderList(long practiceCode)
         {
             return _patientSurveyRepository.GetMany(x => x.PRACTICE_CODE == practiceCode).Select(x => x.PROVIDER).Distinct().ToList();
