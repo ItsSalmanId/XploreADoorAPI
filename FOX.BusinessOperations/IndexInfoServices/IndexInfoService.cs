@@ -2635,7 +2635,12 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
                     Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter, PdfPath, i, imgPathServer, logoImgPathServer));
                     myThread.Start();
-                    threadsList.Add(myThread);
+                    if (workId != null && workId.Contains("_"))
+                    {
+                        var uWorkId = _OriginalQueueFiles.GetFirst(t => t.UNIQUE_ID == workId);
+                        workId = Convert.ToString(uWorkId.WORK_ID);
+                    }
+                        threadsList.Add(myThread);
                     AddFilesToDatabase(imgPath, workId, lworkid, logoImgPath);
                 }
                 while (noOfPages > threadCounter.Count)
