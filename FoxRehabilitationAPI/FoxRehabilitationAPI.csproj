@@ -322,6 +322,7 @@
     <Compile Include="Controllers\FaxController.cs" />
     <Compile Include="Controllers\FileReceiverController.cs" />
     <Compile Include="Controllers\FoxPHDController.cs" />
+    <Compile Include="Controllers\FrictionlessReferral\SupportStaff\SupportStaffController.cs" />
     <Compile Include="Controllers\GeneralNotesController.cs" />
     <Compile Include="Controllers\GroupController.cs" />
     <Compile Include="Controllers\HomeController.cs" />

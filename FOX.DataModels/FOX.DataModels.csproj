@@ -74,6 +74,7 @@
     <Compile Include="Context\DbContextDashboard.cs" />
     <Compile Include="Context\DBContextExceptionLog.cs" />
     <Compile Include="Context\DBContextFoxPHD.cs" />
+    <Compile Include="Context\DbContextFrictionless.cs" />
     <Compile Include="Context\DBContextHrAutoEmail.cs" />
     <Compile Include="Context\DBContextHrAutoEmails.cs" />
     <Compile Include="Context\DbContextIndexinfo.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Models\ExternalUserModel\Zip_City_State.cs" />
     <Compile Include="Models\Fax\Faxes.cs" />
     <Compile Include="Models\FoxPHDModel\FoxPHD.cs" />
+    <Compile Include="Models\FrictionlessReferral\SupportStaff\SupportStaff.cs" />
     <Compile Include="Models\GeneralNotesModel\GeneralNoteModels.cs" />
     <Compile Include="Models\GoogleRecaptcha\GoogleRecaptchaResponse.cs" />
     <Compile Include="Models\GroupsModel\UserGroupsModel.cs" />

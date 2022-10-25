@@ -315,5 +315,12 @@ namespace FOX.BusinessOperations.CommonServices
                 return @"abdulsattar@carecloud.com";
             }
         }
+        public static string NPPESNPIRegistry
+        {
+            get
+            {
+                return "https://npiregistry.cms.hhs.gov/api/?version=2.1";
+            }
+        }
     }
 }
