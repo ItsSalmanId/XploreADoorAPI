@@ -54,8 +54,8 @@ namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient Details is Empty");
             }
         }
-        [HttpGet]
-        public HttpResponseMessage GetOrderingReferralSourceInformation(OrderReferralSourceRequest orderingReferralSourceInfo)
+        [HttpPost]
+        public HttpResponseMessage GetOrderingReferralSourceInformation(ProviderReferralSourceRequest orderingReferralSourceInfo)
         {
             if(orderingReferralSourceInfo != null)
             {

@@ -11,7 +11,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         List<InsurancePayer> GetInsurancePayers();
         ResponseModel SendInviteToPatientPortal(PatientDetail obj);
         ResponseModel SendInviteOnMobile(PatientDetail obj);
-        List<OrderingReferralSourceResponse> GetOrderingReferralSource(OrderReferralSourceRequest obj);
+        List<ProviderReferralSourceResponse> GetOrderingReferralSource(ProviderReferralSourceRequest obj);
         FrictionLessReferral GetFrictionLessReferralDetails(long referralId);
         ResponseModel SaveFrictionLessReferralDetails(FrictionLessReferral frictionLessReferral);
         #endregion

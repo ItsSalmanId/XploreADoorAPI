@@ -19,16 +19,16 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public string SUBMITTER_LAST_NAME { get; set; }
         public string SUBMITTER_PHONE { get; set; }
         public string SUBMITTER_EMAIL { get; set; }
-        public string ORS_NPI { get; set; }
-        public string ORS_FIRST_NAME { get; set; }
-        public string ORS_LAST_NAME { get; set; }
-        public string ORS_ADDRESS { get; set; }
-        public string ORS_CITY { get; set; }
-        public string ORS_STATE { get; set; }
-        public string ORS_ZIP_CODE { get; set; }
-        public string ORS_REGION { get; set; }
-        public string ORS_REGION_CODE { get; set; }
-        public string ORS_FAX { get; set; }
+        public string PROVIDER_NPI { get; set; }
+        public string PROVIDER_FIRST_NAME { get; set; }
+        public string PROVIDER_LAST_NAME { get; set; }
+        public string PROVIDER_ADDRESS { get; set; }
+        public string PROVIDER_CITY { get; set; }
+        public string PROVIDER_STATE { get; set; }
+        public string PROVIDER_ZIP_CODE { get; set; }
+        public string PROVIDER_REGION { get; set; }
+        public string PROVIDER_REGION_CODE { get; set; }
+        public string PROVIDER_FAX { get; set; }
         public string PATIENT_FIRST_NAME { get; set; }
         public string PATIENT_LAST_NAME { get; set; }
         public DateTime PATIENT_DOB { get; set; }
@@ -60,18 +60,12 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public string MobilePhone { get; set; }
         public string EmailAddress { get; set; }
     }
-    public class OrderReferralSourceRequest
+    public class ProviderReferralSourceRequest
     {
-        public string OrsNpi { get; set; }
-        public string OrsFirstName { get; set; }
-        public string OrsLastName { get; set; }
-        public string OrsAddress { get; set; }
-        public string OrsCity { get; set; }
-        public string OrsState { get; set; }
-        public string OrsZipCode { get; set; }
-        public string OrsRegion { get; set; }
-        public string OrsRegionCode { get; set; }
-        public string OrsFax { get; set; }
+        public string ProviderNpi { get; set; }
+        public string ProviderFirstName { get; set; }
+        public string ProviderLastName { get; set; }
+        public string ProviderState { get; set; }
     }
     public class NPPESRegistryRequest
     {
@@ -90,18 +84,18 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public IList<OtherName> other_names { get; set; }
         public Basic basic { get; set; }
     }
-    public class OrderingReferralSourceResponse : ResponseModel
+    public class ProviderReferralSourceResponse : ResponseModel
     {
-        public string OrsNpi { get; set; }
-        public string OrsFirstName { get; set; }
-        public string OrsLastName { get; set; }
-        public string OrsAddress { get; set; }
-        public string OrsCity { get; set; }
-        public string OrsState { get; set; }
-        public string OrsZipCode { get; set; }
-        public string OrsRegion { get; set; }
-        public string OrsRegionCode { get; set; }
-        public string OrsFax { get; set; }
+        public string ProviderNpi { get; set; }
+        public string ProviderFirstName { get; set; }
+        public string ProviderLastName { get; set; }
+        public string ProviderAddress { get; set; }
+        public string ProviderCity { get; set; }
+        public string ProviderState { get; set; }
+        public string ProviderZipCode { get; set; }
+        public string ProviderRegion { get; set; }
+        public string ProviderRegionCode { get; set; }
+        public string ProviderFax { get; set; }
     }
     #endregion
 }

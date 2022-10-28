@@ -204,57 +204,57 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             return responseModel;
         }
         // Description: This function is used to get provider details from db first then npiregistry.
-        public List<OrderingReferralSourceResponse> GetOrderingReferralSources(OrderReferralSourceRequest obj)
+        public List<ProviderReferralSourceResponse> GetProviderReferralSources(ProviderReferralSourceRequest obj)
         {
             List<Provider> providerResponse = new List<Provider>();
-            List<OrderingReferralSourceResponse> orderingReferralSourceInfo = new List<OrderingReferralSourceResponse>();
+            List<ProviderReferralSourceResponse> ProviderReferralSourceInfo = new List<ProviderReferralSourceResponse>();
             long practiceCode = GetPracticeCode();
-            if (practiceCode != 0 && !string.IsNullOrEmpty(obj.OrsNpi))
+            if (practiceCode != 0 && !string.IsNullOrEmpty(obj.ProviderNpi))
             {
-                providerResponse = _providerRepository.GetMany(x => x.INDIVIDUAL_NPI == obj.OrsNpi && x.PRACTICE_CODE == practiceCode && !(x.DELETED.HasValue ? x.DELETED.Value : false));
+                providerResponse = _providerRepository.GetMany(x => x.INDIVIDUAL_NPI == obj.ProviderNpi && x.PRACTICE_CODE == practiceCode && !(x.DELETED.HasValue ? x.DELETED.Value : false));
                 // Search on NPPES
                 if (providerResponse.Count == 0)
                 {
-                    string url = AppConfiguration.NPPESNPIRegistry + "&number=" + obj.OrsNpi;
-                    orderingReferralSourceInfo = GetNPPESNPIResponse(url);
-                    return orderingReferralSourceInfo;
+                    string url = AppConfiguration.NPPESNPIRegistry + "&number=" + obj.ProviderNpi;
+                    ProviderReferralSourceInfo = GetNPPESNPIResponse(url);
+                    return ProviderReferralSourceInfo;
                 }
             }
-            else if (practiceCode != 0 && !string.IsNullOrEmpty(obj.OrsFirstName) && !string.IsNullOrEmpty(obj.OrsLastName) && !string.IsNullOrEmpty(obj.OrsState))
+            else if (practiceCode != 0 && !string.IsNullOrEmpty(obj.ProviderFirstName) && !string.IsNullOrEmpty(obj.ProviderLastName) && !string.IsNullOrEmpty(obj.ProviderState))
             {
-                providerResponse = _providerRepository.GetMany(x => x.FIRST_NAME == obj.OrsFirstName && x.LAST_NAME == obj.OrsLastName && x.STATE == obj.OrsState && x.PRACTICE_CODE == practiceCode && !(x.DELETED.HasValue ? x.DELETED.Value : false));
+                providerResponse = _providerRepository.GetMany(x => x.FIRST_NAME == obj.ProviderFirstName && x.LAST_NAME == obj.ProviderLastName && x.STATE == obj.ProviderState && x.PRACTICE_CODE == practiceCode && !(x.DELETED.HasValue ? x.DELETED.Value : false));
                 // Search on NPPES
                 if (providerResponse.Count == 0)
                 {
-                    string url = AppConfiguration.NPPESNPIRegistry + "&first_name=" + obj.OrsFirstName + "&last_name=" + obj.OrsLastName + "&state" + obj.OrsState;
-                    orderingReferralSourceInfo = GetNPPESNPIResponse(url);
-                    return orderingReferralSourceInfo;
+                    string url = AppConfiguration.NPPESNPIRegistry + "&first_name=" + obj.ProviderFirstName + "&last_name=" + obj.ProviderLastName + "&state=" + obj.ProviderState;
+                    ProviderReferralSourceInfo = GetNPPESNPIResponse(url);
+                    return ProviderReferralSourceInfo;
                 }
             }
-            if (providerResponse != null && orderingReferralSourceInfo.Count == 0)
+            if (providerResponse != null && ProviderReferralSourceInfo.Count == 0)
             {
-                orderingReferralSourceInfo = providerResponse.Select(x => new OrderingReferralSourceResponse
+                ProviderReferralSourceInfo = providerResponse.Select(x => new ProviderReferralSourceResponse
                 {
-                    OrsNpi = x.INDIVIDUAL_NPI,
-                    OrsFirstName = x.FIRST_NAME,
-                    OrsLastName = x.LAST_NAME,
-                    OrsAddress = x.ADDRESS,
-                    OrsCity = x.CITY,
-                    OrsState = x.STATE,
-                    OrsZipCode = x.ZIP,
-                    OrsRegion = x.REGION_NAME,
-                    OrsRegionCode = x.REGION_CODE,
-                    OrsFax = x.FAX,
+                    ProviderNpi = x.INDIVIDUAL_NPI,
+                    ProviderFirstName = x.FIRST_NAME,
+                    ProviderLastName = x.LAST_NAME,
+                    ProviderAddress = x.ADDRESS,
+                    ProviderCity = x.CITY,
+                    ProviderState = x.STATE,
+                    ProviderZipCode = x.ZIP,
+                    ProviderRegion = x.REGION_NAME,
+                    ProviderRegionCode = x.REGION_CODE,
+                    ProviderFax = x.FAX,
                     Success = true,
                 }).ToList();
             }
-            return orderingReferralSourceInfo;
+            return ProviderReferralSourceInfo;
         }
         // Description: This function is trigger to fetch details of provider from NPPES NPI Registry.
-        public List<OrderingReferralSourceResponse> GetNPPESNPIResponse(string url)
+        public List<ProviderReferralSourceResponse> GetNPPESNPIResponse(string url)
         {
             NPPESRegistryRequest registryRequest = new NPPESRegistryRequest();
-            List<OrderingReferralSourceResponse> referralSourceResponse = new List<OrderingReferralSourceResponse>();
+            List<ProviderReferralSourceResponse> referralSourceResponse = new List<ProviderReferralSourceResponse>();
             using (HttpClient http = new HttpClient())
             {
                 var response = http.GetAsync(url).Result;
@@ -264,20 +264,20 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     if (stringResponse != null && !stringResponse.Contains("NPI must be 10 digits"))
                     {
                         registryRequest = JsonConvert.DeserializeObject<NPPESRegistryRequest>(stringResponse);
-                        if (registryRequest != null && registryRequest.results.Count >= 1)
+                        if (registryRequest != null && registryRequest?.results?.Count >= 1)
                         {
                             foreach (var item in registryRequest.results)
                             {
-                                referralSourceResponse.Add(new OrderingReferralSourceResponse()
+                                referralSourceResponse.Add(new ProviderReferralSourceResponse()
                                 {
-                                    OrsNpi = item.number,
-                                    OrsFirstName = item.basic.first_name,
-                                    OrsLastName = item.basic.last_name,
-                                    OrsAddress = item.addresses[1].address_1,
-                                    OrsCity = item.addresses[1].city,
-                                    OrsState = item.addresses[1].state,
-                                    OrsZipCode = item.addresses[1].postal_code,
-                                    OrsFax = item.addresses[1].fax_number,
+                                    ProviderNpi = item.number,
+                                    ProviderFirstName = item.basic.first_name,
+                                    ProviderLastName = item.basic.last_name,
+                                    ProviderAddress = item.addresses[1].address_1,
+                                    ProviderCity = item.addresses[1].city,
+                                    ProviderState = item.addresses[1].state,
+                                    ProviderZipCode = item.addresses[1].postal_code,
+                                    ProviderFax = item.addresses[1].fax_number,
                                     Success = true,
                                 });
                             }
@@ -285,9 +285,9 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     }
                     else
                     {
-                        referralSourceResponse = new List<OrderingReferralSourceResponse>()
+                        referralSourceResponse = new List<ProviderReferralSourceResponse>()
                         {
-                            new OrderingReferralSourceResponse
+                            new ProviderReferralSourceResponse
                             {
                                 Message = "NPI must be 10 digits",
                                 Success = false,
@@ -298,26 +298,26 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             }
             return referralSourceResponse;
         }
-        // Description: This function is used to get details of Ordering Referral Source on the basics of NPI, First Name, Last Name and State.
-        public List<OrderingReferralSourceResponse> GetOrderingReferralSource(OrderReferralSourceRequest obj)
+        // Description: This function is used to get details of Provider Referral Source on the basics of NPI, First Name, Last Name and State.
+        public List<ProviderReferralSourceResponse> GetOrderingReferralSource(ProviderReferralSourceRequest obj)
         {
-            List<OrderingReferralSourceResponse> orderingReferralSourceInfo;
+            List<ProviderReferralSourceResponse> ProviderReferralSourceInfo;
             if (obj != null)
             {
-                orderingReferralSourceInfo = GetOrderingReferralSources(obj);
+                ProviderReferralSourceInfo = GetProviderReferralSources(obj);
             }
             else
             {
-                orderingReferralSourceInfo = new List<OrderingReferralSourceResponse>()
+                ProviderReferralSourceInfo = new List<ProviderReferralSourceResponse>()
                 {
-                    new OrderingReferralSourceResponse
+                    new ProviderReferralSourceResponse
                     {
                         Success = false,
                         Message = "Please use NPPES API."
                     }
                 };
             }
-            return orderingReferralSourceInfo;
+            return ProviderReferralSourceInfo;
         }
         // Description: This function is trigger to get details of frictionless referral.
         public FrictionLessReferral GetFrictionLessReferralDetails(long referralId)
@@ -362,16 +362,16 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     existingFrictionReferral.SUBMITTER_LAST_NAME = frictionLessReferralObj.SUBMITTER_LAST_NAME;
                     existingFrictionReferral.SUBMITTER_PHONE = frictionLessReferralObj.SUBMITTER_PHONE;
                     existingFrictionReferral.SUBMITTER_EMAIL = frictionLessReferralObj.SUBMITTER_EMAIL;
-                    existingFrictionReferral.ORS_NPI = frictionLessReferralObj.ORS_NPI;
-                    existingFrictionReferral.ORS_FIRST_NAME = frictionLessReferralObj.ORS_FIRST_NAME;
-                    existingFrictionReferral.ORS_LAST_NAME = frictionLessReferralObj.ORS_LAST_NAME;
-                    existingFrictionReferral.ORS_ADDRESS = frictionLessReferralObj.ORS_ADDRESS;
-                    existingFrictionReferral.ORS_CITY = frictionLessReferralObj.ORS_CITY;
-                    existingFrictionReferral.ORS_STATE = frictionLessReferralObj.ORS_STATE;
-                    existingFrictionReferral.ORS_ZIP_CODE = frictionLessReferralObj.ORS_ZIP_CODE;
-                    existingFrictionReferral.ORS_REGION = frictionLessReferralObj.ORS_REGION;
-                    existingFrictionReferral.ORS_REGION_CODE = frictionLessReferralObj.ORS_REGION_CODE;
-                    existingFrictionReferral.ORS_FAX = frictionLessReferralObj.ORS_FAX;
+                    existingFrictionReferral.PROVIDER_NPI = frictionLessReferralObj.PROVIDER_NPI;
+                    existingFrictionReferral.PROVIDER_FIRST_NAME = frictionLessReferralObj.PROVIDER_FIRST_NAME;
+                    existingFrictionReferral.PATIENT_LAST_NAME = frictionLessReferralObj.PATIENT_LAST_NAME;
+                    existingFrictionReferral.PROVIDER_ADDRESS = frictionLessReferralObj.PROVIDER_ADDRESS;
+                    existingFrictionReferral.PROVIDER_CITY = frictionLessReferralObj.PROVIDER_CITY;
+                    existingFrictionReferral.PROVIDER_STATE = frictionLessReferralObj.PROVIDER_STATE;
+                    existingFrictionReferral.PROVIDER_ZIP_CODE = frictionLessReferralObj.PROVIDER_ZIP_CODE;
+                    existingFrictionReferral.PROVIDER_REGION = frictionLessReferralObj.PROVIDER_REGION;
+                    existingFrictionReferral.PROVIDER_REGION_CODE = frictionLessReferralObj.PROVIDER_REGION_CODE;
+                    existingFrictionReferral.PROVIDER_FAX = frictionLessReferralObj.PROVIDER_FAX;
                     existingFrictionReferral.PATIENT_FIRST_NAME = frictionLessReferralObj.PATIENT_FIRST_NAME;
                     existingFrictionReferral.PATIENT_LAST_NAME = frictionLessReferralObj.PATIENT_LAST_NAME;
                     existingFrictionReferral.PATIENT_DOB = frictionLessReferralObj.PATIENT_DOB;
