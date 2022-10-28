@@ -87,9 +87,9 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
 
         }
         [Test]
-        [TestCase( 1011163, true)]
-        [TestCase(1011163, false)]
-        public void GetPatientList_PatientListModel_ReturnData(long practiceCode, bool isTalkRehab)
+        [TestCase(1011163, true, 101116354816630)]
+        [TestCase(1011163, false, 101116354816001)]
+        public void GetPatientList_PatientListModel_ReturnData(long practiceCode, bool isTalkRehab, long Patient_Account)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -110,9 +110,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _userProfile.isTalkRehab = isTalkRehab;
             _patientSearchRequest.DOBInString = Convert.ToString(DateTime.Today);
             _patientSearchRequest.CreatedDateInString = Convert.ToString(DateTime.Today);
+            _patientSearchRequest.Patient_Account = Patient_Account.ToString();
 
-           //Act
-           var result = _patientService.GetPatientList(_patientSearchRequest,_userProfile);
+
+            //Act
+            var result = _patientService.GetPatientList(_patientSearchRequest, _userProfile);
 
             //Assert
             if (result != null)
