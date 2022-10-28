@@ -2018,7 +2018,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 var wORK_IDProc = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = obj.WORK_ID };
                 var wORK_IDCpt = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = obj.WORK_ID };
                 var wORK_IDDoc = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = obj.WORK_ID };
-                var result = SpRepository<GETtAll_IndexifoRes>.GetSingleObjectWithStoreProcedure(@"exec [FOX_GET_INDEX_ALL_INFO_Test] @WORK_ID", wORK_ID);
+                var result = SpRepository<GETtAll_IndexifoRes>.GetSingleObjectWithStoreProcedure(@"exec [FOX_GET_INDEX_ALL_INFO] @WORK_ID", wORK_ID);
 
                 if (result != null)
                 {
@@ -5325,7 +5325,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             var date_Of_Birth = new SqlParameter { ParameterName = "@Date_Of_Birth", SqlDbType = SqlDbType.VarChar, Value = req.Date_Of_Birth == null ? "" : req.Date_Of_Birth?.ToString("MM/dd/yyyy") };
             var Patient_Alias = new SqlParameter { ParameterName = "@Patient_Alias", SqlDbType = SqlDbType.Bit, Value = req.INCLUDE_ALIAS };
             var _PRACTICE_ORGANIZATION_ID = new SqlParameter("@PRACTICE_ORGANIZATION_ID", SqlDbType.BigInt) { Value = Profile.PRACTICE_ORGANIZATION_ID ?? 0 };
-            var result = SpRepository<PatientListResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_FOR_INDEX_INFO_Test
+            var result = SpRepository<PatientListResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_FOR_INDEX_INFO
                              @First_Name,@Last_Name,@Middle_Name,@Chart_Id,@SSN,@Gender,@PRACTICE_CODE,@CURRENT_PAGE,@RECORD_PER_PAGE,@PRACTICE_ORGANIZATION_ID,@Date_Of_Birth,@Patient_Alias",
                              first_Name, last_Name, middle_Name, chart_Id, SSN, gender, Practice_Code, _currentPage, _recordPerPage, _PRACTICE_ORGANIZATION_ID, date_Of_Birth, Patient_Alias);
             if (result.Any())
