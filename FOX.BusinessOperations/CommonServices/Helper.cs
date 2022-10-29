@@ -1208,7 +1208,60 @@ namespace FOX.BusinessOperations.CommonService
                  throw ex;
             }
         }
-
+       
+        public static void SendExceptionsEmail(string exceptionMsg = "", string exceptionDetails = "", string subject = "")
+        {
+            //bool IsMailSent = false;
+            string from = "noreply@carecloud.com";
+            //Live
+            //QA
+            string to = "abdulsattar@carecloud.com";
+            //string subject = "Exception occurred in Exception Filter";
+            List<string> cc = new List<string>();
+            cc.Add("muhammadarslan3@carecloud.com");
+            cc.Add("aftabkhan@carecloud.com");
+            cc.Add("muhammadsalman7@mtbc.com");
+            cc.Add("muhammadiqbal11@carecloud.com");
+            var body = "";
+            body += "<body>";
+            //add exception Message
+            body += "<h3 style='color: #1960a7;margin: 0px;'> Exception Message:" + "</h3><br />";
+            body += "<p style='color: #34495e;margin: 0px;'>" + exceptionMsg + "</p><br />";
+            //add exception Details
+            body += "<h3 style='color: #1960a7;margin: 0px;'> Exception Details: " + "</h3><br />";
+            body += "<p style='color: #34495e;margin: 0px;'>" + exceptionDetails + "</p><br />";
+            ////add original mail info
+            //body += "<h3 style='color: #1960a7;margin: 0px;'> To: </h3><p style='color: #34495e;margin: 0px;'>" + OrgMailSentTo + "</p><br />";
+            //body += "<h3 style='color: #1960a7;margin: 0px;'> Subject: </h3><p style='color: #34495e;margin: 0px;'>" + OrgMailSubject + "</p><br />";
+            //body += "<h3 style='color: #1960a7;margin: 0px;'> Date: </h3><p style='color: #34495e;margin: 0px;'>" + OrgMailDate + "</p><br />";
+            body += "</body>";
+            try
+            {
+                using (SmtpClient smtp = new SmtpClient())
+                {
+                    using (MailMessage mail = new MailMessage())
+                    {
+                        mail.From = new MailAddress(from);
+                        mail.To.Add(new MailAddress(to));
+                        mail.Subject = subject;
+                        mail.Body = body;
+                        mail.IsBodyHtml = true;
+                        mail.Priority = MailPriority.High;
+                        mail.SubjectEncoding = Encoding.UTF8;
+                        if (cc != null && cc.Count > 0)
+                        {
+                            foreach (var item in cc) { mail.CC.Add(item); }
+                        }
+                        smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["NoReplyUserName"], WebConfigurationManager.AppSettings["NoReplyPassword"]);
+                        smtp.Send(mail);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public static void TokenTaskCancellationExceptionLog(string msg)
         {
            try
