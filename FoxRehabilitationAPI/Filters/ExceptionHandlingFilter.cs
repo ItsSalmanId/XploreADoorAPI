@@ -17,6 +17,14 @@ namespace FoxRehabilitationAPI.Filters
                 var excpParam = JsonConvert.SerializeObject(context.ActionContext.ActionArguments.Values);
                 var uri = context.ActionContext.Request.RequestUri.OriginalString;
                 var excpMsg = context.Exception.Message;
+                if (excpMsg.Contains("it is being used by another process"))
+                {
+                    return;
+                }
+                if (excpMsg.Contains("The context cannot be used while the model is being created. This exception may be thrown if the context is used inside the OnModelCreating method"))
+                {
+                    return;
+                }
                 var excpStackTrace = context.Exception.StackTrace;
                 var excpInnerMessage = ((context.Exception.InnerException != null && context.Exception.InnerException.Message != null) ? (context.Exception.InnerException.Message.ToLower().Contains("inner exception") ? context.Exception.InnerException.InnerException.Message : context.Exception.InnerException.Message) : "NULL");
 
@@ -59,6 +67,12 @@ namespace FoxRehabilitationAPI.Filters
                 {
                     Helper.SendEmailOnException(ex.Message, ex.ToString(), "Exception occurred in Exception Filter");
                 }
+                var expmsg = Environment.NewLine + "URI:  " + uri + Environment.NewLine + Environment.NewLine + "Request parameters: " + excpParam + Environment.NewLine + Environment.NewLine + "StackTrace: " + excpStackTrace + Environment.NewLine + Environment.NewLine +
+                             "///------------------Inner Exception------------------///" + Environment.NewLine + Environment.NewLine + excpInnerMessage + Environment.NewLine + Environment.NewLine + "Date: " + DateTime.Now.ToString()
+                             + Environment.NewLine + Environment.NewLine + "-------------------------------------------------------||||||||||||---End Current Exception---||||||||||||||||------------------------------" +
+                             "-------------------------" + Environment.NewLine;
+
+                Helper.SendExceptionsEmail(excpMsg, expmsg.ToString(), "Exception occurred in Exception Filter");
             }
             catch (Exception ex)
             {

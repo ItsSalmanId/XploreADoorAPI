@@ -21,6 +21,7 @@ using FOX.DataModels.Models.Settings.ReferralSource;
 using FOX.DataModels.Models.TasksModel;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 using SautinSoft;
 using SelectPdf;
 using System;
@@ -2381,16 +2382,18 @@ namespace FOX.BusinessOperations.PatientServices
             string zipCode = string.Empty;
             if (!string.IsNullOrEmpty(loc.Zip))
             {
-                if (loc.Zip.Length > 5)
-                {
-                    zipCode = loc.Zip.Substring(0, 5);
-                }
+               if (loc.Zip.Length > 5)
+                { 
+                    zipCode = loc.Zip.Insert(5, "-");
+                }               
                 else
                 {
                     zipCode = loc.Zip;
                 }
             }
-            //string zipCode = string.IsNullOrEmpty(loc.Zip) ? "" : loc.Zip;
+            
+            
+                      //string zipCode = string.IsNullOrEmpty(loc.Zip) ? "" : loc.Zip;
 
             string address = add + " " + city + " " + state + " " + zipCode;
 
@@ -5971,7 +5974,9 @@ namespace FOX.BusinessOperations.PatientServices
             var newData = currentMedicareLimitList.Where(e => e.MEDICARE_LIMIT_TYPE_NAME == "Hospice").FirstOrDefault();
             if (hos_Id != null)
             {
-                var oldData = _MedicareLimitRepository.GetByID(hos_Id.Value);
+                //var oldData = _MedicareLimitRepository.GetByID(hos_Id.Value);
+                var oldData = _MedicareLimitRepository.GetFirst(l => l.MEDICARE_LIMIT_ID == hos_Id.Value);
+                if (oldData != null && oldData.EFFECTIVE_DATE != newData.EFFECTIVE_DATE) { hosInfoChanged = true; return true; }
                 if (oldData.EFFECTIVE_DATE != newData.EFFECTIVE_DATE) { hosInfoChanged = true; return true; }
                 if (oldData.END_DATE != newData.END_DATE) { hosInfoChanged = true; return true; }
                 if (!String.Equals(oldData.NPI ?? "", newData.NPI ?? "", StringComparison.Ordinal)) { hosInfoChanged = true; return true; }
@@ -11092,12 +11097,12 @@ namespace FOX.BusinessOperations.PatientServices
                         FacilityLocation pos = _FacilityLocationRepository.GetFirst(e => e.LOC_ID == loc.LOC_ID && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
                         if (pos != null)
                         {
-                            if (loc.SetCoordinatesManually == false)
+                        if (loc.SetCoordinatesManually == false)
                             {
                                 POSCoordinates coordinates = GetCoordinates(pos);
                                 if (coordinates != null)
                                 {
-                                    pos.Longitude = Convert.ToDouble(coordinates.Longitude);
+                                pos.Longitude = Convert.ToDouble(coordinates.Longitude);
                                     pos.Latitude = Convert.ToDouble(coordinates.Latitude);
                                     pos.Address = coordinates.Address;
                                 }

@@ -46,6 +46,9 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<RoleToAdd>().Property(t => t.ROLE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<ReferralSender>().Property(t => t.ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<Splash>().Property(t => t.FOX_SPLASH_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<CommonAnnouncements>().Property(t => t.ANNOUNCEMENT_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<AnnouncementsHistory>().Property(t => t.ANNOUNCEMENT_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+
         }
         public virtual DbSet<Maintenance_Counter> Maintenance_Counter { get; set; }
         public virtual DbSet<WorkOrderHistory> WorkOrderHistory { get; set; }
@@ -65,5 +68,7 @@ namespace FOX.DataModels.Context
         public virtual DbSet<RoleToAdd> GetUserRoles { get; set; }
         public virtual DbSet<ReferralSender> ReferralSender { get; set; }
         public virtual DbSet<Splash> Splashes { get; set; }
+        public virtual DbSet<CommonAnnouncements> CommonAnnouncements { get; set; }
+        public virtual DbSet<AnnouncementsHistory> AnnouncementsHistory { get; set; }
     }
 }

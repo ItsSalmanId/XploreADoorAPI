@@ -82,18 +82,18 @@ namespace FOX.DataModels.Models.PatientSurvey
         public DateTime? REFERRAL_DATE { get; set; }
         public string PROCEDURE_OR_TRAN_CODE { get; set; }
         public decimal? SERVICE_OR_PAYMENT_AMOUNT { get; set; }
+        public bool? IS_IMPROVED_SETISFACTION { get; set; }
+        [NotMapped]
+        public string Is_improved_Satisfaction_Str { get; set; }
+        public bool? IS_REFERABLE { get; set; }
+        [NotMapped]
+        public string Is_Referrable_Str { get; set; }
         public bool? IS_CONTACT_HQ { get; set; }
         [NotMapped]
         public string Is_Contact_HQ_Str { get; set; }
         public bool? IS_RESPONSED_BY_HQ { get; set; }
         [NotMapped]
         public string Is_Responsed_By_HQ_Str { get; set; }
-        public bool? IS_REFERABLE { get; set; }
-        [NotMapped]
-        public string Is_Referrable_Str { get; set; }
-        public bool? IS_IMPROVED_SETISFACTION { get; set; }
-        [NotMapped]
-        public string Is_improved_Satisfaction_Str { get; set; }
         public bool? IS_QUESTION_ANSWERED { get; set; }
         [NotMapped]
         public string Is_Questioned_Answered_Str { get; set; }
