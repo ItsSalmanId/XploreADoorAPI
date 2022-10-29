@@ -1,3 +1,6 @@
+USE [MIS_DB]
+GO
+
 /****** Object:  Table [dbo].[FOX_TBL_SURVEY_AUDIT_SCORES]    Script Date: 7/21/2022 10:00:24 PM ******/
 SET ANSI_NULLS ON
 GO
