@@ -1,6 +1,10 @@
+-- AUTHOR:  <DEVELOPER, MUHAMMAD SALMAN>
+-- CREATE DATE: <CREATE DATE, 10/29/2022>   
+-- MODIFY DATE: <CREATE DATE, 10/29/2022>   
+-- DESCRIPTION: <FOX_GET_INDEX_ALL_INFO>  
 -- [dbo].[FOX_GET_INDEX_ALL_INFO] 54815326                                      
                                               
-CREATE PROCEDURE [dbo].[FOX_GET_INDEX_ALL_INFO]                                                              
+ALTER PROCEDURE [dbo].[FOX_GET_INDEX_ALL_INFO]                                                              
 @WORK_ID BIGINT                                                
 --DECLARE @WORK_ID BIGINT= 5486941;                                                              
 AS                                   

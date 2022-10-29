@@ -1,0 +1,26 @@
+USE [MIS_DB]
+GO
+
+/****** Object:  Table [dbo].[FOX_TBL_ADJUSTMENT_LOGS]    Script Date: 7/21/2022 8:40:34 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+CREATE TABLE [dbo].[FOX_TBL_PHD_FAQS_DETAILS](
+	[FAQS_ID] [bigint] NULL,
+	[QUESTIONS] [varchar](250) NOT NULL,
+	[ANSWERS] [nvarchar](max) NULL,
+	[PRACTICE_CODE] [bigint] NULL,
+	[CREATED_BY] [varchar](70) NULL,
+	[CREATED_DATE] [datetime] NULL,
+	[MODIFIED_BY] [varchar](70) NULL,
+	[MODIFIED_DATE] [datetime] NULL,
+	[DELETED] [bit] NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+

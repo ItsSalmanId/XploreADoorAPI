@@ -1,5 +1,8 @@
-    
-CREATE PROCEDURE [dbo].[FOX_PROC_GET_PATIENT_FOR_INDEX_INFO] --'','','','','','',10111663,1,1,'','',1                  
+-- AUTHOR:  <DEVELOPER, MUHAMMAD SALMAN>
+-- CREATE DATE: <CREATE DATE, 10/29/2022>   
+-- MODIFY DATE: <CREATE DATE, 10/29/2022>   
+-- DESCRIPTION: <FOX_PROC_GET_PATIENT_FOR_INDEX_INFO>      
+ALTER PROCEDURE [dbo].[FOX_PROC_GET_PATIENT_FOR_INDEX_INFO] --'','','','','','',10111663,1,1,'','',1                  
 (                  
 @First_Name VARCHAR(50)                  
 ,@Last_Name VARCHAR(50)                  

@@ -1,0 +1,15 @@
+-- AUTHOR:  <MUHAMMAD SALMAN>      
+-- CREATE DATE: <CREATE DATE, 09/26/2022>      
+-- DESCRIPTION: <GET LIST OF FAQS DETAILS>   
+CREATE PROCEDURE [DBO].[FOX_PROC_GET_PHD_FAQS_LIST]                   
+(                     
+  @PRACTICE_CODE BIGINT        
+)                        
+AS                        
+BEGIN                 
+  
+  SELECT FAQS_ID, QUESTIONS, ANSWERS, PRACTICE_CODE FROM FOX_TBL_PHD_FAQS_DETAILS         
+  WHERE PRACTICE_CODE = @PRACTICE_CODE AND ISNULL(DELETED, 0) = 0        
+  ORDER BY FAQS_ID DESC   
+        
+END 

@@ -1,7 +1,9 @@
-
-
+-- AUTHOR:  <DEVELOPER, MUHAMMAD SALMAN>
+-- CREATE DATE: <CREATE DATE, 10/29/2022>   
+-- MODIFY DATE: <CREATE DATE, 10/29/2022>   
+-- DESCRIPTION: <FOX_PROC_GET_PATIENT_LIST>      
 --exec [FOX_PROC_GET_PATIENT_LIST] '1012714312079337','', '', '', '', '','', '','', '',1012714, 1, 0, '', 'createdDate', 'ASC','', 0                                
-CREATE PROCEDURE [dbo].[FOX_PROC_GET_PATIENT_LIST] --'', '', '', '', '','', 'FEMALE', '','', '', '1011163', 1, 0, '', '', 'ASC', ''                                    
+ALTER PROCEDURE [dbo].[FOX_PROC_GET_PATIENT_LIST] --'', '', '', '', '','', 'FEMALE', '','', '', '1011163', 1, 0, '', '', 'ASC', ''                                    
  (                                    
   @Patient_Account  AS VARCHAR(50)                                    
  ,@First_Name AS VARCHAR(50)                                    
