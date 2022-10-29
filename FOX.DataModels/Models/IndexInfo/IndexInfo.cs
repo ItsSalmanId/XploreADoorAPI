@@ -516,6 +516,8 @@ namespace FOX.DataModels.Models.IndexInfo
         public string SENDER_TYPE { get; set; }
         public long? FOX_SOURCE_CATEGORY_ID { get; set; }
         public bool? IS_OCR { get; set; }
+        [NotMapped]
+        public bool? IS_ACQUISITION { get; set; }
     }
 
     public class Index_infoReq : BaseModel
@@ -563,6 +565,8 @@ namespace FOX.DataModels.Models.IndexInfo
         public string LAST_NAME_ALIAS { get; set; }
         public string MIDDLE_INITIALS_ALIAS { get; set; }
         public bool? Is_Patient_Alias { get; set; }
+        [NotMapped]
+        public bool? IS_ACQUISITION { get; set; }
         public string Date_Of_Birth { get; set; }
         public string Gender { get; set; }
         public string SSN { get; set; }

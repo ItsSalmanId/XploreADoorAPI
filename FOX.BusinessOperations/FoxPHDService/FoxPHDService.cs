@@ -9,6 +9,7 @@ using FOX.DataModels.Models.GeneralNotesModel;
 using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.Patient;
 using FOX.DataModels.Models.PatientDocuments;
+using FOX.DataModels.Models.PatientSurvey;
 using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.ServiceConfiguration;
 using SautinSoft;
@@ -53,6 +54,7 @@ namespace FOX.BusinessOperations.FoxPHDService
         private readonly GenericRepository<PatientPATDocument> _foxPatientPATdocumentRepository;
         private readonly GenericRepository<PatientDocumentFiles> _foxPatientdocumentFilesRepository;
         private readonly GenericRepository<DefaultVauesForPhdUsers> _DefaultVauesForPhdUsersRepository;
+        private readonly GenericRepository<PhdFaqsDetail> _phdFaqsDetailRepository;
         public FoxPHDService()
         {
             _PatientRepository = new GenericRepository<Patient>(_PatientContext);
@@ -72,6 +74,7 @@ namespace FOX.BusinessOperations.FoxPHDService
             _foxPatientPATdocumentRepository = new GenericRepository<PatientPATDocument>(_PatientPATDocumentContext);
             _foxPatientdocumentFilesRepository = new GenericRepository<PatientDocumentFiles>(_PatientPATDocumentContext);
             _DefaultVauesForPhdUsersRepository = new GenericRepository<DefaultVauesForPhdUsers>(_DBContextFoxPHD);
+            _phdFaqsDetailRepository = new GenericRepository<PhdFaqsDetail>(_DBContextFoxPHD);
         }
 
         public DropdownLists GetDropdownLists(UserProfile profile)
@@ -157,6 +160,7 @@ namespace FOX.BusinessOperations.FoxPHDService
             }
             catch (Exception ex)
             {
+
                 if (retrycatch <= 2 && ex.InnerException.Message.Contains("deadlocked on lock resources with another process"))
                 {
                     retrycatch = retrycatch + 1;
@@ -166,6 +170,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                 {
                     throw ex;
                 }
+                
             }
         }
         public ResponseModel DeleteCallDetailRecordInformation(PHDCallDetail ObjPHDCallDetailRequest, UserProfile profile)
@@ -1693,6 +1698,109 @@ namespace FOX.BusinessOperations.FoxPHDService
             var phdSanarios = _DefaultVauesForPhdUsersRepository.GetFirst(x => x.USER_ID == user.USER_ID && x.PRACTICE_CODE == user.PRACTICE_CODE && !x.DELETED);
             return phdSanarios;
 
+        }
+        //Description:  This function is trigger to Add faqs
+        public ResponseModel AddUpdatePhdFaqsDetail(PhdFaqsDetail objPHDFAQsDetail, UserProfile profile)
+        {
+            ResponseModel response = new ResponseModel();
+            try
+            {
+                PhdFaqsDetail phdFaqsDetail = new PhdFaqsDetail();
+                if (objPHDFAQsDetail != null && !string.IsNullOrEmpty(objPHDFAQsDetail.QUESTIONS.ToString()) && !string.IsNullOrEmpty(objPHDFAQsDetail.ANSWERS.ToString()) && profile.PracticeCode != 0 && !string.IsNullOrEmpty(objPHDFAQsDetail.FAQS_ID.ToString()))
+                {
+                    var existingDetailInfo = _phdFaqsDetailRepository.GetFirst(r => r.FAQS_ID == objPHDFAQsDetail.FAQS_ID && r.DELETED == false);
+                    if (existingDetailInfo == null)
+                    {
+                        phdFaqsDetail.FAQS_ID = Helper.getMaximumId("FAQS_ID");
+                        phdFaqsDetail.QUESTIONS = objPHDFAQsDetail.QUESTIONS.ToString();
+                        phdFaqsDetail.ANSWERS = objPHDFAQsDetail.ANSWERS.ToString();
+                        phdFaqsDetail.PRACTICE_CODE = profile.PracticeCode;
+                        phdFaqsDetail.DELETED = false;
+                        phdFaqsDetail.CREATED_BY = phdFaqsDetail.MODIFIED_BY = profile.UserName;
+                        phdFaqsDetail.CREATED_DATE = phdFaqsDetail.MODIFIED_DATE = Helper.GetCurrentDate();
+                        _phdFaqsDetailRepository.Insert(phdFaqsDetail);
+                        _phdFaqsDetailRepository.Save();
+                        response.Message = "FAQ inserted successfully";
+                        response.Success = true;                     
+                    }
+                    else
+                    {
+                        existingDetailInfo.FAQS_ID = objPHDFAQsDetail.FAQS_ID;
+                        existingDetailInfo.QUESTIONS = objPHDFAQsDetail.QUESTIONS.ToString();
+                        existingDetailInfo.ANSWERS = objPHDFAQsDetail.ANSWERS.ToString();
+                        existingDetailInfo.PRACTICE_CODE = profile.PracticeCode;
+                        existingDetailInfo.DELETED = false;
+                        existingDetailInfo.MODIFIED_BY = profile.UserName;
+                        existingDetailInfo.MODIFIED_DATE = Helper.GetCurrentDate();
+                        _phdFaqsDetailRepository.Update(existingDetailInfo);
+                        _phdFaqsDetailRepository.Save();
+                        response.Message = "FAQ updated successfully";
+                        response.Success = true;
+                    }
+                }
+                else
+                {
+                    response.ErrorMessage = "Please Enter a Question or Answer";
+                    response.Success = false;
+                }
+               
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            return response;
+        }
+        //Description:  This function is trigger to soft delete faqs
+        public ResponseModel DeletePhdFaqs(PhdFaqsDetail objPhdFaqsDetail, UserProfile profile)
+        {
+                ResponseModel response = new ResponseModel();
+                if (objPhdFaqsDetail != null && profile.PracticeCode != 0 && !string.IsNullOrEmpty(objPhdFaqsDetail.FAQS_ID.ToString()))
+                { 
+                    var existingDetailInfo = _phdFaqsDetailRepository.GetFirst(r => r.FAQS_ID == objPhdFaqsDetail.FAQS_ID && r.DELETED == false);
+                    if (existingDetailInfo != null)
+                    {
+                        existingDetailInfo.MODIFIED_BY = profile.UserName;
+                        existingDetailInfo.MODIFIED_DATE = Helper.GetCurrentDate();
+                        existingDetailInfo.DELETED = true;
+                        _phdFaqsDetailRepository.Update(existingDetailInfo);
+                        _phdFaqsDetailRepository.Save();
+                        response.ErrorMessage = "";
+                        response.Message = "FAQ deleted successfully";
+                        response.Success = true;
+                    }
+                    else
+                    {
+                        response.ErrorMessage = "";
+                        response.Message = "FAQ deleted successfully";
+                        response.Success = true;
+                    }
+                }
+                return response;
+        }
+        //Description:  This function is trigger to get dropdown list of faqs
+        public List<PhdFaqsDetail> GetDropdownListFaqs(UserProfile profile)
+        {
+            List <PhdFaqsDetail> faqsInfoList = new List<PhdFaqsDetail>();
+            if(profile != null && profile.PracticeCode != 0)
+            {
+                var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                faqsInfoList = SpRepository<PhdFaqsDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_FAQS_LIST  @PRACTICE_CODE ", PracticeCode);
+            }
+            return faqsInfoList;
+        }
+        //Description:  This function is trigger for smart search 
+        public List<PhdFaqsDetail> GetPHDFaqsDetailsInformation(PhdFaqsDetail objPhdFaqsDetail, UserProfile profile)
+        {
+            List<PhdFaqsDetail> phdDetailsList = new List<PhdFaqsDetail>();
+            if (objPhdFaqsDetail != null && !string.IsNullOrEmpty(objPhdFaqsDetail.QUESTIONS?.ToString()) && profile.PracticeCode != 0)
+            {
+                var PracticeCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                var SearchText = new SqlParameter { ParameterName = "@SEARCH_TEXT", SqlDbType = SqlDbType.VarChar, Value = string.IsNullOrEmpty(objPhdFaqsDetail.QUESTIONS) ? "" : objPhdFaqsDetail.QUESTIONS };
+                phdDetailsList = SpRepository<PhdFaqsDetail>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PHD_FAQs_DETAILS @PRACTICE_CODE, @SEARCH_TEXT ",
+                PracticeCode, SearchText);
+            }
+            return phdDetailsList;
         }
     }
 }
