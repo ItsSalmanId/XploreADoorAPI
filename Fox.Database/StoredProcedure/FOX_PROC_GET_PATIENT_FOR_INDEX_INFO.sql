@@ -1,7 +1,8 @@
-IF (OBJECT_ID('FOX_PROC_GET_PATIENT_FOR_INDEX_INFO') IS NOT NULL ) DROP PROCEDURE FOX_PROC_GET_PATIENT_FOR_INDEX_INFO  
-GO 
+ 
+-- Modified By : <AFTAB AHMED KHAN, 09/29/2022>      
+-- DESCRIPTION: <OFFSET CLOUSE ISSUE FIXING>   
 --exec [FOX_PROC_GET_PATIENT_FOR_INDEX_INFO] '','','g','','','',1011163,1,100000,'','',1        
-CREATE PROCEDURE [dbo].[FOX_PROC_GET_PATIENT_FOR_INDEX_INFO] --'','','','','','',10111663,1,1,'','',1        
+ALTER PROCEDURE [dbo].[FOX_PROC_GET_PATIENT_FOR_INDEX_INFO] --'','','','','','',10111663,1,1,'','',1        
 (        
 @First_Name VARCHAR(50)        
 ,@Last_Name VARCHAR(50)        
@@ -35,7 +36,11 @@ DECLARE
 DECLARE @firstnamelen int=(select len(@First_Name))        
 ,@lastnamelen int=(select len(@Last_Name))        
 BEGIN        
---SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED        
+--SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED       
+IF(@CURRENT_PAGE = 0)
+BEGIN
+SET @CURRENT_PAGE = 1
+END
 IF (@First_Name='')        
 BEGIN        
 SET @First_Name=NULL        
@@ -84,7 +89,7 @@ ELSE
 IF (@RECORD_PER_PAGE=0)        
 BEGIN        
 SELECT @RECORD_PER_PAGE=COUNT(*)        
-FROM PATIENT        
+FROM PATIENT with (nolock)       
 END        
 ELSE        
 BEGIN        
@@ -132,13 +137,13 @@ p.CREATED_DATE,
 FTP.PRACTICE_ORGANIZATION_ID,        
 ROW_NUMBER() OVER(ORDER BY p.CREATED_DATE DESC) AS ROW        
 into #PatientInformation        
-FROM Patient p        
-LEFT JOIN  FOX_TBL_PATIENT AS FTP ON FTP.Patient_Account=p.Patient_Account        
+FROM Patient p with (nolock)      
+LEFT JOIN  FOX_TBL_PATIENT AS FTP with (nolock) ON FTP.Patient_Account=p.Patient_Account        
 AND ISNULL(FTP.DELETED, 0)=0        
-LEFT JOIN FOX_TBL_FINANCIAL_CLASS AS FC ON FTP.FINANCIAL_CLASS_ID=FC.FINANCIAL_CLASS_ID        
+LEFT JOIN FOX_TBL_FINANCIAL_CLASS AS FC  with (nolock) ON FTP.FINANCIAL_CLASS_ID=FC.FINANCIAL_CLASS_ID        
 AND p.Practice_Code=FC.PRACTICE_CODE        
 AND ISNULL(FC.DELETED, 0)=0        
-LEFT JOIN FOX_TBL_PATIENT_ALIAS AS pa ON pa.PATIENT_ACCOUNT=p.PATIENT_ACCOUNT        
+LEFT JOIN FOX_TBL_PATIENT_ALIAS AS pa with (nolock) ON pa.PATIENT_ACCOUNT=p.PATIENT_ACCOUNT        
 AND ISNULL(pa.DELETED, 0)=0        
 AND @Patient_Alias=cast(1 as bit)        
 WHERE        
@@ -241,13 +246,13 @@ FTP.PRACTICE_ORGANIZATION_ID,
 ROW_NUMBER() OVER(ORDER BY p.CREATED_DATE DESC) AS ROW        
 ,@TOATL_PAGESUDM AS TOTAL_RECORD_PAGES        
 ,@TOTAL_RECORDS TOTAL_RECORDS        
-FROM Patient p        
-LEFT JOIN  FOX_TBL_PATIENT AS FTP ON FTP.Patient_Account=p.Patient_Account        
+FROM Patient p with (nolock)      
+LEFT JOIN  FOX_TBL_PATIENT AS  with (nolock) FTP ON FTP.Patient_Account=p.Patient_Account        
 AND ISNULL(FTP.DELETED, 0)=0        
-LEFT JOIN FOX_TBL_FINANCIAL_CLASS AS FC ON FTP.FINANCIAL_CLASS_ID=FC.FINANCIAL_CLASS_ID        
+LEFT JOIN FOX_TBL_FINANCIAL_CLASS AS  with (nolock) FC ON FTP.FINANCIAL_CLASS_ID=FC.FINANCIAL_CLASS_ID        
 AND p.Practice_Code=FC.PRACTICE_CODE        
 AND ISNULL(FC.DELETED, 0)=0        
-LEFT JOIN FOX_TBL_PATIENT_ALIAS AS pa ON pa.PATIENT_ACCOUNT=p.PATIENT_ACCOUNT        
+LEFT JOIN FOX_TBL_PATIENT_ALIAS AS pa with (nolock) ON pa.PATIENT_ACCOUNT=p.PATIENT_ACCOUNT        
 AND ISNULL(pa.DELETED, 0)=0        
 AND @Patient_Alias=cast(1 as bit)        
 WHERE        
