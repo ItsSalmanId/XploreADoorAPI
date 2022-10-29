@@ -1,3 +1,4 @@
+
 -- AUTHOR:  <DEVELOPER, MUHAMMAD SALMAN>
 -- CREATE DATE: <CREATE DATE, 10/29/2022>   
 -- MODIFY DATE: <CREATE DATE, 10/29/2022>   
@@ -144,7 +145,7 @@ IF (@RECORD_PER_PAGE = 0)
  SELECT @TOATL_PAGESUDM = COUNT(*)                          
  FROM Patient p             
  LEFT JOIN  FOX_TBL_ACQUISITION_PATIENT AS FTA with (nolock) ON FTA.Patient_Account=p.Patient_Account  AND ISNULL(FTA.DELETED, 0)=0                 
- LEFT JOIN  FOX_TBL_PATIENT AS FTP ON FTP.Patient_Account=p.Patient_Account                         
+ LEFT JOIN  FOX_TBL_PATIENT AS FTP  ON FTP.Patient_Account=p.Patient_Account                         
            LEFT JOIN FOX_TBL_PATIENT_INSURANCE AS PI ON PI.Patient_Insurance_Id =                            
              (                            
                  SELECT TOP 1 Patient_Insurance_Id                            
@@ -155,14 +156,14 @@ IF (@RECORD_PER_PAGE = 0)
                        AND (ti.FOX_INSURANCE_STATUS = 'C')   
     ORDER BY Modified_Date DESC                            
              )                            
-                  LEFT JOIN FOX_TBL_INSURANCE fi ON fi.FOX_TBL_INSURANCE_ID = PI.FOX_TBL_INSURANCE_ID                            
+                  LEFT JOIN FOX_TBL_INSURANCE fi with (nolock) ON fi.FOX_TBL_INSURANCE_ID = PI.FOX_TBL_INSURANCE_ID                            
                                         AND fi.PRACTICE_CODE = @PRACTICE_CODE                            
-                  LEFT JOIN FOX_TBL_FINANCIAL_CLASS FC ON PI.FINANCIAL_CLASS_ID = FC.FINANCIAL_CLASS_ID                            
+                  LEFT JOIN FOX_TBL_FINANCIAL_CLASS FC with (nolock) ON PI.FINANCIAL_CLASS_ID = FC.FINANCIAL_CLASS_ID                            
                                                           AND ISNULL(FC.DELETED, 0) = 0                          
                                                           AND FC.PRACTICE_CODE = @PRACTICE_CODE                            
-   LEFT JOIN fox_tbl_application_user u ON u.USER_NAME = p.Created_By                          
-   LEFT JOIN fox_tbl_application_user us ON us.USER_NAME = p.Modified_By                          
-   LEFT JOIN FOX_TBL_PATIENT_ALIAS AS pa ON pa.PATIENT_ACCOUNT = p.PATIENT_ACCOUNT                          
+   LEFT JOIN fox_tbl_application_user u with (nolock) ON u.USER_NAME = p.Created_By                          
+   LEFT JOIN fox_tbl_application_user us with (nolock) ON us.USER_NAME = p.Modified_By                          
+   LEFT JOIN FOX_TBL_PATIENT_ALIAS AS pa with (nolock) ON pa.PATIENT_ACCOUNT = p.PATIENT_ACCOUNT                          
               AND ISNULL(pa.DELETED, 0) = 0                          
               AND @Patient_Alias = cast(1 as bit)                        
 LEFT JOIN FOX_TBL_FINANCIAL_CLASS FPC ON FTP.FINANCIAL_CLASS_ID = FPC.FINANCIAL_CLASS_ID                            
@@ -278,8 +279,8 @@ LEFT JOIN FOX_TBL_FINANCIAL_CLASS FPC ON FTP.FINANCIAL_CLASS_ID = FPC.FINANCIAL_
   FPC.NAME AS PATIENT_FINANCIAL_CLASS                  
  FROM Patient p              
  LEFT JOIN  FOX_TBL_ACQUISITION_PATIENT AS FTA with (nolock) ON FTA.Patient_Account=p.Patient_Account AND ISNULL(FTA.DELETED, 0)=0                
-  LEFT JOIN  FOX_TBL_PATIENT AS FTP ON FTP.Patient_Account=p.Patient_Account                         
-           LEFT JOIN FOX_TBL_PATIENT_INSURANCE AS PI ON PI.Patient_Insurance_Id =                            
+  LEFT JOIN  FOX_TBL_PATIENT AS FTP with (nolock) ON FTP.Patient_Account=p.Patient_Account                         
+           LEFT JOIN FOX_TBL_PATIENT_INSURANCE AS PI with (nolock) ON PI.Patient_Insurance_Id =                            
              (                            
                  SELECT TOP 1 Patient_Insurance_Id                            
                  FROM FOX_TBL_PATIENT_INSURANCE ti                            
@@ -294,12 +295,12 @@ LEFT JOIN FOX_TBL_FINANCIAL_CLASS FPC ON FTP.FINANCIAL_CLASS_ID = FPC.FINANCIAL_
                   LEFT JOIN FOX_TBL_FINANCIAL_CLASS FC ON PI.FINANCIAL_CLASS_ID = FC.FINANCIAL_CLASS_ID                            
                                                           AND ISNULL(FC.DELETED, 0) = 0               
                                                           AND FC.PRACTICE_CODE = @PRACTICE_CODE                            
-   LEFT JOIN fox_tbl_application_user u ON u.USER_NAME = p.Created_By                          
-   LEFT JOIN fox_tbl_application_user us ON us.USER_NAME = p.Modified_By                          
-   LEFT JOIN FOX_TBL_PATIENT_ALIAS AS pa ON pa.PATIENT_ACCOUNT = p.PATIENT_ACCOUNT                          
+   LEFT JOIN fox_tbl_application_user u with (nolock) ON u.USER_NAME = p.Created_By                          
+   LEFT JOIN fox_tbl_application_user us with (nolock) ON us.USER_NAME = p.Modified_By                          
+   LEFT JOIN FOX_TBL_PATIENT_ALIAS AS pa with (nolock) ON pa.PATIENT_ACCOUNT = p.PATIENT_ACCOUNT                          
               AND ISNULL(pa.DELETED, 0) = 0                          
               AND @Patient_Alias = cast(1 as bit)                          
-  LEFT JOIN FOX_TBL_FINANCIAL_CLASS FPC ON FTP.FINANCIAL_CLASS_ID = FPC.FINANCIAL_CLASS_ID                            
+  LEFT JOIN FOX_TBL_FINANCIAL_CLASS FPC with (nolock) ON FTP.FINANCIAL_CLASS_ID = FPC.FINANCIAL_CLASS_ID                            
                                             AND ISNULL(FPC.DELETED, 0) = 0                            
                                             AND FPC.PRACTICE_CODE = @PRACTICE_CODE                        
  WHERE(p.Practice_Code = @PRACTICE_CODE)                          
@@ -504,4 +505,4 @@ LEFT JOIN FOX_TBL_FINANCIAL_CLASS FPC ON FTP.FINANCIAL_CLASS_ID = FPC.FINANCIAL_
  FETCH NEXT @RECORD_PER_PAGE ROWS ONLY                                    
 END   
   
-  
+  Go
