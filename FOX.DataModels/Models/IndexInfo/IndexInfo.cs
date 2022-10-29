@@ -554,7 +554,7 @@ namespace FOX.DataModels.Models.IndexInfo
         public long ROW { get; set; }
         public string FINANCIAL_CLASS_NAME { get; set; }
         public int? FINANCIAL_CLASS_ID { get; set; }
-        public long? Patient_Account { get; set; }
+        public string Patient_Account { get; set; }
         public string MRN { get; set; }
         public string First_Name { get; set; }
         public string Last_Name { get; set; }
