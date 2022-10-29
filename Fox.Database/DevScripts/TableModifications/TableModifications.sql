@@ -4,7 +4,7 @@
 ----- Created By: Muhammad Arslan Tufail
 ----- Created Date: 08/25/2022
 ----- Modified By: Muhammad Taseer Iqbal
------ Modified Date: 09/15/2022
+----- Modified Date: 10/29/2022
 --------------------------------------------------------
 
 --------------------------------------------------------
@@ -37,6 +37,19 @@ ADD  APPROPRIATE_GREETING BIGINT
 ,APPROPRIATE_CLOSING_TOTAL BIGINT;
 GO
 
+--------------------------------------------------------
+----- JIRA ID: FOX-6993
+----- Task Name: QAR Perform an Audit - Issues - development
+----- Assignee: Muhammad Taseer Iqbal
+----  Non Replication Table
+--------------------------------------------------------
+
+	ALTER TABLE FOX_TBL_SURVEY_AUDIT_SCORES ALTER COLUMN CLIENT_EXPERIENCE_COMMENT VARCHAR(1000)
+	GO
+	ALTER TABLE FOX_TBL_SURVEY_AUDIT_SCORES ALTER COLUMN SYSTEM_PROCESS_COMMENT VARCHAR(1000)
+	GO
+	ALTER TABLE FOX_TBL_SURVEY_AUDIT_SCORES ALTER COLUMN WOW_FACTOR_COMMENT VARCHAR(1000)
+	GO
 --------------------------------------------------------
 ----- JIRA ID: FOX-6872
 ----- Task Name: Item P522 | Alert Window Upon Login
