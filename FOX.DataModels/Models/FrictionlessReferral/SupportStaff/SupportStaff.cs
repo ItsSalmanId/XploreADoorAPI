@@ -97,5 +97,11 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public string ProviderRegionCode { get; set; }
         public string ProviderFax { get; set; }
     }
+    public class FrictionLessReferralResponse 
+    {
+        public FrictionLessReferral FrictionLessReferralObj { get; set; }
+        public bool Success { get; set; }
+        public string Message { get; set; }
+    }
     #endregion
 }

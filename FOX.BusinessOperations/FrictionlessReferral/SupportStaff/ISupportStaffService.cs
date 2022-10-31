@@ -13,7 +13,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         ResponseModel SendInviteOnMobile(PatientDetail obj);
         List<ProviderReferralSourceResponse> GetOrderingReferralSource(ProviderReferralSourceRequest obj);
         FrictionLessReferral GetFrictionLessReferralDetails(long referralId);
-        ResponseModel SaveFrictionLessReferralDetails(FrictionLessReferral frictionLessReferral);
+        FrictionLessReferralResponse SaveFrictionLessReferralDetails(FrictionLessReferral frictionLessReferral);
         #endregion
     }
 }

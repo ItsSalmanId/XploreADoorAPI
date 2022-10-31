@@ -332,9 +332,10 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             return frictionLessReferral;
         }
         // Description: This function is used to save the record of referral form in frictionless table.
-        public ResponseModel SaveFrictionLessReferralDetails(FrictionLessReferral frictionLessReferralObj)
+        public FrictionLessReferralResponse SaveFrictionLessReferralDetails(FrictionLessReferral frictionLessReferralObj)
         {
             ResponseModel responseModel = new ResponseModel();
+            FrictionLessReferralResponse frictionLessReferralResponse = new FrictionLessReferralResponse();
             long practiceCode = GetPracticeCode();
             if (frictionLessReferralObj != null)
             {
@@ -348,11 +349,9 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     frictionLessReferralObj.DELETED = false;
                     _frictionlessReferralRepository.Insert(frictionLessReferralObj);
 
-                    responseModel = new ResponseModel()
-                    {
-                        Success = true,
-                        Message = "Record Inserted Successfully.",
-                    };
+                    frictionLessReferralResponse.Message = "Record Inserted Successfully.";
+                    frictionLessReferralResponse.Success = true;
+                    frictionLessReferralResponse.FrictionLessReferralObj = frictionLessReferralObj;
                 }
                 else
                 {
@@ -386,15 +385,13 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     existingFrictionReferral.MODIFIED_DATE = Helper.GetCurrentDate();
                     _frictionlessReferralRepository.Update(existingFrictionReferral);
 
-                    responseModel = new ResponseModel()
-                    {
-                        Success = true,
-                        Message = "Record Updated Successfully.",
-                    };
+                    frictionLessReferralResponse.Message = "Record Updated Successfully.";
+                    frictionLessReferralResponse.Success = true;
+                    frictionLessReferralResponse.FrictionLessReferralObj = frictionLessReferralObj;
                 }
                 _frictionlessReferralRepository.Save();
             }
-            return responseModel;
+            return frictionLessReferralResponse;
         }
         #endregion
     }
