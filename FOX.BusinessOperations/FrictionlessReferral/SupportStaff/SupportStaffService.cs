@@ -344,7 +344,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 {
                     frictionLessReferralObj.FRICTIONLESS_REFERRAL_ID = Helper.getMaximumId("FRICTIONLESS_REFERRAL_ID");
                     frictionLessReferralObj.PRACTICE_CODE = GetPracticeCode();
-                    frictionLessReferralObj.CREATED_BY = frictionLessReferralObj.MODIFIED_BY = frictionLessReferralObj.SUBMITTER_LAST_NAME;
+                    frictionLessReferralObj.CREATED_BY = frictionLessReferralObj.MODIFIED_BY = !string.IsNullOrEmpty(frictionLessReferralObj.SUBMITTER_LAST_NAME) ? frictionLessReferralObj.SUBMITTER_LAST_NAME : "FOX_TEAM";
                     frictionLessReferralObj.CREATED_DATE = frictionLessReferralObj.MODIFIED_DATE = Helper.GetCurrentDate();
                     frictionLessReferralObj.DELETED = false;
                     _frictionlessReferralRepository.Insert(frictionLessReferralObj);
