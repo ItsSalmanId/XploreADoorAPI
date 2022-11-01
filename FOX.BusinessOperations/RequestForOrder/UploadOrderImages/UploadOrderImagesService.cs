@@ -131,11 +131,13 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             originalQueue.FACILITY_ID = reqSubmitUploadOrderImagesModel.FACILITY_ID;
             originalQueue.IS_EMERGENCY_ORDER = reqSubmitUploadOrderImagesModel.IS_EMERGENCY_ORDER;
             originalQueue.REASON_FOR_VISIT = reqSubmitUploadOrderImagesModel.NOTE_DESC;
+            originalQueue.FOX_SOURCE_CATEGORY_ID = reqSubmitUploadOrderImagesModel.FOX_SOURCE_CATEGORY_ID;
             originalQueue.RFO_Type = "Upload_Images";
 
             originalQueue.ASSIGNED_TO = null;
             originalQueue.ASSIGNED_BY = null;
             originalQueue.ASSIGNED_DATE = null;
+
 
             _QueueRepository.Insert(originalQueue);
             _QueueRepository.Save();
@@ -192,7 +194,11 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                 };
                 InsertNotesHistory(newObj, Profile);
             }
-            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages || End Time of Function SubmitUploadOrderImages" + Helper.GetCurrentDate().ToLocalTime());
+            if (!string.IsNullOrWhiteSpace(reqSubmitUploadOrderImagesModel?.SPECIALITY_PROGRAM))
+            {
+                var procedureDetail = InsertUpdateSpecialty(reqSubmitUploadOrderImagesModel, Profile, originalQueue, reqSubmitUploadOrderImagesModel.PATIENT_ACCOUNT);
+            }
+                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages || End Time of Function SubmitUploadOrderImages" + Helper.GetCurrentDate().ToLocalTime());
             return new ResSubmitUploadOrderImagesModel() { Message = "Work Order Created Successfully. workId = " + workId, ErrorMessage = "", Success = true };
             //}
             //catch (Exception exception)
@@ -202,6 +208,22 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             //    return new ResSubmitUploadOrderImagesModel() { Message = "Work Order Created Successfully.", ErrorMessage = exception.ToString(), Success = false };
             //    //return new ResSubmitUploadOrderImagesModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
             //}
+            
+        }
+        private OriginalQueue InsertUpdateSpecialty(ReqSubmitUploadOrderImagesModel obj, UserProfile profile, OriginalQueue sourceAddDetail, long? pat_account)
+        {
+            // speciality program zero/null value check
+            //patient accout null
+            if (!string.IsNullOrEmpty(obj.SPECIALITY_PROGRAM) && obj.SPECIALITY_PROGRAM != "0" && pat_account != null && pat_account != 0)
+            {
+                SqlParameter workId = new SqlParameter("WORK_ID", sourceAddDetail.WORK_ID);
+                SqlParameter specialityProgram = new SqlParameter("SPECIALITY_PROGRAM", obj.SPECIALITY_PROGRAM);
+                SqlParameter patAccount = new SqlParameter("PATIENT_ACCOUNT", pat_account.Value);
+                SqlParameter userName = new SqlParameter("USER_NAME", profile.UserName);
+                return SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_INSERT_UPDATE_SPECIALITY_PROGRAM @WORK_ID, @SPECIALITY_PROGRAM, @PATIENT_ACCOUNT,@USER_NAME",
+                                                                                                                                    workId, specialityProgram, patAccount, userName);
+            }
+            return null;
         }
 
         public void GenerateAndSaveImagesOfUploadedFiles(long workId, List<string> FileNameList, UserProfile profile, int originalQueueFilesCount = 0)
