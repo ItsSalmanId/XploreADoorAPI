@@ -138,7 +138,6 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             originalQueue.ASSIGNED_BY = null;
             originalQueue.ASSIGNED_DATE = null;
 
-
             _QueueRepository.Insert(originalQueue);
             _QueueRepository.Save();
 
