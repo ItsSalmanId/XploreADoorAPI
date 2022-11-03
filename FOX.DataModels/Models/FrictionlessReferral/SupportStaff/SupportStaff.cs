@@ -32,6 +32,10 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public string PATIENT_FIRST_NAME { get; set; }
         public string PATIENT_LAST_NAME { get; set; }
         public DateTime? PATIENT_DOB { get; set; }
+        [NotMapped]
+        public string PATIENT_DOB_STRING { get; set; }
+        [NotMapped]
+        public List<string> FILE_NAME_LIST { get; set; }
         public string PATIENT_MOBILE_NO { get; set; }
         public string PATIENT_EMAIL { get; set; }
         public string PATIENT_SUBSCRIBER_ID { get; set; }

@@ -1,45 +1,61 @@
 ﻿using FOX.BusinessOperations.CommonService;
 using FOX.BusinessOperations.CommonServices;
 using FOX.BusinessOperations.PatientServices;
+using FOX.BusinessOperations.RequestForOrder.UploadOrderImages;
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.CommonModel;
 using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
+using FOX.DataModels.Models.IndexInfo;
+using FOX.DataModels.Models.OriginalQueueModel;
 using FOX.DataModels.Models.Patient;
+using FOX.DataModels.Models.Security;
+using FOX.DataModels.Models.UploadWorkOrderFiles;
 using FOX.ExternalServices;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Web;
 using System.Web.Configuration;
 
 namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
 {
-    public class SupportStaffService : ISupportStaffService
+    public class SupportStaffService : ISupportStaffService 
     {
+        private readonly IUploadOrderImagesService _IUploadOrderImagesService;
+
         #region PROPERTIES
         // DB Context Objects
         private readonly DbContextFrictionless _dbContextFrictionLess = new DbContextFrictionless();
         private readonly DbContextPatient _dbContextPatient = new DbContextPatient();
         private readonly DbContextCommon _dbContextCommon = new DbContextCommon();
+        private readonly DBContextQueue _QueueContext = new DBContextQueue();
 
         // Generic Repository Objects
         private readonly GenericRepository<FoxInsurancePayers> _insurancePayerRepository;
         private readonly GenericRepository<PHR> _phrRepository;
         private readonly GenericRepository<Provider> _providerRepository;
         private readonly GenericRepository<FrictionLessReferral> _frictionlessReferralRepository;
+        private readonly GenericRepository<OriginalQueueFiles> _OriginalQueueFiles;
 
         // Class Objects
         PatientService patientServices = new PatientService();
         #endregion
         #region CONSTRUCTOR
-        public SupportStaffService()
+        public SupportStaffService(IUploadOrderImagesService IUploadOrderImagesService)
         {
             _insurancePayerRepository = new GenericRepository<FoxInsurancePayers>(_dbContextFrictionLess);
             _phrRepository = new GenericRepository<PHR>(_dbContextPatient);
             _providerRepository = new GenericRepository<Provider>(_dbContextCommon);
             _frictionlessReferralRepository = new GenericRepository<FrictionLessReferral>(_dbContextFrictionLess);
+            _OriginalQueueFiles = new GenericRepository<OriginalQueueFiles>(_QueueContext);
+            _IUploadOrderImagesService = IUploadOrderImagesService;
         }
         #endregion
         #region FUNCTIONS
@@ -373,7 +389,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     existingFrictionReferral.PROVIDER_FAX = frictionLessReferralObj.PROVIDER_FAX;
                     existingFrictionReferral.PATIENT_FIRST_NAME = frictionLessReferralObj.PATIENT_FIRST_NAME;
                     existingFrictionReferral.PATIENT_LAST_NAME = frictionLessReferralObj.PATIENT_LAST_NAME;
-                    existingFrictionReferral.PATIENT_DOB = frictionLessReferralObj.PATIENT_DOB;
+                    existingFrictionReferral.PATIENT_DOB = Convert.ToDateTime(frictionLessReferralObj.PATIENT_DOB_STRING);
                     existingFrictionReferral.PATIENT_MOBILE_NO = frictionLessReferralObj.PATIENT_MOBILE_NO;
                     existingFrictionReferral.PATIENT_EMAIL = frictionLessReferralObj.PATIENT_EMAIL;
                     existingFrictionReferral.PATIENT_SUBSCRIBER_ID = frictionLessReferralObj.PATIENT_SUBSCRIBER_ID;
@@ -391,6 +407,46 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 }
                 _frictionlessReferralRepository.Save();
             }
+            //var x = frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB.ToString();
+
+            //var s = x.Split();
+            //var xxx = s[0];
+           // frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB_STRING = xxx;
+            UserProfile userProfile = new UserProfile();
+            userProfile.PracticeCode = GetPracticeCode();
+            userProfile.UserName = "FOX TEAM";
+            var result = new ResSaveUploadWorkOrderFiles();
+            long workId = Helper.getMaximumId("WORK_ID");
+
+            var originalQueueFilesCount = 0;
+            Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SaveUploadWorkOrderFiles > GenerateAndSaveImagesOfUploadedFiles || Start Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
+            _IUploadOrderImagesService.GenerateAndSaveImagesOfUploadedFiles(workId, frictionLessReferralObj.FILE_NAME_LIST, userProfile, originalQueueFilesCount);
+            Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SaveUploadWorkOrderFiles > GenerateAndSaveImagesOfUploadedFiles || End Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
+
+            result.WORK_ID = workId;
+            result.FilePaths = SpRepository<FilePath>.GetListWithStoreProcedure(@"exec FOX_GET_File_PAGES  @WORK_ID", new SqlParameter("WORK_ID ", SqlDbType.BigInt) { Value = workId });
+            result.Message = $"Upload Work Order Files Successfully. WorkId = { workId }";
+            result.ErrorMessage = "";
+            result.Success = true;
+
+            decimal size = 0;
+            decimal byteCount = 0;
+            foreach (var list in result.FilePaths.ToList())
+            {
+                string virtualPath = @"/" + list.file_path1;
+                string orignalPath = HttpContext.Current.Server.MapPath("~" + virtualPath);
+                FileInfo file = new FileInfo(orignalPath);
+                bool exists = file.Exists;
+                if (file.Exists)
+                {
+                    byteCount = file.Length;
+                    size += byteCount;
+                }
+            }
+            result.fileSize = Convert.ToDecimal(string.Format("{0:0.00}", size / 1048576));
+
+
+
             return frictionLessReferralResponse;
         }
         #endregion
