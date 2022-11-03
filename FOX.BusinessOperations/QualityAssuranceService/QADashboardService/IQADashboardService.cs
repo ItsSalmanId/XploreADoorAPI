@@ -11,6 +11,6 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QADashboardService
    public interface IQADashboardService
     {
         List<FeedBackCaller> GetEmployeelist(string callScanrioID,UserProfile profile);
-        QADashboardData GetDashboardData(QADashboardSearch qADashboardSearch, UserProfile profile);
+        DashBoardMainModel GetDashboardData(QADashboardSearch qADashboardSearch, UserProfile profile);
     }
 }

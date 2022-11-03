@@ -17,8 +17,10 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
     public class QADashboardSearch : BaseModel
     {
         public string CALL_HANDLING_ID { get; set; }
+        public string TEAMS_NAMES { get; set; }
         public string CALL_TYPE { get; set; }
         public string EMPLOYEE_USER_NAME { get; set; }
+        public string USER_FULL_NAME { get; set; }
         public string EVALUATION_NAME { get; set; }
         public bool IS_ACTIVE { get; set; }
         public string TIME_FRAME { get; set; }
@@ -59,5 +61,38 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public long SurveyCallTotal { get; set; }
         public long SurveySysTotal { get; set; }
         public long TotalCount { get; set; }
+    }
+    public class LineGraphData : BaseModel
+    {
+        public int WEEK_NUMBER { get; set; }
+        public string DATE_RANGE { get; set; }
+        public DateTime START_DATE { get; set; }
+        public DateTime END_DATE { get; set; }
+        public long EVALUATION_PERCENTAGE { get; set; }
+        public String TEAM_NAME { get; set; }
+        public string AGENT_NAME { get; set; }
+        public series[] series { get; set; }
+    }
+
+    public class series
+    {
+        public string name { get; set; }
+        public string type { get; set; }
+     //   public string color { get; set; }
+        public List<long> data { get; set; }
+    }
+
+    public class DashBoardMainModel : BaseModel
+    {
+        public QADashboardData PieChartData { get; set; } 
+        public LineGraphResponseModel LineChartData { get; set; }
+
+    }
+
+    public class LineGraphResponseModel : BaseModel
+    {
+        public List<LineGraphData> lineGraphData { get; set; }
+        public List<series> series { get; set; }
+        public List<string> dateRanges { get; set; }
     }
 }

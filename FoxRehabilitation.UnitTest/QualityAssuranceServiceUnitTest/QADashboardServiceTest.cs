@@ -25,10 +25,10 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             _userProfile = new UserProfile();
         }
         [Test]
-        [TestCase(",",0)]
-        [TestCase(",544110,544109", 0)]
-        [TestCase(",",1011163)]
-        [TestCase(",544110,544109", 38403)]
+        [TestCase("",0)]
+        [TestCase("544110,544109", 0)]
+        [TestCase("",1011163)]
+        [TestCase("544110,544109", 38403)]
 
         public void GetEmployeelist_Employeelist_ReturnData(string callScanrioID, long praticeCode)
         {
@@ -48,26 +48,28 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
                 Assert.IsTrue(true);
             }
         }
-        [TestCase]
-        [TestCase(",544110", "Phd", "Both", ",abcd_5482928,abcd_5483047,hameed_5483227,", "LAST_TWO_WEEK", "9/19/2022 12:00:00 AM", "10/2/2022 12:00:00 AM", 0)]
-        [TestCase(",544110", "Phd", "Both", ",abcd_5482928,abcd_5483047,hameed_5483227,", "LAST_TWO_WEEK", "9/19/2022 12:00:00 AM", "", 0)]
-        [TestCase(",544110", "Phd", "Both", ",abcd_5482928,abcd_5483047,hameed_5483227,", "LAST_TWO_WEEK", "", "", 0)]
-        [TestCase(",544110", "Phd", "Both", ",abcd_5482928,abcd_5483047,hameed_5483227,", "", "", "", 0)]
-        [TestCase(",544110", "Phd", "Both", "", "", "", "", 0)]
-        [TestCase(",544110", "Phd", "", "", "", "", "", 0)]
-        [TestCase(",544110", "", "", "", "", "", "", 0)]
-        [TestCase("", "", "", "", "", "", "", 0)]
-        public void GetDashboardData_EvaluatedData_ReturnData(string calHandlingID, string callType, string evaluatedBy,  string userName,  string timeFrame, DateTime  dateFrom, DateTime dateTo, long praticeCode)
+        [Test]
+        [TestCase("544110,544109,544114", "phd", "Both", "", "",",Client Services,Commercial Team,Followup","LAST_THREE_MONTHS",false, 1011163)]
+        [TestCase("544110,544109,544114", "survey", "Both", "", "",",Client Services,Commercial Team,Followup","LAST_THREE_MONTHS",false, 1011163)]
+        [TestCase("544110,544109,544114", "survey", "", "", "",",Client Services,Commercial Team,Followup","LAST_THREE_MONTHS",false, 1011163)]
+        [TestCase("544110,544109,544114", "survey", "", "", "","","LAST_THREE_MONTHS",false, 1011163)]
+        [TestCase("544110,544109,544114", "survey", "", "", "","","LAST_THREE_MONTHS",true, 1011163)]
+        [TestCase("544110,544109,544114", "survey", "", "", "","","LAST_THREE_MONTHS",true, 0)]
+        [TestCase("", "", "", "", "","","LAST_THREE_MONTHS",true, 0)]
+        public void GetDashboardData_EvaluatedData_ReturnData(string calHandlingID, string callType, string evaluatedName,  string userName, string userFullName, string teamsName, string timeFrame, bool isActive, long praticeCode)
         {
             //Arrange
             
             _qADashboardSearch.CALL_HANDLING_ID = calHandlingID;
             _qADashboardSearch.CALL_TYPE = callType;
             _qADashboardSearch.EMPLOYEE_USER_NAME = userName;
-            _qADashboardSearch.EVALUATION_NAME = evaluatedBy;
+            _qADashboardSearch.USER_FULL_NAME = userFullName;
+            _qADashboardSearch.TEAMS_NAMES = teamsName;
+            _qADashboardSearch.EVALUATION_NAME = evaluatedName;
             _qADashboardSearch.TIME_FRAME = timeFrame;
-            _qADashboardSearch.START_DATE = dateFrom;
-            _qADashboardSearch.END_DATE = dateTo;
+            //_qADashboardSearch.START_DATE = dateFrom;
+            //_qADashboardSearch.END_DATE = dateTo;
+            _qADashboardSearch.IS_ACTIVE = isActive;
             _userProfile.PracticeCode = praticeCode;
 
             //Act
