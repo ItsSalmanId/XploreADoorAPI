@@ -1,6 +1,7 @@
 ﻿using FOX.DataModels.Models.IndexInfo;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -28,6 +29,9 @@ namespace FOX.DataModels.Models.RequestForOrder.UploadOrderImages
         public string ORS_PHONE { get; set; }
         public string ORS_FAX { get; set; }
         public string ORS_NPI { get; set; }
+        [NotMapped]
+        public string SPECIALITY_PROGRAM { get; set; }
+        public long? FOX_SOURCE_CATEGORY_ID { get; set; }
 
     }
     public class ResSubmitUploadOrderImagesModel

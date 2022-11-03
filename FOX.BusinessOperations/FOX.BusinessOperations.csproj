@@ -286,6 +286,8 @@
     <Compile Include="Security\StringCipher.cs" />
     <Compile Include="Security\TokenService.cs" />
     <Compile Include="Security\UserService.cs" />
+    <Compile Include="SettingsService\AnnouncementService\AnnouncementService.cs" />
+    <Compile Include="SettingsService\AnnouncementService\IAnnouncementService.cs" />
     <Compile Include="SettingsService\ClinicianSetupService\ClinicianSetupService.cs" />
     <Compile Include="SettingsService\ClinicianSetupService\IClinicianSetupService.cs" />
     <Compile Include="SettingsService\FacilityLocationService\FacilityLocationService.cs" />
