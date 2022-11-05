@@ -3614,6 +3614,10 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("IS_PROTECTIVE_EQUIPMENT");
                 }
+                if (dc.Contains("HAS_CALL_PATH"))
+                {
+                    dc.Remove("HAS_CALL_PATH");
+                }
             }
             if (CalledFrom.Equals("Interface_Log_Report"))
             {
@@ -7130,15 +7134,15 @@ namespace FOX.BusinessOperations.CommonServices
                 }
                 if (dtcol.Contains("Is_Contact_HQ_Str"))
                 {
-                    dtcol["Is_Contact_HQ_Str"].ColumnName = "Is Contact Headquarter";
+                    dtcol["Is_Contact_HQ_Str"].ColumnName = "Is Contact Team";
                 }
                 if (dtcol.Contains("Is_Responsed_By_HQ_Str"))
                 {
-                    dtcol["Is_Responsed_By_HQ_Str"].ColumnName = "Is Responsed by Headquarter";
+                    dtcol["Is_Responsed_By_HQ_Str"].ColumnName = "Is Response Courteous";
                 }
                 if (dtcol.Contains("Is_Questioned_Answered_Str"))
                 {
-                    dtcol["Is_Questioned_Answered_Str"].ColumnName = "Complaint Resolved";
+                    dtcol["Is_Questioned_Answered_Str"].ColumnName = "Is Concerns Answered";
                 }
                 if (dtcol.Contains("Is_protective_equipment_Str"))
                 {

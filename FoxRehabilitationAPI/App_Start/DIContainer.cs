@@ -56,6 +56,7 @@ namespace FoxRehabilitationAPI.App_Start
 
             container.RegisterType<IGroupService, GroupService>();
             // container.RegisterType<FOX.BusinessOperations.ReconnectCallService.IReconnectCallService, FOX.BusinessOperations.ReconnectCallService.ReconnectCallService>();
+            container.RegisterType<FOX.BusinessOperations.SettingsService.AnnouncementService.IAnnouncementService, FOX.BusinessOperations.SettingsService.AnnouncementService.AnnouncementService>();
             container.RegisterType<FOX.BusinessOperations.SettingsService.ClinicianSetupService.IClinicianSetupService, FOX.BusinessOperations.SettingsService.ClinicianSetupService.ClinicianSetupService>();
             container.RegisterType<FOX.BusinessOperations.PatientMaintenanceService.PatientInsuranceService.IPatientInsuranceService, FOX.BusinessOperations.PatientMaintenanceService.PatientInsuranceService.PatientInsuranceService>();
             container.RegisterType<FOX.BusinessOperations.PatientMaintenanceService.IPatientMaintenanceService, FOX.BusinessOperations.PatientMaintenanceService.PatientMaintenanceService>();

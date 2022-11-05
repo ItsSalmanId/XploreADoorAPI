@@ -13,7 +13,11 @@ namespace FOX.BusinessOperations.FoxPHDService
         List<Patient> GetPatientInformation(PatientsSearchRequest PatientSearchRequest, UserProfile profile);
         ResponseModel DeleteCallDetailRecordInformation(PHDCallDetail ObjAddUpdatePHDDetail, UserProfile profile);
         List<PHDCallDetail> GetPHDCallDetailsInformation(CallDetailsSearchRequest ObjCallDetailsSearchRequest, UserProfile profile);
-        ResponseModel AddUpdatePHDCallDetailInformation(PHDCallDetail ObjAddUpdatePHDDetail, UserProfile profile);
+        ResponseModel AddUpdatePHDCallDetailInformation(PHDCallDetail objAddUpdatePHDDetail, UserProfile profile);
+        List<PhdFaqsDetail> GetPHDFaqsDetailsInformation(PhdFaqsDetail objPhdFaqsDetail, UserProfile profile);
+        List<PhdFaqsDetail> GetDropdownListFaqs(UserProfile profile);
+        ResponseModel AddUpdatePhdFaqsDetail(PhdFaqsDetail objPhdFaqsDetail, UserProfile profile);
+        ResponseModel DeletePhdFaqs(PhdFaqsDetail objPhdFaqsDetail, UserProfile profile);
         ResponseModel AddUpdateVerificationInformation(PhdPatientVerification ObjPhdPatientVerification, UserProfile profile);
         string ExportToExcelPHD(CallDetailsSearchRequest ObjCallDetailsSearchRequest, UserProfile profile);
         bool AddUpdateRecordingName(PHDCallDetail ObjPHDCallDetailRequest, UserProfile profile);

@@ -611,6 +611,20 @@ namespace FOX.DataModels.Models.FoxPHD
         public string MODIFIED_BY { get; set; }
         public DateTime? MODIFIED_DATE { get; set; }
     }
+    [Table("FOX_TBL_PHD_FAQS_DETAILS")]
+    public class PhdFaqsDetail : BaseModel
+    {
+        [Key]
+        public long FAQS_ID { get; set; }
+        public string QUESTIONS { get; set; }
+        public string ANSWERS { get; set; }
+        public long PRACTICE_CODE { get; set; }
+        public bool DELETED { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime? CREATED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public DateTime? MODIFIED_DATE { get; set; }
+    }
     public class SavePhdScanariosList
     {
         public List<DefaultVauesForPhdUsers> PhdCallScenarios { get; set; }
