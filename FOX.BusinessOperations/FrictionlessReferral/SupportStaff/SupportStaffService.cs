@@ -9,18 +9,25 @@ using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
 using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.OriginalQueueModel;
 using FOX.DataModels.Models.Patient;
+using FOX.DataModels.Models.RequestForOrder;
+using FOX.DataModels.Models.RequestForOrder.UploadOrderImages;
 using FOX.DataModels.Models.Security;
+using FOX.DataModels.Models.ServiceConfiguration;
 using FOX.DataModels.Models.UploadWorkOrderFiles;
 using FOX.ExternalServices;
 using Newtonsoft.Json;
+using SautinSoft;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Web;
 using System.Web.Configuration;
 
@@ -33,9 +40,13 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         #region PROPERTIES
         // DB Context Objects
         private readonly DbContextFrictionless _dbContextFrictionLess = new DbContextFrictionless();
+        private readonly GenericRepository<OriginalQueue> _QueueRepository;
         private readonly DbContextPatient _dbContextPatient = new DbContextPatient();
         private readonly DbContextCommon _dbContextCommon = new DbContextCommon();
         private readonly DBContextQueue _QueueContext = new DBContextQueue();
+        private readonly GenericRepository<FOX_TBL_NOTES_HISTORY> _NotesRepository;
+        private readonly UploadOrderImagesService _uploadOrderImagesService;
+        private readonly DbContextIndexinfo _IndexinfoContext = new DbContextIndexinfo();
 
         // Generic Repository Objects
         private readonly GenericRepository<FoxInsurancePayers> _insurancePayerRepository;
@@ -43,7 +54,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         private readonly GenericRepository<Provider> _providerRepository;
         private readonly GenericRepository<FrictionLessReferral> _frictionlessReferralRepository;
         private readonly GenericRepository<OriginalQueueFiles> _OriginalQueueFiles;
-
+        private static List<Thread> threadsList = new List<Thread>();
         // Class Objects
         PatientService patientServices = new PatientService();
         #endregion
@@ -56,6 +67,9 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             _frictionlessReferralRepository = new GenericRepository<FrictionLessReferral>(_dbContextFrictionLess);
             _OriginalQueueFiles = new GenericRepository<OriginalQueueFiles>(_QueueContext);
             _IUploadOrderImagesService = IUploadOrderImagesService;
+            _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
+            _uploadOrderImagesService = new UploadOrderImagesService();
+            _NotesRepository = new GenericRepository<FOX_TBL_NOTES_HISTORY>(_IndexinfoContext);
         }
         #endregion
         #region FUNCTIONS
@@ -355,6 +369,10 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             long practiceCode = GetPracticeCode();
             if (frictionLessReferralObj != null)
             {
+                if (frictionLessReferralObj.PATIENT_DISCIPLINE_ID.StartsWith(",") && frictionLessReferralObj.PATIENT_DISCIPLINE_ID != null)
+                {
+                    frictionLessReferralObj.PATIENT_DISCIPLINE_ID = frictionLessReferralObj.PATIENT_DISCIPLINE_ID.Remove(0, 1);
+                }
                 var existingFrictionReferral = _frictionlessReferralRepository.GetFirst(f => f.FRICTIONLESS_REFERRAL_ID == frictionLessReferralObj.FRICTIONLESS_REFERRAL_ID && f.PRACTICE_CODE == practiceCode && f.DELETED == false);
                 if (existingFrictionReferral == null)
                 {
@@ -407,48 +425,307 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 }
                 _frictionlessReferralRepository.Save();
             }
-            //var x = frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB.ToString();
+            var x = frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB.ToString();
+            var s = x.Split();
+            var xxx = s[0];
+            frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB_STRING = xxx;
+            if (frictionLessReferralObj.FILE_NAME_LIST.Count != 0) {
 
-            //var s = x.Split();
-            //var xxx = s[0];
-           // frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB_STRING = xxx;
-            UserProfile userProfile = new UserProfile();
-            userProfile.PracticeCode = GetPracticeCode();
-            userProfile.UserName = "FOX TEAM";
-            var result = new ResSaveUploadWorkOrderFiles();
-            long workId = Helper.getMaximumId("WORK_ID");
-
-            var originalQueueFilesCount = 0;
-            Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SaveUploadWorkOrderFiles > GenerateAndSaveImagesOfUploadedFiles || Start Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
-            _IUploadOrderImagesService.GenerateAndSaveImagesOfUploadedFiles(workId, frictionLessReferralObj.FILE_NAME_LIST, userProfile, originalQueueFilesCount);
-            Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SaveUploadWorkOrderFiles > GenerateAndSaveImagesOfUploadedFiles || End Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
-
-            result.WORK_ID = workId;
-            result.FilePaths = SpRepository<FilePath>.GetListWithStoreProcedure(@"exec FOX_GET_File_PAGES  @WORK_ID", new SqlParameter("WORK_ID ", SqlDbType.BigInt) { Value = workId });
-            result.Message = $"Upload Work Order Files Successfully. WorkId = { workId }";
-            result.ErrorMessage = "";
-            result.Success = true;
-
-            decimal size = 0;
-            decimal byteCount = 0;
-            foreach (var list in result.FilePaths.ToList())
-            {
-                string virtualPath = @"/" + list.file_path1;
-                string orignalPath = HttpContext.Current.Server.MapPath("~" + virtualPath);
-                FileInfo file = new FileInfo(orignalPath);
-                bool exists = file.Exists;
-                if (file.Exists)
-                {
-                    byteCount = file.Length;
-                    size += byteCount;
-                }
+                UserProfile userProfile = new UserProfile();
+                userProfile.PracticeCode = GetPracticeCode();
+                userProfile.UserName = "FOX TEAM";
+                var result = new ResSaveUploadWorkOrderFiles();
+                // long workId = Helper.getMaximumId("WORK_ID");
+                //==========================================================
+                SubmitUploadOrderImages(frictionLessReferralObj, userProfile);
+                //=========================================================
             }
-            result.fileSize = Convert.ToDecimal(string.Format("{0:0.00}", size / 1048576));
+            //var originalQueueFilesCount = 0;
+            //Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SaveUploadWorkOrderFiles > GenerateAndSaveImagesOfUploadedFiles || Start Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
+            //_IUploadOrderImagesService.GenerateAndSaveImagesOfUploadedFiles(workId, frictionLessReferralObj.FILE_NAME_LIST, userProfile, originalQueueFilesCount);
+            //Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SaveUploadWorkOrderFiles > GenerateAndSaveImagesOfUploadedFiles || End Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
+
+            //result.WORK_ID = workId;
+            //result.FilePaths = SpRepository<FilePath>.GetListWithStoreProcedure(@"exec FOX_GET_File_PAGES  @WORK_ID", new SqlParameter("WORK_ID ", SqlDbType.BigInt) { Value = workId });
+            //result.Message = $"Upload Work Order Files Successfully. WorkId = { workId }";
+            //result.ErrorMessage = "";
+            //result.Success = true;
+
+            //decimal size = 0;
+            //decimal byteCount = 0;
+            //foreach (var list in result.FilePaths.ToList())
+            //{
+            //    string virtualPath = @"/" + list.file_path1;
+            //    string orignalPath = HttpContext.Current.Server.MapPath("~" + virtualPath);
+            //    FileInfo file = new FileInfo(orignalPath);
+            //    bool exists = file.Exists;
+            //    if (file.Exists)
+            //    {
+            //        byteCount = file.Length;
+            //        size += byteCount;
+            //    }
+            //}
+            //result.fileSize = Convert.ToDecimal(string.Format("{0:0.00}", size / 1048576));
 
 
 
             return frictionLessReferralResponse;
         }
         #endregion
+
+
+        public ResSubmitUploadOrderImagesModel SubmitUploadOrderImages(FrictionLessReferral frictionLessReferralObj, UserProfile Profile)
+        {
+            //try
+            //{54819524
+            var workId = Helper.getMaximumId("WORK_ID");
+            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages Work_ID (" + workId + ") || Start Time of Function SubmitUploadOrderImages" + Helper.GetCurrentDate().ToLocalTime());
+            OriginalQueue originalQueue = new OriginalQueue();
+
+            originalQueue.WORK_ID = workId;
+            originalQueue.UNIQUE_ID = workId.ToString();
+            originalQueue.PRACTICE_CODE = Profile.PracticeCode;
+            originalQueue.CREATED_BY = originalQueue.MODIFIED_BY = Profile.UserName;
+            originalQueue.CREATED_DATE = originalQueue.MODIFIED_DATE = DateTime.Now;
+            originalQueue.IS_EMERGENCY_ORDER = false;
+            originalQueue.supervisor_status = false;
+            originalQueue.DELETED = false;
+            originalQueue.RECEIVE_DATE = originalQueue.CREATED_DATE;
+            originalQueue.SORCE_TYPE = "Email";
+            originalQueue.RFO_Type = frictionLessReferralObj.USER_TYPE;
+            originalQueue.IsSigned = frictionLessReferralObj.IS_SIGNED_REFERRAL;
+            originalQueue.SORCE_NAME = frictionLessReferralObj.SUBMITTER_EMAIL;
+            originalQueue.WORK_STATUS = "Created";
+      //    originalQueue.DOCUMENT_TYPE = reqSubmitUploadOrderImagesModel.DOCUMENT_TYPE;
+            originalQueue.DEPARTMENT_ID = frictionLessReferralObj.PATIENT_DISCIPLINE_ID;
+            originalQueue.REASON_FOR_VISIT = frictionLessReferralObj.PATIENT_REFERRAL_NOTES;
+            originalQueue.ASSIGNED_TO = null;
+            originalQueue.ASSIGNED_BY = null;
+            originalQueue.ASSIGNED_DATE = null;
+
+            _QueueRepository.Insert(originalQueue);
+            _QueueRepository.Save();
+
+            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > GenerateAndSaveImagesOfUploadedFiles || Start Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
+            _IUploadOrderImagesService.GenerateAndSaveImagesOfUploadedFiles(workId, frictionLessReferralObj.FILE_NAME_LIST, Profile);
+            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > GenerateAndSaveImagesOfUploadedFiles || End Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
+
+           // if (reqSubmitUploadOrderImagesModel.Is_Manual_ORS)
+            if (true)
+            {
+                string body = string.Empty;
+                string template_html = HttpContext.Current.Server.MapPath(@"~/HtmlTemplates/ORS_info_Template.html");
+                Profile.PracticeCode = 1011163;
+                var config = Helper.GetServiceConfiguration(Profile.PracticeCode);
+                //body = File.ReadAllText(template_html);
+                //body = body.Replace("[[provider_name]]", reqSubmitUploadOrderImagesModel.ORS_NAME ?? "");
+                //body = body.Replace("[[provider_NPI]]", reqSubmitUploadOrderImagesModel.ORS_NPI ?? "");
+                //body = body.Replace("[[provider_phone]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(reqSubmitUploadOrderImagesModel.ORS_PHONE) ?? "");
+                //body = body.Replace("[[provider_fax]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(reqSubmitUploadOrderImagesModel.ORS_FAX) ?? "");
+                long pageCounter = 1;
+                ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, body, "orsInfo");
+                string coverfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
+                var ext = Path.GetExtension(coverfilePath).ToLower();
+                int numberOfPages = getNumberOfPagesOfPDF(coverfilePath);
+
+                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > SavePdfToImages || Start Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
+               SavePdfToImages(coverfilePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
+                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > SavePdfToImages || End Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
+
+                FOX_TBL_NOTES_HISTORY notes = new FOX_TBL_NOTES_HISTORY();
+                notes.NOTE_ID = Helper.getMaximumId("NOTE_ID");
+
+                notes.CREATED_BY = Profile.UserName;
+                notes.CREATED_DATE = Helper.GetCurrentDate().ToString();
+                notes.DELETED = false;
+                notes.MODIFIED_DATE = Helper.GetCurrentDate();
+                notes.MODIFIED_BY = Profile.UserName;
+                notes.PRACTICE_CODE = Profile.PracticeCode;
+                _NotesRepository.Insert(notes);
+                _NotesRepository.Save();
+
+                var newObj = new FOX_TBL_NOTES_HISTORY()
+                {
+                    WORK_ID = workId,
+                    NOTE_DESC = "Custom ordering referral source is added by the user. See the attached referral for details"
+                };
+                InsertNotesHistory(newObj, Profile);
+            }
+            //if (!String.IsNullOrWhiteSpace(reqSubmitUploadOrderImagesModel.NOTE_DESC))
+            //{
+            //    var newObj = new FOX_TBL_NOTES_HISTORY()
+            //    {
+            //        WORK_ID = workId,
+            //        NOTE_DESC = reqSubmitUploadOrderImagesModel.NOTE_DESC
+            //    };
+            //    InsertNotesHistory(newObj, Profile);
+            //}
+            //if (!string.IsNullOrWhiteSpace(reqSubmitUploadOrderImagesModel?.SPECIALITY_PROGRAM))
+            //{
+            //    var procedureDetail = InsertUpdateSpecialty(reqSubmitUploadOrderImagesModel, Profile, originalQueue, reqSubmitUploadOrderImagesModel.PATIENT_ACCOUNT);
+            //}
+            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages || End Time of Function SubmitUploadOrderImages" + Helper.GetCurrentDate().ToLocalTime());
+            return new ResSubmitUploadOrderImagesModel() { Message = "Work Order Created Successfully. workId = " + workId, ErrorMessage = "", Success = true };
+            //}
+            //catch (Exception exception)
+            //{
+            //    //TO DO Log exception here
+            //    //throw exception;
+            //    return new ResSubmitUploadOrderImagesModel() { Message = "Work Order Created Successfully.", ErrorMessage = exception.ToString(), Success = false };
+            //    //return new ResSubmitUploadOrderImagesModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
+            //}
+
+        }
+
+        private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, int pageCounter, out long pageCounterOut)
+        {
+            List<int> threadCounter = new List<int>();
+            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SavePdfToImages > Checking Time of Directory Create || Start Time of Function SavePdfToImages > Checking Time of Directory Create" + Helper.GetCurrentDate().ToLocalTime());
+            if (!Directory.Exists(config.IMAGES_PATH_SERVER))
+            {
+                Directory.CreateDirectory(config.IMAGES_PATH_SERVER);
+            }
+            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SavePdfToImages > Checking Time of Directory Create || End Time of Function SavePdfToImages > Checking Time of Directory Create" + Helper.GetCurrentDate().ToLocalTime());
+            if (System.IO.File.Exists(PdfPath))
+            {
+                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SavePdfToImages > Checking Time of Threading || Start Time of Function SavePdfToImages > Checking Time of Threading" + Helper.GetCurrentDate().ToLocalTime());
+                for (int i = 0; i < noOfPages; i++, pageCounter++)
+                {
+                    Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter, PdfPath, i, config, workId, pageCounter));
+                    myThread.Start();
+                    threadsList.Add(myThread);
+                    var imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + pageCounter + ".jpg";
+                    var logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + pageCounter + ".jpg";
+                    AddFilesToDatabase(imgPath, workId, logoImgPath);
+                }
+                while (noOfPages > threadCounter.Count)
+                {
+                    //loop untill record complete
+                }
+
+                foreach (var thread in threadsList)
+                {
+                    thread.Abort();
+                }
+                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SavePdfToImages > Checking Time of Threading || End Time of Function SavePdfToImages > Checking Time of Threading" + Helper.GetCurrentDate().ToLocalTime());
+                //AddToDatabase(PdfPath, noOfPages, workId);
+            }
+            pageCounterOut = pageCounter;
+        }
+        private int getNumberOfPagesOfPDF(string PdfPath)
+        {
+            iTextSharp.text.pdf.PdfReader pdfReader = new iTextSharp.text.pdf.PdfReader(PdfPath);
+            return pdfReader.NumberOfPages;
+        }
+        public void newThreadImplementaion(ref List<int> threadCounter, string PdfPath, int i, ServiceConfiguration config, long workId, int pageCounter)
+        {
+            try
+            {
+                System.Drawing.Image img;
+                PdfFocus f = new PdfFocus();
+                f.Serial = "10261435399";
+                f.OpenPdf(PdfPath);
+                if (f.PageCount > 0)
+                {
+                    //Save all PDF pages to jpeg images
+                    f.ImageOptions.Dpi = 120;
+                    f.ImageOptions.ImageFormat = ImageFormat.Jpeg;
+                    var image = f.ToImage(i + 1);
+                    //Next manipulate with Jpeg in memory or save to HDD, open in a viewer
+
+                    using (var ms = new MemoryStream(image))
+                    {
+                        img = System.Drawing.Image.FromStream(ms);
+                        img.Save(config.IMAGES_PATH_SERVER + "\\" + workId + "_" + pageCounter + ".jpg", ImageFormat.Jpeg);
+                        Bitmap bmp = new Bitmap(img);
+                        img.Dispose();
+                        ConvertPDFToImages ctp = new ConvertPDFToImages();
+                        ctp.SaveWithNewDimention(bmp, 115, 150, 100, config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + pageCounter + ".jpg");
+                        bmp.Dispose();
+                    }
+                    threadCounter.Add(1);
+                }
+            }
+            catch (Exception)
+            {
+                threadCounter.Add(1);
+            }
+
+        }
+
+        private void AddFilesToDatabase(string filePath, long workId, string logoPath)
+        {
+            try
+            {
+                //OriginalQueueFiles originalQueueFiles = _OriginalQueueFiles.GetFirst(t => t.WORK_ID == workId && !t.deleted && t.FILE_PATH1.Equals(filePath) && t.FILE_PATH.Equals(logoPath));
+
+                //if (originalQueueFiles == null)
+                //{
+                //    //If Work Order files is deleted
+                //    originalQueueFiles = _OriginalQueueFiles.Get(t => t.WORK_ID == workId && t.deleted && t.FILE_PATH1.Equals(filePath) && t.FILE_PATH.Equals(logoPath));
+                //    if (originalQueueFiles == null)
+                //    {
+                //        originalQueueFiles = new OriginalQueueFiles();
+
+                //        originalQueueFiles.FILE_ID = Helper.getMaximumId("FOXREHAB_FILE_ID");
+                //        originalQueueFiles.WORK_ID = workId;
+                //        originalQueueFiles.UNIQUE_ID = workId.ToString();
+                //        originalQueueFiles.FILE_PATH1 = filePath;
+                //        originalQueueFiles.FILE_PATH = logoPath;
+                //        originalQueueFiles.deleted = false;
+
+                //        //_OriginalQueueFiles.Insert(originalQueueFiles);
+                //        //_OriginalQueueFiles.Save();
+                //    }
+                //}
+
+                long iD = Helper.getMaximumId("FOXREHAB_FILE_ID");
+                var fileId = new SqlParameter("FILE_ID", SqlDbType.BigInt) { Value = iD };
+                var parmWorkID = new SqlParameter("WORKID", SqlDbType.BigInt) { Value = workId };
+                var parmFilePath = new SqlParameter("FILEPATH", SqlDbType.VarChar) { Value = filePath };
+                var parmLogoPath = new SqlParameter("LOGOPATH", SqlDbType.VarChar) { Value = logoPath };
+                var _isFromIndexInfo = new SqlParameter("IS_FROM_INDEX_INFO", SqlDbType.Bit) { Value = false };
+
+                var result = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_AD_FILES_TO_DB_FROM_RFO @FILE_ID, @WORKID, @FILEPATH, @LOGOPATH, @IS_FROM_INDEX_INFO",
+                    fileId, parmWorkID, parmFilePath, parmLogoPath, _isFromIndexInfo);
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
+        }
+
+        public void InsertNotesHistory(FOX_TBL_NOTES_HISTORY obj, UserProfile profile)
+        {
+            var notesDetail = _NotesRepository.GetByID(obj.NOTE_ID);
+
+            if (notesDetail != null)
+            {
+                notesDetail.WORK_ID = obj.WORK_ID;
+                notesDetail.NOTE_DESC = obj.NOTE_DESC;
+                notesDetail.DELETED = obj.DELETED;
+                notesDetail.MODIFIED_DATE = Helper.GetCurrentDate();
+                notesDetail.MODIFIED_BY = profile.UserName;
+                _NotesRepository.Update(notesDetail);
+                _NotesRepository.Save();
+            }
+            else
+            {
+                obj.NOTE_ID = Helper.getMaximumId("NOTE_ID");
+                obj.CREATED_BY = profile.UserName;
+                obj.CREATED_DATE = Helper.GetCurrentDate().ToString();
+                obj.DELETED = obj.DELETED;
+                obj.MODIFIED_DATE = Helper.GetCurrentDate();
+                obj.MODIFIED_BY = profile.UserName;
+                obj.PRACTICE_CODE = profile.PracticeCode;
+                _NotesRepository.Insert(obj);
+                _NotesRepository.Save();
+            }
+
+            //Log Changes
+            string logMsg = string.Format("ID: {0} A new Note(s) has been added.", obj.WORK_ID);
+            string user = !string.IsNullOrEmpty(profile.FirstName) ? profile.FirstName + " " + profile.LastName : profile.UserName;
+            Helper.LogSingleWorkOrderChange(obj.WORK_ID, obj.WORK_ID.ToString(), logMsg, user);
+        }
     }
 }
