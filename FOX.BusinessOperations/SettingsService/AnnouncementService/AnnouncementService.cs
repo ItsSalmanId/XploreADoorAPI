@@ -64,8 +64,6 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                             var ExistingDetailInfo = _announcementRepository.GetFirst(r => r.ANNOUNCEMENT_ID == objAddEditAnnouncement.ANNOUNCEMENT_ID && r.DELETED == false);
                             if (ExistingDetailInfo == null)
                             {
-                               // var DuplicationCheckInAnnouncment = _announcementRepository.GetFirst(r => r.ANNOUNCEMENT_DATE_FROM == objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM && r.ANNOUNCEMENT_DATE_TO <= objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO && r.DELETED == false);
-
                                 SqlParameter AnouncementDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", Convert.ToDateTime(objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM));
                                 SqlParameter AnouncementDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO" , objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO);
                                 SqlParameter RolesIds = new SqlParameter("ROLES_IDs", objAddEditAnnouncement.EditSelectedRolesID.Substring(1));
@@ -108,7 +106,7 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                                 }
                                 else
                                 {
-                                    response.ErrorMessage = "Can't add more than one announcement for one day.";
+                                    response.ErrorMessage = "Can't add more than one announcement for a role in a same day.";
                                     response.Success = false;
                                 }
                             }
