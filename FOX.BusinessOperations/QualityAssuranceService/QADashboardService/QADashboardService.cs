@@ -197,7 +197,13 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QADashboardService
        
             if (!qADashboardSearch.IS_ACTIVE && !string.IsNullOrEmpty(qADashboardSearch.TEAMS_NAMES) && lineGraphResponseModel.lineGraphData != null && lineGraphResponseModel.lineGraphData.Count > 0)
             {
-                qADashboardSearch.TEAMS_NAMES = qADashboardSearch.TEAMS_NAMES.Replace(",Survey Calls", "");
+                if (qADashboardSearch.CALL_TYPE == "Phd") {
+                    qADashboardSearch.TEAMS_NAMES = qADashboardSearch.TEAMS_NAMES.Replace(",Survey Calls", "");
+                    qADashboardSearch.TEAMS_NAMES = qADashboardSearch.TEAMS_NAMES.Replace("Survey Calls", "");
+                    if (qADashboardSearch.TEAMS_NAMES != null && qADashboardSearch.TEAMS_NAMES.StartsWith(","))
+                    {
+                        qADashboardSearch.TEAMS_NAMES = qADashboardSearch.TEAMS_NAMES.Remove(0, 1);
+                    } }
                 var teamName = qADashboardSearch.TEAMS_NAMES.Split(',');
                 lineGraphResponseModel.series = new List<series>();
                 lineGraphResponseModel.dateRanges = lineGraphResponseModel.lineGraphData.FindAll(x => !string.IsNullOrEmpty(x.DATE_RANGE)).Select(d => d.DATE_RANGE).Distinct().ToList();

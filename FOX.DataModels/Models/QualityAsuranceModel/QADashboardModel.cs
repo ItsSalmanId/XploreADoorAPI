@@ -91,8 +91,13 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
 
     public class LineGraphResponseModel : BaseModel
     {
+        public LineGraphResponseModel()
+        {
+            series = new List<series>();
+        }
         public List<LineGraphData> lineGraphData { get; set; }
         public List<series> series { get; set; }
         public List<string> dateRanges { get; set; }
+
     }
 }
