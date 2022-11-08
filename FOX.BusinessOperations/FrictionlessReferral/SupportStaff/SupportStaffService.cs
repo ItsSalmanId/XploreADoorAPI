@@ -30,10 +30,15 @@ using System.Net.Http;
 using System.Threading;
 using System.Web;
 using System.Web.Configuration;
+using HtmlAgilityPack;
+using SelectPdf;
+using FOX.BusinessOperations.FaxServices;
+using ZXing;
+using FOX.BusinessOperations.RequestForOrder;
 
 namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
 {
-    public class SupportStaffService : ISupportStaffService 
+    public class SupportStaffService : ISupportStaffService
     {
         private readonly IUploadOrderImagesService _IUploadOrderImagesService;
 
@@ -55,8 +60,10 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         private readonly GenericRepository<FrictionLessReferral> _frictionlessReferralRepository;
         private readonly GenericRepository<OriginalQueueFiles> _OriginalQueueFiles;
         private static List<Thread> threadsList = new List<Thread>();
+        private readonly IFaxService _IFaxService = new FaxService();
         // Class Objects
         PatientService patientServices = new PatientService();
+        RequestForOrderService requestForOrderService = new RequestForOrderService();
         #endregion
         #region CONSTRUCTOR
         public SupportStaffService(IUploadOrderImagesService IUploadOrderImagesService)
@@ -372,8 +379,21 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 if (frictionLessReferralObj.PATIENT_DISCIPLINE_ID.StartsWith(",") && frictionLessReferralObj.PATIENT_DISCIPLINE_ID != null)
                 {
                     frictionLessReferralObj.PATIENT_DISCIPLINE_ID = frictionLessReferralObj.PATIENT_DISCIPLINE_ID.Remove(0, 1);
-                }
+                }   
                 var existingFrictionReferral = _frictionlessReferralRepository.GetFirst(f => f.FRICTIONLESS_REFERRAL_ID == frictionLessReferralObj.FRICTIONLESS_REFERRAL_ID && f.PRACTICE_CODE == practiceCode && f.DELETED == false);
+              //  if ((frictionLessReferralObj.FILE_NAME_LIST.Count != 0 || frictionLessReferralObj.IS_SIGNED_REFERRAL == false) && frictionLessReferralObj.IS_SUBMIT_CHECK == true)
+                    if (frictionLessReferralObj.FILE_NAME_LIST.Count != 0 || frictionLessReferralObj.IS_SIGNED_REFERRAL == false)
+                    {
+                    UserProfile userProfile = new UserProfile();
+                    userProfile.PracticeCode = GetPracticeCode();
+                    userProfile.UserName = "FOX TEAM";
+                    var result = new ResSaveUploadWorkOrderFiles();
+                    var workId = Helper.getMaximumId("WORK_ID");
+                    frictionLessReferralObj.WORK_ID = workId;
+                    //==========================================================
+                    SubmitUploadOrderImages(frictionLessReferralObj, userProfile);
+                    //=========================================================
+                }
                 if (existingFrictionReferral == null)
                 {
                     frictionLessReferralObj.FRICTIONLESS_REFERRAL_ID = Helper.getMaximumId("FRICTIONLESS_REFERRAL_ID");
@@ -425,21 +445,10 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 }
                 _frictionlessReferralRepository.Save();
             }
-            var x = frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB.ToString();
-            var s = x.Split();
-            var xxx = s[0];
-            frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB_STRING = xxx;
-            if (frictionLessReferralObj.FILE_NAME_LIST.Count != 0) {
+            var date = frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB.ToString();
+            var tempDate = date.Split();
+            frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB_STRING = tempDate[0];
 
-                UserProfile userProfile = new UserProfile();
-                userProfile.PracticeCode = GetPracticeCode();
-                userProfile.UserName = "FOX TEAM";
-                var result = new ResSaveUploadWorkOrderFiles();
-                // long workId = Helper.getMaximumId("WORK_ID");
-                //==========================================================
-                SubmitUploadOrderImages(frictionLessReferralObj, userProfile);
-                //=========================================================
-            }
             //var originalQueueFilesCount = 0;
             //Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SaveUploadWorkOrderFiles > GenerateAndSaveImagesOfUploadedFiles || Start Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
             //_IUploadOrderImagesService.GenerateAndSaveImagesOfUploadedFiles(workId, frictionLessReferralObj.FILE_NAME_LIST, userProfile, originalQueueFilesCount);
@@ -478,10 +487,16 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         {
             //try
             //{54819524
-            var workId = Helper.getMaximumId("WORK_ID");
+            var workId = frictionLessReferralObj.WORK_ID;
             Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages Work_ID (" + workId + ") || Start Time of Function SubmitUploadOrderImages" + Helper.GetCurrentDate().ToLocalTime());
             OriginalQueue originalQueue = new OriginalQueue();
-
+            if (frictionLessReferralObj.IS_SIGNED_REFERRAL)
+            {
+                originalQueue.DOCUMENT_TYPE = 51;
+            }else
+            {
+                originalQueue.DOCUMENT_TYPE = 42;
+            }
             originalQueue.WORK_ID = workId;
             originalQueue.UNIQUE_ID = workId.ToString();
             originalQueue.PRACTICE_CODE = Profile.PracticeCode;
@@ -496,7 +511,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             originalQueue.IsSigned = frictionLessReferralObj.IS_SIGNED_REFERRAL;
             originalQueue.SORCE_NAME = frictionLessReferralObj.SUBMITTER_EMAIL;
             originalQueue.WORK_STATUS = "Created";
-      //    originalQueue.DOCUMENT_TYPE = reqSubmitUploadOrderImagesModel.DOCUMENT_TYPE;
+            //    originalQueue.DOCUMENT_TYPE = reqSubmitUploadOrderImagesModel.DOCUMENT_TYPE;
             originalQueue.DEPARTMENT_ID = frictionLessReferralObj.PATIENT_DISCIPLINE_ID;
             originalQueue.REASON_FOR_VISIT = frictionLessReferralObj.PATIENT_REFERRAL_NOTES;
             originalQueue.ASSIGNED_TO = null;
@@ -510,12 +525,12 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             _IUploadOrderImagesService.GenerateAndSaveImagesOfUploadedFiles(workId, frictionLessReferralObj.FILE_NAME_LIST, Profile);
             Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > GenerateAndSaveImagesOfUploadedFiles || End Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
 
-           // if (reqSubmitUploadOrderImagesModel.Is_Manual_ORS)
+            // if (reqSubmitUploadOrderImagesModel.Is_Manual_ORS)
             if (true)
             {
                 string body = string.Empty;
                 string template_html = HttpContext.Current.Server.MapPath(@"~/HtmlTemplates/ORS_info_Template.html");
-                Profile.PracticeCode = 1011163;
+                Profile.PracticeCode = GetPracticeCode();
                 var config = Helper.GetServiceConfiguration(Profile.PracticeCode);
                 //body = File.ReadAllText(template_html);
                 //body = body.Replace("[[provider_name]]", reqSubmitUploadOrderImagesModel.ORS_NAME ?? "");
@@ -529,7 +544,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 int numberOfPages = getNumberOfPagesOfPDF(coverfilePath);
 
                 Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > SavePdfToImages || Start Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
-               SavePdfToImages(coverfilePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
+                SavePdfToImages(coverfilePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
                 Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > SavePdfToImages || End Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
 
                 FOX_TBL_NOTES_HISTORY notes = new FOX_TBL_NOTES_HISTORY();
@@ -727,5 +742,418 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             string user = !string.IsNullOrEmpty(profile.FirstName) ? profile.FirstName + " " + profile.LastName : profile.UserName;
             Helper.LogSingleWorkOrderChange(obj.WORK_ID, obj.WORK_ID.ToString(), logMsg, user);
         }
+        private ResponseHTMLToPDF HTMLToPDF(ServiceConfiguration config, string htmlString, string fileName, string type, string linkMessage = null)
+        {
+            try
+            {
+                HtmlDocument htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(htmlString);
+                htmlDoc.DocumentNode.SelectSingleNode("//*[contains(@id,'print-footer')]")?.Remove();
+
+
+                if (!string.IsNullOrWhiteSpace(linkMessage))
+                {
+                    var htmlNode_link = htmlDoc.DocumentNode.SelectSingleNode("//*[contains(@id,'link')]");
+                    if (htmlNode_link != null)
+                    {
+                        htmlNode_link.InnerHtml = linkMessage;
+                    }
+                }
+                HtmlToPdf converter = new HtmlToPdf();
+                converter.Options.PdfPageSize = PdfPageSize.A4;
+                converter.Options.MarginBottom = 10;
+                converter.Options.MarginTop = 10;
+                converter.Options.MarginLeft = 10;
+                converter.Options.MarginRight = 10;
+                converter.Options.DisplayHeader = false;
+                converter.Options.WebPageWidth = 768;
+
+                //if (type == "fax")
+                //{
+                //    if (!EntityHelper.isTalkRehab)
+                //    {
+                //        PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at +1 (800) 597 - 0848 or email admit@foxrehab.org",
+                //                           new Font("Arial", 10));
+
+                //        // footer settings
+                //        converter.Options.DisplayFooter = true;
+                //        converter.Footer.Height = 50;
+                //        converter.Footer.Add(text);
+                //    }
+                //}
+
+                PdfDocument doc = converter.ConvertHtmlString(htmlDoc.DocumentNode.OuterHtml);
+
+                //string pdfPath = HttpContext.Current.Server.MapPath("~/" + @"FoxDocumentDirectory\RequestForOrderPDF\");
+                string pdfPath = config.ORIGINAL_FILES_PATH_SERVER;
+
+                if (!Directory.Exists(pdfPath))
+                {
+                    Directory.CreateDirectory(pdfPath);
+                }
+
+                fileName += DateTime.Now.Ticks + ".pdf";
+                string pdfFilePath = pdfPath + fileName;
+
+
+                // save pdf document
+                doc.Save(pdfFilePath);
+
+                // close pdf document
+                doc.Close();
+                return new ResponseHTMLToPDF() { FileName = fileName, FilePath = pdfPath, Success = true, ErrorMessage = "" };
+            }
+            catch (Exception exception)
+            {
+                return new ResponseHTMLToPDF() { FileName = "", FilePath = "", Success = false, ErrorMessage = exception.ToString() };
+            }
+        }
+
+        public ResponseModel DownloadPdf(RequestDownloadPdfFrictionlessModel requestDownloadPdfModel)
+        {
+            try
+            {
+                var config = Helper.GetServiceConfiguration(GetPracticeCode());
+                if (config.PRACTICE_CODE != null
+                    && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
+                    && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
+                {
+                    ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestDownloadPdfModel.AttachmentHTML, requestDownloadPdfModel.FileName.Replace(' ', '_'), "fax");
+                    //return new ResponseModel() { Message = @"FoxDocumentDirectory\RequestForOrderPDF\" + responseHTMLToPDF.FileName, ErrorMessage = "", Success = true };
+                    return new ResponseModel() { Message = config.ORIGINAL_FILES_PATH_DB + responseHTMLToPDF.FileName, ErrorMessage = "", Success = true };
+
+                }
+                else
+                {
+                    return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = "DB configuration for file paths not found. See service configuration.", Success = false };
+                }
+            }
+            catch (Exception exception)
+            {
+                //TO DO Log exception here
+                //throw exception;
+                return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
+            }
+        }
+
+        public ResponseModel SendFAX(FrictionLessRequestSendFAXModel requestSendFAXModel)
+        {
+            try
+            {
+                string htmlstring = "";
+                var config = Helper.GetServiceConfiguration(GetPracticeCode());
+                UserProfile Profile = new UserProfile();
+                Profile.PracticeCode = GetPracticeCode();
+                Profile.UserName = "FOX TEAM";
+                if (config.PRACTICE_CODE != null
+                    && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
+                    && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
+                {
+                    ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestSendFAXModel.AttachmentHTML, requestSendFAXModel.FileName, "fax");
+
+                    if (responseHTMLToPDF != null && (responseHTMLToPDF?.Success ?? false))
+                    {
+                        string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
+                        int numberOfPages = getNumberOfPagesOfPDF(filePath);
+
+                        SavePdfToImages(filePath, config, requestSendFAXModel.WorkId, numberOfPages, "Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
+
+                        //SavePdfToImages(deliveryfilePath, config, requestSendFAXModel.WorkId, 1, "DR:Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
+
+                        var commonService = new CommonServices.CommonServices();
+                        AttachmentData attachmentPath = commonService.GeneratePdfForSupportedDoc(config, requestSendFAXModel.WorkId.ToString(), Profile);
+
+                        if (!attachmentPath.FILE_PATH.EndsWith("\\"))
+                        {
+                            attachmentPath.FILE_PATH = attachmentPath.FILE_PATH + "\\";
+                        }
+
+                        var resultfax = _IFaxService.SendFax(new string[] { requestSendFAXModel.ReceipientFaxNumber }, new string[] { "" }, null, attachmentPath.FILE_NAME, attachmentPath.FILE_PATH, requestSendFAXModel.Subject, false, Profile);
+
+
+                        if (resultfax == "failed")
+                        {
+                            htmlstring = "<html><body><h2>Delivery Report</h2><p>Subject:" + requestSendFAXModel.Subject + "</p><p>From:" + requestSendFAXModel.SenderName + "</p><p>To:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Sent:" + DateTime.Now + "</p><br/><div style='padding:10px;background-color:#ff9999;width: 50%;'><p>Delivery report for:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Failed:</p><p>Message failed to deliver </p></div></body></html>";
+                        }
+                        else
+                        {
+                            htmlstring = "<html><body><h2>Delivery Report</h2><p>Subject:" + requestSendFAXModel.Subject + "</p><p>From:" + requestSendFAXModel.SenderName + "</p><p>To:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Sent:" + DateTime.Now + "</p><br/><div style='padding:10px;width: 50%;'><p>Delivery report for:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Delivered Successfully:</p><p>Message delivered to recipient. </p></div></body></html>";
+                        }
+                        //hl
+                        ResponseHTMLToPDF responseHTMLToPDF2 = HTMLToPDF2(config, htmlstring, "tempdfdelivery");
+
+                        string deliveryfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
+
+                        SavePdfToImages(deliveryfilePath, config, requestSendFAXModel.WorkId, 1, "DR:Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
+
+                        return new ResponseModel() { Message = "Fax sent successfully, our admission team is processing your referral.", ErrorMessage = "", Success = true };
+                    }
+                    else
+                    {
+                        return new ResponseModel() { Message = "Fax sent successfully, our admission team is processing your referral.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
+                        //return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
+                    }
+                }
+                else
+                {
+                    return new ResponseModel() { Message = "Fax could not be sent.", ErrorMessage = "DB configuration for file paths not found. See service configuration.", Success = false };
+                }
+            }
+            catch (Exception exception)
+            {
+                //TO DO Log exception here
+                //throw exception;
+                return new ResponseModel() { Message = "Fax sent successfully, our admission team is processing your referral.", ErrorMessage = exception.ToString(), Success = false };
+            }
+        }
+
+        private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, string sorcetype, string sorceName, string userName, bool _isFromIndexInfo)
+        {
+            List<int> threadCounter = new List<int>();
+            var originalQueueFilesCount = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
+            long pageCounter = originalQueueFilesCount;
+
+            if (!Directory.Exists(config.IMAGES_PATH_SERVER))
+            {
+                Directory.CreateDirectory(config.IMAGES_PATH_SERVER);
+            }
+
+            if (System.IO.File.Exists(PdfPath))
+            {
+
+                for (int i = 0; i < noOfPages; i++, pageCounter++)
+                {
+                    var imgPath = "";
+                    var logoImgPath = "";
+                    var imgPathServer = "";
+                    var logoImgPathServer = "";
+                    string deliveryReportId = "";
+                    Random random = new Random();
+
+                    if (sorcetype.Split(':')?[0] == "DR")
+                    {
+                        deliveryReportId = Convert.ToString(workId) + DateTime.Now.Ticks;
+                        if (_isFromIndexInfo)
+                        {
+                            var randomString = random.Next();
+                            imgPath = config.IMAGES_PATH_DB + "\\" + deliveryReportId + "_" + i + "_" + randomString + ".jpg";
+                            imgPathServer = config.IMAGES_PATH_SERVER + "\\" + deliveryReportId + "_" + i + "_" + randomString + ".jpg";
+                        }
+                        else
+                        {
+                            imgPath = config.IMAGES_PATH_DB + "\\" + deliveryReportId + "_" + i + ".jpg";
+                            imgPathServer = config.IMAGES_PATH_SERVER + "\\" + deliveryReportId + "_" + i + ".jpg";
+                        }
+                        if (_isFromIndexInfo)
+                        {
+                            var randomString = random.Next();
+                            logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + deliveryReportId + "_" + i + "_" + randomString + ".jpg";
+                            logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + deliveryReportId + "_" + i + "_" + randomString + ".jpg";
+                        }
+                        else
+                        {
+                            logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + deliveryReportId + "_" + i + ".jpg";
+                            logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + deliveryReportId + "_" + i + ".jpg";
+                        }
+                    }
+                    else
+                    {
+                        if (_isFromIndexInfo)
+                        {
+                            var randomString = random.Next();
+                            imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
+                            imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
+                        }
+                        else if (pageCounter != 0 && _isFromIndexInfo == false && sorcetype.ToLower() == "fax")
+                        {
+                            imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + pageCounter + ".jpg";
+                            imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + pageCounter + ".jpg";
+                        }
+                        else
+                        {
+                            imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + ".jpg";
+                            imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + ".jpg";
+                        }
+                        if (_isFromIndexInfo)
+                        {
+                            var randomString = random.Next();
+                            logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + "_" + randomString + ".jpg";
+                            logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + "_" + randomString + ".jpg";
+                        }
+                        else if (pageCounter != 0 && _isFromIndexInfo == false && sorcetype.ToLower() == "fax")
+                        {
+                            logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + pageCounter + ".jpg";
+                            logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + pageCounter + ".jpg";
+                        }
+                        else
+                        {
+                            logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + ".jpg";
+                            logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + ".jpg";
+                        }
+                    }
+
+                    Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter, PdfPath, i, imgPathServer, logoImgPathServer));
+                    myThread.Start();
+                    threadsList.Add(myThread);
+                    //End
+                    //string ImgDirPath = "FoxDocumentDirectory\\Fox\\Images";
+
+                    //if (sorcetype.Split(':')?[0] == "DR")
+                    //{
+                    //     imgPath = config.IMAGES_PATH_DB + "\\" + deliveryReportId + "_" + i + ".jpg";
+                    //     logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + deliveryReportId + "_" + i + ".jpg";
+                    //}
+                    //else
+                    //{
+                    //    imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + ".jpg";
+                    //    logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + ".jpg";
+                    //}
+                    //======= uncommit this code
+ //AddFilesToDatabase(imgPath, workId, logoImgPath, _isFromIndexInfo);
+                }
+                while (noOfPages > threadCounter.Count)
+                {
+                    //loop untill record complete
+                }
+
+                foreach (var thread in threadsList)
+                {
+                    thread.Abort();
+                }
+                //if (_isFromIndexInfo)
+                //{
+                //AddToDatabaseForRFO(workId, userName, _isFromIndexInfo);
+                //}
+                //else
+                //{
+                noOfPages = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
+                //======= uncommit this code
+                //AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, config.PRACTICE_CODE, _isFromIndexInfo);
+                //}
+            }
+        }
+        public void newThreadImplementaion(ref List<int> threadCounter, string PdfPath, int i, string imgPath, string logoImgPath)
+        {
+            try
+            {
+                System.Drawing.Image img;
+                PdfFocus f = new PdfFocus();
+                f.Serial = "10261435399";
+                f.OpenPdf(PdfPath);
+
+                if (f.PageCount > 0)
+                {
+                    //Save all PDF pages to jpeg images
+                    f.ImageOptions.Dpi = 120;
+                    f.ImageOptions.ImageFormat = ImageFormat.Jpeg;
+
+                    var image = f.ToImage(i + 1);
+                    //Next manipulate with Jpeg in memory or save to HDD, open in a viewer
+                    using (var ms = new MemoryStream(image))
+                    {
+                        img = System.Drawing.Image.FromStream(ms);
+                        img.Save(imgPath, ImageFormat.Jpeg);
+                        Bitmap bmp = new Bitmap(img);
+                        img.Dispose();
+                        ConvertPDFToImages ctp = new ConvertPDFToImages();
+                        ctp.SaveWithNewDimention(bmp, 115, 150, 100, logoImgPath);
+                        bmp.Dispose();
+                    }
+                }
+                threadCounter.Add(1);
+            }
+            catch (Exception)
+            {
+                threadCounter.Add(1);
+            }
+        }
+        public static ResponseHTMLToPDF HTMLToPDF2(ServiceConfiguration config, string htmlString, string fileName, string linkMessage = null)
+        {
+            try
+            {
+                HtmlDocument htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(htmlString);
+                HtmlToPdf converter = new HtmlToPdf();
+                converter.Options.PdfPageSize = PdfPageSize.A4;
+                converter.Options.MarginBottom = 10;
+                converter.Options.MarginTop = 10;
+                converter.Options.MarginLeft = 10;
+                converter.Options.MarginRight = 10;
+                converter.Options.DisplayHeader = false;
+                converter.Options.WebPageWidth = 768;
+                PdfDocument doc = converter.ConvertHtmlString(htmlDoc.DocumentNode.OuterHtml);
+                //string pdfPath = HttpContext.Current.Server.MapPath("~/" + @"FoxDocumentDirectory\RequestForOrderPDF\");
+                string pdfpath = config.ORIGINAL_FILES_PATH_SERVER;
+                if (!Directory.Exists(pdfpath))
+                {
+                    Directory.CreateDirectory(pdfpath);
+                }
+                fileName = fileName + DateTime.Now.Ticks + ".pdf";
+                string pdfFilePath = pdfpath + "\\" + fileName;
+                // save pdf document
+                doc.Save(pdfFilePath);
+
+                // close pdf document
+                doc.Close();
+                return new ResponseHTMLToPDF() { FileName = fileName, FilePath = pdfpath, Success = true, ErrorMessage = "" };
+            }
+            catch (Exception exception)
+            {
+                return new ResponseHTMLToPDF() { FileName = "", FilePath = "", Success = true, ErrorMessage = exception.ToString() };
+            }
+        }
+
+        public QRCodeModel GenerateQRCode(QRCodeModel obj)
+        {
+             Bitmap result = null;
+            string base64Image = "";
+            try
+            {
+                var writer = new BarcodeWriter();
+                writer.Format = BarcodeFormat.QR_CODE;
+                writer.Options.Height = 70;
+                writer.Options.Width = 70;
+                writer.Options.Margin = 0;
+
+                result = writer.Write(obj.WORK_ID.ToString());
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("QRcode is not generated by library", ex);
+            }
+            if (!Directory.Exists(obj.AbsolutePath))
+            {
+                Directory.CreateDirectory(obj.AbsolutePath);
+            }
+
+            using (var bitmap = new Bitmap(result))
+            {
+                result.Dispose();
+                string curtime = obj.AbsolutePath + obj.WORK_ID + "_" + DateTime.Now.Ticks.ToString() + ".jpg";
+                Bitmap cimage = (Bitmap)bitmap;
+                cimage.Save(curtime, System.Drawing.Imaging.ImageFormat.Jpeg);
+                bitmap.Dispose();
+                cimage.Dispose();
+                base64Image = Convert.ToBase64String(File.ReadAllBytes(curtime)); //Get Base64
+            }
+            string src = "data:image/png;base64," + base64Image;
+            string encodedString = HttpUtility.UrlEncode(src);
+            obj.ENCODED_IMAGE_BYTES = encodedString;
+            if (!File.Exists(System.Web.HttpContext.Current.Server.MapPath("~/" + obj.SignPath)))
+            {
+                obj.SignPath = "";
+            }
+            return obj;
+        }
+
+        public ResponseModel SendEmail(RequestSendEmailModel requestSendEmailModel)
+        {
+            UserProfile userProfile = new UserProfile();
+            userProfile.PracticeCode = GetPracticeCode();
+            userProfile.UserName = "FOX TEAM";
+            userProfile.isTalkRehab = false;
+            return requestForOrderService.SendEmail(requestSendEmailModel, userProfile);
+        }
     }
+
 }

@@ -35,6 +35,8 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         [NotMapped]
         public string PATIENT_DOB_STRING { get; set; }
         [NotMapped]
+        public bool IS_SUBMIT_CHECK { get; set; }
+        [NotMapped]
         public List<string> FILE_NAME_LIST { get; set; }
         public string PATIENT_MOBILE_NO { get; set; }
         public string PATIENT_EMAIL { get; set; }
@@ -106,6 +108,23 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public FrictionLessReferral FrictionLessReferralObj { get; set; }
         public bool Success { get; set; }
         public string Message { get; set; }
+    }
+    public class RequestDownloadPdfFrictionlessModel : BaseModel
+    {
+        public string AttachmentHTML { get; set; }
+        public string FileName { get; set; }
+    }
+    public class FrictionLessRequestSendFAXModel : BaseModel
+    {
+        public string SenderName { get; set; }
+        public string SenderFax { get; set; }
+        public string Subject { get; set; }
+        public string ReceipientFaxNumber { get; set; }
+        public string Notes { get; set; }
+        public string AttachmentHTML { get; set; }
+        public string FileName { get; set; }
+        public long WorkId { get; set; }
+        public bool _isFromIndexInfo { get; set; }
     }
     #endregion
 }

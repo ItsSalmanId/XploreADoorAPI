@@ -32,6 +32,7 @@ using FOX.DataModels.Models.SenderType;
 using System.Threading;
 using System.Diagnostics;
 using FOX.DataModels;
+using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
 
 namespace FOX.BusinessOperations.RequestForOrder
 {
@@ -41,7 +42,7 @@ namespace FOX.BusinessOperations.RequestForOrder
         private readonly GenericRepository<OriginalQueue> _QueueRepository;
         private readonly GenericRepository<OriginalQueueFiles> _OriginalQueueFiles;
         private readonly DbContextPatient _PatientContext = new DbContextPatient();
-
+         private readonly DbContextFrictionless _dbContextFrictionLess = new DbContextFrictionless();
         private readonly DbContextSecurity security = new DbContextSecurity();
         private readonly GenericRepository<User> _UserRepository;
 
@@ -62,6 +63,7 @@ namespace FOX.BusinessOperations.RequestForOrder
         private readonly GenericRepository<FOX_TBL_PATIENT_PROCEDURE> _InsertProceuresRepository;
         private readonly GenericRepository<PatientInsurance> _PatientInsuranceRepository;
         private readonly GenericRepository<FoxInsurancePayers> _foxInsurancePayersRepository;
+        private readonly GenericRepository<FrictionLessReferral> _frictionlessReferralRepository;
         private readonly GenericRepository<FinancialClass> _financialClassRepository;
         private readonly GenericRepository<User> _User;
         private readonly GenericRepository<FOX_TBL_SENDER_TYPE> _SenderTypeRepository;
@@ -84,6 +86,7 @@ namespace FOX.BusinessOperations.RequestForOrder
             _foxdocumenttypeRepository = new GenericRepository<FoxDocumentType>(_IndexinfoContext);
             _PatientAddressRepository = new GenericRepository<PatientAddress>(_PatientContext);
             _FoxTblPatientRepository = new GenericRepository<FOX_TBL_PATIENT>(_PatientContext);
+            _frictionlessReferralRepository = new GenericRepository<FrictionLessReferral>(_dbContextFrictionLess);
             _InsertDiagnosisRepository = new GenericRepository<FOX_TBL_PATIENT_DIAGNOSIS>(_IndexinfoContext);
             _InsertProceuresRepository = new GenericRepository<FOX_TBL_PATIENT_PROCEDURE>(_IndexinfoContext);
             _PatientInsuranceRepository = new GenericRepository<PatientInsurance>(_PatientContext);
@@ -1225,7 +1228,15 @@ public ResponseModel DownloadPdf(RequestDownloadPdfModel requestDownloadPdfModel
             {
                 pri_insurance = ins_name;
             }
-            var file_name = patient.Last_Name + "_" + documentType;
+            var frictionLessReferralData = _frictionlessReferralRepository.GetFirst(t => t.DELETED == false && t.WORK_ID == WorkId);
+            if(frictionLessReferralData != null)
+            {
+                patient = new Patient();
+                patient.LastName = frictionLessReferralData.PATIENT_FIRST_NAME;
+                patient.FirstName = frictionLessReferralData.PATIENT_FIRST_NAME;
+                patient.Date_Of_Birth = frictionLessReferralData.PATIENT_DOB;
+            }
+             var file_name = patient.Last_Name + "_" + documentType;
             var Sender = _User.GetFirst(T => T.USER_NAME == sourceDetail.CREATED_BY);
             if (Sender == null && sourceDetail != null && !string.IsNullOrEmpty(sourceDetail.CREATED_BY) && sourceDetail.CREATED_BY.Equals("FOX TEAM"))
             {

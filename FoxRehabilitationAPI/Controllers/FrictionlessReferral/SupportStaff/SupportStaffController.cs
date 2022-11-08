@@ -1,5 +1,6 @@
 ﻿using FOX.BusinessOperations.FrictionlessReferral.SupportStaff;
 using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
+using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.Patient;
 using FoxRehabilitationAPI.Filters;
 using System;
@@ -8,6 +9,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using FOX.BusinessOperations.CommonServices;
+using FOX.DataModels.Models.RequestForOrder;
 
 namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
 {
@@ -89,6 +92,34 @@ namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Frictionless Referral Model is Empty");
             }
+        }
+        [HttpPost]
+        public HttpResponseMessage DownloadPdf(RequestDownloadPdfFrictionlessModel requestDownloadPdfModel)
+        {
+            var responseModel = _supportStaffService.DownloadPdf(requestDownloadPdfModel);
+            var response = Request.CreateResponse(HttpStatusCode.OK, responseModel);
+            return response;
+        }
+        [HttpPost]
+        public HttpResponseMessage SendFAX(FrictionLessRequestSendFAXModel requestSendFAXModel)
+        {
+            var responseModel = _supportStaffService.SendFAX(requestSendFAXModel);
+            var response = Request.CreateResponse(HttpStatusCode.OK, responseModel);
+            return response;
+        }
+        [HttpPost]
+        public HttpResponseMessage SendEmail(RequestSendEmailModel requestSendEmailModel)
+        {
+            var responseModel = _supportStaffService.SendEmail(requestSendEmailModel);
+            var response = Request.CreateResponse(HttpStatusCode.OK, responseModel);
+            return response;
+        }
+        [HttpPost]
+        public HttpResponseMessage GenerateQRCode([FromBody] QRCodeModel obj)
+        {
+            obj.SignPath = "";
+            obj.AbsolutePath = System.Web.HttpContext.Current.Server.MapPath("~/" + AppConfiguration.QRCodeTempPath);
+            return Request.CreateResponse(HttpStatusCode.OK, _supportStaffService.GenerateQRCode(obj));
         }
         #endregion
     }
