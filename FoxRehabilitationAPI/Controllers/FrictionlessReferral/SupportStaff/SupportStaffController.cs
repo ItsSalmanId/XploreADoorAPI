@@ -11,6 +11,9 @@ using System.Net.Http;
 using System.Web.Http;
 using FOX.BusinessOperations.CommonServices;
 using FOX.DataModels.Models.RequestForOrder;
+using FOX.DataModels.Models.CommonModel;
+using System.Threading.Tasks;
+using System.Web;
 
 namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
 {
@@ -120,6 +123,20 @@ namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
             obj.SignPath = "";
             obj.AbsolutePath = System.Web.HttpContext.Current.Server.MapPath("~/" + AppConfiguration.QRCodeTempPath);
             return Request.CreateResponse(HttpStatusCode.OK, _supportStaffService.GenerateQRCode(obj));
+        }
+        [HttpPost]
+        public Task<HttpResponseMessage> UploadFrictionlessFilesAPI()
+        {
+            RequestUploadFilesModel requestUploadFilesAPIModel = new RequestUploadFilesModel()
+            {
+                //AllowedFileExtensions = new List<string> { ".pdf", ".png", ".jpg", ".JPG", ".jpeg", ".tiff", ".tif", ".docx" },
+                AllowedFileExtensions = new List<string> { ".pdf", ".docx", ".jpg", ".jpeg", ".png", ".tif", ".gif", ".txt", ".tiff", ".bmp" },
+                UploadFilesPath = HttpContext.Current.Server.MapPath("~/" + FOX.BusinessOperations.CommonServices.AppConfiguration.RequestForOrderUploadImages),
+                Files = HttpContext.Current.Request.Files
+            };
+            var uploadFiles = _supportStaffService.UploadFiles(requestUploadFilesAPIModel);
+            var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
+            return Task.FromResult(response);
         }
         #endregion
     }

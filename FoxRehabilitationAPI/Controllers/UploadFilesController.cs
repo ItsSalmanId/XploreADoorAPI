@@ -42,21 +42,6 @@ namespace FoxRehabilitationAPI.Controllers
             return Task.FromResult(response);
         }
         [HttpPost]
-        [AllowAnonymous]
-        public Task<HttpResponseMessage> UploadFrictionlessFilesAPI()
-        {
-            RequestUploadFilesModel requestUploadFilesAPIModel = new RequestUploadFilesModel()
-            {
-                //AllowedFileExtensions = new List<string> { ".pdf", ".png", ".jpg", ".JPG", ".jpeg", ".tiff", ".tif", ".docx" },
-                AllowedFileExtensions = new List<string> { ".pdf", ".docx", ".jpg", ".jpeg", ".png", ".tif", ".gif", ".txt", ".tiff", ".bmp" },
-                UploadFilesPath = HttpContext.Current.Server.MapPath("~/" + FOX.BusinessOperations.CommonServices.AppConfiguration.RequestForOrderUploadImages),
-                Files = HttpContext.Current.Request.Files
-            };
-            var uploadFiles = _IUploadFilesServices.UploadFiles(requestUploadFilesAPIModel);
-            var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
-            return Task.FromResult(response);
-        }
-        [HttpPost]
         public Task<HttpResponseMessage> UploadExcelFilesAPI()
         {
             RequestUploadFilesModel requestUploadFilesModel = new RequestUploadFilesModel()

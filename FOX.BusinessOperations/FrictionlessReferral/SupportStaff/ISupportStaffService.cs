@@ -20,6 +20,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         ResponseModel SendFAX(FrictionLessRequestSendFAXModel requestSendFAXModel);
         ResponseModel SendEmail(RequestSendEmailModel requestSendEmailModel);
         QRCodeModel GenerateQRCode(QRCodeModel obj);
+        ResponseUploadFilesModel UploadFiles(RequestUploadFilesModel requestUploadFilesAPIModel);
         #endregion
     }
 }

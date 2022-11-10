@@ -380,9 +380,10 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 {
                     frictionLessReferralObj.PATIENT_DISCIPLINE_ID = frictionLessReferralObj.PATIENT_DISCIPLINE_ID.Remove(0, 1);
                 }   
+
                 var existingFrictionReferral = _frictionlessReferralRepository.GetFirst(f => f.FRICTIONLESS_REFERRAL_ID == frictionLessReferralObj.FRICTIONLESS_REFERRAL_ID && f.PRACTICE_CODE == practiceCode && f.DELETED == false);
               //  if ((frictionLessReferralObj.FILE_NAME_LIST.Count != 0 || frictionLessReferralObj.IS_SIGNED_REFERRAL == false) && frictionLessReferralObj.IS_SUBMIT_CHECK == true)
-                    if (frictionLessReferralObj.FILE_NAME_LIST.Count != 0 || frictionLessReferralObj.IS_SIGNED_REFERRAL == false)
+                    if ((frictionLessReferralObj.FILE_NAME_LIST.Count > 0 && frictionLessReferralObj.FILE_NAME_LIST != null) || frictionLessReferralObj.IS_SUBMIT_CHECK == true)
                     {
                     UserProfile userProfile = new UserProfile();
                     userProfile.PracticeCode = GetPracticeCode();
@@ -401,6 +402,10 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     frictionLessReferralObj.CREATED_BY = frictionLessReferralObj.MODIFIED_BY = !string.IsNullOrEmpty(frictionLessReferralObj.SUBMITTER_LAST_NAME) ? frictionLessReferralObj.SUBMITTER_LAST_NAME : "FOX_TEAM";
                     frictionLessReferralObj.CREATED_DATE = frictionLessReferralObj.MODIFIED_DATE = Helper.GetCurrentDate();
                     frictionLessReferralObj.DELETED = false;
+                    if(frictionLessReferralObj.PROVIDER_FAX != null)
+                    {
+                        frictionLessReferralObj.PROVIDER_FAX = frictionLessReferralObj.PROVIDER_FAX.Replace("-", "");
+                    }
                     _frictionlessReferralRepository.Insert(frictionLessReferralObj);
 
                     frictionLessReferralResponse.Message = "Record Inserted Successfully.";
@@ -1153,6 +1158,78 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             userProfile.UserName = "FOX TEAM";
             userProfile.isTalkRehab = false;
             return requestForOrderService.SendEmail(requestSendEmailModel, userProfile);
+        }
+
+        public ResponseUploadFilesModel UploadFiles(RequestUploadFilesModel requestUploadFilesModel)
+        {
+
+            ResponseUploadFilesModel responseUploadFilesModel = new ResponseUploadFilesModel();
+            string message = "Please upload file of type " + String.Join(", ", requestUploadFilesModel?.AllowedFileExtensions) + ".";
+            try
+            {
+                foreach (string file in requestUploadFilesModel?.Files)
+                {
+                    var postedFile = requestUploadFilesModel?.Files[file];
+                    if (postedFile != null && postedFile.ContentLength > 0)
+                    {
+                        //int MaxContentLength = 1024 * 1024 * 5; //Size = 5 MB  
+                        //IList<string> AllowedFileExtensions = new List<string> { ".pdf", ".png", ".jpg", ".JPG", ".jpeg", ".tiff", ".tif", ".docx" };
+
+                        string fileName = Path.GetFileNameWithoutExtension(postedFile.FileName);
+                        if (fileName?.Length > 30)
+                            fileName = fileName.Substring(0, 30);
+
+                        string fileExtension = Path.GetExtension(postedFile.FileName);
+
+                        if (!(requestUploadFilesModel?.AllowedFileExtensions.Contains(fileExtension?.ToLower()) ?? false))
+                        {
+                            responseUploadFilesModel.FilePath = "";
+                            responseUploadFilesModel.Message = message;
+                            responseUploadFilesModel.Success = true;
+                            responseUploadFilesModel.ErrorMessage = "";
+                            return responseUploadFilesModel;
+                        }
+                        //else if (postedFile.ContentLength > MaxContentLength)
+                        //{
+                        //    var message = string.Format("Please Upload a file upto 5MB.");
+                        //    dict.Add("error", message);
+                        //    return Request.CreateResponse(HttpStatusCode.BadRequest, dict);
+                        //}
+                        else
+                        {
+                            string uploadFilesPath = requestUploadFilesModel?.UploadFilesPath;
+                            if (!Directory.Exists(uploadFilesPath))
+                            {
+                                Directory.CreateDirectory(uploadFilesPath);
+                            }
+                            fileName += "_" + DateTime.Now.Ticks + fileExtension;
+                            string filePath = uploadFilesPath + @"\" + fileName;
+
+                            responseUploadFilesModel.FilePath = fileName;
+                            responseUploadFilesModel.FileName = filePath;
+                            responseUploadFilesModel.Message = "File Uploaded Successfully.";
+                            responseUploadFilesModel.Success = true;
+                            responseUploadFilesModel.ErrorMessage = "";
+                            postedFile.SaveAs(filePath);
+                        }
+                    }
+                    return responseUploadFilesModel;
+                }
+                responseUploadFilesModel.Message = message;
+                responseUploadFilesModel.Success = true;
+                responseUploadFilesModel.ErrorMessage = "";
+                responseUploadFilesModel.FilePath = "";
+                return responseUploadFilesModel;
+            }
+            catch (Exception exception)
+            {
+                responseUploadFilesModel.Message = "We encountered an error while processing your request.";
+                responseUploadFilesModel.Success = false;
+                responseUploadFilesModel.ErrorMessage = exception.ToString();
+                responseUploadFilesModel.FilePath = "";
+                return responseUploadFilesModel;
+            }
+
         }
     }
 
