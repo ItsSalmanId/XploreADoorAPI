@@ -401,6 +401,14 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     frictionLessReferralObj.PRACTICE_CODE = GetPracticeCode();
                     frictionLessReferralObj.CREATED_BY = frictionLessReferralObj.MODIFIED_BY = !string.IsNullOrEmpty(frictionLessReferralObj.SUBMITTER_LAST_NAME) ? frictionLessReferralObj.SUBMITTER_LAST_NAME : "FOX_TEAM";
                     frictionLessReferralObj.CREATED_DATE = frictionLessReferralObj.MODIFIED_DATE = Helper.GetCurrentDate();
+                    if(!string.IsNullOrEmpty(frictionLessReferralObj.PATIENT_DOB_STRING))
+                    {
+                        frictionLessReferralObj.PATIENT_DOB = Convert.ToDateTime(frictionLessReferralObj.PATIENT_DOB_STRING);
+                    }
+                    else
+                    {
+                        frictionLessReferralObj.PATIENT_DOB = null;
+                    }
                     frictionLessReferralObj.DELETED = false;
                     if(frictionLessReferralObj.PROVIDER_FAX != null)
                     {
