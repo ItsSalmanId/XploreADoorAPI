@@ -19,6 +19,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         ResponseModel DownloadPdf(RequestDownloadPdfFrictionlessModel requestDownloadPdfModel);
         ResponseModel SendFAX(FrictionLessRequestSendFAXModel requestSendFAXModel);
         ResponseModel SendEmail(RequestSendEmailModel requestSendEmailModel);
+        ResponseModel DeleteWorkOrder(RequestDeleteWorkOrder requestDeleteWorkOrder);
         QRCodeModel GenerateQRCode(QRCodeModel obj);
         ResponseUploadFilesModel UploadFiles(RequestUploadFilesModel requestUploadFilesAPIModel);
         #endregion

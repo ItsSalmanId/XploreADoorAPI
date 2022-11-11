@@ -395,20 +395,21 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     SubmitUploadOrderImages(frictionLessReferralObj, userProfile);
                     //=========================================================
                 }
+                if (!string.IsNullOrEmpty(frictionLessReferralObj.PATIENT_DOB_STRING))
+                {
+                    frictionLessReferralObj.PATIENT_DOB = Convert.ToDateTime(frictionLessReferralObj.PATIENT_DOB_STRING);
+                }
+                else
+                {
+                    frictionLessReferralObj.PATIENT_DOB = null;
+                }
                 if (existingFrictionReferral == null)
                 {
                     frictionLessReferralObj.FRICTIONLESS_REFERRAL_ID = Helper.getMaximumId("FRICTIONLESS_REFERRAL_ID");
                     frictionLessReferralObj.PRACTICE_CODE = GetPracticeCode();
                     frictionLessReferralObj.CREATED_BY = frictionLessReferralObj.MODIFIED_BY = !string.IsNullOrEmpty(frictionLessReferralObj.SUBMITTER_LAST_NAME) ? frictionLessReferralObj.SUBMITTER_LAST_NAME : "FOX_TEAM";
                     frictionLessReferralObj.CREATED_DATE = frictionLessReferralObj.MODIFIED_DATE = Helper.GetCurrentDate();
-                    if(!string.IsNullOrEmpty(frictionLessReferralObj.PATIENT_DOB_STRING))
-                    {
-                        frictionLessReferralObj.PATIENT_DOB = Convert.ToDateTime(frictionLessReferralObj.PATIENT_DOB_STRING);
-                    }
-                    else
-                    {
-                        frictionLessReferralObj.PATIENT_DOB = null;
-                    }
+                
                     frictionLessReferralObj.DELETED = false;
                     if(frictionLessReferralObj.PROVIDER_FAX != null)
                     {
@@ -440,7 +441,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     existingFrictionReferral.PROVIDER_FAX = frictionLessReferralObj.PROVIDER_FAX;
                     existingFrictionReferral.PATIENT_FIRST_NAME = frictionLessReferralObj.PATIENT_FIRST_NAME;
                     existingFrictionReferral.PATIENT_LAST_NAME = frictionLessReferralObj.PATIENT_LAST_NAME;
-                    existingFrictionReferral.PATIENT_DOB = Convert.ToDateTime(frictionLessReferralObj.PATIENT_DOB_STRING);
+                    existingFrictionReferral.PATIENT_DOB = frictionLessReferralObj.PATIENT_DOB;
                     existingFrictionReferral.PATIENT_MOBILE_NO = frictionLessReferralObj.PATIENT_MOBILE_NO;
                     existingFrictionReferral.PATIENT_EMAIL = frictionLessReferralObj.PATIENT_EMAIL;
                     existingFrictionReferral.PATIENT_SUBSCRIBER_ID = frictionLessReferralObj.PATIENT_SUBSCRIBER_ID;
@@ -494,7 +495,31 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             return frictionLessReferralResponse;
         }
         #endregion
+        public ResponseModel DeleteWorkOrder(RequestDeleteWorkOrder requestDeleteWorkOrder)
+        {
+            try
+            {
+                OriginalQueue originalQueue = _QueueRepository.Get(t => t.WORK_ID == requestDeleteWorkOrder?.WorkId && !t.DELETED);
 
+                if (originalQueue != null)
+                {
+                    originalQueue.DELETED = true;
+               //     originalQueue.MODIFIED_BY = Profile.UserName;
+                    originalQueue.MODIFIED_DATE = DateTime.Now;
+
+                    _QueueRepository.Update(originalQueue);
+                    _QueueRepository.Save();
+                    return new ResponseModel() { Message = "Delete work order successfully.", ErrorMessage = "", Success = true };
+                }
+                else
+                    return new ResponseModel() { Message = "Work order not found.", ErrorMessage = "", Success = true };
+            }
+            catch (Exception exception)
+            {
+                //throw exception;
+                return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
+            }
+        }
 
         public ResSubmitUploadOrderImagesModel SubmitUploadOrderImages(FrictionLessReferral frictionLessReferralObj, UserProfile Profile)
         {
@@ -539,46 +564,46 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > GenerateAndSaveImagesOfUploadedFiles || End Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
 
             // if (reqSubmitUploadOrderImagesModel.Is_Manual_ORS)
-            if (true)
-            {
-                string body = string.Empty;
-                string template_html = HttpContext.Current.Server.MapPath(@"~/HtmlTemplates/ORS_info_Template.html");
-                Profile.PracticeCode = GetPracticeCode();
-                var config = Helper.GetServiceConfiguration(Profile.PracticeCode);
-                //body = File.ReadAllText(template_html);
-                //body = body.Replace("[[provider_name]]", reqSubmitUploadOrderImagesModel.ORS_NAME ?? "");
-                //body = body.Replace("[[provider_NPI]]", reqSubmitUploadOrderImagesModel.ORS_NPI ?? "");
-                //body = body.Replace("[[provider_phone]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(reqSubmitUploadOrderImagesModel.ORS_PHONE) ?? "");
-                //body = body.Replace("[[provider_fax]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(reqSubmitUploadOrderImagesModel.ORS_FAX) ?? "");
-                long pageCounter = 1;
-                ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, body, "orsInfo");
-                string coverfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
-                var ext = Path.GetExtension(coverfilePath).ToLower();
-                int numberOfPages = getNumberOfPagesOfPDF(coverfilePath);
+            //if (!frictionLessReferralObj.IS_SIGNED_REFERRAL)
+            //{
+            //    string body = string.Empty;
+            //    string template_html = HttpContext.Current.Server.MapPath(@"~/HtmlTemplates/ORS_info_Template.html");
+            //    Profile.PracticeCode = GetPracticeCode();
+            //    var config = Helper.GetServiceConfiguration(Profile.PracticeCode);
+            //    //body = File.ReadAllText(template_html);
+            //    //body = body.Replace("[[provider_name]]", reqSubmitUploadOrderImagesModel.ORS_NAME ?? "");
+            //    //body = body.Replace("[[provider_NPI]]", reqSubmitUploadOrderImagesModel.ORS_NPI ?? "");
+            //    //body = body.Replace("[[provider_phone]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(reqSubmitUploadOrderImagesModel.ORS_PHONE) ?? "");
+            //    //body = body.Replace("[[provider_fax]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(reqSubmitUploadOrderImagesModel.ORS_FAX) ?? "");
+            //    long pageCounter = 1;
+            //    ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, body, "orsInfo");
+            //    string coverfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
+            //    var ext = Path.GetExtension(coverfilePath).ToLower();
+            //    int numberOfPages = getNumberOfPagesOfPDF(coverfilePath);
 
-                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > SavePdfToImages || Start Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
-                SavePdfToImages(coverfilePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
-                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > SavePdfToImages || End Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
+            //    Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > SavePdfToImages || Start Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
+            //    SavePdfToImages(coverfilePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
+            //    Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > SavePdfToImages || End Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
 
-                FOX_TBL_NOTES_HISTORY notes = new FOX_TBL_NOTES_HISTORY();
-                notes.NOTE_ID = Helper.getMaximumId("NOTE_ID");
+            //    FOX_TBL_NOTES_HISTORY notes = new FOX_TBL_NOTES_HISTORY();
+            //    notes.NOTE_ID = Helper.getMaximumId("NOTE_ID");
 
-                notes.CREATED_BY = Profile.UserName;
-                notes.CREATED_DATE = Helper.GetCurrentDate().ToString();
-                notes.DELETED = false;
-                notes.MODIFIED_DATE = Helper.GetCurrentDate();
-                notes.MODIFIED_BY = Profile.UserName;
-                notes.PRACTICE_CODE = Profile.PracticeCode;
-                _NotesRepository.Insert(notes);
-                _NotesRepository.Save();
+            //    notes.CREATED_BY = Profile.UserName;
+            //    notes.CREATED_DATE = Helper.GetCurrentDate().ToString();
+            //    notes.DELETED = false;
+            //    notes.MODIFIED_DATE = Helper.GetCurrentDate();
+            //    notes.MODIFIED_BY = Profile.UserName;
+            //    notes.PRACTICE_CODE = Profile.PracticeCode;
+            //    _NotesRepository.Insert(notes);
+            //    _NotesRepository.Save();
 
-                var newObj = new FOX_TBL_NOTES_HISTORY()
-                {
-                    WORK_ID = workId,
-                    NOTE_DESC = "Custom ordering referral source is added by the user. See the attached referral for details"
-                };
-                InsertNotesHistory(newObj, Profile);
-            }
+            //    var newObj = new FOX_TBL_NOTES_HISTORY()
+            //    {
+            //        WORK_ID = workId,
+            //        NOTE_DESC = "Custom ordering referral source is added by the user. See the attached referral for details"
+            //    };
+            //    InsertNotesHistory(newObj, Profile);
+            //}
             //if (!String.IsNullOrWhiteSpace(reqSubmitUploadOrderImagesModel.NOTE_DESC))
             //{
             //    var newObj = new FOX_TBL_NOTES_HISTORY()

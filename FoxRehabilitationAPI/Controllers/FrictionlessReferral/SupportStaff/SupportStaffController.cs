@@ -118,6 +118,13 @@ namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
             return response;
         }
         [HttpPost]
+        public HttpResponseMessage DeleteWorkOrder(RequestDeleteWorkOrder requestDeleteWorkOrder)
+        {
+            var responseModel = _supportStaffService.DeleteWorkOrder(requestDeleteWorkOrder);
+            var response = Request.CreateResponse(HttpStatusCode.OK, responseModel);
+            return response;
+        }
+        [HttpPost]
         public HttpResponseMessage GenerateQRCode([FromBody] QRCodeModel obj)
         {
             obj.SignPath = "";
