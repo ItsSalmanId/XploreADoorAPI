@@ -35,6 +35,7 @@ using SelectPdf;
 using FOX.BusinessOperations.FaxServices;
 using ZXing;
 using FOX.BusinessOperations.RequestForOrder;
+using System.Net;
 
 namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
 {
@@ -107,6 +108,9 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         // Description: This function send email invite to patient for Patient Portal.
         public ResponseModel SendInviteToPatientPortal(PatientDetail patientDetails)
         {
+            const System.Security.Authentication.SslProtocols _Tls12 = (System.Security.Authentication.SslProtocols)0x00000C00;
+            const SecurityProtocolType Tls12 = (SecurityProtocolType)_Tls12;
+            ServicePointManager.SecurityProtocol = Tls12;
             ResponseModel responseModel = new ResponseModel();
             PHR phrInvite = new PHR();
             bool emailStatus = false;
@@ -252,6 +256,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 // Search on NPPES
                 if (providerResponse.Count == 0)
                 {
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     string url = AppConfiguration.NPPESNPIRegistry + "&number=" + obj.ProviderNpi;
                     ProviderReferralSourceInfo = GetNPPESNPIResponse(url);
                     return ProviderReferralSourceInfo;
@@ -263,6 +268,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 // Search on NPPES
                 if (providerResponse.Count == 0)
                 {
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     string url = AppConfiguration.NPPESNPIRegistry + "&first_name=" + obj.ProviderFirstName + "&last_name=" + obj.ProviderLastName + "&state=" + obj.ProviderState;
                     ProviderReferralSourceInfo = GetNPPESNPIResponse(url);
                     return ProviderReferralSourceInfo;
@@ -1046,8 +1052,8 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     //    imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + ".jpg";
                     //    logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + ".jpg";
                     //}
-                    //======= uncommit this code
- //AddFilesToDatabase(imgPath, workId, logoImgPath, _isFromIndexInfo);
+            //======= uncommit this code
+           AddFilesToDatabase(imgPath, workId, logoImgPath);
                 }
                 while (noOfPages > threadCounter.Count)
                 {
@@ -1066,7 +1072,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 //{
                 noOfPages = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
                 //======= uncommit this code
-                //AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, config.PRACTICE_CODE, _isFromIndexInfo);
+             //   AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, config.PRACTICE_CODE, _isFromIndexInfo);
                 //}
             }
         }
