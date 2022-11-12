@@ -59,11 +59,11 @@ namespace FOX.DataModels.Models.ExternalUserModel
     {
         public IList<Taxonomy> taxonomies { get; set; }
         public IList<Address> addresses { get; set; }
-        public int created_epoch { get; set; }
+        public string created_epoch { get; set; }
         public IList<Identifier> identifiers { get; set; }
         public IList<OtherName> other_names { get; set; }
-        public int number { get; set; }
-        public int last_updated_epoch { get; set; }
+        public string number { get; set; }
+        public string last_updated_epoch { get; set; }
         public Basic basic { get; set; }
         public string enumeration_type { get; set; }
     }
