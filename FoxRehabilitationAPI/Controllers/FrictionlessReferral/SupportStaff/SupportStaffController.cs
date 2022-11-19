@@ -145,6 +145,18 @@ namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
             var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
             return Task.FromResult(response);
         }
+        [HttpGet]
+        public HttpResponseMessage getFrictionLessReferralDetailsByWorkID(long referralId)
+        {
+            if (referralId != 0)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _supportStaffService.getFrictionLessReferralDetailsByWorkID(referralId));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Frictionless Referral ID is Empty");
+            }
+        }
         #endregion
     }
 }

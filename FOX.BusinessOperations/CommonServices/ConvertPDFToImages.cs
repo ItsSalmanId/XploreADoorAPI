@@ -1,5 +1,6 @@
 ﻿using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
+using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
 using FOX.DataModels.Models.OriginalQueueModel;
 using System;
 using System.Collections;
@@ -20,12 +21,15 @@ namespace FOX.BusinessOperations.CommonService
     class ConvertPDFToImages
     {
         private readonly DBContextQueue _QueueContext = new DBContextQueue();
+        private readonly DbContextFrictionless _dbContextFrictionLess = new DbContextFrictionless();
         //private readonly GenericRepository<OriginalQueue> _QueueRepository;
         private readonly GenericRepository<OriginalQueueFiles> _OriginalQueueFiles;
+        private readonly GenericRepository<FrictionLessReferral> _frictionlessReferralRepository;
         public ConvertPDFToImages()
         {
             //_QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
             _OriginalQueueFiles = new GenericRepository<OriginalQueueFiles>(_QueueContext);
+            _frictionlessReferralRepository = new GenericRepository<FrictionLessReferral>(_dbContextFrictionLess);
         }
 
         //public int PDFToImages(string pdfPath, string imagePath, long WORK_ID)
@@ -266,6 +270,22 @@ namespace FOX.BusinessOperations.CommonService
                         _OriginalQueueFiles.Insert(originalQueueFiles);
                         _OriginalQueueFiles.Save();
                    }
+                    var frictionLessReferralData = _frictionlessReferralRepository.GetFirst(t => t.DELETED == false && t.WORK_ID == workId);
+                    if (frictionLessReferralData != null && originalQueueFiles != null)
+                    {
+                        originalQueueFiles = new OriginalQueueFiles();
+
+                        originalQueueFiles.FILE_ID = Helper.getMaximumId("FOXREHAB_FILE_ID");
+                        originalQueueFiles.WORK_ID = workId;
+                        originalQueueFiles.UNIQUE_ID = workId.ToString();
+                        originalQueueFiles.FILE_PATH1 = filePath;
+                        originalQueueFiles.FILE_PATH = logoPath;
+                        originalQueueFiles.deleted = false;
+
+                        _OriginalQueueFiles.Insert(originalQueueFiles);
+                        _OriginalQueueFiles.Save();
+
+                    }
                 }
             }
             catch (Exception exception)

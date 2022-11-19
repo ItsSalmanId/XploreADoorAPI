@@ -115,7 +115,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             PHR phrInvite = new PHR();
             bool emailStatus = false;
             long practiceCode = GetPracticeCode();
-            if (patientDetails != null && !string.IsNullOrEmpty(patientDetails.EmailAddress) && !string.IsNullOrEmpty(patientDetails.MobilePhone))
+            if (patientDetails != null && (!string.IsNullOrEmpty(patientDetails.EmailAddress) || !string.IsNullOrEmpty(patientDetails.MobilePhone)))
             {
                 phrInvite = _phrRepository.GetFirst(e => e.EMAIL_ADDRESS == patientDetails.EmailAddress && e.USER_PHONE == patientDetails.MobilePhone && e.PRACTICE_CODE == practiceCode && !(e.DELETED.HasValue ? e.DELETED.Value : false));
                 if (phrInvite == null)
@@ -270,7 +270,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 {
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     string url = AppConfiguration.NPPESNPIRegistry + "&first_name=" + obj.ProviderFirstName + "&last_name=" + obj.ProviderLastName + "&state=" + obj.ProviderState;
-                    ProviderReferralSourceInfo = GetNPPESNPIResponse(url);
+                    ProviderReferralSourceInfo = GetNPPESNPIResponse(url);                 
                     return ProviderReferralSourceInfo;
                 }
             }
@@ -288,6 +288,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     ProviderRegion = x.REGION_NAME,
                     ProviderRegionCode = x.REGION_CODE,
                     ProviderFax = x.FAX,
+                    isNPPES = false,
                     Success = true,
                 }).ToList();
             }
@@ -321,6 +322,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                                     ProviderState = item.addresses[1].state,
                                     ProviderZipCode = item.addresses[1].postal_code,
                                     ProviderFax = item.addresses[1].fax_number,
+                                    isNPPES = true,
                                     Success = true,
                                 });
                             }
@@ -370,6 +372,21 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             if (referralId != 0 && practiceCode != 0)
             {
                 frictionLessReferral = _frictionlessReferralRepository.GetFirst(f => f.FRICTIONLESS_REFERRAL_ID == referralId && f.PRACTICE_CODE == practiceCode && f.DELETED == false);
+                var date = frictionLessReferral.PATIENT_DOB.ToString();
+                var tempDate = date.Split();
+                frictionLessReferral.PATIENT_DOB_STRING = tempDate[0];
+                return frictionLessReferral ?? new FrictionLessReferral();
+            }       
+            return frictionLessReferral;
+        }
+        // Description: This function is trigger to get details of frictionless referral.
+        public FrictionLessReferral getFrictionLessReferralDetailsByWorkID(long referralId)
+        {
+            FrictionLessReferral frictionLessReferral = new FrictionLessReferral();
+            long practiceCode = GetPracticeCode();
+            if (referralId != 0 && practiceCode != 0)
+            {
+                frictionLessReferral = _frictionlessReferralRepository.GetFirst(f => f.WORK_ID == referralId && f.PRACTICE_CODE == practiceCode && f.DELETED == false);
                 return frictionLessReferral ?? new FrictionLessReferral();
             }
             return frictionLessReferral;
@@ -391,11 +408,31 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
               //  if ((frictionLessReferralObj.FILE_NAME_LIST.Count != 0 || frictionLessReferralObj.IS_SIGNED_REFERRAL == false) && frictionLessReferralObj.IS_SUBMIT_CHECK == true)
                     if ((frictionLessReferralObj.FILE_NAME_LIST.Count > 0 && frictionLessReferralObj.FILE_NAME_LIST != null) || frictionLessReferralObj.IS_SUBMIT_CHECK == true)
                     {
+                    //  if () { }
+                    long workId = 0;
+                   // var work_order = _QueueRepository.GetFirst(t => t.WORK_ID == frictionLessReferralObj.WORK_ID && t.DELETED == false);
+                    if(existingFrictionReferral.WORK_ID == 0)
+                    {
+                        workId = Helper.getMaximumId("WORK_ID");
+                    }
+                    else
+                    {
+                        workId = existingFrictionReferral.WORK_ID;
+                        //_QueueRepository.Delete(t => t.WORK_ID == workId);
+                        //_OriginalQueueFiles.Delete(t => t.WORK_ID == workId);
+                        var WorkID = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = workId };
+                        var updatedWorkFiles = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_UPDATE_WORK_FILE @WORK_ID", WorkID);
+
+                        var prac = GetPracticeCode();
+                        var queueWorkID = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = workId };
+                        var PracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = prac };
+                        var updatedWorkQUEFiles = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_UPDATE_WORK_QUEUE_DELETED_BIT @WORK_ID,@PRACTICE_CODE", queueWorkID, PracticeCode);
+                    }
                     UserProfile userProfile = new UserProfile();
                     userProfile.PracticeCode = GetPracticeCode();
-                    userProfile.UserName = "FOX TEAM";
+                    userProfile.UserName = existingFrictionReferral.SUBMITTER_LAST_NAME;
                     var result = new ResSaveUploadWorkOrderFiles();
-                    var workId = Helper.getMaximumId("WORK_ID");
+               //      workId = Helper.getMaximumId("WORK_ID");
                     frictionLessReferralObj.WORK_ID = workId;
                     //==========================================================
                     SubmitUploadOrderImages(frictionLessReferralObj, userProfile);
@@ -536,10 +573,10 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             OriginalQueue originalQueue = new OriginalQueue();
             if (frictionLessReferralObj.IS_SIGNED_REFERRAL)
             {
-                originalQueue.DOCUMENT_TYPE = 51;
+                originalQueue.DOCUMENT_TYPE = 42;
             }else
             {
-                originalQueue.DOCUMENT_TYPE = 42;
+                originalQueue.DOCUMENT_TYPE = 51;
             }
             originalQueue.WORK_ID = workId;
             originalQueue.UNIQUE_ID = workId.ToString();
@@ -1194,7 +1231,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         {
             UserProfile userProfile = new UserProfile();
             userProfile.PracticeCode = GetPracticeCode();
-            userProfile.UserName = "FOX TEAM";
+            userProfile.UserName = "FRICTIONLESS_REFERRAL_SOURCE";
             userProfile.isTalkRehab = false;
             return requestForOrderService.SendEmail(requestSendEmailModel, userProfile);
         }

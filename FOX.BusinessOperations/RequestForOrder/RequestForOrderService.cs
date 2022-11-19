@@ -242,8 +242,18 @@ namespace FOX.BusinessOperations.RequestForOrder
                     }
                     else
                     {
-                        link = AppConfiguration.ClientURL + @"#/VerifyWorkOrder?value=" + HttpUtility.UrlEncode(encryptedWorkId);
-                        link += "&name=" + requestSendEmailModel.EmailAddress;
+                        var frictionLessReferralData = _frictionlessReferralRepository.GetFirst(t => t.DELETED == false && t.WORK_ID == requestSendEmailModel.WorkId);
+                        if (frictionLessReferralData != null)
+                        {
+                            link = AppConfiguration.ClientURL + @"#/VerifyWorkOrder?value=" + HttpUtility.UrlEncode(encryptedWorkId);
+                            link += "&name=" + requestSendEmailModel.EmailAddress;
+                            link += "&isFrictionLess=" + true;
+                        }
+                        else
+                        {
+                            link = AppConfiguration.ClientURL + @"#/VerifyWorkOrder?value=" + HttpUtility.UrlEncode(encryptedWorkId);
+                            link += "&name=" + requestSendEmailModel.EmailAddress;
+                        }
                     }
                     
                     //if (!string.IsNullOrWhiteSpace(orderingRefSourceFullName))
@@ -259,7 +269,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                     ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestSendEmailModel.AttachmentHTML, requestSendEmailModel.FileName.Replace(' ', '_'), "email", linkMessage);
                     AddHtmlToDB(requestSendEmailModel.WorkId, requestSendEmailModel.AttachmentHTML, Profile.UserName);
                     if (responseHTMLToPDF != null && (responseHTMLToPDF?.Success ?? false))
-                        {
+                    {
                         //string attachmentPath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
                         string attachmentPath = "";
                         //For Live
@@ -330,7 +340,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                                                         <table style='width:250px;font-family: sans-serif !important;' cellpadding='0' cellspacing='0'>
                                                             <tr>
                                                                 <td style='text-align: center;background-color:#ff671f; border:1px solid #ff671f; vertical-align:middle; line-height:normal; padding:5px 15px 5px 15px;'>
-                                                                    <a style='color:#fff; font-size:16px;text-decoration:none; outline:none;background-color:#ff671f;' target='_blank' href='" +link + @"'>Login To Fox Rehab Portal</a>
+                                                                    <a style='color:#fff; font-size:16px;text-decoration:none; outline:none;background-color:#ff671f;' target='_blank' href='" + link + @"'>Login To Fox Rehab Portal</a>
                                                                 </td>
                                                             </tr>
                                                         </table>
@@ -446,20 +456,39 @@ namespace FOX.BusinessOperations.RequestForOrder
                             emailStatus = Helper.Email(requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath });
                         }
 
+                        //using (var test = new DBContextQueue())
+                        //{
+                        //    var obj = test.WorkQueue.Where(s => s.WORK_ID == requestSendEmailModel.WorkId && (s.DELETED == false)).FirstOrDefault();
+                        //    obj.REFERRAL_EMAIL_SENT_TO = "test";
+                        //    test.SaveChanges();
+                        //}
+
                         Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || Start Time of Finding WORK ID " + Helper.GetCurrentDate().ToLocalTime());
-                       
                         var queueResult = _QueueRepository.GetFirst(s => s.WORK_ID == requestSendEmailModel.WorkId && s.DELETED == false);
                         Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || End Time of Finding WORK ID " + Helper.GetCurrentDate().ToLocalTime());
+                        var frictionLessReferralData = _frictionlessReferralRepository.GetFirst(t => t.DELETED == false && t.WORK_ID == requestSendEmailModel.WorkId);
+                        if (frictionLessReferralData != null)
+                        {
                         if (queueResult != null && emailStatus == true)
                         {
                             Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || Start Time of Saving Email Address Against the WORK ID " + Helper.GetCurrentDate().ToLocalTime());
                             queueResult.REFERRAL_EMAIL_SENT_TO = requestSendEmailModel.EmailAddress;
-                            _QueueRepository.Update(queueResult);
                             _QueueRepository.Save();
                             Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || End Time of Saving Email Address Against the WORK ID " + Helper.GetCurrentDate().ToLocalTime());
                         }
+                            else
+                            {
+                                Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || Start Time of Saving Email Address Against the WORK ID " + Helper.GetCurrentDate().ToLocalTime());
+                                queueResult.REFERRAL_EMAIL_SENT_TO = requestSendEmailModel.EmailAddress;
+                                _QueueRepository.Update(queueResult);
+                                _QueueRepository.Save();
+                                Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || End Time of Saving Email Address Against the WORK ID " + Helper.GetCurrentDate().ToLocalTime());
 
-                        string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
+                            }
+                    }
+
+
+                            string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
                         int numberOfPages = getNumberOfPagesOfPDF(filePath);
                         //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
                         //SavePdfToImages(filePath, imagesPath, requestSendEmailModel.WorkId, numberOfPages, "Email", requestSendEmailModel.EmailAddress, Profile.UserName);
@@ -748,15 +777,34 @@ namespace FOX.BusinessOperations.RequestForOrder
                 //        //_OriginalQueueFiles.Save();
                 //    }
                 //}
-                long iD = Helper.getMaximumId("FOXREHAB_FILE_ID");
-                var fileId = new SqlParameter("FILE_ID", SqlDbType.BigInt) { Value = iD };
-                var parmWorkID = new SqlParameter("WORKID", SqlDbType.BigInt) { Value = workId };
-                var parmFilePath = new SqlParameter("FILEPATH", SqlDbType.VarChar) { Value = filePath };
-                var parmLogoPath = new SqlParameter("LOGOPATH", SqlDbType.VarChar) { Value = logoPath };
-                var _isFromIndexInfo = new SqlParameter("IS_FROM_INDEX_INFO", SqlDbType.Bit) { Value = false };
+                var frictionLessReferralData = _frictionlessReferralRepository.GetFirst(t => t.DELETED == false && t.WORK_ID == workId);
+                if (frictionLessReferralData != null)
+                {
+                    long iD = Helper.getMaximumId("FOXREHAB_FILE_ID");
+                    var fileId = new SqlParameter("FILE_ID", SqlDbType.BigInt) { Value = iD };
+                    var parmWorkID = new SqlParameter("WORKID", SqlDbType.BigInt) { Value = workId };
+                    var parmFilePath = new SqlParameter("FILEPATH", SqlDbType.VarChar) { Value = filePath };
+                    var parmLogoPath = new SqlParameter("LOGOPATH", SqlDbType.VarChar) { Value = logoPath };
+                    var _isFromIndexInfo = new SqlParameter("IS_FROM_INDEX_INFO", SqlDbType.Bit) { Value = false };
 
-                var result = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_AD_FILES_TO_DB_FROM_RFO @FILE_ID, @WORKID, @FILEPATH, @LOGOPATH, @IS_FROM_INDEX_INFO",
-                    fileId, parmWorkID, parmFilePath, parmLogoPath, _isFromIndexInfo);
+                    var result = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_AD_FILES_TO_DB_FROM_RFO_FRICTIONLESS @FILE_ID, @WORKID, @FILEPATH, @LOGOPATH, @IS_FROM_INDEX_INFO",
+                        fileId, parmWorkID, parmFilePath, parmLogoPath, _isFromIndexInfo);
+
+                }
+                else
+                {
+                    long iD = Helper.getMaximumId("FOXREHAB_FILE_ID");
+                    var fileId = new SqlParameter("FILE_ID", SqlDbType.BigInt) { Value = iD };
+                    var parmWorkID = new SqlParameter("WORKID", SqlDbType.BigInt) { Value = workId };
+                    var parmFilePath = new SqlParameter("FILEPATH", SqlDbType.VarChar) { Value = filePath };
+                    var parmLogoPath = new SqlParameter("LOGOPATH", SqlDbType.VarChar) { Value = logoPath };
+                    var _isFromIndexInfo = new SqlParameter("IS_FROM_INDEX_INFO", SqlDbType.Bit) { Value = false };
+
+                    var result = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_AD_FILES_TO_DB_FROM_RFO @FILE_ID, @WORKID, @FILEPATH, @LOGOPATH, @IS_FROM_INDEX_INFO",
+                        fileId, parmWorkID, parmFilePath, parmLogoPath, _isFromIndexInfo);
+                }
+
+
             }
             catch (Exception exception)
             {
@@ -868,11 +916,21 @@ namespace FOX.BusinessOperations.RequestForOrder
                             imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + pageCounter + ".jpg";
                             imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + pageCounter + ".jpg";
                         }
+                        else if (pageCounter != 0  && userName.ToLower() == "frictionless_referral_source")
+                        {
+                            imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + pageCounter  + ".jpg";
+                            imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + pageCounter + ".jpg";
+                        }
                         else
                         {
                             imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + ".jpg";
                             imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + ".jpg";
                         }
+
+
+
+
+
                         if (_isFromIndexInfo)
                         {
                             var randomString = random.Next();
@@ -883,6 +941,12 @@ namespace FOX.BusinessOperations.RequestForOrder
                         {
                             logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + pageCounter + ".jpg";
                             logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + pageCounter + ".jpg";
+                        }
+                        else if (pageCounter != 0 && userName.ToLower() == "frictionless_referral_source")
+                        {
+
+                            logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + pageCounter + ".jpg";
+                            logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + pageCounter  + ".jpg";
                         }
                         else
                         {

@@ -102,6 +102,7 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public string ProviderRegion { get; set; }
         public string ProviderRegionCode { get; set; }
         public string ProviderFax { get; set; }
+        public bool isNPPES { get; set; }
     }
     public class FrictionLessReferralResponse 
     {
