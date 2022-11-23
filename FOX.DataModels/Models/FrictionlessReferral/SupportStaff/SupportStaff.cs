@@ -127,5 +127,21 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public long WorkId { get; set; }
         public bool _isFromIndexInfo { get; set; }
     }
+
+    [Table("FOX_TBL_FRICTIONLESS_WORK_QUEUE_FILE_ALL")]
+    public class FrictionlessReferralForm
+    {
+        [Key]
+        public long FRICTIONLESS_REFERRAL_FILE_ID { get; set; }
+        public string UNIQUE_ID { get; set; }
+        public string FILE_PATH { get; set; }
+        public string FILE_PATH1 { get; set; }
+        public long? WORK_ID { get; set; }
+        public DateTime CREATED_DATE { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime MODIFIED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public bool DELETED { get; set; }
+    }
     #endregion
 }

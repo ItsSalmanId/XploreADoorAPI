@@ -242,18 +242,10 @@ namespace FOX.BusinessOperations.RequestForOrder
                     }
                     else
                     {
-                        var frictionLessReferralData = _frictionlessReferralRepository.GetFirst(t => t.DELETED == false && t.WORK_ID == requestSendEmailModel.WorkId);
-                        if (frictionLessReferralData != null)
-                        {
+
                             link = AppConfiguration.ClientURL + @"#/VerifyWorkOrder?value=" + HttpUtility.UrlEncode(encryptedWorkId);
                             link += "&name=" + requestSendEmailModel.EmailAddress;
-                            link += "&isFrictionLess=" + true;
-                        }
-                        else
-                        {
-                            link = AppConfiguration.ClientURL + @"#/VerifyWorkOrder?value=" + HttpUtility.UrlEncode(encryptedWorkId);
-                            link += "&name=" + requestSendEmailModel.EmailAddress;
-                        }
+
                     }
                     
                     //if (!string.IsNullOrWhiteSpace(orderingRefSourceFullName))
@@ -463,27 +455,20 @@ namespace FOX.BusinessOperations.RequestForOrder
                         //    test.SaveChanges();
                         //}
 
-                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || Start Time of Finding WORK ID " + Helper.GetCurrentDate().ToLocalTime());
                         var queueResult = _QueueRepository.GetFirst(s => s.WORK_ID == requestSendEmailModel.WorkId && s.DELETED == false);
-                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || End Time of Finding WORK ID " + Helper.GetCurrentDate().ToLocalTime());
                         var frictionLessReferralData = _frictionlessReferralRepository.GetFirst(t => t.DELETED == false && t.WORK_ID == requestSendEmailModel.WorkId);
                         if (frictionLessReferralData != null)
                         {
                         if (queueResult != null && emailStatus == true)
                         {
-                            Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || Start Time of Saving Email Address Against the WORK ID " + Helper.GetCurrentDate().ToLocalTime());
                             queueResult.REFERRAL_EMAIL_SENT_TO = requestSendEmailModel.EmailAddress;
                             _QueueRepository.Save();
-                            Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || End Time of Saving Email Address Against the WORK ID " + Helper.GetCurrentDate().ToLocalTime());
                         }
                             else
                             {
-                                Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || Start Time of Saving Email Address Against the WORK ID " + Helper.GetCurrentDate().ToLocalTime());
                                 queueResult.REFERRAL_EMAIL_SENT_TO = requestSendEmailModel.EmailAddress;
                                 _QueueRepository.Update(queueResult);
                                 _QueueRepository.Save();
-                                Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || End Time of Saving Email Address Against the WORK ID " + Helper.GetCurrentDate().ToLocalTime());
-
                             }
                     }
 
@@ -1099,16 +1084,30 @@ namespace FOX.BusinessOperations.RequestForOrder
                 //string workIdStr = StringCipher.Decrypt(value);
                 string workIdStr = value;
                 long workId = long.Parse(workIdStr);
-                OriginalQueue originalQueue = _QueueRepository.Get(t => t.WORK_ID == workId && !t.DELETED);
+              //  OriginalQueue originalQueue = _QueueRepository.Get(t => t.WORK_ID == workId && !t.DELETED);
+                OriginalQueue originalQueue = _QueueRepository.GetFirst(t => t.WORK_ID == workId && !t.DELETED);
+                var frictionLessReferralData = _frictionlessReferralRepository.GetFirst(t => t.DELETED == false && t.WORK_ID == workId);
                 if (originalQueue != null)
                 {
-                    originalQueue.IS_VERIFIED_BY_RECIPIENT = true;
+                    if(frictionLessReferralData != null)
+                    {
+                        originalQueue.IS_VERIFIED_BY_RECIPIENT = true;
 
-                    originalQueue.MODIFIED_BY = "ExternalUser";
-                    originalQueue.MODIFIED_DATE = DateTime.Now;
+                        originalQueue.MODIFIED_BY = "ExternalUser";
+                        originalQueue.MODIFIED_DATE = DateTime.Now;
+                        _QueueRepository.Save();
 
-                    _QueueRepository.Update(originalQueue);
-                    _QueueRepository.Save();
+                    }
+                    else
+                    {
+                        originalQueue.IS_VERIFIED_BY_RECIPIENT = true;
+
+                        originalQueue.MODIFIED_BY = "ExternalUser";
+                        originalQueue.MODIFIED_DATE = DateTime.Now;
+
+                        _QueueRepository.Update(originalQueue);
+                        _QueueRepository.Save();
+                    }
                     return true;
                 }
                 return false;
@@ -1291,14 +1290,6 @@ public ResponseModel DownloadPdf(RequestDownloadPdfModel requestDownloadPdfModel
             if (!String.IsNullOrWhiteSpace(ins_name))
             {
                 pri_insurance = ins_name;
-            }
-            var frictionLessReferralData = _frictionlessReferralRepository.GetFirst(t => t.DELETED == false && t.WORK_ID == WorkId);
-            if(frictionLessReferralData != null)
-            {
-                patient = new Patient();
-                patient.LastName = frictionLessReferralData.PATIENT_FIRST_NAME;
-                patient.FirstName = frictionLessReferralData.PATIENT_FIRST_NAME;
-                patient.Date_Of_Birth = frictionLessReferralData.PATIENT_DOB;
             }
              var file_name = patient.Last_Name + "_" + documentType;
             var Sender = _User.GetFirst(T => T.USER_NAME == sourceDetail.CREATED_BY);

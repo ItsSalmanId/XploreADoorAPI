@@ -2,6 +2,7 @@
 using FOX.BusinessOperations.CommonServices;
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
+using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
 using FOX.DataModels.Models.OriginalQueueModel;
 using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.Settings.RoleAndRights;
@@ -19,13 +20,16 @@ namespace FOX.BusinessOperations.OriginalQueueService
     public class OriginalQueueService : IOriginalQueueService
     {
         private readonly DBContextQueue _QueueContext = new DBContextQueue();
+        private readonly DbContextFrictionless _dbContextFrictionLess = new DbContextFrictionless();
         private readonly GenericRepository<OriginalQueue> _QueueRepository;
         private readonly GenericRepository<OriginalQueueFiles> _OriginalQueueFilesRepository;
+        private readonly GenericRepository<FrictionLessReferral> _frictionlessReferralRepository;
 
         public OriginalQueueService()
         {
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
             _OriginalQueueFilesRepository = new GenericRepository<OriginalQueueFiles>(_QueueContext);
+            _frictionlessReferralRepository = new GenericRepository<FrictionLessReferral>(_dbContextFrictionLess);
         }
         public ResOriginalQueueModel GetOriginalQueue(OriginalQueueRequest req, UserProfile Profile)
         {
@@ -409,8 +413,9 @@ namespace FOX.BusinessOperations.OriginalQueueService
 
         public OriginalQueue SaveQueueFromOldQueueData(long work_ID, UserProfile Profile, int numberOfPages, long CurrrentParentID)
         {
-            var queue = _QueueRepository.GetByID(work_ID);
-            var count = _QueueRepository.GetMany(x => x.UNIQUE_ID.Contains(work_ID.ToString())).Count;
+           // var queue = _QueueRepository.GetByID(work_ID);
+            var queue = _QueueRepository.GetFirst(x => x.WORK_ID == work_ID && x.DELETED == false);
+            var count = _QueueRepository.GetMany(x => x.UNIQUE_ID.Contains(work_ID.ToString()) && x.DELETED == false).Count;
 
             if (queue != null)
             {
@@ -590,16 +595,29 @@ namespace FOX.BusinessOperations.OriginalQueueService
         {
             OriginalQueue req = new OriginalQueue();
 
-            var queue = _QueueRepository.GetByID(CurrrentParentID);
+            //    var queue = _QueueRepository.GetByID(CurrrentParentID);
+            var queue = _QueueRepository.GetFirst(x => x.WORK_ID == CurrrentParentID && x.DELETED == false);
+            var frictionLessReferralData = _frictionlessReferralRepository.GetFirst(t => t.DELETED == false && t.WORK_ID == CurrrentParentID);
 
             if (queue != null)
             {
-                var newPages = queue.TOTAL_PAGES - oldPages;
-                queue.TOTAL_PAGES = newPages;
-                queue.MODIFIED_DATE = Helper.GetCurrentDate();
-                queue.MODIFIED_BY = Profile.UserName;
-                _QueueRepository.Update(queue);
-                _QueueRepository.Save();
+                if(frictionLessReferralData != null)
+                {
+                    var newPages = queue.TOTAL_PAGES - oldPages;
+                    queue.TOTAL_PAGES = newPages;
+                    queue.MODIFIED_DATE = Helper.GetCurrentDate();
+                    queue.MODIFIED_BY = Profile.UserName;
+                    _QueueRepository.Save();
+                }
+                else
+                {
+                    var newPages = queue.TOTAL_PAGES - oldPages;
+                    queue.TOTAL_PAGES = newPages;
+                    queue.MODIFIED_DATE = Helper.GetCurrentDate();
+                    queue.MODIFIED_BY = Profile.UserName;
+                    _QueueRepository.Update(queue);
+                    _QueueRepository.Save();
+                }
             }
             else
             {

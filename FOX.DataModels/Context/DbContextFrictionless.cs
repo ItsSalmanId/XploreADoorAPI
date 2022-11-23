@@ -17,9 +17,11 @@ namespace FOX.DataModels.Context
         {
             modelBuilder.Entity<FoxInsurancePayers>().Property(t => t.FOX_TBL_INSURANCE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<FrictionLessReferral>().Property(t => t.FRICTIONLESS_REFERRAL_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<FrictionlessReferralForm>().Property(t => t.FRICTIONLESS_REFERRAL_FILE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
         }
         public virtual DbSet<FoxInsurancePayers> FoxInsurancePayers { get; set; }
         public virtual DbSet<FrictionLessReferral> FrictionLessReferrals { get; set; }
+        public virtual DbSet<FrictionlessReferralForm> FrictionLessReferralFiles { get; set; }
         #endregion
     }
 }
