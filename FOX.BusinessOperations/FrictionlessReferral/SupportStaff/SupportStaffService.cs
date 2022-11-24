@@ -1534,7 +1534,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     int document_type = _foxdocumenttypeRepository.GetFirst(x => x.NAME == "Signed Order" && !x.DELETED && x.IS_ACTIVE == true).DOCUMENT_TYPE_ID;
                     if (document_type != 0)
                     {
-                        workOrder.DOCUMENT_TYPE = document_type;
+                        originalQueue.DOCUMENT_TYPE = document_type;
                     }
                 }
                 else
@@ -1542,7 +1542,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     int document_type = _foxdocumenttypeRepository.GetFirst(x => x.NAME == "Unsigned Order" && !x.DELETED && x.IS_ACTIVE == true).DOCUMENT_TYPE_ID;
                     if (document_type != 0)
                     {
-                        workOrder.DOCUMENT_TYPE = document_type;
+                        originalQueue.DOCUMENT_TYPE = document_type;
                     }
                 }
                 originalQueue.WORK_ID = workId;
