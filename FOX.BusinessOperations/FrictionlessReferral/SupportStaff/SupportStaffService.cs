@@ -1499,11 +1499,19 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 workId = workOrder.WORK_ID;
                 if (frictionLessReferralObj.IS_SIGNED_REFERRAL)
                 {
-                    workOrder.DOCUMENT_TYPE = 42;
+                    int document_type = _foxdocumenttypeRepository.GetFirst(x => x.NAME == "Signed Order" && !x.DELETED && x.IS_ACTIVE == true).DOCUMENT_TYPE_ID;
+                    if(document_type != 0)
+                    {
+                        workOrder.DOCUMENT_TYPE = document_type;
+                    }                
                 }
                 else
                 {
-                    workOrder.DOCUMENT_TYPE = 51;
+                    int document_type = _foxdocumenttypeRepository.GetFirst(x => x.NAME == "Unsigned Order" && !x.DELETED && x.IS_ACTIVE == true).DOCUMENT_TYPE_ID;
+                    if (document_type != 0)
+                    {
+                        workOrder.DOCUMENT_TYPE = document_type;
+                    }
                 }
                 workOrder.CREATED_BY = workOrder.MODIFIED_BY = Profile.UserName;
                 workOrder.MODIFIED_DATE = DateTime.Now;
@@ -1523,11 +1531,19 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 workId = Helper.getMaximumId("WORK_ID");
                 if (frictionLessReferralObj.IS_SIGNED_REFERRAL)
                 {
-                    originalQueue.DOCUMENT_TYPE = 42;
+                    int document_type = _foxdocumenttypeRepository.GetFirst(x => x.NAME == "Signed Order" && !x.DELETED && x.IS_ACTIVE == true).DOCUMENT_TYPE_ID;
+                    if (document_type != 0)
+                    {
+                        workOrder.DOCUMENT_TYPE = document_type;
+                    }
                 }
                 else
                 {
-                    originalQueue.DOCUMENT_TYPE = 51;
+                    int document_type = _foxdocumenttypeRepository.GetFirst(x => x.NAME == "Unsigned Order" && !x.DELETED && x.IS_ACTIVE == true).DOCUMENT_TYPE_ID;
+                    if (document_type != 0)
+                    {
+                        workOrder.DOCUMENT_TYPE = document_type;
+                    }
                 }
                 originalQueue.WORK_ID = workId;
                 originalQueue.UNIQUE_ID = workId.ToString();
