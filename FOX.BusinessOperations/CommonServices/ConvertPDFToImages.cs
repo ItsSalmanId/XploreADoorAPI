@@ -21,15 +21,12 @@ namespace FOX.BusinessOperations.CommonService
     class ConvertPDFToImages
     {
         private readonly DBContextQueue _QueueContext = new DBContextQueue();
-        private readonly DbContextFrictionless _dbContextFrictionLess = new DbContextFrictionless();
         //private readonly GenericRepository<OriginalQueue> _QueueRepository;
         private readonly GenericRepository<OriginalQueueFiles> _OriginalQueueFiles;
-        private readonly GenericRepository<FrictionLessReferral> _frictionlessReferralRepository;
         public ConvertPDFToImages()
         {
             //_QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
             _OriginalQueueFiles = new GenericRepository<OriginalQueueFiles>(_QueueContext);
-            _frictionlessReferralRepository = new GenericRepository<FrictionLessReferral>(_dbContextFrictionLess);
         }
 
         //public int PDFToImages(string pdfPath, string imagePath, long WORK_ID)
@@ -270,7 +267,6 @@ namespace FOX.BusinessOperations.CommonService
                         _OriginalQueueFiles.Insert(originalQueueFiles);
                         _OriginalQueueFiles.Save();
                    }
-
                 }
             }
             catch (Exception exception)

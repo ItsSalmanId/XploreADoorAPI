@@ -4230,7 +4230,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 ins_name = _foxInsurancePayersRepository.GetFirst(t => (t.DELETED == null || t.DELETED == false) && t.FOX_TBL_INSURANCE_ID == curr_insurances.FOX_TBL_INSURANCE_ID).INSURANCE_NAME ?? "";
             }
             var frictionLessReferralData = _frictionlessReferralRepository.GetFirst(t => t.DELETED == false && t.WORK_ID == work_id);
-            if (frictionLessReferralData != null)
+            if (frictionLessReferralData.PATIENT_INSURANCE_PAYER_ID != null)
             {
                 ins_name = _foxInsurancePayersRepository.GetFirst(t => (t.DELETED == null || t.DELETED == false) && t.INSURANCE_PAYERS_ID == frictionLessReferralData.PATIENT_INSURANCE_PAYER_ID).INSURANCE_NAME ?? "";
             }
