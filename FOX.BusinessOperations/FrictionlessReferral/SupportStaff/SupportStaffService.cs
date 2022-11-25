@@ -375,8 +375,11 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             if (referralId != 0 && practiceCode != 0)
             {
                 frictionLessReferral = _frictionlessReferralRepository.GetFirst(f => f.FRICTIONLESS_REFERRAL_ID == referralId && f.PRACTICE_CODE == practiceCode && f.DELETED == false);
-                var date = Convert.ToDateTime(frictionLessReferral.PATIENT_DOB);
-                frictionLessReferral.PATIENT_DOB_STRING = date.ToShortDateString();
+                if (frictionLessReferral.PATIENT_DOB != null)
+                {
+                    var date = Convert.ToDateTime(frictionLessReferral.PATIENT_DOB);
+                    frictionLessReferral.PATIENT_DOB_STRING = date.ToShortDateString();
+                }
                 return frictionLessReferral ?? new FrictionLessReferral();
             }
             return frictionLessReferral;
@@ -477,8 +480,12 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 }
                 _frictionlessReferralRepository.Save();
             }
-            var date = Convert.ToDateTime(frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB);
-            frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB_STRING = date.ToShortDateString();
+            if (frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB != null)
+            {
+                var date = Convert.ToDateTime(frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB);
+                frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB_STRING = date.ToShortDateString();
+            }
+            
 
             return frictionLessReferralResponse;
         }
