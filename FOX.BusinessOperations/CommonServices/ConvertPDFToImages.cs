@@ -1,6 +1,5 @@
 ﻿using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
-using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
 using FOX.DataModels.Models.OriginalQueueModel;
 using System;
 using System.Collections;

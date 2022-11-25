@@ -35,7 +35,6 @@ namespace FOX.DataModels.Models.RequestForOrder
         public long WorkId { get; set; }
         public bool _isFromIndexInfo { get; set; }
         public string Patient_Last_Name { get; set; }
-        public long FRICTIONLESS_REFERRAL_ID { get; set; }
     }
     public class RequestSendFAXModel : BaseModel
     {

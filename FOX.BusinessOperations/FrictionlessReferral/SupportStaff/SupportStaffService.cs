@@ -10,7 +10,6 @@ using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.OriginalQueueModel;
 using FOX.DataModels.Models.Patient;
 using FOX.DataModels.Models.RequestForOrder;
-using FOX.DataModels.Models.RequestForOrder.UploadOrderImages;
 using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.ServiceConfiguration;
 using FOX.DataModels.Models.UploadWorkOrderFiles;
@@ -23,7 +22,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -34,7 +32,6 @@ using HtmlAgilityPack;
 using SelectPdf;
 using FOX.BusinessOperations.FaxServices;
 using ZXing;
-using FOX.BusinessOperations.RequestForOrder;
 using System.Net;
 
 namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
@@ -42,6 +39,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
     public class SupportStaffService : ISupportStaffService
     {
         private readonly IUploadOrderImagesService _IUploadOrderImagesService;
+        private readonly IFaxService _IFaxService = new FaxService();
 
         #region PROPERTIES
         // DB Context Objects
@@ -51,7 +49,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         private readonly DbContextCommon _dbContextCommon = new DbContextCommon();
         private readonly DBContextQueue _QueueContext = new DBContextQueue();
         private readonly GenericRepository<FOX_TBL_NOTES_HISTORY> _NotesRepository;
-        private readonly UploadOrderImagesService _uploadOrderImagesService;
         private readonly DbContextIndexinfo _IndexinfoContext = new DbContextIndexinfo();
         private readonly GenericRepository<FoxDocumentType> _foxdocumenttypeRepository;
         private readonly GenericRepository<FoxInsurancePayers> _foxInsurancePayersRepository;
@@ -66,12 +63,11 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         private readonly GenericRepository<FrictionLessReferral> _frictionlessReferralRepository;
         private readonly GenericRepository<OriginalQueueFiles> _OriginalQueueFiles;
         private static List<Thread> threadsList = new List<Thread>();
-        private readonly IFaxService _IFaxService = new FaxService();
         // Class Objects
         PatientService patientServices = new PatientService();
         ConvertPDFToImages _convertPDFToImages;
-        RequestForOrderService requestForOrderService = new RequestForOrderService();
         #endregion
+
         #region CONSTRUCTOR
         public SupportStaffService(IUploadOrderImagesService IUploadOrderImagesService)
         {
@@ -83,7 +79,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             _OriginalQueueFiles = new GenericRepository<OriginalQueueFiles>(_QueueContext);
             _IUploadOrderImagesService = IUploadOrderImagesService;
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
-            _uploadOrderImagesService = new UploadOrderImagesService();
             _NotesRepository = new GenericRepository<FOX_TBL_NOTES_HISTORY>(_IndexinfoContext);
             _convertPDFToImages = new ConvertPDFToImages();
             _foxdocumenttypeRepository = new GenericRepository<FoxDocumentType>(_IndexinfoContext);
@@ -91,6 +86,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             _fox_tbl_TherapyTreatmentRequestForm = new GenericRepository<TherapyTreatmentRequestForm>(_QueueContext);
         }
         #endregion
+
         #region FUNCTIONS
         // Description: This function is used to get practice code from WebConfig.
         public long GetPracticeCode()
@@ -119,9 +115,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         // Description: This function send email invite to patient for Patient Portal.
         public ResponseModel SendInviteToPatientPortal(PatientDetail patientDetails)
         {
-            const System.Security.Authentication.SslProtocols _Tls12 = (System.Security.Authentication.SslProtocols)0x00000C00;
-            const SecurityProtocolType Tls12 = (SecurityProtocolType)_Tls12;
-            ServicePointManager.SecurityProtocol = Tls12;
             ResponseModel responseModel = new ResponseModel();
             PHR phrInvite = new PHR();
             bool emailStatus = false;
@@ -267,7 +260,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 // Search on NPPES
                 if (providerResponse.Count == 0)
                 {
-                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     string url = AppConfiguration.NPPESNPIRegistry + "&number=" + obj.ProviderNpi;
                     ProviderReferralSourceInfo = GetNPPESNPIResponse(url);
                     return ProviderReferralSourceInfo;
@@ -279,7 +271,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 // Search on NPPES
                 if (providerResponse.Count == 0)
                 {
-                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     string url = AppConfiguration.NPPESNPIRegistry + "&first_name=" + obj.ProviderFirstName + "&last_name=" + obj.ProviderLastName + "&state=" + obj.ProviderState;
                     ProviderReferralSourceInfo = GetNPPESNPIResponse(url);
                     return ProviderReferralSourceInfo;
@@ -312,6 +303,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             List<ProviderReferralSourceResponse> referralSourceResponse = new List<ProviderReferralSourceResponse>();
             using (HttpClient http = new HttpClient())
             {
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 var response = http.GetAsync(url).Result;
                 if (response != null && response.IsSuccessStatusCode)
                 {
@@ -383,21 +375,20 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             if (referralId != 0 && practiceCode != 0)
             {
                 frictionLessReferral = _frictionlessReferralRepository.GetFirst(f => f.FRICTIONLESS_REFERRAL_ID == referralId && f.PRACTICE_CODE == practiceCode && f.DELETED == false);
-                var date = frictionLessReferral.PATIENT_DOB.ToString();
-                var tempDate = date.Split();
-                frictionLessReferral.PATIENT_DOB_STRING = tempDate[0];
+                var date = Convert.ToDateTime(frictionLessReferral.PATIENT_DOB);
+                frictionLessReferral.PATIENT_DOB_STRING = date.ToShortDateString();
                 return frictionLessReferral ?? new FrictionLessReferral();
             }
             return frictionLessReferral;
         }
         // Description: This function is trigger to get details of frictionless referral.
-        public FrictionLessReferral getFrictionLessReferralDetailsByWorkID(long referralId)
+        public FrictionLessReferral GetFrictionLessReferralDetailsByWorkID(long workId)
         {
             FrictionLessReferral frictionLessReferral = new FrictionLessReferral();
             long practiceCode = GetPracticeCode();
-            if (referralId != 0 && practiceCode != 0)
+            if (workId != 0 && practiceCode != 0)
             {
-                frictionLessReferral = _frictionlessReferralRepository.GetFirst(f => f.WORK_ID == referralId && f.PRACTICE_CODE == practiceCode && f.DELETED == false);
+                frictionLessReferral = _frictionlessReferralRepository.GetFirst(f => f.WORK_ID == workId && f.PRACTICE_CODE == practiceCode && f.DELETED == false);
                 return frictionLessReferral ?? new FrictionLessReferral();
             }
             return frictionLessReferral;
@@ -414,7 +405,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 {
                     frictionLessReferralObj.PATIENT_DISCIPLINE_ID = frictionLessReferralObj.PATIENT_DISCIPLINE_ID.Remove(0, 1);
                 }
-
                 var existingFrictionReferral = _frictionlessReferralRepository.GetFirst(f => f.FRICTIONLESS_REFERRAL_ID == frictionLessReferralObj.FRICTIONLESS_REFERRAL_ID && f.PRACTICE_CODE == practiceCode && f.DELETED == false);
                 if ((frictionLessReferralObj.FILE_NAME_LIST.Count > 0 && frictionLessReferralObj.FILE_NAME_LIST != null) || frictionLessReferralObj.IS_SUBMIT_CHECK == true)
                 {
@@ -440,14 +430,12 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     frictionLessReferralObj.PRACTICE_CODE = GetPracticeCode();
                     frictionLessReferralObj.CREATED_BY = frictionLessReferralObj.MODIFIED_BY = !string.IsNullOrEmpty(frictionLessReferralObj.SUBMITTER_LAST_NAME) ? frictionLessReferralObj.SUBMITTER_LAST_NAME : "FOX_TEAM";
                     frictionLessReferralObj.CREATED_DATE = frictionLessReferralObj.MODIFIED_DATE = Helper.GetCurrentDate();
-
                     frictionLessReferralObj.DELETED = false;
                     if (frictionLessReferralObj.PROVIDER_FAX != null)
                     {
                         frictionLessReferralObj.PROVIDER_FAX = frictionLessReferralObj.PROVIDER_FAX.Replace("-", "");
                     }
                     _frictionlessReferralRepository.Insert(frictionLessReferralObj);
-
                     frictionLessReferralResponse.Message = "Record Inserted Successfully.";
                     frictionLessReferralResponse.Success = true;
                     frictionLessReferralResponse.FrictionLessReferralObj = frictionLessReferralObj;
@@ -483,61 +471,26 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     existingFrictionReferral.WORK_ID = frictionLessReferralObj.WORK_ID;
                     existingFrictionReferral.MODIFIED_DATE = Helper.GetCurrentDate();
                     _frictionlessReferralRepository.Update(existingFrictionReferral);
-
                     frictionLessReferralResponse.Message = "Record Updated Successfully.";
                     frictionLessReferralResponse.Success = true;
                     frictionLessReferralResponse.FrictionLessReferralObj = frictionLessReferralObj;
                 }
                 _frictionlessReferralRepository.Save();
             }
-            var date = frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB.ToString();
-            var tempDate = date.Split();
-            frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB_STRING = tempDate[0];
-
-            //var originalQueueFilesCount = 0;
-            //Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SaveUploadWorkOrderFiles > GenerateAndSaveImagesOfUploadedFiles || Start Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
-            //_IUploadOrderImagesService.GenerateAndSaveImagesOfUploadedFiles(workId, frictionLessReferralObj.FILE_NAME_LIST, userProfile, originalQueueFilesCount);
-            //Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SaveUploadWorkOrderFiles > GenerateAndSaveImagesOfUploadedFiles || End Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
-
-            //result.WORK_ID = workId;
-            //result.FilePaths = SpRepository<FilePath>.GetListWithStoreProcedure(@"exec FOX_GET_File_PAGES  @WORK_ID", new SqlParameter("WORK_ID ", SqlDbType.BigInt) { Value = workId });
-            //result.Message = $"Upload Work Order Files Successfully. WorkId = { workId }";
-            //result.ErrorMessage = "";
-            //result.Success = true;
-
-            //decimal size = 0;
-            //decimal byteCount = 0;
-            //foreach (var list in result.FilePaths.ToList())
-            //{
-            //    string virtualPath = @"/" + list.file_path1;
-            //    string orignalPath = HttpContext.Current.Server.MapPath("~" + virtualPath);
-            //    FileInfo file = new FileInfo(orignalPath);
-            //    bool exists = file.Exists;
-            //    if (file.Exists)
-            //    {
-            //        byteCount = file.Length;
-            //        size += byteCount;
-            //    }
-            //}
-            //result.fileSize = Convert.ToDecimal(string.Format("{0:0.00}", size / 1048576));
-
-
+            var date = Convert.ToDateTime(frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB);
+            frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB_STRING = date.ToShortDateString();
 
             return frictionLessReferralResponse;
         }
-        #endregion
         public ResponseModel DeleteWorkOrder(RequestDeleteWorkOrder requestDeleteWorkOrder)
         {
             try
             {
                 OriginalQueue originalQueue = _QueueRepository.Get(t => t.WORK_ID == requestDeleteWorkOrder?.WorkId && !t.DELETED);
-
                 if (originalQueue != null)
                 {
                     originalQueue.DELETED = true;
-                    //     originalQueue.MODIFIED_BY = Profile.UserName;
                     originalQueue.MODIFIED_DATE = DateTime.Now;
-
                     _QueueRepository.Update(originalQueue);
                     _QueueRepository.Save();
                     return new ResponseModel() { Message = "Delete work order successfully.", ErrorMessage = "", Success = true };
@@ -547,11 +500,9 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             }
             catch (Exception exception)
             {
-                //throw exception;
                 return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
             }
         }
-
         private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, int pageCounter, out long pageCounterOut, FrictionLessReferral frictionLessReferralObj)
         {
             List<int> threadCounter = new List<int>();
@@ -641,7 +592,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 var parmFilePath = new SqlParameter("FILEPATH", SqlDbType.VarChar) { Value = filePath };
                 var parmLogoPath = new SqlParameter("LOGOPATH", SqlDbType.VarChar) { Value = logoPath };
                 var _isFromIndexInfo = new SqlParameter("IS_FROM_INDEX_INFO", SqlDbType.Bit) { Value = false };
-
                 var result = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_AD_FILES_TO_DB_FROM_RFO @FILE_ID, @WORKID, @FILEPATH, @LOGOPATH, @IS_FROM_INDEX_INFO",
                     fileId, parmWorkID, parmFilePath, parmLogoPath, _isFromIndexInfo);
             }
@@ -650,11 +600,9 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 throw exception;
             }
         }
-
         public void InsertNotesHistory(FOX_TBL_NOTES_HISTORY obj, UserProfile profile)
         {
             var notesDetail = _NotesRepository.GetByID(obj.NOTE_ID);
-
             if (notesDetail != null)
             {
                 notesDetail.WORK_ID = obj.WORK_ID;
@@ -690,8 +638,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 HtmlDocument htmlDoc = new HtmlDocument();
                 htmlDoc.LoadHtml(htmlString);
                 htmlDoc.DocumentNode.SelectSingleNode("//*[contains(@id,'print-footer')]")?.Remove();
-
-
                 if (!string.IsNullOrWhiteSpace(linkMessage))
                 {
                     var htmlNode_link = htmlDoc.DocumentNode.SelectSingleNode("//*[contains(@id,'link')]");
@@ -727,7 +673,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 return new ResponseHTMLToPDF() { FileName = "", FilePath = "", Success = false, ErrorMessage = exception.ToString() };
             }
         }
-
         public ResponseModel DownloadPdf(RequestDownloadPdfFrictionlessModel requestDownloadPdfModel)
         {
             try
@@ -749,8 +694,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             }
             catch (Exception exception)
             {
-                //TO DO Log exception here
-                //throw exception;
                 return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
             }
         }
@@ -810,7 +753,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     else
                     {
                         return new ResponseModel() { Message = "Fax sent successfully, our admission team is processing your referral.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
-                        //return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
                     }
                 }
                 else
@@ -820,18 +762,14 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             }
             catch (Exception exception)
             {
-                //TO DO Log exception here
-                //throw exception;
                 return new ResponseModel() { Message = "Fax sent successfully, our admission team is processing your referral.", ErrorMessage = exception.ToString(), Success = false };
             }
         }
-
         private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, string sorcetype, string sorceName, string userName, bool _isFromIndexInfo)
         {
             List<int> threadCounter = new List<int>();
             var originalQueueFilesCount = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
             long pageCounter = originalQueueFilesCount;
-
             if (!Directory.Exists(config.IMAGES_PATH_SERVER))
             {
                 Directory.CreateDirectory(config.IMAGES_PATH_SERVER);
@@ -882,7 +820,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                             logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + "_" + randomString + ".jpg";
                         }
                     }
-
                     Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter, PdfPath, i, imgPathServer, logoImgPathServer));
                     myThread.Start();
                     threadsList.Add(myThread);
@@ -892,7 +829,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 {
                     //loop untill record complete
                 }
-
                 foreach (var thread in threadsList)
                 {
                     thread.Abort();
@@ -1077,12 +1013,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                             responseUploadFilesModel.ErrorMessage = "";
                             return responseUploadFilesModel;
                         }
-                        //else if (postedFile.ContentLength > MaxContentLength)
-                        //{
-                        //    var message = string.Format("Please Upload a file upto 5MB.");
-                        //    dict.Add("error", message);
-                        //    return Request.CreateResponse(HttpStatusCode.BadRequest, dict);
-                        //}
                         else
                         {
                             string uploadFilesPath = requestUploadFilesModel?.UploadFilesPath;
@@ -1138,7 +1068,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     }
                     if (ext == ".tiff" || ext == ".tif" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".gif" || ext == ".bmp")
                     {
-                        //  ConvertPDFToImages pdfToImg = new ConvertPDFToImages();
                         int numberOfPages = tifToImage(filePath, config.IMAGES_PATH_SERVER, workId, pageCounter, config.IMAGES_PATH_DB, out pageCounter, true, frictionLessReferralObj);
                         totalPages += numberOfPages;
                     }
@@ -1157,7 +1086,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 throw new Exception("DB configuration for file paths not found. See service configuration.");
             }
         }
-
         private void AddToDatabase(string filePath, int noOfPages, string userName, long workId, long? practiceCode)
         {
             try
@@ -1176,7 +1104,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 //throw exception;
             }
         }
-
         public int tifToImage(string tifImagePath, string imagePath, long workId, long pageCounter, string ImgDirPath, out long pageCounterOut, bool _isStoreToDB, FrictionLessReferral frictionLessReferralObj)
         {
             if (!Directory.Exists(imagePath))
@@ -1227,7 +1154,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 var parmWorkID = new SqlParameter("WORKID", SqlDbType.BigInt) { Value = workId };
                 var parmFilePath = new SqlParameter("FILEPATH", SqlDbType.VarChar) { Value = filePath };
                 var parmLogoPath = new SqlParameter("LOGOPATH", SqlDbType.VarChar) { Value = logoPath };
-
                 var result = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_ADD_FRICTIONLESS_FILES_TO_DB_FROM_RFO @FRICTIONLESS_ID,  @WORKID, @FILEPATH, @LOGOPATH",
                     frictionlessRefId, parmWorkID, parmFilePath, parmLogoPath);
             }
@@ -1361,7 +1287,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
             }
         }
-
         public void AddHtmlToDB(string htmll, string userName, FrictionLessReferral FrictionLessReferralObj)
         {
             var work_order = _QueueRepository.GetFirst(t => t.WORK_ID == FrictionLessReferralObj.WORK_ID && t.DELETED == false);
@@ -1369,7 +1294,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             var documentType = _foxdocumenttypeRepository.GetFirst(t => t.DOCUMENT_TYPE_ID == work_order.DOCUMENT_TYPE).NAME ?? "";
             var pri_insurance = "";
             var ins_name = "";
-
             if (!string.IsNullOrEmpty(FrictionLessReferralObj.PATIENT_INSURANCE_PAYER_ID))
             {
                 ins_name = _foxInsurancePayersRepository.GetFirst(t => t.DELETED == false && t.INSURANCE_PAYERS_ID == FrictionLessReferralObj.PATIENT_INSURANCE_PAYER_ID).INSURANCE_NAME ?? "";
@@ -1564,7 +1488,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 originalQueue.ASSIGNED_TO = null;
                 originalQueue.ASSIGNED_BY = null;
                 originalQueue.ASSIGNED_DATE = null;
-
                 _QueueRepository.Insert(originalQueue);
                 _QueueRepository.Save();
                 GenerateAndSaveImagesOfUploadedFiles(workId, frictionLessReferralObj, Profile);
@@ -1572,5 +1495,5 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             return workId;
         }
     }
-
+    #endregion
 }

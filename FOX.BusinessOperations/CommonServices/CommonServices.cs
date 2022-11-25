@@ -100,7 +100,7 @@ namespace FOX.BusinessOperations.CommonServices
         {
             try
             {
-                var queue = _QueueRepository.GetSingle(e => e.UNIQUE_ID == unique_Id && e.DELETED == false);
+                var queue = _QueueRepository.GetSingle(e => e.UNIQUE_ID == unique_Id);
                 if (queue != null)
                 {
                     var localPath = practiceDocumentDirectory + "/" + queue.UNIQUE_ID + " __" + DateTime.Now.Ticks + ".pdf";

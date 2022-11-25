@@ -4230,7 +4230,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 ins_name = _foxInsurancePayersRepository.GetFirst(t => (t.DELETED == null || t.DELETED == false) && t.FOX_TBL_INSURANCE_ID == curr_insurances.FOX_TBL_INSURANCE_ID).INSURANCE_NAME ?? "";
             }
             var frictionLessReferralData = _frictionlessReferralRepository.GetFirst(t => t.DELETED == false && t.WORK_ID == work_id);
-            if (frictionLessReferralData.PATIENT_INSURANCE_PAYER_ID != null)
+            if (frictionLessReferralData != null && !string.IsNullOrEmpty(frictionLessReferralData.PATIENT_INSURANCE_PAYER_ID))
             {
                 ins_name = _foxInsurancePayersRepository.GetFirst(t => (t.DELETED == null || t.DELETED == false) && t.INSURANCE_PAYERS_ID == frictionLessReferralData.PATIENT_INSURANCE_PAYER_ID).INSURANCE_NAME ?? "";
             }
@@ -4320,7 +4320,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 body = File.ReadAllText(templatePathOfSenderEmail);
                 HtmlDocument htmldoc = new HtmlDocument();
                 htmldoc.LoadHtml(body);
-               // var frictionLessReferralData = _frictionlessReferralRepository.GetFirst(t => t.DELETED == false && t.WORK_ID == work_id);
                 if (work_order.IS_VERBAL_ORDER == false && work_order.is_strategic_account == true)
                 {
                     var VerbalOrder = htmldoc.DocumentNode.SelectSingleNode("//span[@id='VerbalOrder']");
@@ -4352,11 +4351,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 {
                     patient = new Patient();
                     body = body.Replace("[[PATIENT_NAME]]", frictionLessReferralData.PATIENT_LAST_NAME + ", " + frictionLessReferralData.PATIENT_FIRST_NAME);
-                    var date = frictionLessReferralData.PATIENT_DOB.ToString();
-                    var tempDate = date.Split();
-                    frictionLessReferralData.PATIENT_DOB_STRING = tempDate[0];
+                    var date = Convert.ToDateTime(frictionLessReferralData.PATIENT_DOB);
+                    frictionLessReferralData.PATIENT_DOB_STRING = date.ToShortDateString();
                     body = body.Replace("[[PATIENT_DOB]]", frictionLessReferralData.PATIENT_DOB_STRING ?? "");
-                   body = body.Replace("[[PATIENT_MRN]]", patient.Chart_Id ?? "");
+                    body = body.Replace("[[PATIENT_MRN]]", patient.Chart_Id ?? "");
                 }
                 else
                 {
@@ -4364,9 +4362,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     body = body.Replace("[[PATIENT_DOB]]", patient.Date_Of_Birth.ToString() ?? "");
                     body = body.Replace("[[PATIENT_MRN]]", patient.Chart_Id ?? "");
                 }
-                //body = body.Replace("[[PATIENT_NAME]]", patient.Last_Name + ", " + patient.First_Name + " (" + patient.Gender + ")");
-                //body = body.Replace("[[PATIENT_DOB]]", patient.Date_Of_Birth.ToString() ?? "");
-                //body = body.Replace("[[PATIENT_MRN]]", patient.Chart_Id ?? "");
                 if (address != null)
                 {
                     body = body.Replace("[[PATIENT_HOME_ADDRESS]]", address.ADDRESS ?? "");
@@ -4391,7 +4386,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 {
                     body = body.Replace("[[ORS]]", ORS.LAST_NAME + ", " + ORS.FIRST_NAME ?? "");
                 }
-                if (frictionLessReferralData != null)
+                if (frictionLessReferralData != null && !string.IsNullOrEmpty(frictionLessReferralData.PROVIDER_LAST_NAME))
                 {
                     body = body.Replace("[[ORS]]", frictionLessReferralData.PROVIDER_LAST_NAME + ", " + frictionLessReferralData.PROVIDER_FIRST_NAME ?? "" + "|" + frictionLessReferralData.PROVIDER_REGION ?? "");
                 }
@@ -4500,7 +4495,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                 splitedFaxIndex[7] + splitedFaxIndex[8] + splitedFaxIndex[9];
                                 body = body.Replace("[[provider_fax]]", "+" + newFormatFax ?? "");
                             }
-                          
                         }
                         else
                         {

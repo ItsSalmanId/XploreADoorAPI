@@ -2,11 +2,8 @@
 using FOX.BusinessOperations.CommonServices;
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
-using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
 using FOX.DataModels.Models.OriginalQueueModel;
 using FOX.DataModels.Models.Security;
-using FOX.DataModels.Models.Settings.RoleAndRights;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -22,7 +19,6 @@ namespace FOX.BusinessOperations.OriginalQueueService
         private readonly DBContextQueue _QueueContext = new DBContextQueue();
         private readonly GenericRepository<OriginalQueue> _QueueRepository;
         private readonly GenericRepository<OriginalQueueFiles> _OriginalQueueFilesRepository;
-
 
         public OriginalQueueService()
         {
@@ -412,7 +408,7 @@ namespace FOX.BusinessOperations.OriginalQueueService
         public OriginalQueue SaveQueueFromOldQueueData(long work_ID, UserProfile Profile, int numberOfPages, long CurrrentParentID)
         {
             var queue = _QueueRepository.GetByID(work_ID);
-            var count = _QueueRepository.GetMany(x => x.UNIQUE_ID.Contains(work_ID.ToString()) && x.DELETED == false).Count;
+            var count = _QueueRepository.GetMany(x => x.UNIQUE_ID.Contains(work_ID.ToString())).Count;
 
             if (queue != null)
             {
@@ -584,16 +580,12 @@ namespace FOX.BusinessOperations.OriginalQueueService
         //    }
         //}
 
-
-
-
-
         public void UpdateNmOfPages(long CurrrentParentID, UserProfile Profile, int oldPages)
         {
             OriginalQueue req = new OriginalQueue();
 
             //    var queue = _QueueRepository.GetByID(CurrrentParentID);
-            var queue = _QueueRepository.GetFirst(x => x.WORK_ID == CurrrentParentID && x.DELETED == false);
+            var queue = _QueueRepository.GetByID(CurrrentParentID);
 
             if (queue != null)
             {

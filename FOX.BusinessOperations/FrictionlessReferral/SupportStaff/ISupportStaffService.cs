@@ -22,7 +22,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         ResponseModel DeleteWorkOrder(RequestDeleteWorkOrder requestDeleteWorkOrder);
         QRCodeModel GenerateQRCode(QRCodeModel obj);
         ResponseUploadFilesModel UploadFiles(RequestUploadFilesModel requestUploadFilesAPIModel);
-        FrictionLessReferral getFrictionLessReferralDetailsByWorkID(long referralId);
+        FrictionLessReferral GetFrictionLessReferralDetailsByWorkID(long referralId);
         #endregion
     }
 }

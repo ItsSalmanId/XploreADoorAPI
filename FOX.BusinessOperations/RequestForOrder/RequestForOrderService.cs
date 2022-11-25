@@ -8,7 +8,6 @@ using FOX.DataModels.GenericRepository;
 using FOX.BusinessOperations.CommonService;
 using FOX.DataModels.Context;
 using System.IO;
-
 using FOX.BusinessOperations.FaxServices;
 using SautinSoft;
 using System.Drawing.Imaging;
@@ -30,9 +29,7 @@ using ZXing;
 using System.Linq;
 using FOX.DataModels.Models.SenderType;
 using System.Threading;
-using System.Diagnostics;
 using FOX.DataModels;
-using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
 
 namespace FOX.BusinessOperations.RequestForOrder
 {
@@ -44,10 +41,8 @@ namespace FOX.BusinessOperations.RequestForOrder
         private readonly DbContextPatient _PatientContext = new DbContextPatient();
         private readonly DbContextSecurity security = new DbContextSecurity();
         private readonly GenericRepository<User> _UserRepository;
-
         private readonly DbContextCommon _DbContextCommon = new DbContextCommon();
         private readonly GenericRepository<DataModels.Models.SenderName.FOX_TBL_SENDER_NAME> _FOX_TBL_SENDER_NAME;
-
         private readonly DbContextIndexinfo _IndexinfoContext = new DbContextIndexinfo();
         private readonly GenericRepository<ReferralSource> _InsertUpdateOrderingSourceRepository;
         private readonly GenericRepository<FOX_TBL_IDENTIFIER> _fox_tbl_identifier;
@@ -239,10 +234,8 @@ namespace FOX.BusinessOperations.RequestForOrder
                     }
                     else
                     {
-
-                            link = AppConfiguration.ClientURL + @"#/VerifyWorkOrder?value=" + HttpUtility.UrlEncode(encryptedWorkId);
-                            link += "&name=" + requestSendEmailModel.EmailAddress;
-
+                        link = AppConfiguration.ClientURL + @"#/VerifyWorkOrder?value=" + HttpUtility.UrlEncode(encryptedWorkId);
+                        link += "&name=" + requestSendEmailModel.EmailAddress;
                     }
                     
                     //if (!string.IsNullOrWhiteSpace(orderingRefSourceFullName))
@@ -444,13 +437,6 @@ namespace FOX.BusinessOperations.RequestForOrder
                         {
                             emailStatus = Helper.Email(requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath });
                         }
-
-                        //using (var test = new DBContextQueue())
-                        //{
-                        //    var obj = test.WorkQueue.Where(s => s.WORK_ID == requestSendEmailModel.WorkId && (s.DELETED == false)).FirstOrDefault();
-                        //    obj.REFERRAL_EMAIL_SENT_TO = "test";
-                        //    test.SaveChanges();
-                        //}
 
                         var queueResult = _QueueRepository.GetFirst(s => s.WORK_ID == requestSendEmailModel.WorkId && s.DELETED == false);
 
@@ -749,7 +735,6 @@ namespace FOX.BusinessOperations.RequestForOrder
                 //        //_OriginalQueueFiles.Save();
                 //    }
                 //}
-
                     long iD = Helper.getMaximumId("FOXREHAB_FILE_ID");
                     var fileId = new SqlParameter("FILE_ID", SqlDbType.BigInt) { Value = iD };
                     var parmWorkID = new SqlParameter("WORKID", SqlDbType.BigInt) { Value = workId };
@@ -759,9 +744,6 @@ namespace FOX.BusinessOperations.RequestForOrder
 
                     var result = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_AD_FILES_TO_DB_FROM_RFO @FILE_ID, @WORKID, @FILEPATH, @LOGOPATH, @IS_FROM_INDEX_INFO",
                         fileId, parmWorkID, parmFilePath, parmLogoPath, _isFromIndexInfo);
-                
-
-
             }
             catch (Exception exception)
             {
@@ -1040,7 +1022,6 @@ namespace FOX.BusinessOperations.RequestForOrder
                 //string workIdStr = StringCipher.Decrypt(value);
                 string workIdStr = value;
                 long workId = long.Parse(workIdStr);
-              //  OriginalQueue originalQueue = _QueueRepository.Get(t => t.WORK_ID == workId && !t.DELETED);
                 OriginalQueue originalQueue = _QueueRepository.GetFirst(t => t.WORK_ID == workId && !t.DELETED);
                 if (originalQueue != null)
                 {           
@@ -1049,7 +1030,6 @@ namespace FOX.BusinessOperations.RequestForOrder
                         originalQueue.MODIFIED_DATE = DateTime.Now;
                         _QueueRepository.Update(originalQueue);
                         _QueueRepository.Save();
-             
                     return true;
                 }
                 return false;
