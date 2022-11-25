@@ -228,7 +228,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 if (!string.IsNullOrEmpty(urlLink))
                 {
                     var status = SmsService.SMSTwilio(patientDetails.MobilePhone, urlLink);
-                    if (status != null && status == "Success")
+                    if (status != null)
                     {
                         responseModel = new ResponseModel()
                         {
