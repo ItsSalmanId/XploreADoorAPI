@@ -82,19 +82,19 @@ namespace FOX.ExternalServices
         /// <param name="number"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static string SMSTwilio(string number, string message)
+        public static WebResponse SMSTwilio(string number, string message)
         {
             try
             {
-                string SmsUrl = "http://clnjacu-srv1/ACU_SMS/ACU_Twilio_Service.asmx/ACUSendSMS";
+                string SmsUrl = ConfigurationManager.AppSettings["TwilioURL"];
                 WebRequest request = WebRequest.Create($"{SmsUrl}?Number={number}&Message={message}");
                 request.Method = "GET";
                 WebResponse response = request.GetResponse();
-                return "Success";
+                return response;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new ArgumentNullException("Failed", ex);
             }
         }
     }
