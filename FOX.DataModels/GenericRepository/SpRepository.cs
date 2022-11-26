@@ -16,14 +16,15 @@ namespace FOX.DataModels.GenericRepository
     /// <typeparam name="TEntity"></typeparam>
     public static class SpRepository<TEntity> where TEntity : class
     {
+        static long retrycatch = 0;
         #region Private member variables...
-       // internal static DbContext Context =new DbContextSP();
-       // internal static DbSet<TEntity> DbSet= Context.Set<TEntity>();
+        // internal static DbContext Context =new DbContextSP();
+        // internal static DbSet<TEntity> DbSet= Context.Set<TEntity>();
         //private object 
         #endregion
 
         #region Public Constructor...
-        
+
         static SpRepository()
         {
         }
@@ -38,21 +39,61 @@ namespace FOX.DataModels.GenericRepository
         /// <returns></returns>
         public static List<TEntity> GetListWithStoreProcedure(string query, params object[] parameters)
         {
-            using (DbContext Context = new DbContextSP())
+            try
             {
-                Context.Database.CommandTimeout = 300;
-                return Context.Database.SqlQuery<TEntity>(query, parameters).ToList<TEntity>();
+                using (DbContext Context = new DbContextSP())
+                {
+                    retrycatch = 0;
+                    Context.Database.CommandTimeout = 300;
+                    return Context.Database.SqlQuery<TEntity>(query, parameters).ToList<TEntity>();
+
+                }
             }
-            
+            catch (Exception ex)
+            {
+                if (retrycatch <= 2 && !string.IsNullOrEmpty(ex.Message) && ex.Message.Contains("deadlocked on lock resources with another process")
+                    || (ex.InnerException != null && !string.IsNullOrEmpty(ex.InnerException.Message) && ex.InnerException.Message.Contains("deadlocked on lock resources with another process")))
+                {
+                    retrycatch = retrycatch + 1;
+                    return GetListWithStoreProcedure(query, parameters);
+                }
+                else
+                {
+                    retrycatch = 0;
+                    throw ex;
+
+                }
+            }
         }
 
         public static TEntity GetSingleObjectWithStoreProcedure(string query, params object[] parameters)
         {
-            using (DbContext Context = new DbContextSP())
+            try
             {
-                Context.Database.CommandTimeout = 300;
-                return Context.Database.SqlQuery<TEntity>(query, parameters).FirstOrDefault<TEntity>();
+
+                using (DbContext Context = new DbContextSP())
+                {
+                    retrycatch = 0;
+                    Context.Database.CommandTimeout = 300;
+                    return Context.Database.SqlQuery<TEntity>(query, parameters).FirstOrDefault<TEntity>();
+                }
             }
+            catch (Exception ex)
+            {
+                if (retrycatch <= 2 && !string.IsNullOrEmpty(ex.Message) && ex.Message.Contains("deadlocked on lock resources with another process")
+                   || (ex.InnerException != null && !string.IsNullOrEmpty(ex.InnerException.Message) && ex.InnerException.Message.Contains("deadlocked on lock resources with another process")))
+                {
+                    retrycatch = retrycatch + 1;
+                    return GetSingleObjectWithStoreProcedure(query, parameters);
+                }
+                else
+                {
+                    retrycatch = 0;
+                    throw ex;
+
+                }
+            }
+
         }
         //sql dataAdapter for dataset
         public static SqlDataAdapter getSpSqlDataAdapter(string query)
@@ -66,5 +107,5 @@ namespace FOX.DataModels.GenericRepository
         }
         #endregion
     }
-   
+
 }

@@ -26,6 +26,10 @@ namespace FoxRehabilitationAPI.Filters
                 {
                     return;
                 }
+                if (excpMsg.Contains("no pages"))
+                {
+                    return;
+                }
                 var excpStackTrace = context.Exception.StackTrace;
                 var excpInnerMessage = ((context.Exception.InnerException != null && context.Exception.InnerException.Message != null) ? (context.Exception.InnerException.Message.ToLower().Contains("inner exception") ? context.Exception.InnerException.InnerException.Message : context.Exception.InnerException.Message) : "NULL");
 
