@@ -271,7 +271,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 // Search on NPPES
                 if (providerResponse.Count == 0)
                 {
-                    string url = AppConfiguration.NPPESNPIRegistry + "&first_name=" + obj.ProviderFirstName + "&last_name=" + obj.ProviderLastName + "&state=" + obj.ProviderState;
+                    string url = AppConfiguration.NPPESNPIRegistry + "&first_name=" + obj.ProviderFirstName.Trim() + "&last_name=" + obj.ProviderLastName.Trim() + "&state=" + obj.ProviderState.Trim();
                     ProviderReferralSourceInfo = GetNPPESNPIResponse(url);
                     return ProviderReferralSourceInfo;
                 }
