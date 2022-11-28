@@ -265,7 +265,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     return ProviderReferralSourceInfo;
                 }
             }
-            else if (practiceCode != 0 && !string.IsNullOrEmpty(obj.ProviderFirstName) && !string.IsNullOrEmpty(obj.ProviderLastName) && !string.IsNullOrEmpty(obj.ProviderState))
+            else if (practiceCode != 0 && !string.IsNullOrEmpty(obj.ProviderFirstName.Trim()) && !string.IsNullOrEmpty(obj.ProviderLastName.Trim()) && !string.IsNullOrEmpty(obj.ProviderState.Trim()))
             {
                 providerResponse = _providerRepository.GetMany(x => x.FIRST_NAME == obj.ProviderFirstName && x.LAST_NAME == obj.ProviderLastName && x.STATE == obj.ProviderState && x.PRACTICE_CODE == practiceCode && !(x.DELETED.HasValue ? x.DELETED.Value : false));
                 // Search on NPPES
