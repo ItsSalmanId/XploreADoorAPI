@@ -41,7 +41,6 @@ namespace FoxRehabilitationAPI.Controllers
             var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
             return Task.FromResult(response);
         }
-
         [HttpPost]
         public Task<HttpResponseMessage> UploadExcelFilesAPI()
         {
