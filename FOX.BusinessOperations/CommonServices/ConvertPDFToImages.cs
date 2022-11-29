@@ -115,7 +115,7 @@ namespace FOX.BusinessOperations.CommonService
                         bmp.Save(imagePath + "\\" + workId + "_" + pageCounter + ".jpg", ImageFormat.Jpeg);
                         var imgPath = ImgDirPath + "\\" + workId + "_" + pageCounter + ".jpg";
                         var logoImgPath = ImgDirPath + "\\Logo_" + workId + "_" + pageCounter + ".jpg";
-                        AddFilesToDatabase(imgPath, workId, logoImgPath);
+                            AddFilesToDatabase(imgPath, workId, logoImgPath);                 
                     }
                     bmp.Dispose();
                    // encoderParameters.Dispose();
@@ -251,7 +251,7 @@ namespace FOX.BusinessOperations.CommonService
                 if (originalQueueFiles == null)
                 {
                     //If Work Order files is deleted
-                   originalQueueFiles = _OriginalQueueFiles.GetFirst(t => t.WORK_ID == workId && t.deleted && t.FILE_PATH1.Equals(filePath) && t.FILE_PATH.Equals(logoPath));
+                    originalQueueFiles = _OriginalQueueFiles.GetFirst(t => t.WORK_ID == workId && t.deleted && t.FILE_PATH1.Equals(filePath) && t.FILE_PATH.Equals(logoPath));
                     if (originalQueueFiles == null)
                     {
                         originalQueueFiles = new OriginalQueueFiles();
