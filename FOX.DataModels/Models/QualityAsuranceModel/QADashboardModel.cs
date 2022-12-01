@@ -78,15 +78,13 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
     {
         public string name { get; set; }
         public string type { get; set; }
-     //   public string color { get; set; }
         public List<long> data { get; set; }
     }
 
     public class DashBoardMainModel : BaseModel
     {
-        public QADashboardData PieChartData { get; set; } 
+        public QADashboardData PieChartData { get; set; }
         public LineGraphResponseModel LineChartData { get; set; }
-
     }
 
     public class LineGraphResponseModel : BaseModel
@@ -98,6 +96,5 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public List<LineGraphData> lineGraphData { get; set; }
         public List<series> series { get; set; }
         public List<string> dateRanges { get; set; }
-
     }
 }
