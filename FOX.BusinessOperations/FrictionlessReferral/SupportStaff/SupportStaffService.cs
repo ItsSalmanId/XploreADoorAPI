@@ -38,7 +38,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
 {
     public class SupportStaffService : ISupportStaffService
     {
-        private readonly IUploadOrderImagesService _IUploadOrderImagesService;
         private readonly IFaxService _IFaxService = new FaxService();
 
         #region PROPERTIES
@@ -69,7 +68,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         #endregion
 
         #region CONSTRUCTOR
-        public SupportStaffService(IUploadOrderImagesService IUploadOrderImagesService)
+        public SupportStaffService()
         {
             _insurancePayerRepository = new GenericRepository<FoxInsurancePayers>(_dbContextFrictionLess);
             _frictionlessReferralWorkReposistory = new GenericRepository<FrictionlessReferralForm>(_dbContextFrictionLess);
@@ -77,7 +76,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             _providerRepository = new GenericRepository<Provider>(_dbContextCommon);
             _frictionlessReferralRepository = new GenericRepository<FrictionLessReferral>(_dbContextFrictionLess);
             _OriginalQueueFiles = new GenericRepository<OriginalQueueFiles>(_QueueContext);
-            _IUploadOrderImagesService = IUploadOrderImagesService;
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
             _NotesRepository = new GenericRepository<FOX_TBL_NOTES_HISTORY>(_IndexinfoContext);
             _convertPDFToImages = new ConvertPDFToImages();
