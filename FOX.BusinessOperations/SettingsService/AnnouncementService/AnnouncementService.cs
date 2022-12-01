@@ -55,50 +55,48 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                     {
                         objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO = Convert.ToDateTime(objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO_STR);
                     }
-                    DateTime Today = (DateTime)objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO;
-                    double TotalDays = Today.Subtract((DateTime)objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM).TotalDays + 1;
-                    if (TotalDays <= 10)
+                    DateTime today = (DateTime)objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO;
+                    double totalDays = today.Subtract((DateTime)objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM).TotalDays + 1;
+                    if (totalDays <= 10)
                     {
                         if (!string.IsNullOrEmpty(objAddEditAnnouncement.ANNOUNCEMENT_DETAILS.ToString()))
                         {
-                            var ExistingDetailInfo = _announcementRepository.GetFirst(r => r.ANNOUNCEMENT_ID == objAddEditAnnouncement.ANNOUNCEMENT_ID && r.DELETED == false);
-                            if (ExistingDetailInfo == null)
+                            var existingDetailInfo = _announcementRepository.GetFirst(r => r.ANNOUNCEMENT_ID == objAddEditAnnouncement.ANNOUNCEMENT_ID && r.DELETED == false);
+                            if (existingDetailInfo == null)
                             {
-                                SqlParameter AnouncementDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", Convert.ToDateTime(objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM));
-                                SqlParameter AnouncementDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO" , objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO);
-                                SqlParameter RolesIds = new SqlParameter("ROLES_IDs", objAddEditAnnouncement.EditSelectedRolesID.Substring(1));
-                                var DuplicationCheckInAnnouncment = SpRepository<Announcements>.GetSingleObjectWithStoreProcedure(@"exec WEB_FOX_PROC_CHECK_ANNOUNCEMENT_DUPLICATION  @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @ROLES_IDs", AnouncementDateFrom, AnouncementDateTo,RolesIds);
-                                
-
-                                if (DuplicationCheckInAnnouncment == null)
+                                SqlParameter anouncementDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", Convert.ToDateTime(objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM));
+                                SqlParameter anouncementDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO", objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO);
+                                SqlParameter rolesIds = new SqlParameter("ROLES_IDs", objAddEditAnnouncement.EditSelectedRolesID.Substring(1));
+                                var duplicationCheckInAnnouncment = SpRepository<Announcements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_CHECK_ANNOUNCEMENT_DUPLICATION @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @ROLES_IDs", anouncementDateFrom, anouncementDateTo, rolesIds);                               
+                                if (duplicationCheckInAnnouncment == null)
                                 {
-                                    for (int i = 0; i < TotalDays; i++)
+                                    for (int i = 0; i < totalDays; i++)
                                     {
-                                        DateTime AnnouncementDateFromUpdated = (DateTime)objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM;
-                                        AnnouncementDateFromUpdated = AnnouncementDateFromUpdated.AddDays(i);
+                                        DateTime announcementDateFromUpdated = (DateTime)objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM;
+                                        announcementDateFromUpdated = announcementDateFromUpdated.AddDays(i);
                                         long primaryKey = Helper.getMaximumId("ANNOUNCEMENT_ID");
-                                        SqlParameter AnnouncementId = new SqlParameter("ANNOUNCEMENT_ID", primaryKey);
-                                        SqlParameter AnnouncementDetails = new SqlParameter("ANNOUNCEMENT_DETAILS", objAddEditAnnouncement.ANNOUNCEMENT_DETAILS.ToString() ?? (object)DBNull.Value);
-                                        SqlParameter AnnouncementTitle = new SqlParameter("ANNOUNCEMENT_TITLE", objAddEditAnnouncement.ANNOUNCEMENT_TITLE.ToString() ?? (object)DBNull.Value);
-                                        SqlParameter AnnouncementDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", Convert.ToDateTime(AnnouncementDateFromUpdated));
-                                        SqlParameter AnnouncementDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO", AnnouncementDateFromUpdated);
-                                        SqlParameter ModifiedDate = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
-                                        SqlParameter ModifiedBy = new SqlParameter("MODIFIED_BY", profile.UserName);
-                                        SqlParameter PracticeCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
-                                        SqlParameter Deleted = new SqlParameter("DELETED", false);
-                                        SqlParameter CreatedBy = new SqlParameter("CREATED_BY", profile.UserName);
-                                        SqlParameter Operaton = new SqlParameter("OPERATION", "ADD");
-                                        SpRepository<Announcements>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT @ANNOUNCEMENT_ID, @ANNOUNCEMENT_DETAILS, @ANNOUNCEMENT_TITLE, @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @MODIFIED_DATE, @MODIFIED_BY, @PRACTICE_CODE, @DELETED, @CREATED_BY, @OPERATION", AnnouncementId, AnnouncementDetails, AnnouncementTitle, AnnouncementDateFrom, AnnouncementDateTo, ModifiedDate, ModifiedBy, PracticeCode, Deleted, CreatedBy, Operaton);
+                                        SqlParameter announcementId = new SqlParameter("ANNOUNCEMENT_ID", primaryKey);
+                                        SqlParameter announcementDetails = new SqlParameter("ANNOUNCEMENT_DETAILS", objAddEditAnnouncement.ANNOUNCEMENT_DETAILS.ToString() ?? (object)DBNull.Value);
+                                        SqlParameter announcementTitle = new SqlParameter("ANNOUNCEMENT_TITLE", objAddEditAnnouncement.ANNOUNCEMENT_TITLE.ToString() ?? (object)DBNull.Value);
+                                        SqlParameter announcementDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", Convert.ToDateTime(announcementDateFromUpdated));
+                                        SqlParameter announcementDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO", announcementDateFromUpdated);
+                                        SqlParameter modifiedDate = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
+                                        SqlParameter modifiedBy = new SqlParameter("MODIFIED_BY", profile.UserName);
+                                        SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
+                                        SqlParameter deleted = new SqlParameter("DELETED", false);
+                                        SqlParameter createdBy = new SqlParameter("CREATED_BY", profile.UserName);
+                                        SqlParameter operaton = new SqlParameter("OPERATION", "ADD");
+                                        SpRepository<Announcements>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT @ANNOUNCEMENT_ID, @ANNOUNCEMENT_DETAILS, @ANNOUNCEMENT_TITLE, @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @MODIFIED_DATE, @MODIFIED_BY, @PRACTICE_CODE, @DELETED, @CREATED_BY, @OPERATION", announcementId, announcementDetails, announcementTitle, announcementDateFrom, announcementDateTo, modifiedDate, modifiedBy, practiceCode, deleted, createdBy, operaton);
                                         foreach (var item in objAddEditAnnouncement.RoleRequest)
                                         {
                                             long primaryKeyRole = Helper.getMaximumId("ANNOUNCEMENT_ROLE_ID");
-                                            SqlParameter AnnouncementRoleId = new SqlParameter("ANNOUNCEMENT_ROLE_ID", primaryKeyRole);
-                                            SqlParameter RoleId = new SqlParameter("ROLE_ID", item.ROLE_ID.ToString() ?? (object)DBNull.Value);
-                                            SqlParameter RoleName = new SqlParameter("ROLE_NAME", item.ROLE_NAME.ToString() ?? (object)DBNull.Value);
-                                            SqlParameter AnnouncementIdRole = new SqlParameter("ANNOUNCEMENT_ID", primaryKey);
-                                            SqlParameter ROLE_MODIFIED_DATE = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
-                                            SqlParameter RolePracticeCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
-                                            SpRepository<AnnouncementRoles>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT_ROLE @ANNOUNCEMENT_ROLE_ID, @ROLE_ID, @ROLE_NAME, @ANNOUNCEMENT_ID, @PRACTICE_CODE", AnnouncementRoleId, RoleId, RoleName, AnnouncementIdRole, RolePracticeCode);
+                                            SqlParameter announcementRoleId = new SqlParameter("ANNOUNCEMENT_ROLE_ID", primaryKeyRole);
+                                            SqlParameter roleId = new SqlParameter("ROLE_ID", item.ROLE_ID.ToString() ?? (object)DBNull.Value);
+                                            SqlParameter roleName = new SqlParameter("ROLE_NAME", item.ROLE_NAME.ToString() ?? (object)DBNull.Value);
+                                            SqlParameter announcementIdRole = new SqlParameter("ANNOUNCEMENT_ID", primaryKey);
+                                            SqlParameter roleModifiedDate = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
+                                            SqlParameter rolePracticeCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
+                                            SpRepository<AnnouncementRoles>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT_ROLE @ANNOUNCEMENT_ROLE_ID, @ROLE_ID, @ROLE_NAME, @ANNOUNCEMENT_ID, @PRACTICE_CODE", announcementRoleId, roleId, roleName, announcementIdRole, rolePracticeCode);
                                         }
                                     }
                                     response.ErrorMessage = "Announcement added successfully.";
@@ -112,28 +110,28 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                             }
                             else
                             {
-                                SqlParameter AnnouncementId = new SqlParameter("ANNOUNCEMENT_ID", objAddEditAnnouncement.ANNOUNCEMENT_ID);
-                                SqlParameter AnnouncementDetails = new SqlParameter("ANNOUNCEMENT_DETAILS", objAddEditAnnouncement.ANNOUNCEMENT_DETAILS.ToString() ?? (object)DBNull.Value);
-                                SqlParameter AnnouncementTitle = new SqlParameter("ANNOUNCEMENT_TITLE", objAddEditAnnouncement.ANNOUNCEMENT_TITLE.ToString() ?? (object)DBNull.Value);
-                                SqlParameter AnnouncementDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", Convert.ToDateTime(objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM));
-                                SqlParameter AnnouncementDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO", objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO);
-                                SqlParameter ModifiedDate = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
-                                SqlParameter ModifiedBy = new SqlParameter("MODIFIED_BY", profile.UserName);
-                                SqlParameter PracticeCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
-                                SqlParameter Deleted = new SqlParameter("DELETED", false);
-                                SqlParameter CreatedBy = new SqlParameter("CREATED_BY", profile.UserName);
-                                SqlParameter Operaton = new SqlParameter("OPERATION", "UPDATE");
-                                SpRepository<Announcements>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT @ANNOUNCEMENT_ID, @ANNOUNCEMENT_DETAILS, @ANNOUNCEMENT_TITLE, @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @MODIFIED_DATE, @MODIFIED_BY, @PRACTICE_CODE, @DELETED, @CREATED_BY, @OPERATION", AnnouncementId, AnnouncementDetails, AnnouncementTitle, AnnouncementDateFrom, AnnouncementDateTo, ModifiedDate, ModifiedBy, PracticeCode, Deleted, CreatedBy, Operaton);
+                                SqlParameter announcementId = new SqlParameter("ANNOUNCEMENT_ID", objAddEditAnnouncement.ANNOUNCEMENT_ID);
+                                SqlParameter announcementDetails = new SqlParameter("ANNOUNCEMENT_DETAILS", objAddEditAnnouncement.ANNOUNCEMENT_DETAILS.ToString() ?? (object)DBNull.Value);
+                                SqlParameter announcementTitle = new SqlParameter("ANNOUNCEMENT_TITLE", objAddEditAnnouncement.ANNOUNCEMENT_TITLE.ToString() ?? (object)DBNull.Value);
+                                SqlParameter announcementDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", Convert.ToDateTime(objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM));
+                                SqlParameter announcementDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO", objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO);
+                                SqlParameter modifiedDate = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
+                                SqlParameter modifiedBy = new SqlParameter("MODIFIED_BY", profile.UserName);
+                                SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
+                                SqlParameter deleted = new SqlParameter("DELETED", false);
+                                SqlParameter createdBy = new SqlParameter("CREATED_BY", profile.UserName);
+                                SqlParameter operaton = new SqlParameter("OPERATION", "UPDATE");
+                                SpRepository<Announcements>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT @ANNOUNCEMENT_ID, @ANNOUNCEMENT_DETAILS, @ANNOUNCEMENT_TITLE, @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @MODIFIED_DATE, @MODIFIED_BY, @PRACTICE_CODE, @DELETED, @CREATED_BY, @OPERATION", announcementId, announcementDetails, announcementTitle, announcementDateFrom, announcementDateTo, modifiedDate, modifiedBy, practiceCode, deleted, createdBy, operaton);
                                 foreach (var item in objAddEditAnnouncement.RoleRequest)
                                 {
                                     long primaryKeyRole = Helper.getMaximumId("ANNOUNCEMENT_ROLE_ID");
-                                    SqlParameter AnnouncementRoleId = new SqlParameter("ANNOUNCEMENT_ROLE_ID", primaryKeyRole);
-                                    SqlParameter RoleId = new SqlParameter("ROLE_ID", item.ROLE_ID.ToString() ?? (object)DBNull.Value);
-                                    SqlParameter RoleName = new SqlParameter("ROLE_NAME", item.ROLE_NAME.ToString() ?? (object)DBNull.Value);
-                                    SqlParameter AnnouncementIdRole = new SqlParameter("ANNOUNCEMENT_ID", objAddEditAnnouncement.ANNOUNCEMENT_ID);
-                                    SqlParameter ROLE_MODIFIED_DATE = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
-                                    SqlParameter RolePracticeCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
-                                    SpRepository<AnnouncementRoles>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT_ROLE @ANNOUNCEMENT_ROLE_ID, @ROLE_ID, @ROLE_NAME, @ANNOUNCEMENT_ID , @PRACTICE_CODE", AnnouncementRoleId, RoleId, RoleName, AnnouncementIdRole, RolePracticeCode);
+                                    SqlParameter announcementRoleId = new SqlParameter("ANNOUNCEMENT_ROLE_ID", primaryKeyRole);
+                                    SqlParameter roleId = new SqlParameter("ROLE_ID", item.ROLE_ID.ToString() ?? (object)DBNull.Value);
+                                    SqlParameter roleName = new SqlParameter("ROLE_NAME", item.ROLE_NAME.ToString() ?? (object)DBNull.Value);
+                                    SqlParameter announcementIdRole = new SqlParameter("ANNOUNCEMENT_ID", objAddEditAnnouncement.ANNOUNCEMENT_ID);
+                                    SqlParameter roleModifiedDate = new SqlParameter("MODIFIED_DATE", Helper.GetCurrentDate());
+                                    SqlParameter rolePracticeCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
+                                    SpRepository<AnnouncementRoles>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_ANNOUNCEMENT_ROLE @ANNOUNCEMENT_ROLE_ID, @ROLE_ID, @ROLE_NAME, @ANNOUNCEMENT_ID , @PRACTICE_CODE", announcementRoleId, roleId, roleName, announcementIdRole, rolePracticeCode);
                                 }
                                 response.ErrorMessage = "Announcement updated  successfully.";
                                 response.Success = true;
@@ -183,12 +181,12 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                 }
                 if (objAnnouncement != null && profile.PracticeCode != 0)
                 {
-                    var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
-                    SqlParameter AnnouncementsDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", objAnnouncement.ANNOUNCEMENT_DATE_FROM ?? (object)DBNull.Value);
-                    SqlParameter AnnouncementsDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO", objAnnouncement.ANNOUNCEMENT_DATE_TO ?? (object)DBNull.Value);
-                    SqlParameter RoleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = objAnnouncement.ROLE_ID ?? (object)DBNull.Value };
-                    SqlParameter AnnouncementTitle = new SqlParameter { ParameterName = "ANNOUNCEMENT_TITLE", SqlDbType = SqlDbType.VarChar, Value = objAnnouncement.ANNOUNCEMENT_TITLE == null ? null : objAnnouncement.ANNOUNCEMENT_TITLE };
-                    announcementsList = SpRepository<Announcements>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS  @PRACTICE_CODE, @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @ROLE_ID,@ANNOUNCEMENT_TITLE", PracticeCode, AnnouncementsDateFrom, AnnouncementsDateTo, RoleId, AnnouncementTitle);
+                    var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                    SqlParameter announcementsDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", objAnnouncement.ANNOUNCEMENT_DATE_FROM ?? (object)DBNull.Value);
+                    SqlParameter announcementsDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO", objAnnouncement.ANNOUNCEMENT_DATE_TO ?? (object)DBNull.Value);
+                    SqlParameter roleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = objAnnouncement.ROLE_ID ?? (object)DBNull.Value};
+                    SqlParameter announcementTitle = new SqlParameter { ParameterName = "ANNOUNCEMENT_TITLE", SqlDbType = SqlDbType.VarChar, Value = objAnnouncement.ANNOUNCEMENT_TITLE == null ? null : objAnnouncement.ANNOUNCEMENT_TITLE};
+                    announcementsList = SpRepository<Announcements>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS @PRACTICE_CODE, @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @ROLE_ID, @ANNOUNCEMENT_TITLE", practiceCode, announcementsDateFrom, announcementsDateTo, roleId, announcementTitle);
                 }
             }
             return announcementsList;
@@ -207,9 +205,9 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                     {
                         objAnnouncement.ANNOUNCEMENT_DATE_TO = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_TO);
                     }
-                    var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
-                    var AccouncmentId = new SqlParameter { ParameterName = "ANNOUNCEMENT_ID", SqlDbType = SqlDbType.BigInt, Value = objAnnouncement.ANNOUNCEMENT_ID };
-                    announcementsList = SpRepository<Announcements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS_FOR_UPDATE  @PRACTICE_CODE, @ANNOUNCEMENT_ID", PracticeCode, AccouncmentId);
+                    var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode};
+                    var accouncmentId = new SqlParameter { ParameterName = "ANNOUNCEMENT_ID", SqlDbType = SqlDbType.BigInt, Value = objAnnouncement.ANNOUNCEMENT_ID};
+                    announcementsList = SpRepository<Announcements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS_FOR_UPDATE  @PRACTICE_CODE, @ANNOUNCEMENT_ID", practiceCode, accouncmentId);
                     if (announcementsList != null)
                     {
                         announcementsList.AnnouncementRoles = _announcementRoleRepository.GetMany(x => x.ANNOUNCEMENT_ID == announcementsList.ANNOUNCEMENT_ID && !(x.DELETED) && x.PRACTICE_CODE == profile.PracticeCode);
