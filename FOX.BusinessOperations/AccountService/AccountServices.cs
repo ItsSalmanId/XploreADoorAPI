@@ -22,15 +22,10 @@ using FOX.DataModels.Models.Settings.ReferralSource;
 using FOX.DataModels.Models.Settings.Practice;
 using FOX.DataModels.Models.SenderName;
 using FOX.DataModels.Models.Patient;
-using System.Threading.Tasks;
 using FOX.DataModels.Models.Authorization;
-using System.Text;
-using System.Net.NetworkInformation;
 using System.Xml;
 using System.Collections.Specialized;
 using static FOX.DataModels.Models.Security.ProfileToken;
-using FOX.DataModels.Models.IndexInfo;
-using FOX.DataModels.Models.OriginalQueueModel;
 using FOX.DataModels;
 namespace FOX.BusinessOperations.AccountService
 {
@@ -124,7 +119,7 @@ namespace FOX.BusinessOperations.AccountService
         }
         public UserDetailByNPIModel GetProviderDetailByNpi(string npi)
         {
-            string url = AppConfiguration.NPIRegistryURL + "?number=" + npi;
+            string url = AppConfiguration.NPIRegistryURL + "&number=" + npi;
             using (HttpClient client = new HttpClient())
             {
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;

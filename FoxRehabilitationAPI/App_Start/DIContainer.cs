@@ -11,6 +11,7 @@ using FOX.BusinessOperations.GeneralNotesService;
 using FOX.BusinessOperations.TaskServices;
 using FOX.BusinessOperations.CaseServices;
 using FOX.BusinessOperations.GroupServices;
+using FOX.BusinessOperations.FrictionlessReferral.SupportStaff;
 
 namespace FoxRehabilitationAPI.App_Start
 {
@@ -56,6 +57,7 @@ namespace FoxRehabilitationAPI.App_Start
 
             container.RegisterType<IGroupService, GroupService>();
             // container.RegisterType<FOX.BusinessOperations.ReconnectCallService.IReconnectCallService, FOX.BusinessOperations.ReconnectCallService.ReconnectCallService>();
+            container.RegisterType<FOX.BusinessOperations.SettingsService.AnnouncementService.IAnnouncementService, FOX.BusinessOperations.SettingsService.AnnouncementService.AnnouncementService>();
             container.RegisterType<FOX.BusinessOperations.SettingsService.ClinicianSetupService.IClinicianSetupService, FOX.BusinessOperations.SettingsService.ClinicianSetupService.ClinicianSetupService>();
             container.RegisterType<FOX.BusinessOperations.PatientMaintenanceService.PatientInsuranceService.IPatientInsuranceService, FOX.BusinessOperations.PatientMaintenanceService.PatientInsuranceService.PatientInsuranceService>();
             container.RegisterType<FOX.BusinessOperations.PatientMaintenanceService.IPatientMaintenanceService, FOX.BusinessOperations.PatientMaintenanceService.PatientMaintenanceService>();
@@ -67,6 +69,7 @@ namespace FoxRehabilitationAPI.App_Start
             container.RegisterType<FOX.BusinessOperations.Scheduler.ISchedulerService, FOX.BusinessOperations.Scheduler.SchedulerService>();
             container.RegisterType<FOX.BusinessOperations.HrAutoEmail.IHrAutoEmailService, FOX.BusinessOperations.HrAutoEmail.HrAutoEmailService>();
             container.RegisterType<FOX.BusinessOperations.SignatureRequiredServices.ISignatureRequiredService, FOX.BusinessOperations.SignatureRequiredServices.SignatureRequiredService>();
+            container.RegisterType<ISupportStaffService, SupportStaffService>();
             return container;
         }
     }

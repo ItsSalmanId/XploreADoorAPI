@@ -8,7 +8,6 @@ using FOX.DataModels.GenericRepository;
 using FOX.BusinessOperations.CommonService;
 using FOX.DataModels.Context;
 using System.IO;
-
 using FOX.BusinessOperations.FaxServices;
 using SautinSoft;
 using System.Drawing.Imaging;
@@ -30,7 +29,6 @@ using ZXing;
 using System.Linq;
 using FOX.DataModels.Models.SenderType;
 using System.Threading;
-using System.Diagnostics;
 using FOX.DataModels;
 
 namespace FOX.BusinessOperations.RequestForOrder
@@ -41,13 +39,10 @@ namespace FOX.BusinessOperations.RequestForOrder
         private readonly GenericRepository<OriginalQueue> _QueueRepository;
         private readonly GenericRepository<OriginalQueueFiles> _OriginalQueueFiles;
         private readonly DbContextPatient _PatientContext = new DbContextPatient();
-
         private readonly DbContextSecurity security = new DbContextSecurity();
         private readonly GenericRepository<User> _UserRepository;
-
         private readonly DbContextCommon _DbContextCommon = new DbContextCommon();
         private readonly GenericRepository<DataModels.Models.SenderName.FOX_TBL_SENDER_NAME> _FOX_TBL_SENDER_NAME;
-
         private readonly DbContextIndexinfo _IndexinfoContext = new DbContextIndexinfo();
         private readonly GenericRepository<ReferralSource> _InsertUpdateOrderingSourceRepository;
         private readonly GenericRepository<FOX_TBL_IDENTIFIER> _fox_tbl_identifier;
@@ -232,13 +227,23 @@ namespace FOX.BusinessOperations.RequestForOrder
 
                     //var encryptedWorkId = StringCipher.Encrypt(requestSendEmailModel.WorkId.ToString());
                     var encryptedWorkId = requestSendEmailModel.WorkId.ToString();
-                    string link = AppConfiguration.ClientURL + @"#/VerifyWorkOrder?value=" + HttpUtility.UrlEncode(encryptedWorkId);
+                    string link = "";
+                    if(Profile!= null && Profile.isTalkRehab)
+                    {
+                        link = AppConfiguration.ClientURL + @"#/account/login?talkRehabEmail="+ Profile.PracticeCode;
+                    }
+                    else
+                    {
+                        link = AppConfiguration.ClientURL + @"#/VerifyWorkOrder?value=" + HttpUtility.UrlEncode(encryptedWorkId);
+                        link += "&name=" + requestSendEmailModel.EmailAddress;
+                    }
+                    
                     //if (!string.IsNullOrWhiteSpace(orderingRefSourceFullName))
                     //{
                     //    link += "&name=" + orderingRefSourceFullName;
                     //    link += "&name=" + requestSendEmailModel.EmailAddress;
                     //}
-                    link += "&name=" + requestSendEmailModel.EmailAddress;
+                    
                     string linkMessage = @"
                                 <p>Please <a href='" + link + @"'>click here for signing</a> to confirm that you have reviewed and are an agreement of this request.   Once you click, the document will electronically be signed by you with the current date and time.  Thank you for your confidence in our practice.
                                 ";
@@ -317,7 +322,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                                                         <table style='width:250px;font-family: sans-serif !important;' cellpadding='0' cellspacing='0'>
                                                             <tr>
                                                                 <td style='text-align: center;background-color:#ff671f; border:1px solid #ff671f; vertical-align:middle; line-height:normal; padding:5px 15px 5px 15px;'>
-                                                                    <a style='color:#fff; font-size:16px;text-decoration:none; outline:none;background-color:#ff671f;' target='_blank' href='" +link + @"'>Login To Fox Rehab Portal</a>
+                                                                    <a style='color:#fff; font-size:16px;text-decoration:none; outline:none;background-color:#ff671f;' target='_blank' href='" + link + @"'>Login To Fox Rehab Portal</a>
                                                                 </td>
                                                             </tr>
                                                         </table>
@@ -433,19 +438,14 @@ namespace FOX.BusinessOperations.RequestForOrder
                             emailStatus = Helper.Email(requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath });
                         }
 
-                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || Start Time of Finding WORK ID " + Helper.GetCurrentDate().ToLocalTime());
-                       
                         var queueResult = _QueueRepository.GetFirst(s => s.WORK_ID == requestSendEmailModel.WorkId && s.DELETED == false);
-                        Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || End Time of Finding WORK ID " + Helper.GetCurrentDate().ToLocalTime());
+
                         if (queueResult != null && emailStatus == true)
                         {
-                            Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || Start Time of Saving Email Address Against the WORK ID " + Helper.GetCurrentDate().ToLocalTime());
-                            queueResult.REFERRAL_EMAIL_SENT_TO = requestSendEmailModel.EmailAddress;
-                            _QueueRepository.Update(queueResult);
-                            _QueueRepository.Save();
-                            Helper.TokenTaskCancellationExceptionLog("RequestForOrder: In Function Queue Repository || End Time of Saving Email Address Against the WORK ID " + Helper.GetCurrentDate().ToLocalTime());
-                        }
-
+                             queueResult.REFERRAL_EMAIL_SENT_TO = requestSendEmailModel.EmailAddress;
+                             _QueueRepository.Update(queueResult);
+                             _QueueRepository.Save();
+                        }                
                         string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
                         int numberOfPages = getNumberOfPagesOfPDF(filePath);
                         //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
@@ -735,15 +735,15 @@ namespace FOX.BusinessOperations.RequestForOrder
                 //        //_OriginalQueueFiles.Save();
                 //    }
                 //}
-                long iD = Helper.getMaximumId("FOXREHAB_FILE_ID");
-                var fileId = new SqlParameter("FILE_ID", SqlDbType.BigInt) { Value = iD };
-                var parmWorkID = new SqlParameter("WORKID", SqlDbType.BigInt) { Value = workId };
-                var parmFilePath = new SqlParameter("FILEPATH", SqlDbType.VarChar) { Value = filePath };
-                var parmLogoPath = new SqlParameter("LOGOPATH", SqlDbType.VarChar) { Value = logoPath };
-                var _isFromIndexInfo = new SqlParameter("IS_FROM_INDEX_INFO", SqlDbType.Bit) { Value = false };
+                    long iD = Helper.getMaximumId("FOXREHAB_FILE_ID");
+                    var fileId = new SqlParameter("FILE_ID", SqlDbType.BigInt) { Value = iD };
+                    var parmWorkID = new SqlParameter("WORKID", SqlDbType.BigInt) { Value = workId };
+                    var parmFilePath = new SqlParameter("FILEPATH", SqlDbType.VarChar) { Value = filePath };
+                    var parmLogoPath = new SqlParameter("LOGOPATH", SqlDbType.VarChar) { Value = logoPath };
+                    var _isFromIndexInfo = new SqlParameter("IS_FROM_INDEX_INFO", SqlDbType.Bit) { Value = false };
 
-                var result = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_AD_FILES_TO_DB_FROM_RFO @FILE_ID, @WORKID, @FILEPATH, @LOGOPATH, @IS_FROM_INDEX_INFO",
-                    fileId, parmWorkID, parmFilePath, parmLogoPath, _isFromIndexInfo);
+                    var result = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_AD_FILES_TO_DB_FROM_RFO @FILE_ID, @WORKID, @FILEPATH, @LOGOPATH, @IS_FROM_INDEX_INFO",
+                        fileId, parmWorkID, parmFilePath, parmLogoPath, _isFromIndexInfo);
             }
             catch (Exception exception)
             {
@@ -1022,16 +1022,14 @@ namespace FOX.BusinessOperations.RequestForOrder
                 //string workIdStr = StringCipher.Decrypt(value);
                 string workIdStr = value;
                 long workId = long.Parse(workIdStr);
-                OriginalQueue originalQueue = _QueueRepository.Get(t => t.WORK_ID == workId && !t.DELETED);
+                OriginalQueue originalQueue = _QueueRepository.GetFirst(t => t.WORK_ID == workId && !t.DELETED);
                 if (originalQueue != null)
-                {
-                    originalQueue.IS_VERIFIED_BY_RECIPIENT = true;
-
-                    originalQueue.MODIFIED_BY = "ExternalUser";
-                    originalQueue.MODIFIED_DATE = DateTime.Now;
-
-                    _QueueRepository.Update(originalQueue);
-                    _QueueRepository.Save();
+                {           
+                        originalQueue.IS_VERIFIED_BY_RECIPIENT = true;
+                        originalQueue.MODIFIED_BY = "ExternalUser";
+                        originalQueue.MODIFIED_DATE = DateTime.Now;
+                        _QueueRepository.Update(originalQueue);
+                        _QueueRepository.Save();
                     return true;
                 }
                 return false;
@@ -1215,7 +1213,7 @@ public ResponseModel DownloadPdf(RequestDownloadPdfModel requestDownloadPdfModel
             {
                 pri_insurance = ins_name;
             }
-            var file_name = patient.Last_Name + "_" + documentType;
+             var file_name = patient.Last_Name + "_" + documentType;
             var Sender = _User.GetFirst(T => T.USER_NAME == sourceDetail.CREATED_BY);
             if (Sender == null && sourceDetail != null && !string.IsNullOrEmpty(sourceDetail.CREATED_BY) && sourceDetail.CREATED_BY.Equals("FOX TEAM"))
             {

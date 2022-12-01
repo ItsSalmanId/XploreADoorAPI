@@ -1,6 +1,7 @@
 ﻿using FOX.DataModels.Models.CasesModel;
 using FOX.DataModels.Models.GroupsModel;
 using FOX.DataModels.Models.Security;
+using FOX.DataModels.Models.Settings.Announcement;
 using FOX.DataModels.Models.Settings.ClinicianSetup;
 using FOX.DataModels.Models.Settings.Practice;
 using FOX.DataModels.Models.Settings.ReferralSource;
@@ -34,6 +35,9 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<Referral_Physicians>().Property(t => t.REFERRAL_CODE).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<FOX_TBL_ZIP_STATE_COUNTY>().Property(t => t.ZIP_STATE_COUNTY_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<FOX_TBL_DASHBOARD_ACCESS>().Property(t => t.DASHBOARD_ACCESS_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<FoxRoles>().Property(t => t.ROLE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<Announcements>().Property(t => t.ANNOUNCEMENT_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<AnnouncementRoles>().Property(t => t.ANNOUNCEMENT_ROLE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
         }
         public virtual DbSet<ReferralRegion> ReferralRegion { get; set; }
         public virtual DbSet<PracticeOrganization> PracticeOrganization { get; set; }
@@ -47,6 +51,8 @@ namespace FOX.DataModels.Context
         public virtual DbSet<Referral_Physicians> _Referral_Physicians { get; set; }
         public virtual DbSet<FOX_TBL_ZIP_STATE_COUNTY> ZipCityCounty { get; set; }
         public virtual DbSet<FOX_TBL_DASHBOARD_ACCESS> DashBoardAccess { get; set; }
-
+        public virtual DbSet<FoxRoles> FoxRoles { get; set; }
+        public virtual DbSet<Announcements> Announcements { get; set; }
+        public virtual DbSet<AnnouncementRoles> AnnouncementRoles { get; set; }
     }
 }

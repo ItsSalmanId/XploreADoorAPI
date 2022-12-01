@@ -322,6 +322,7 @@
     <Compile Include="Controllers\FaxController.cs" />
     <Compile Include="Controllers\FileReceiverController.cs" />
     <Compile Include="Controllers\FoxPHDController.cs" />
+    <Compile Include="Controllers\FrictionlessReferral\SupportStaff\SupportStaffController.cs" />
     <Compile Include="Controllers\GeneralNotesController.cs" />
     <Compile Include="Controllers\GroupController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -348,6 +349,7 @@
     <Compile Include="Controllers\Scheduler\SchedulerController.cs" />
     <Compile Include="Controllers\SearchOrderController.cs" />
     <Compile Include="Controllers\SettingsController.cs" />
+    <Compile Include="Controllers\Settings\Announcement\AnnouncementController.cs" />
     <Compile Include="Controllers\Settings\ClinicianSetup\ClinicianSetupController.cs" />
     <Compile Include="Controllers\Settings\PracticeOrganization\PracticeOrganizationController.cs" />
     <Compile Include="Controllers\Settings\ReferralRegion\ReferralRegionController.cs" />

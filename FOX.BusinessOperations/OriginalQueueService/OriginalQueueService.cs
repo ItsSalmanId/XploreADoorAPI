@@ -4,8 +4,6 @@ using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.OriginalQueueModel;
 using FOX.DataModels.Models.Security;
-using FOX.DataModels.Models.Settings.RoleAndRights;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -582,24 +580,21 @@ namespace FOX.BusinessOperations.OriginalQueueService
         //    }
         //}
 
-
-
-
-
         public void UpdateNmOfPages(long CurrrentParentID, UserProfile Profile, int oldPages)
         {
             OriginalQueue req = new OriginalQueue();
 
+            //    var queue = _QueueRepository.GetByID(CurrrentParentID);
             var queue = _QueueRepository.GetByID(CurrrentParentID);
 
             if (queue != null)
             {
-                var newPages = queue.TOTAL_PAGES - oldPages;
-                queue.TOTAL_PAGES = newPages;
-                queue.MODIFIED_DATE = Helper.GetCurrentDate();
-                queue.MODIFIED_BY = Profile.UserName;
-                _QueueRepository.Update(queue);
-                _QueueRepository.Save();
+                    var newPages = queue.TOTAL_PAGES - oldPages;
+                    queue.TOTAL_PAGES = newPages;
+                    queue.MODIFIED_DATE = Helper.GetCurrentDate();
+                    queue.MODIFIED_BY = Profile.UserName;
+                    _QueueRepository.Update(queue);
+                    _QueueRepository.Save();              
             }
             else
             {

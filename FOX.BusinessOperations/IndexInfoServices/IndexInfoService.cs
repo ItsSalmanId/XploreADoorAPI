@@ -46,6 +46,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FOX.BusinessOperations.GroupServices;
 using FOX.DataModels;
+using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
 
 namespace FOX.BusinessOperations.IndexInfoServices
 {
@@ -59,6 +60,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private readonly DbContextIndexinfo _IndexinfoContext = new DbContextIndexinfo();
         private readonly DbContextPatient _PatientContext = new DbContextPatient();
         private readonly DbContextSecurity security = new DbContextSecurity();
+        private readonly DbContextFrictionless _dbContextFrictionLess = new DbContextFrictionless();
 
         private readonly DbContextSettings _settings = new DbContextSettings();
         private readonly DbContextTasks _TaskContext = new DbContextTasks();
@@ -92,6 +94,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private readonly GenericRepository<TaskLog> _taskLogRepository;
         private readonly GenericRepository<FOX_TBL_TASK_TASK_SUB_TYPE> _TaskTaskSubTypeRepository;
         private readonly GenericRepository<FOX_TBL_TASK_SUB_TYPE> _taskSubTypeRepository;
+        private readonly GenericRepository<FrictionLessReferral> _frictionlessReferralRepository;
         private readonly GenericRepository<PatientInsurance> _PatientInsuranceRepository;
         private readonly GenericRepository<FoxInsurancePayers> _foxInsurancePayersRepository;
         private readonly GenericRepository<GROUP> _groupRepository;
@@ -118,6 +121,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private long talkRehabWorkID = 0;
         private long talkRehabInterfaceID = 0;
         private long talkRehabTaskID = 0;
+        private long retrycatch = 0;
         public IndexInfoService()
         {
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
@@ -132,6 +136,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             _updatePatAddRepository = new GenericRepository<IndexPatReq>(_IndexinfoContext);
             _DeleteDiagnosisRepository = new GenericRepository<FOX_TBL_PATIENT_DIAGNOSIS>(_IndexinfoContext);
             _DeleteProcedureRepository = new GenericRepository<FOX_TBL_PATIENT_PROCEDURE>(_IndexinfoContext);
+            _frictionlessReferralRepository = new GenericRepository<FrictionLessReferral>(_dbContextFrictionLess);
             _InsertUpdateRepository = new GenericRepository<FOX_TBL_PATIENT_DOCUMENTS>(_IndexinfoContext);
             _DeleteDocRepository = new GenericRepository<FOX_TBL_PATIENT_DOCUMENTS>(_IndexinfoContext);
             _InsertUpdateOrderingSourceRepository = new GenericRepository<ReferralSource>(_IndexinfoContext);
@@ -4224,12 +4229,26 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 ins_name = _foxInsurancePayersRepository.GetFirst(t => (t.DELETED == null || t.DELETED == false) && t.FOX_TBL_INSURANCE_ID == curr_insurances.FOX_TBL_INSURANCE_ID).INSURANCE_NAME ?? "";
             }
+            var frictionLessReferralData = _frictionlessReferralRepository.GetFirst(t => t.DELETED == false && t.WORK_ID == work_id);
+            if (frictionLessReferralData != null && !string.IsNullOrEmpty(frictionLessReferralData.PATIENT_INSURANCE_PAYER_ID))
+            {
+                ins_name = _foxInsurancePayersRepository.GetFirst(t => (t.DELETED == null || t.DELETED == false) && t.INSURANCE_PAYERS_ID == frictionLessReferralData.PATIENT_INSURANCE_PAYER_ID).INSURANCE_NAME ?? "";
+            }
 
             if (!String.IsNullOrWhiteSpace(ins_name))
             {
                 pri_insurance = ins_name;
             }
-            var file_name = patient.Last_Name + "_" + documentType;
+            var file_name = "";
+            if (frictionLessReferralData != null)
+            {
+                 file_name = frictionLessReferralData.PATIENT_LAST_NAME + "_" + documentType;
+            }
+            else
+            {
+                file_name = patient.Last_Name + "_" + documentType;
+            }
+
             var Sender = _User.GetFirst(T => T.USER_NAME == sourceDetail.CREATED_BY);
             if (Sender == null && sourceDetail != null && !string.IsNullOrEmpty(sourceDetail.CREATED_BY) && sourceDetail.CREATED_BY.Equals("FOX TEAM"))
             {
@@ -4301,7 +4320,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 body = File.ReadAllText(templatePathOfSenderEmail);
                 HtmlDocument htmldoc = new HtmlDocument();
                 htmldoc.LoadHtml(body);
-
                 if (work_order.IS_VERBAL_ORDER == false && work_order.is_strategic_account == true)
                 {
                     var VerbalOrder = htmldoc.DocumentNode.SelectSingleNode("//span[@id='VerbalOrder']");
@@ -4322,16 +4340,28 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     var evaluate = htmldoc.DocumentNode.SelectSingleNode("//span[@id='EVALUATE_TREAT']");
                     evaluate.Remove();
                 }
-                if (work_order.IS_EMERGENCY_ORDER == false)
+                if (work_order.IS_EMERGENCY_ORDER == false || frictionLessReferralData != null)
                 {
                     var URGENT = htmldoc.DocumentNode.SelectSingleNode("//span[@id='URGENT']");
                     URGENT.Remove();
                 }
                 body = htmldoc.DocumentNode.OuterHtml;
-
-                body = body.Replace("[[PATIENT_NAME]]", patient.Last_Name + ", " + patient.First_Name + " (" + patient.Gender + ")");
-                body = body.Replace("[[PATIENT_DOB]]", patient.Date_Of_Birth.ToString() ?? "");
-                body = body.Replace("[[PATIENT_MRN]]", patient.Chart_Id ?? "");
+            
+                if(frictionLessReferralData != null)
+                {
+                    patient = new Patient();
+                    body = body.Replace("[[PATIENT_NAME]]", frictionLessReferralData.PATIENT_LAST_NAME + ", " + frictionLessReferralData.PATIENT_FIRST_NAME);
+                    var date = Convert.ToDateTime(frictionLessReferralData.PATIENT_DOB);
+                    frictionLessReferralData.PATIENT_DOB_STRING = date.ToShortDateString();
+                    body = body.Replace("[[PATIENT_DOB]]", frictionLessReferralData.PATIENT_DOB_STRING ?? "");
+                    body = body.Replace("[[PATIENT_MRN]]", patient.Chart_Id ?? "");
+                }
+                else
+                {
+                    body = body.Replace("[[PATIENT_NAME]]", patient.Last_Name + ", " + patient.First_Name + " (" + patient.Gender + ")");
+                    body = body.Replace("[[PATIENT_DOB]]", patient.Date_Of_Birth.ToString() ?? "");
+                    body = body.Replace("[[PATIENT_MRN]]", patient.Chart_Id ?? "");
+                }
                 if (address != null)
                 {
                     body = body.Replace("[[PATIENT_HOME_ADDRESS]]", address.ADDRESS ?? "");
@@ -4356,7 +4386,20 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 {
                     body = body.Replace("[[ORS]]", ORS.LAST_NAME + ", " + ORS.FIRST_NAME ?? "");
                 }
-                body = body.Replace("[[SENDER]]", Sender == null ? "" : Sender.LAST_NAME + ", " + Sender.FIRST_NAME ?? "");
+                if (frictionLessReferralData != null && !string.IsNullOrEmpty(frictionLessReferralData.PROVIDER_LAST_NAME))
+                {
+                    body = body.Replace("[[ORS]]", frictionLessReferralData.PROVIDER_LAST_NAME + ", " + frictionLessReferralData.PROVIDER_FIRST_NAME ?? "" + "|" + frictionLessReferralData.PROVIDER_REGION ?? "");
+                }
+
+                if (frictionLessReferralData != null)
+                {
+                    body = body.Replace("[[SENDER]]", frictionLessReferralData.SUBMITER_FIRST_NAME == null ? "" : frictionLessReferralData.SUBMITTER_LAST_NAME + ", " + frictionLessReferralData.SUBMITER_FIRST_NAME ?? "");
+                }
+                else
+                {
+                    body = body.Replace("[[SENDER]]", Sender == null ? "" : Sender.LAST_NAME + ", " + Sender.FIRST_NAME ?? "");
+                }
+
                 body = body.Replace("[[TREATMENT_LOCATION]]", sourceDetail.FACILITY_NAME ?? "");
                 if (fClass != null && !string.IsNullOrEmpty(fClass.NAME) && fClass.NAME.ToLower().Equals("sa- special account"))
                 {
@@ -4437,13 +4480,35 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 }
                 else
                 {
-                    body = body.Replace("[[provider_name]]", "");
-                    body = body.Replace("[[provider_NPI]]", "");
-                    body = body.Replace("[[provider_phone]]", "");
-                    body = body.Replace("[[provider_fax]]", "");
-                    body = body.Replace("[[provider_date]]", "");
-                }
-
+                    if(frictionLessReferralData != null)
+                    {
+                        body = body.Replace("[[provider_name]]", frictionLessReferralData.PROVIDER_LAST_NAME + ", " + frictionLessReferralData.PROVIDER_FIRST_NAME + " " + frictionLessReferralData.PROVIDER_REGION);
+                        body = body.Replace("[[provider_NPI]]", frictionLessReferralData.PROVIDER_NPI ?? "");
+                        body = body.Replace("[[provider_phone]]", DataModels.HelperClasses.StringHelper.ApplyPhoneMask(frictionLessReferralData.SUBMITTER_PHONE) ?? "");
+                        body = body.Replace("[[provider_date]]", Helper.GetCurrentDate().ToShortDateString() ?? "");
+                        if (frictionLessReferralData.PROVIDER_FAX != null)
+                        {
+                            var splitedFaxIndex = frictionLessReferralData.PROVIDER_FAX.Substring(0);
+                            if (splitedFaxIndex != null && splitedFaxIndex.Length >= 10)
+                            {
+                                var newFormatFax = 1 + " " + "(" + splitedFaxIndex[0] + splitedFaxIndex[1] + splitedFaxIndex[2] + ")" + " " + splitedFaxIndex[3] + splitedFaxIndex[4] + splitedFaxIndex[5] + " " + "<span> &#8208;</span>" + " " + splitedFaxIndex[6] +
+                                splitedFaxIndex[7] + splitedFaxIndex[8] + splitedFaxIndex[9];
+                                body = body.Replace("[[provider_fax]]", "+" + newFormatFax ?? "");
+                            }
+                        }
+                        else
+                        {
+                            body = body.Replace("[[provider_fax]]", "");
+                        }
+                    }
+                    else {
+                        body = body.Replace("[[provider_name]]", "");
+                        body = body.Replace("[[provider_NPI]]", "");
+                        body = body.Replace("[[provider_phone]]", "");
+                        body = body.Replace("[[provider_fax]]", "");
+                        body = body.Replace("[[provider_date]]", "");
+                    }
+                }          
                 if (obj._approval)
                 {
                     body = body.Replace("[[Signature]]", obj.base64textString ?? "");
@@ -4886,29 +4951,47 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
         private void InsertTaskLog(long? taskId, List<TaskLog> tasklog, UserProfile profile)
         {
-            if (taskId != null && taskId.Value > 0)
+            
+            try
             {
-                foreach (var item in tasklog)
+  
+                if (taskId != null && taskId.Value > 0)
                 {
-                    List<TaskLog> lstTaskLog = new List<TaskLog>();
-                    lstTaskLog.Add(item);
-                    DataTable _dataTable = GetTaskLogTable(lstTaskLog);
-
-                    if (_dataTable.Rows.Count > 0)
+                    foreach (var item in tasklog)
                     {
-                        long primaryKey = Helper.getMaximumId("FOX_TASK_LOG_ID");
-                        SqlParameter id = new SqlParameter("ID", primaryKey);
-                        SqlParameter task_log = new SqlParameter("TASK_LOG", SqlDbType.Structured);
-                        task_log.TypeName = "TASK_LOG_HISTORY";
-                        task_log.Value = _dataTable;
-                        SqlParameter practice_Code = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
-                        SqlParameter Task_Id = new SqlParameter("TASK_ID", taskId);
-                        //SqlParameter pAction = new SqlParameter("ACTION", string.IsNullOrEmpty(Action) ? string.Empty : Action);
-                        //SqlParameter Action_Detail = new SqlParameter("ACTION_DETAIL", string.IsNullOrEmpty(ActionDetail) ? string.Empty : ActionDetail);
-                        SqlParameter user_Name = new SqlParameter("USER_NAME", profile.UserName);
-                        SpRepository<TaskLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_INSERT_TASK_LOG @ID, @PRACTICE_CODE, @TASK_ID, @TASK_LOG, @USER_NAME", id, practice_Code, Task_Id, task_log, user_Name);
+                        List<TaskLog> lstTaskLog = new List<TaskLog>();
+                        lstTaskLog.Add(item);
+                        DataTable _dataTable = GetTaskLogTable(lstTaskLog);
+
+                        if (_dataTable.Rows.Count > 0)
+                        {
+                            long primaryKey = Helper.getMaximumId("FOX_TASK_LOG_ID");
+                            SqlParameter id = new SqlParameter("ID", primaryKey);
+                            SqlParameter task_log = new SqlParameter("TASK_LOG", SqlDbType.Structured);
+                            task_log.TypeName = "TASK_LOG_HISTORY";
+                            task_log.Value = _dataTable;
+                            SqlParameter practice_Code = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
+                            SqlParameter Task_Id = new SqlParameter("TASK_ID", taskId);
+                            //SqlParameter pAction = new SqlParameter("ACTION", string.IsNullOrEmpty(Action) ? string.Empty : Action);
+                            //SqlParameter Action_Detail = new SqlParameter("ACTION_DETAIL", string.IsNullOrEmpty(ActionDetail) ? string.Empty : ActionDetail);
+                            SqlParameter user_Name = new SqlParameter("USER_NAME", profile.UserName);
+                            SpRepository<TaskLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_INSERT_TASK_LOG @ID, @PRACTICE_CODE, @TASK_ID, @TASK_LOG, @USER_NAME", id, practice_Code, Task_Id, task_log, user_Name);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            { 
+                if (retrycatch <= 2 && !string.IsNullOrEmpty(ex.Message) && ex.Message.Contains("Violation of PRIMARY KEY constraint"))
+                {
+                    retrycatch = retrycatch + 1;
+                    InsertTaskLog(taskId, tasklog, profile);
+                 }
+            else
+                {
+                    throw ex;
+                }
+
             }
         }
 
@@ -5363,9 +5446,9 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 if (checkDuplicateReferral != null)
                 {
                     var wORK_ID = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = checkDuplicateReferral.workID };
-                    var getWorkID = SpRepository<GETtAll_IndexifoRes>.GetSingleObjectWithStoreProcedure(@"exec [FOX_GET_INDEX_ALL_INFO] @WORK_ID", wORK_ID);
+                   var getWorkID = SpRepository<GETtAll_IndexifoRes>.GetSingleObjectWithStoreProcedure(@"exec [FOX_GET_INDEX_ALL_INFO] @WORK_ID", wORK_ID);
 
-                    if (getWorkID != null && getWorkID.PATIENT_ACCOUNT != null)
+                   if (getWorkID != null && getWorkID.PATIENT_ACCOUNT != null)
                     {
                         var Patient_Account = new SqlParameter("PATIENT_ACCOUNT", SqlDbType.BigInt) { Value = getWorkID.PATIENT_ACCOUNT };
                         var Practice_Code = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = userProfile.PracticeCode };
@@ -5386,15 +5469,15 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                             if (item != null)
                                             {
                                                 //var DepartIDs = ite.DEPARTMENT_ID.Split(',');
-                                                if (ite.DEPARTMENT_ID.Contains(item.ToString()))
+                                                if (!string.IsNullOrEmpty(ite.DEPARTMENT_ID) && ite.DEPARTMENT_ID.Contains(item.ToString()))
                                                 {
-                                                    if (MainList != null)
+                                                                             if (MainList != null)
                                                     {
                                                         if (MainList.Find(e => e.WORK_ID == ite.WORK_ID) == null)
                                                         {
                                                             MainList.Add(ite);
                                                         }
-                                                    }
+                                                    } 
                                                 }
                                             }
                                         }

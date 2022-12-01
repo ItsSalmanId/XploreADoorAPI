@@ -224,6 +224,8 @@
     <Compile Include="FaxServices\IFaxService.cs" />
     <Compile Include="FoxPHDService\FoxPHDService.cs" />
     <Compile Include="FoxPHDService\IFoxPHDService.cs" />
+    <Compile Include="FrictionlessReferral\SupportStaff\ISupportStaffService.cs" />
+    <Compile Include="FrictionlessReferral\SupportStaff\SupportStaffService.cs" />
     <Compile Include="GeneralNotesService\GeneralNotesServices.cs" />
     <Compile Include="GeneralNotesService\IGeneralNotesServices.cs" />
     <Compile Include="GroupServices\GroupService.cs" />
@@ -286,6 +288,8 @@
     <Compile Include="Security\StringCipher.cs" />
     <Compile Include="Security\TokenService.cs" />
     <Compile Include="Security\UserService.cs" />
+    <Compile Include="SettingsService\AnnouncementService\AnnouncementService.cs" />
+    <Compile Include="SettingsService\AnnouncementService\IAnnouncementService.cs" />
     <Compile Include="SettingsService\ClinicianSetupService\ClinicianSetupService.cs" />
     <Compile Include="SettingsService\ClinicianSetupService\IClinicianSetupService.cs" />
     <Compile Include="SettingsService\FacilityLocationService\FacilityLocationService.cs" />

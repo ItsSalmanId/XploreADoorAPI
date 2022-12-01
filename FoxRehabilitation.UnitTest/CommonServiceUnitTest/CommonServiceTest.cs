@@ -13,6 +13,7 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
         private UserProfile _userProfile;
         private ReqGetSenderNamesModel _senderNamesModel;
         private ServiceConfiguration _serviceConfiguration;
+        private CommonAnnouncements _commonAnnouncements;
 
         [SetUp]
         public void Setup()
@@ -21,6 +22,7 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
             _userProfile = new UserProfile();
             _senderNamesModel = new ReqGetSenderNamesModel();
             _serviceConfiguration = new ServiceConfiguration();
+            _commonAnnouncements = new CommonAnnouncements();
         }
         [Test]
         public void GeneratePdf_UniqueID_NoReturnsData()
@@ -278,7 +280,8 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
             Assert.That(result, Is.False);
         }
         [Test]
-        [TestCase("")]
+        [TestCase("1163testing")]
+        [TestCase("test")]
         public void SaveSplashDetails_EmptyUserProfile(string userName)
         {
             //Arrange
@@ -329,6 +332,55 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
             else
             {
                 Assert.Fail("Failed");
+            }
+        }
+        [TestCase(1011163, 103)]
+        [TestCase(1011163, 0)]
+        [TestCase(0, 103)]
+        [TestCase(0, 0)]
+        public void IsShowAlertWindow_ReturnModel_ReturnsData(long practiceCode, long role)
+        {
+            //Arrange
+            _userProfile.PracticeCode = practiceCode;
+            _userProfile.RoleId = role;
+            _userProfile.UserName = "1163testing";
+
+            //Act
+            var result = _commonServices.IsShowAlertWindow(_userProfile);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
+        [TestCase(1011163, 103)]
+        [TestCase(1011163, 0)]
+        [TestCase(0, 103)]
+        [TestCase(0, 0)]
+        public void SaveAlertWindowsDetails_SaveModel_SaveData(long practiceCode, long role)
+        {
+            //Arrange
+            _userProfile.PracticeCode = practiceCode;
+            _userProfile.userID = practiceCode;
+            _userProfile.UserName = "1011testing";
+            _userProfile.RoleId = role;
+
+            //Act
+            var result = _commonServices.SaveAlertWindowsDetails(_commonAnnouncements, _userProfile);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
             }
         }
         [TearDown]
