@@ -43,25 +43,6 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public int SURVEY_SYS_LESS_THAN { get; set; }
     }
 
-    public class EvaluatedData : BaseModel
-    {
-        public long BothGreatThenSeventyFive { get; set; }
-        public long BothGreatLessSeventyFive { get; set; }
-        public long PhdClientGreatSeventyFive { get; set; }
-        public long PhdClientLessSeventyFive { get; set; }
-        public long PhdSysGreatSeventyFive { get; set; }
-        public long PhdSysLessSeventyFive { get; set; }
-        public long SurveyCallLessSeventyFive { get; set; }
-        public long SurveyCallGreatSeventyFive { get; set; }
-        public long SurveySysLessSeventyFive { get; set; }
-        public long SurveySysGreatSeventyFive { get; set; }
-        public string PhdHeaderText { get; set; }
-        public string SurveyHeaderText { get; set; }
-        public long TOTAL_POINTS { get; set; }
-        public long SurveyCallTotal { get; set; }
-        public long SurveySysTotal { get; set; }
-        public long TotalCount { get; set; }
-    }
     public class LineGraphData : BaseModel
     {
         public int WEEK_NUMBER { get; set; }

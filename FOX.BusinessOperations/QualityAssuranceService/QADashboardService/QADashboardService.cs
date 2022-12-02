@@ -83,17 +83,20 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QADashboardService
                         qADashboardSearch.START_DATE = startingDate.AddDays(-84);
                         qADashboardSearch.END_DATE = startingDate.AddDays(-2);
                     }
-                    if (qADashboardSearch.EVALUATION_NAME.Contains("Client Experience") && qADashboardSearch.EVALUATION_NAME.Contains("System Product and Process") || qADashboardSearch.EVALUATION_NAME.Contains("Call Quality") && qADashboardSearch.EVALUATION_NAME.Contains("System Usage"))
+                    if (!string.IsNullOrEmpty(qADashboardSearch.EVALUATION_NAME))
                     {
-                        qADashboardSearch.EVALUATION_NAME = "System and Client";
-                    }
-                    if (qADashboardSearch.EVALUATION_NAME.Contains("Call Quality"))
-                    {
-                        qADashboardSearch.EVALUATION_NAME = "Client Experience";
-                    }
-                    if (qADashboardSearch.EVALUATION_NAME.Contains("System Usage"))
-                    {
-                        qADashboardSearch.EVALUATION_NAME = "System Product and Process";
+                        if (qADashboardSearch.EVALUATION_NAME.Contains("Client Experience") && qADashboardSearch.EVALUATION_NAME.Contains("System Product and Process") || qADashboardSearch.EVALUATION_NAME.Contains("Call Quality") && qADashboardSearch.EVALUATION_NAME.Contains("System Usage"))
+                        {
+                            qADashboardSearch.EVALUATION_NAME = "System and Client";
+                        }
+                        if (qADashboardSearch.EVALUATION_NAME.Contains("Call Quality"))
+                        {
+                            qADashboardSearch.EVALUATION_NAME = "Client Experience";
+                        }
+                        if (qADashboardSearch.EVALUATION_NAME.Contains("System Usage"))
+                        {
+                            qADashboardSearch.EVALUATION_NAME = "System Product and Process";
+                        }
                     }
                     dashBoardMainModel.PieChartData = new QADashboardData();
                     if (qADashboardSearch != null)
@@ -119,9 +122,9 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QADashboardService
                         var callType = new SqlParameter { ParameterName = "CALL_TYPE", SqlDbType = SqlDbType.VarChar, Value = qADashboardSearch.CALL_TYPE ?? (object)DBNull.Value };
                         var empUserName = new SqlParameter { ParameterName = "AGENT_NAME", SqlDbType = SqlDbType.VarChar, Value = qADashboardSearch.EMPLOYEE_USER_NAME ?? (object)DBNull.Value };
                         var criteriaName = new SqlParameter { ParameterName = "CRITERIA_NAME", SqlDbType = SqlDbType.VarChar, Value = qADashboardSearch.EVALUATION_NAME ?? (object)DBNull.Value };
-                        var start = new SqlParameter { ParameterName = "START_DATE", SqlDbType = SqlDbType.VarChar, Value = qADashboardSearch.START_DATE };
-                        var end = new SqlParameter { ParameterName = "END_DATE", SqlDbType = SqlDbType.VarChar, Value = qADashboardSearch.END_DATE };
-                        dashBoardMainModel.PieChartData = SpRepository<QADashboardData>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_QA_DASHBOARD_DATA @PRACTICE_CODE,@CALL_SCANRIO_ID,@CALL_TYPE,@AGENT_NAME,@CRITERIA_NAME,@START_DATE,@END_DATE", practiceCode, callHandlingId, callType, empUserName, criteriaName, start, end);
+                        var startDate = new SqlParameter { ParameterName = "START_DATE", SqlDbType = SqlDbType.VarChar, Value = qADashboardSearch.START_DATE };
+                        var endDate = new SqlParameter { ParameterName = "END_DATE", SqlDbType = SqlDbType.VarChar, Value = qADashboardSearch.END_DATE };
+                        dashBoardMainModel.PieChartData = SpRepository<QADashboardData>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_QA_DASHBOARD_DATA @PRACTICE_CODE,@CALL_SCANRIO_ID,@CALL_TYPE,@AGENT_NAME,@CRITERIA_NAME,@START_DATE,@END_DATE", practiceCode, callHandlingId, callType, empUserName, criteriaName, startDate, endDate);
 
                         if (!qADashboardSearch.IS_ACTIVE && qADashboardSearch.CALL_TYPE == "Phd and Survey")
                         {
@@ -163,15 +166,17 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QADashboardService
             var callType = new SqlParameter { ParameterName = "CALL_TYPE", SqlDbType = SqlDbType.VarChar, Value = qADashboardSearch.CALL_TYPE ?? (object)DBNull.Value };
             var empUserName = new SqlParameter { ParameterName = "AGENT_NAME", SqlDbType = SqlDbType.VarChar, Value = qADashboardSearch.EMPLOYEE_USER_NAME ?? (object)DBNull.Value };
             var criteriaName = new SqlParameter { ParameterName = "CRITERIA_NAME", SqlDbType = SqlDbType.VarChar, Value = qADashboardSearch.EVALUATION_NAME ?? (object)DBNull.Value };
-            var start = new SqlParameter { ParameterName = "START_DATE", SqlDbType = SqlDbType.VarChar, Value = qADashboardSearch.START_DATE };
-            var end = new SqlParameter { ParameterName = "END_DATE", SqlDbType = SqlDbType.VarChar, Value = qADashboardSearch.END_DATE };
-            lineGraphResponseModel.lineGraphData = SpRepository<LineGraphData>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_QA_DASHBOARD_LINE_GRAPH_DATA @PRACTICE_CODE,@CALL_SCANRIO_ID,@CALL_TYPE,@AGENT_NAME,@CRITERIA_NAME,@START_DATE,@END_DATE", practiceCode, callHandlingId, callType, empUserName, criteriaName, start, end);
+            var startDate = new SqlParameter { ParameterName = "START_DATE", SqlDbType = SqlDbType.VarChar, Value = qADashboardSearch.START_DATE };
+            var endDate = new SqlParameter { ParameterName = "END_DATE", SqlDbType = SqlDbType.VarChar, Value = qADashboardSearch.END_DATE };
+            lineGraphResponseModel.lineGraphData = SpRepository<LineGraphData>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_QA_DASHBOARD_LINE_GRAPH_DATA @PRACTICE_CODE,@CALL_SCANRIO_ID,@CALL_TYPE,@AGENT_NAME,@CRITERIA_NAME,@START_DATE,@END_DATE", practiceCode, callHandlingId, callType, empUserName, criteriaName, startDate, endDate);
 
-            if (qADashboardSearch.CALL_TYPE == "Survey")
+            if (!string.IsNullOrEmpty(qADashboardSearch.CALL_TYPE) && qADashboardSearch.CALL_TYPE == "Survey")
             {
-                for (int i = 0; i < lineGraphResponseModel.lineGraphData.Count; i++)
+                int i = 0;
+                foreach (var item in lineGraphResponseModel.lineGraphData)
                 {
                     lineGraphResponseModel.lineGraphData[i].TEAM_NAME = "Survey Calls";
+                    i++;
                 }
                 qADashboardSearch.TEAMS_NAMES = "Survey Calls";
             }
@@ -187,7 +192,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QADashboardService
 
             if (!qADashboardSearch.IS_ACTIVE && !string.IsNullOrEmpty(qADashboardSearch.TEAMS_NAMES) && lineGraphResponseModel.lineGraphData != null && lineGraphResponseModel.lineGraphData.Count > 0)
             {
-                if (qADashboardSearch.CALL_TYPE == "Phd")
+                if (!string.IsNullOrEmpty(qADashboardSearch.CALL_TYPE) && qADashboardSearch.CALL_TYPE == "Phd")
                 {
                     qADashboardSearch.TEAMS_NAMES = qADashboardSearch.TEAMS_NAMES.Replace(",Survey Calls", "");
                     qADashboardSearch.TEAMS_NAMES = qADashboardSearch.TEAMS_NAMES.Replace("Survey Calls", "");
@@ -201,62 +206,65 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QADashboardService
                 lineGraphResponseModel.dateRanges = lineGraphResponseModel.lineGraphData.FindAll(x => !string.IsNullOrEmpty(x.DATE_RANGE)).Select(d => d.DATE_RANGE).Distinct().ToList();
                 foreach (var team in teamName.Select((value, i) => new { i, value }))
                 {
-                    series obj = new series();
-                    obj.name = team.value;
-                    obj.type = "line";
-                    obj.data = new List<long>();
+                    series lineGraphSeriesObj = new series();
+                    lineGraphSeriesObj.name = team.value;
+                    lineGraphSeriesObj.type = "line";
+                    lineGraphSeriesObj.data = new List<long>();
                     foreach (var range in lineGraphResponseModel.dateRanges)
                     {
                         var avgValue = lineGraphResponseModel.lineGraphData.Find(a => a.DATE_RANGE == range && a.TEAM_NAME == team.value);
-                        obj.data.Add(avgValue == null ? 0 : avgValue.EVALUATION_PERCENTAGE);
+                        lineGraphSeriesObj.data.Add(avgValue == null ? 0 : avgValue.EVALUATION_PERCENTAGE);
                     }
-                    lineGraphResponseModel.series.Add(obj);
+                    lineGraphResponseModel.series.Add(lineGraphSeriesObj);
                 }
-                if (qADashboardSearch.EVALUATION_NAME == "Client Experience" && qADashboardSearch.CALL_TYPE == "phd" || qADashboardSearch.EVALUATION_NAME == "System Product and Process" && qADashboardSearch.CALL_TYPE == "phd")
+                if (qADashboardSearch.EVALUATION_NAME != null && qADashboardSearch.CALL_TYPE != null)
                 {
-                    series singleObj = new series();
+                    if (qADashboardSearch.EVALUATION_NAME == "Client Experience" && qADashboardSearch.CALL_TYPE == "phd" || qADashboardSearch.EVALUATION_NAME == "System Product and Process" && qADashboardSearch.CALL_TYPE == "phd")
+                    {
+                        series singleObj = new series();
 
-                    singleObj.name = qADashboardSearch.EVALUATION_NAME;
-                    singleObj.type = "line";
-                    singleObj.data = new List<long>();
-                    for (int i = 0; i < lineGraphResponseModel.dateRanges.Count; i++)
-                    {
-                        var sumOfArrays = lineGraphResponseModel.series.FindAll(x => x.data != null).Sum(s => s.data[i]);
-                        sumOfArrays = sumOfArrays / teamName.Length;
-                        singleObj.data.Add(sumOfArrays);
+                        singleObj.name = qADashboardSearch.EVALUATION_NAME;
+                        singleObj.type = "line";
+                        singleObj.data = new List<long>();
+                        for (int i = 0; i < lineGraphResponseModel.dateRanges.Count; i++)
+                        {
+                            var sumOfArrays = lineGraphResponseModel.series.FindAll(x => x.data != null).Sum(s => s.data[i]);
+                            sumOfArrays = sumOfArrays / teamName.Length;
+                            singleObj.data.Add(sumOfArrays);
+                        }
+                        lineGraphResponseModel.series = new List<series>();
+                        lineGraphResponseModel.series.Add(singleObj);
                     }
-                    lineGraphResponseModel.series = new List<series>();
-                    lineGraphResponseModel.series.Add(singleObj);
-                }
-                if (qADashboardSearch.EVALUATION_NAME == "Client Experience" && qADashboardSearch.CALL_TYPE == "Survey")
-                {
-                    series singleObj = new series();
-                    singleObj.name = "Call Quality";
-                    singleObj.type = "line";
-                    singleObj.data = new List<long>();
-                    for (int i = 0; i < lineGraphResponseModel.dateRanges.Count; i++)
+                    if (qADashboardSearch.EVALUATION_NAME == "Client Experience" && qADashboardSearch.CALL_TYPE == "Survey")
                     {
-                        var sumOfArrays = lineGraphResponseModel.series.FindAll(x => x.data != null).Sum(s => s.data[i]);
-                        sumOfArrays = sumOfArrays / teamName.Length;
-                        singleObj.data.Add(sumOfArrays);
+                        series singleObj = new series();
+                        singleObj.name = "Call Quality";
+                        singleObj.type = "line";
+                        singleObj.data = new List<long>();
+                        for (int i = 0; i < lineGraphResponseModel.dateRanges.Count; i++)
+                        {
+                            var sumOfArrays = lineGraphResponseModel.series.FindAll(x => x.data != null).Sum(s => s.data[i]);
+                            sumOfArrays = sumOfArrays / teamName.Length;
+                            singleObj.data.Add(sumOfArrays);
+                        }
+                        lineGraphResponseModel.series = new List<series>();
+                        lineGraphResponseModel.series.Add(singleObj);
                     }
-                    lineGraphResponseModel.series = new List<series>();
-                    lineGraphResponseModel.series.Add(singleObj);
-                }
-                if (qADashboardSearch.EVALUATION_NAME == "System Product and Process" && qADashboardSearch.CALL_TYPE == "Survey")
-                {
-                    series singleObj = new series();
-                    singleObj.name = "System Usage";
-                    singleObj.type = "line";
-                    singleObj.data = new List<long>();
-                    for (int i = 0; i < lineGraphResponseModel.dateRanges.Count; i++)
+                    if (qADashboardSearch.EVALUATION_NAME == "System Product and Process" && qADashboardSearch.CALL_TYPE == "Survey")
                     {
-                        var sumOfArrays = lineGraphResponseModel.series.FindAll(x => x.data != null).Sum(s => s.data[i]);
-                        sumOfArrays = sumOfArrays / teamName.Length;
-                        singleObj.data.Add(sumOfArrays);
+                        series singleObj = new series();
+                        singleObj.name = "System Usage";
+                        singleObj.type = "line";
+                        singleObj.data = new List<long>();
+                        for (int i = 0; i < lineGraphResponseModel.dateRanges.Count; i++)
+                        {
+                            var sumOfArrays = lineGraphResponseModel.series.FindAll(x => x.data != null).Sum(s => s.data[i]);
+                            sumOfArrays = sumOfArrays / teamName.Length;
+                            singleObj.data.Add(sumOfArrays);
+                        }
+                        lineGraphResponseModel.series = new List<series>();
+                        lineGraphResponseModel.series.Add(singleObj);
                     }
-                    lineGraphResponseModel.series = new List<series>();
-                    lineGraphResponseModel.series.Add(singleObj);
                 }
             }
 
@@ -286,11 +294,11 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QADashboardService
         {
             try
             {
-                List<FeedBackCaller> list = new List<FeedBackCaller>();
-                if (callScanrioID != null)
+                List<FeedBackCaller> feedBackCallerList = new List<FeedBackCaller>();
+                if (!string.IsNullOrEmpty(callScanrioID))
                 {
                     List<FeedBackCaller> surveyAgentList = new List<FeedBackCaller>();
-                    if (callScanrioID != null && profile != null)
+                    if (profile != null)
                     {
                         if (callScanrioID.StartsWith(","))
                         {
@@ -298,21 +306,21 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QADashboardService
                         }
                         var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
                         var callID = new SqlParameter { ParameterName = "CALL_SCANRIO_ID", SqlDbType = SqlDbType.VarChar, Value = callScanrioID };
-                        list = SpRepository<FeedBackCaller>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_TEAM_EMPLOYEE_LIST  @PRACTICE_CODE, @CALL_SCANRIO_ID", practiceCode, callID);
+                        feedBackCallerList = SpRepository<FeedBackCaller>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_TEAM_EMPLOYEE_LIST  @PRACTICE_CODE, @CALL_SCANRIO_ID", practiceCode, callID);
                     }
                     if (callScanrioID.Contains("54410118"))
                     {
-                        var rep = _roleRepository.GetSingle(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.ROLE_NAME == "Feedback Caller").ROLE_ID;
-                        var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
-                        var _roleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.BigInt, Value = rep };
-                        surveyAgentList = SpRepository<FeedBackCaller>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_FEEDBACK_CALLER_LIST @PRACTICE_CODE, @ROLE_ID", PracticeCode, _roleId);
+                        var repRoleID = _roleRepository.GetSingle(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.ROLE_NAME == "Feedback Caller").ROLE_ID;
+                        var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                        var roleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.BigInt, Value = repRoleID };
+                        surveyAgentList = SpRepository<FeedBackCaller>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_FEEDBACK_CALLER_LIST @PRACTICE_CODE, @ROLE_ID", practiceCode, roleId);
                     }
 
-                    list.AddRange(surveyAgentList);
-                    list = list.GroupBy(item => item.NAME).Select(grp => grp.OrderBy(item => item.NAME).First()).ToList();
-                    list = list.OrderBy(x => x.NAME).ToList();
+                    feedBackCallerList.AddRange(surveyAgentList);
+                    feedBackCallerList = feedBackCallerList.GroupBy(item => item.NAME).Select(grp => grp.OrderBy(item => item.NAME).First()).ToList();
+                    feedBackCallerList = feedBackCallerList.OrderBy(x => x.NAME).ToList();
                 }
-                return list;
+                return feedBackCallerList;
             }
             catch (Exception)
             {
