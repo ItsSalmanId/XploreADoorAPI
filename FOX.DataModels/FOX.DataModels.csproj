@@ -140,6 +140,7 @@
     <Compile Include="Models\Patient\PatientInsurance.cs" />
     <Compile Include="Models\QualityAsuranceModel\EvaluationSetupModel.cs" />
     <Compile Include="Models\QualityAsuranceModel\PerformAuditModelcs.cs" />
+    <Compile Include="Models\QualityAsuranceModel\QADashboardModel.cs" />
     <Compile Include="Models\QualityAsuranceModel\QAReportModel.cs" />
     <Compile Include="Models\Reconciliation\Reconciliation.cs" />
     <Compile Include="Models\Reporting\ReferralReport.cs" />
