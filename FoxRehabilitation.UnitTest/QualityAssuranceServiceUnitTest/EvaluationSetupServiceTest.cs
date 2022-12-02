@@ -1,15 +1,11 @@
 ﻿using FOX.BusinessOperations.QualityAssuranceService.EvaluationSetupService;
 using FOX.DataModels.Models.QualityAsuranceModel;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
 {
-    class EvaluationSetupServiceTest
+    [TestFixture]
+    public class EvaluationSetupServiceTest
     {
         private EvaluationSetupService _evaluationSetupService;
         private RequestModelForCallType _requestModelForCallType;
@@ -19,7 +15,6 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
         {
             _evaluationSetupService = new EvaluationSetupService();
             _requestModelForCallType = new RequestModelForCallType();
-
         }
         [Test]
         [TestCase(0, "")]

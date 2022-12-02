@@ -2,17 +2,12 @@
 using FOX.DataModels.Models.QualityAsuranceModel;
 using FOX.DataModels.Models.Security;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
 {
+    [TestFixture]
     public class QADashboardServiceTest
     {
-
         private QADashboardService _qADashboardService;
         private QADashboardSearch _qADashboardSearch;
         private UserProfile _userProfile;
@@ -24,6 +19,7 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             _qADashboardSearch = new QADashboardSearch();
             _userProfile = new UserProfile();
         }
+
         [Test]
         [TestCase("", 0)]
         [TestCase("544110,544109", 0)]
@@ -58,7 +54,6 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
         public void GetDashboardData_EvaluatedData_ReturnData(string calHandlingID, string callType, string evaluatedName, string userName, string userFullName, string teamsName, string timeFrame, bool isActive, long praticeCode)
         {
             //Arrange
-
             _qADashboardSearch.CALL_HANDLING_ID = calHandlingID;
             _qADashboardSearch.CALL_TYPE = callType;
             _qADashboardSearch.EMPLOYEE_USER_NAME = userName;

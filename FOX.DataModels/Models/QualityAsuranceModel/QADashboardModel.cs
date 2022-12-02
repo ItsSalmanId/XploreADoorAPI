@@ -6,14 +6,6 @@ using System.Threading.Tasks;
 
 namespace FOX.DataModels.Models.QualityAsuranceModel
 {
-    public class EvaluationBy : BaseModel
-    {
-        public long EVALUATION_CRITERIA_ID { get; set; }
-        public string CRITERIA_NAME { get; set; }
-        public string CALL_TYPE { get; set; }
-        public bool DELETED { get; set; }
-    }
-
     public class QADashboardSearch : BaseModel
     {
         public string CALL_HANDLING_ID { get; set; }

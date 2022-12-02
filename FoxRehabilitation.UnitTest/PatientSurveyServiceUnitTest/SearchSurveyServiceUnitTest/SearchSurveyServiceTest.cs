@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest.SearchSurveyServiceUnitTest
 {
     [TestFixture]
-    class SearchSurveyServiceTest
+    public class SearchSurveyServiceTest
     {
         private SearchSurveyService _searchSurveyService;
 
