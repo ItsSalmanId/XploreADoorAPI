@@ -45,6 +45,7 @@ namespace FoxRehabilitation.UnitTest.OriginalQueueServiceUnitTest
             _originalQueueRequest.SortOrder = "";
             _originalQueueRequest.DateFrom_str = "7/9/2022";
             _originalQueueRequest.DateTo_str = "8/9/2022";
+            _originalQueueRequest.STATUS_TEXT = "";
 
             //Act
             var result = _originalQueueService.GetOriginalQueue(_originalQueueRequest, _userProfile);
