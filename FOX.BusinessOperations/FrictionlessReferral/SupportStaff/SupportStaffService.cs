@@ -402,12 +402,12 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             long practiceCode = GetPracticeCode();
             if (frictionLessReferralObj != null)
             {
-                if (frictionLessReferralObj.PATIENT_DISCIPLINE_ID.StartsWith(",") && frictionLessReferralObj.PATIENT_DISCIPLINE_ID != null)
+                if (frictionLessReferralObj.PATIENT_DISCIPLINE_ID != null && frictionLessReferralObj.PATIENT_DISCIPLINE_ID.StartsWith(","))
                 {
                     frictionLessReferralObj.PATIENT_DISCIPLINE_ID = frictionLessReferralObj.PATIENT_DISCIPLINE_ID.Remove(0, 1);
                 }
                 var existingFrictionReferral = _frictionlessReferralRepository.GetFirst(f => f.FRICTIONLESS_REFERRAL_ID == frictionLessReferralObj.FRICTIONLESS_REFERRAL_ID && f.PRACTICE_CODE == practiceCode && f.DELETED == false);
-                if ((frictionLessReferralObj.FILE_NAME_LIST.Count > 0 && frictionLessReferralObj.FILE_NAME_LIST != null) || frictionLessReferralObj.IS_SUBMIT_CHECK == true)
+                if ((frictionLessReferralObj.FILE_NAME_LIST != null && frictionLessReferralObj.FILE_NAME_LIST.Count > 0) || frictionLessReferralObj.IS_SUBMIT_CHECK == true)
                 {
                     var WorkID = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = frictionLessReferralObj.WORK_ID };
                     var updatedWorkFiles = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_DELETE_FRICTIONLESS_WORK_FILE @WORK_ID", WorkID);
@@ -501,7 +501,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     return new ResponseModel() { Message = "Delete work order successfully.", ErrorMessage = "", Success = true };
                 }
                 else
-                    return new ResponseModel() { Message = "Work order not found.", ErrorMessage = "", Success = true };
+                    return new ResponseModel() { Message = "Work order not found.", ErrorMessage = "", Success = false };
             }
             catch (Exception exception)
             {
