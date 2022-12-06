@@ -100,7 +100,7 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.AnnouncementUnitTes
                 new FoxRoleRequest
                 {
                     ROLE_ID = 103,
-                    ROLE_NAME = "",
+                    ROLE_NAME = ""
                 }
             };
             if (add == false)
