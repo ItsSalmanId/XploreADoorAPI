@@ -2,11 +2,6 @@
 using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
 using FOX.DataModels.Models.RequestForOrder;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUnitTest
 {
@@ -18,8 +13,8 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
         private RequestDeleteWorkOrder _requestDeleteWorkOrder;
         private FrictionLessReferral _frictionLessReferral;
         private ProviderReferralSourceRequest _providerReferralSourceRequest;
-        [SetUp]
 
+        [SetUp]
         public void Setup()
         {
             _supportStaffService = new SupportStaffService();
@@ -169,9 +164,9 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
         [Test]
         [TestCase("1023489119", "", "", "")]
         [TestCase("1740503804", "", "", "")]
-        [TestCase("", "cary", "smith", "ny")]
-        [TestCase("1023489119", "cary", "smith", "ny")]
-        [TestCase("1023489", "cary", "smith", "ny")]
+        [TestCase("", "carey", "smith", "ny")]
+        [TestCase("1023489119", "carey", "smith", "ny")]
+        [TestCase("1023489", "carey", "smith", "ny")]
         [TestCase("", "", "", "")]
         public void GetOrderingReferralSource_ProviderReferralSourceModel_ReturnData(string npi, string firstName, string lastName, string state)
         {
@@ -208,8 +203,6 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
         [Test]
         [TestCase("Taseer", "iqbal", "muhammadiqbal11@carecloud.com", "2064512559")]
         [TestCase("Taseer", "iqbal", "test1@carecloud.com", "")]
-        [TestCase("Taseer", "iqbal", "", "2064512559")]
-        [TestCase("", "", "", "2064512559")]
         [TestCase("", "", "", "")]
         public void SendInviteOnMobile_PatientDetailModel_ReturnData(string firstName, string lastName, string email, string phoneNumber)
         {

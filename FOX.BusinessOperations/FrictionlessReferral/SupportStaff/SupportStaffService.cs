@@ -1,7 +1,6 @@
 ﻿using FOX.BusinessOperations.CommonService;
 using FOX.BusinessOperations.CommonServices;
 using FOX.BusinessOperations.PatientServices;
-using FOX.BusinessOperations.RequestForOrder.UploadOrderImages;
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.CommonModel;
