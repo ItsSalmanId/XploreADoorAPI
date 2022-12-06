@@ -68,6 +68,7 @@
     <Compile Include="DashboardServiceUnitTest\DashoboardServiceUnitTest.cs" />
     <Compile Include="FoxPHDServiceUnitTest\FoxPHDServiceTest.cs" />
     <Compile Include="FrictionlessReferralUnitTest\SupportStaffUnitTest\SupportStaffServiceTest.cs" />
+    <Compile Include="OriginalQueueServiceUnitTest\OriginalQueueServiceTest.cs" />
     <Compile Include="PatientServicesUnitTest\PatientServicesTest.cs" />
     <Compile Include="PatientSurveyServiceUnitTest\SearchSurveyServiceUnitTest\SearchSurveyServiceTest.cs" />
     <Compile Include="PatientSurveyServiceUnitTest\SurveyReportsServiceUnitTest\SurveyReportsServiceTest.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="RequestForOrderUnitTest\IndexInformationServiceUnitTest\IndexInformationServiceTest.cs" />
     <Compile Include="SearchOrderServicesUnitTest\SearchOrderServicesTest.cs" />
     <Compile Include="SettingServicesUnitTest\AnnouncementUnitTest\AnnouncementTest.cs" />
+    <Compile Include="UnAssignedQueueServiceUnitTest\UnAssignedQueueServiceTest.cs" />
     <Compile Include="UserManagementServiceUnitTest\UserManagementServiceTest.cs" />
     <Compile Include="SignatureRequiredServiceUnitTest\SignatureRequiredServiceTest.cs" />
   </ItemGroup>
