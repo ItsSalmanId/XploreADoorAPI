@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace FoxRehabilitation.UnitTest.DashboardServiceUnitTest
 {
     [TestFixture]
-    public class DashoboardServiceUnitTest
+    public class DashoboardServiceTest
     {
         private DashboardService _dashboardServiceObj;
 
