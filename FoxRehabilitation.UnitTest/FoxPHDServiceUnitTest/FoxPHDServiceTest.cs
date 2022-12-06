@@ -14,6 +14,8 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
         private PHDCallDetail _phdCallDetail;
         private UnmappedCallsSearchRequest _unMappedCallRequest;
         private PhdFaqsDetail _phdFaqsDetail;
+        private PatientsSearchRequest _patientsSearchRequest;
+        private CallDetailsSearchRequest _callDetailsSearchRequest;
 
         [SetUp]
         public void Setup()
@@ -23,6 +25,8 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             _phdCallDetail = new PHDCallDetail();
             _unMappedCallRequest = new UnmappedCallsSearchRequest();
             _phdFaqsDetail = new PhdFaqsDetail();
+            _patientsSearchRequest = new PatientsSearchRequest();
+            _callDetailsSearchRequest = new CallDetailsSearchRequest();
         }
         [Test]
         [TestCase(true)]
@@ -393,6 +397,7 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             //Arrange
             _userProfile.PracticeCode = practiceCode;
             _phdFaqsDetail.FAQS_ID = faqsId;
+            _phdFaqsDetail.QUESTIONS = "test";
 
             //Act
             _foxPHDService.GetPHDFaqsDetailsInformation(_phdFaqsDetail, _userProfile);
@@ -413,6 +418,31 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
 
             //Assert
             Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase(1011163)]
+        [TestCase(1012714)]
+        public void GetPatientInformation_GetModel_ReturnsData(long practiceCode)
+        {
+            //Arrange
+            _userProfile.PracticeCode = practiceCode;
+            _patientsSearchRequest.PATIENT_ACCOUNT = "";
+            _patientsSearchRequest.LAST_NAME = "";
+            _patientsSearchRequest.FIRST_NAME = "";
+            _patientsSearchRequest.DATE_OF_BIRTH_STR = "";
+            _patientsSearchRequest.CURRENT_PAGE = 1;
+            _patientsSearchRequest.RECORD_PER_PAGE = 10;
+            _patientsSearchRequest.SORT_BY = "receivedate";
+            _patientsSearchRequest.SORT_ORDER = "DESC";
+
+            //Act
+            var result = _foxPHDService.GetPatientInformation(_patientsSearchRequest,_userProfile);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
         }
         [TearDown]
         public void Teardown()

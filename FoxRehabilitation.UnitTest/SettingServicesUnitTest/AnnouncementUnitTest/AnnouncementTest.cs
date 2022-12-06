@@ -92,14 +92,15 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.AnnouncementUnitTes
             _userProfile.UserName = "1163testing";
             _addEditFoxAnnouncement.ANNOUNCEMENT_DATE_FROM = Helper.GetCurrentDate();
             _addEditFoxAnnouncement.ANNOUNCEMENT_DATE_TO = Helper.GetCurrentDate();
-            _addEditFoxAnnouncement.ANNOUNCEMENT_TITLE = "test";
-            _addEditFoxAnnouncement.ANNOUNCEMENT_DETAILS = "test";
+            _addEditFoxAnnouncement.ANNOUNCEMENT_TITLE = "N_Unit Testing";
+            _addEditFoxAnnouncement.ANNOUNCEMENT_DETAILS = "N_Unit Testing";
+            _addEditFoxAnnouncement.EditSelectedRolesID = "103";
             _addEditFoxAnnouncement.RoleRequest = new List<FoxRoleRequest>()
             {
                 new FoxRoleRequest
                 {
                     ROLE_ID = 103,
-                    ROLE_NAME = ""
+                    ROLE_NAME = "",
                 }
             };
             if (add == false)
@@ -131,7 +132,7 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.AnnouncementUnitTes
             _announcements.ANNOUNCEMENT_TITLE = "test";
             if (delete == false)
             {
-                _addEditFoxAnnouncement.ANNOUNCEMENT_ID = Helper.getMaximumId("ANNOUNCEMENT_ID") - 1;
+                _announcements.ANNOUNCEMENT_ID = Helper.getMaximumId("ANNOUNCEMENT_ID") - 2;
             }
             
             //Act
