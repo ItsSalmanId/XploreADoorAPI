@@ -2,11 +2,7 @@
 using FOX.DataModels.Models.OriginalQueueModel;
 using FOX.DataModels.Models.Security;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.OriginalQueueServiceUnitTest
 {
@@ -214,6 +210,5 @@ namespace FoxRehabilitation.UnitTest.OriginalQueueServiceUnitTest
             _originalQueue = null;
         }
     }
-
 }
 
