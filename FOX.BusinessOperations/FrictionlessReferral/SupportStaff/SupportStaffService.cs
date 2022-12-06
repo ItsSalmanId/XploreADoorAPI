@@ -220,7 +220,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         {
             ResponseModel responseModel = new ResponseModel();
             int pinCode = Helper.GetRandomPin();
-            if (!string.IsNullOrEmpty(patientDetails.EmailAddress) && !string.IsNullOrEmpty(patientDetails.MobilePhone))
+            if (!string.IsNullOrEmpty(patientDetails.EmailAddress) || !string.IsNullOrEmpty(patientDetails.MobilePhone))
             {
                 string urlLink = GetEncryptedUrlLink(patientDetails.EmailAddress, patientDetails.MobilePhone, "", pinCode.ToString());
                 if (!string.IsNullOrEmpty(urlLink))
@@ -425,6 +425,10 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 {
                     frictionLessReferralObj.PATIENT_DOB = null;
                 }
+                if (frictionLessReferralObj.PROVIDER_FAX != null)
+                {
+                    frictionLessReferralObj.PROVIDER_FAX = frictionLessReferralObj.PROVIDER_FAX.Replace("-", "");
+                }
                 if (existingFrictionReferral == null)
                 {
                     frictionLessReferralObj.FRICTIONLESS_REFERRAL_ID = Helper.getMaximumId("FRICTIONLESS_REFERRAL_ID");
@@ -432,10 +436,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     frictionLessReferralObj.CREATED_BY = frictionLessReferralObj.MODIFIED_BY = !string.IsNullOrEmpty(frictionLessReferralObj.SUBMITTER_LAST_NAME) ? frictionLessReferralObj.SUBMITTER_LAST_NAME : "FOX_TEAM";
                     frictionLessReferralObj.CREATED_DATE = frictionLessReferralObj.MODIFIED_DATE = Helper.GetCurrentDate();
                     frictionLessReferralObj.DELETED = false;
-                    if (frictionLessReferralObj.PROVIDER_FAX != null)
-                    {
-                        frictionLessReferralObj.PROVIDER_FAX = frictionLessReferralObj.PROVIDER_FAX.Replace("-", "");
-                    }
                     _frictionlessReferralRepository.Insert(frictionLessReferralObj);
                     frictionLessReferralResponse.Message = "Record Inserted Successfully.";
                     frictionLessReferralResponse.Success = true;
