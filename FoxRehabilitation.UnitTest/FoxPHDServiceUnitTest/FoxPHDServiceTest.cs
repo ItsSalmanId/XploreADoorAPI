@@ -78,7 +78,7 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
         [TestCase("")]
         [TestCase("10965")]
         [TestCase("1096510965")]
-        public void getNumberInFormat_Number_ReturnsData(string number)
+        public void GetNumberInFormat_Number_ReturnsData(string number)
         {
             //Arrange
             //Act

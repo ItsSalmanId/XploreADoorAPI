@@ -12,8 +12,8 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         private UserProfile _userProfile;
         private List<TeamAddUpdateModel> _userTeamModel;
         private TeamAddUpdateModel userTeamModelobj;
-        private string roleID;
         private User _user;
+        public string roleID;
 
         [SetUp]
         public void SetUp()
@@ -31,8 +31,10 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             //Arrange
             _userProfile.PracticeCode = 0;
             _userTeamModel = null;
+
             //Act
             var result = _userManagementService.UpdateUserTeam(_userTeamModel, _userProfile);
+
             //Assert
             if (result)
             {
@@ -50,8 +52,10 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             //Arrange
             _userProfile.PracticeCode = 123456;
             _userTeamModel = null;
+
             //Act
             var result = _userManagementService.UpdateUserTeam(_userTeamModel, _userProfile);
+
             //Assert
             if (result)
             {
@@ -67,11 +71,13 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         {
             //Arrange
             _userProfile.PracticeCode = 0;
-            TeamAddUpdateModel userTeamModelobj = new TeamAddUpdateModel();
-            userTeamModelobj.USER_ID = 123;
-            userTeamModelobj.PHD_CALL_SCENARIO_ID = 123;
-            userTeamModelobj.DELETED = false;
-            userTeamModelobj.ROLE_ID = 123;
+            TeamAddUpdateModel userTeamModelobj = new TeamAddUpdateModel
+            {
+                USER_ID = 123,
+                PHD_CALL_SCENARIO_ID = 123,
+                DELETED = false,
+                ROLE_ID = 123
+            };
             _userTeamModel.Add(userTeamModelobj);
 
             //Act
@@ -92,14 +98,18 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         {
             //Arrange
             _userProfile.PracticeCode = 111363;
-            userTeamModelobj = new TeamAddUpdateModel();
-            userTeamModelobj.USER_ID = 123;
-            userTeamModelobj.PHD_CALL_SCENARIO_ID = 123;
-            userTeamModelobj.DELETED = false;
-            userTeamModelobj.ROLE_ID = 123;
+            userTeamModelobj = new TeamAddUpdateModel
+            {
+                USER_ID = 123,
+                PHD_CALL_SCENARIO_ID = 123,
+                DELETED = false,
+                ROLE_ID = 123
+            };
             _userTeamModel.Add(userTeamModelobj);
+
             //Act
             var result = _userManagementService.UpdateUserTeam(_userTeamModel, _userProfile);
+
             //Assert
             if (result)
             {
@@ -116,8 +126,10 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             //Arrange
             _userProfile.PracticeCode = 0;
             _userTeamModel = null;
+
             //Act
             bool result = _userManagementService.AddUserTeam(_userTeamModel, _userProfile);
+
             //Assert
             if (result)
             {
@@ -127,21 +139,25 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             {
                 Assert.IsTrue(true);
             }
-        
         }
         [Test]
         public void AddUserTeam_PassArguments_SaveData()
         {
             //Arrange
             _userProfile.PracticeCode = 111363;
-            userTeamModelobj = new TeamAddUpdateModel();
-            userTeamModelobj.USER_ID = 123;
-            userTeamModelobj.PHD_CALL_SCENARIO_ID = 123;
-            userTeamModelobj.DELETED = false;
-            userTeamModelobj.ROLE_ID = 123;
+            userTeamModelobj = new TeamAddUpdateModel
+            {
+                USER_ID = 123,
+                PHD_CALL_SCENARIO_ID = 123,
+                DELETED = false,
+                ROLE_ID = 123
+            };
             _userTeamModel.Add(userTeamModelobj);
+
             //Act
             bool result = _userManagementService.AddUserTeam(_userTeamModel, _userProfile);
+
+            //Assert
             if (result)
             {
                 Assert.IsTrue(true);
@@ -150,7 +166,6 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             {
                 Assert.IsTrue(false);
             }
-
         }
         [Test]
         public void AddUserTeam_EmptyModel_NotSaveData()
@@ -161,6 +176,8 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
 
             //Act
             var result = _userManagementService.AddUserTeam(_userTeamModel, _userProfile);
+
+            //Assert
             if (result)
             {
                 Assert.IsTrue(false);
@@ -169,21 +186,25 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             {
                 Assert.IsTrue(true);
             }
-
         }
         [Test]
         public void AddUserTeam_EmptyProfile_NotSaveData()
         {
             //Arrange
             _userProfile.PracticeCode = 0;
-            TeamAddUpdateModel userTeamModelobj = new TeamAddUpdateModel();
-            userTeamModelobj.USER_ID = 123;
-            userTeamModelobj.PHD_CALL_SCENARIO_ID = 123;
-            userTeamModelobj.DELETED = false;
-            userTeamModelobj.ROLE_ID = 123;
+            TeamAddUpdateModel userTeamModelobj = new TeamAddUpdateModel
+            {
+                USER_ID = 123,
+                PHD_CALL_SCENARIO_ID = 123,
+                DELETED = false,
+                ROLE_ID = 123
+            };
             _userTeamModel.Add(userTeamModelobj);
+
             //Act
             var result = _userManagementService.AddUserTeam(_userTeamModel, _userProfile);
+
+            //Assert
             if (result)
             {
                 Assert.IsTrue(false);
@@ -192,17 +213,17 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             {
                 Assert.IsTrue(true);
             }
-
         }
-
         [Test]
         public void GetTeamList_EmptyArguments_NoReturnData()
         {
             //Arrange
             _userProfile.PracticeCode = 0;
             roleID = null;
+
             //Act
             var result = _userManagementService.GetTeamList(roleID, _userProfile);
+
             //Assert
             if (result.Count == 0)
             {
@@ -219,8 +240,10 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             //Arrange
             _userProfile.PracticeCode = 1011163;
             roleID = "5483234";
+
             //Act
             var result = _userManagementService.GetTeamList(roleID, _userProfile);
+
             //Assert
             if (result.Count > 0)
             {
@@ -237,8 +260,10 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             //Arrange
             _userProfile.PracticeCode = 123;
             roleID = null;
+
             //Act
             var result = _userManagementService.GetTeamList(roleID, _userProfile);
+
             //Assert
             if (result.Count == 0)
             {
@@ -255,8 +280,10 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             //Arrange
             _userProfile.PracticeCode = 0;
             roleID = "5483043";
+
             //Act
             var result = _userManagementService.GetTeamList(roleID, _userProfile);
+
             //Assert
             if (result.Count == 0)
             {
