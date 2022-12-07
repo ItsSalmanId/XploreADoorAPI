@@ -5,6 +5,7 @@ using FOX.DataModels.Models.PatientDocuments;
 using FOX.DataModels.Models.Security;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 
 namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
 {
@@ -19,7 +20,6 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
         private PatientsSearchRequest _patientsSearchRequest;
         private CallDetailsSearchRequest _callDetailsSearchRequest;
         private PatientPATDocument _patientPATDocument;
-        private PhdPatientVerification _phdPatientVerification;
 
         [SetUp]
         public void Setup()
@@ -32,7 +32,6 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             _patientsSearchRequest = new PatientsSearchRequest();
             _callDetailsSearchRequest = new CallDetailsSearchRequest();
             _patientPATDocument = new PatientPATDocument();
-            _phdPatientVerification = new PhdPatientVerification();
         }
         [Test]
         [TestCase(true)]
@@ -202,21 +201,6 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
 
             //Assert
             Assert.That(result.Count, Is.GreaterThanOrEqualTo(0));
-        }
-        [Test]
-        [TestCase(null, 0)]
-        [TestCase(null, 1011163)]
-        public void GenerateCaseEntries_EmptyPHDModel_NoReturnsData(PHDCallDetail phdCallDetail, long practiceCode)
-        {
-            //Arrange
-            _phdCallDetail = phdCallDetail;
-            _userProfile.PracticeCode = practiceCode;
-
-            //Act
-            _foxPHDService.GenerateCaseEntries(_phdCallDetail, _userProfile);
-
-            //Assert
-            Assert.IsTrue(true);
         }
         [Test]
         public void HasAttachment_EmptyAttachmentName_NoReturnsData()
@@ -462,7 +446,6 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             _callDetailsSearchRequest.CALL_DATE_TO_STR = "";
             _callDetailsSearchRequest.CALL_TIME_FROM_STR = callDateStr;
             _callDetailsSearchRequest.CALL_TIME_TO_STR = callDateStr;
-
             _callDetailsSearchRequest.CALL_ATTENDED_BY = "";
             _callDetailsSearchRequest.CALL_REASON = "";
             _callDetailsSearchRequest.CALL_HANDLING = "";
@@ -473,13 +456,10 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             _callDetailsSearchRequest.PATIENT_LAST_NAME = "";
             _callDetailsSearchRequest.PHONE_NUMBER = "";
             _callDetailsSearchRequest.CALL_TIME_TO_STR = "";
-
             _callDetailsSearchRequest.CURRENT_PAGE = 1;
             _callDetailsSearchRequest.RECORD_PER_PAGE = 10;
             _callDetailsSearchRequest.SORT_BY = "receivedate";
             _callDetailsSearchRequest.SORT_ORDER = "DESC";
-            //00:15:00 GMT + 0500(Pakistan Standard Time)
-
 
             //Act
             var result = _foxPHDService.GetPHDCallDetailsInformation(_callDetailsSearchRequest, _userProfile);
@@ -491,10 +471,9 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             }
         }
         [Test]
-        [TestCase(1011163, "")]
-        [TestCase(1011163, "00:15:00 GMT + 0500(Pakistan Standard Time)")]
-        [TestCase(1012714, "")]
-        public void AddDocument_AddModel_InsertData(long practiceCode, string callDateStr)
+        [TestCase(1011163)]
+        [TestCase(1012714)]
+        public void AddDocument_AddModel_InsertData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -508,10 +487,7 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             var result = _foxPHDService.AddDocument(_patientPATDocument, _userProfile, true);
 
             //Assert
-            if (result != null)
-            {
-                Assert.IsTrue(true);
-            }
+            Assert.That(result, Is.GreaterThanOrEqualTo(0));   
         }
         [Test]
         [TestCase(1011163, 0, 0)]
@@ -541,11 +517,9 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             }
         }
         [Test]
-        [TestCase(1011163, 0, 0)]
-        [TestCase(1011163, 0, 54819396)]
-        [TestCase(1011163, 548958, 54819396)]
-        //[TestCase(1012714, 0, 0)]
-        public void AddUpdatePHDCallDetailInformation_AddModel_InsertData(long practiceCode, long patDocumentId, long workId)
+        [TestCase(1011163)]
+        [TestCase(1012714)]
+        public void AddUpdatePHDCallDetailInformation_AddModel_InsertData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -568,25 +542,11 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             }
         }
         [Test]
-        [TestCase(1011163, 0, 0)]
-        [TestCase(1011163, 0, 54819396)]
-        [TestCase(1011163, 548958, 54819396)]
-        //[TestCase(1012714, 0, 0)]
-        public void AddUpdateVerificationInformation_AddModel_InsertData(long practiceCode, long patDocumentId, long workId)
+        public void GenerateCaseNumber_GenerateCase_ReturnCaseNumber()
         {
             //Arrange
-            _userProfile.PracticeCode = practiceCode;
-            _userProfile.UserName = "Unit Testing";
-            _phdPatientVerification.PATIENT_ACCOUNT_STR = "100101101997";
-            _phdPatientVerification.LAST_VERIFIED_DATE_STR = DateTime.Now.ToString();
-            _phdPatientVerification.FOX_PHD_CALL_PATIENT_VERIFICATION_ID = 548140;
-            _phdPatientVerification.NEW_EMAIL_ADDRESS = "UnitTesting@carecloud.com";
-            _phdPatientVerification.NEW_HOME_PHONE = "7322870443";
-            _phdPatientVerification.NEW_CELL_PHONE = "7327541902";
-           // _phdPatientVerification.CALL_ATTENDED_BY = "1011163415";
-
             //Act
-            var result = _foxPHDService.AddUpdateVerificationInformation(_phdPatientVerification, _userProfile);
+            var result = _foxPHDService.GenerateCaseNumber();
 
             //Assert
             if (result != null)
@@ -594,8 +554,47 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
                 Assert.IsTrue(true);
             }
         }
+        [Test]
+        [TestCase(1011163, "test", "test")]
+        public void AddPHDLog_AddModel_InsertData(long practiceCode, string logFor, string logDetail)
+        {
+            //Arrange
+            _userProfile.PracticeCode = practiceCode;
+            _userProfile.UserName = "Unit Testing";
 
-        //AddUpdateVerificationInformation
+            //Act
+            _foxPHDService.AddPHDLog(_phdCallDetail, logFor, logDetail, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase(1011163, 5482573)]
+        [TestCase(1011163, 5481123)]
+        public void SavePhdScanarios_AddModel_InsertData(long practiceCode, long userId)
+        {
+            //Arrange
+            _userProfile.PracticeCode = practiceCode;
+            _userProfile.UserName = "Unit Testing";
+            _callDetailsSearchRequest.CALL_REASON = "";
+            List<DefaultVauesForPhdUsers> defaultVauesForPhdUsers = new List<DefaultVauesForPhdUsers>()
+            {
+                new DefaultVauesForPhdUsers()
+                {
+                    PRACTICE_CODE = 1011163,
+                    DELETED = false,
+                    MODIFIED_BY = "FOXTeam",
+                    CREATED_BY = "FOXTeam",
+                    USER_ID = userId
+                }
+            };
+
+            //Act
+            _foxPHDService.SavePhdScanarios(defaultVauesForPhdUsers, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
         [TearDown]
         public void Teardown()
         {
@@ -605,6 +604,7 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             _phdCallDetail = null;
             _unMappedCallRequest = null;
             _phdFaqsDetail = null;
+            _callDetailsSearchRequest = null;
         }
     }
 }
