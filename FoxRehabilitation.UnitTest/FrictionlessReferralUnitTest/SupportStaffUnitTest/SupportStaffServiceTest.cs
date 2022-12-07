@@ -74,6 +74,25 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
                 Assert.That(result.WORK_ID, Is.EqualTo(0));
         }
         [Test]
+        [TestCase("Taseer", "iqbal", "muhammadiqbal11@carecloud.com", "2064512559")]
+        public void SendInviteToPatientPortal_PatientDetailModel_ReturnData(string firstName, string lastName, string email, string phoneNumber)
+        {
+            //Arrange
+            _patientDetail.FirstName = firstName;
+            _patientDetail.LastName = lastName;
+            _patientDetail.EmailAddress = email;
+            _patientDetail.MobilePhone = phoneNumber;
+
+            //Act
+            var result = _supportStaffService.SendInviteToPatientPortal(_patientDetail);
+
+            //Assert
+            if (result != null)
+                Assert.True(true);
+            else
+                Assert.IsFalse(false);
+        }
+        [Test]
         [TestCase("", "", "", "")]
         [TestCase("1679785950", "", "", "")]
         [TestCase("1740503804", "", "", "")]
@@ -174,27 +193,6 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
 
             //Assert
             if (result.Count > 0)
-                Assert.True(true);
-            else
-                Assert.IsFalse(false);
-        }
-        [Test]
-        [TestCase("Taseer", "iqbal", "muhammadiqbal11@carecloud.com", "2064512559")]
-        [TestCase("Taseer", "iqbal", "test1@carecloud.com", "")]
-        [TestCase("", "", "", "")]
-        public void SendInviteOnMobile_PatientDetailModel_ReturnData(string firstName, string lastName, string email, string phoneNumber)
-        {
-            //Arrange
-            _patientDetail.FirstName = firstName;
-            _patientDetail.LastName = lastName;
-            _patientDetail.EmailAddress = email;
-            _patientDetail.MobilePhone = phoneNumber;
-
-            //Act
-            var result = _supportStaffService.SendInviteOnMobile(_patientDetail);
-
-            //Assert
-            if (result.Success)
                 Assert.True(true);
             else
                 Assert.IsFalse(false);
