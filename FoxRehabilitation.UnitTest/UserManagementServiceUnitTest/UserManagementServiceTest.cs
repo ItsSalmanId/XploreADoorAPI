@@ -298,7 +298,6 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             //Assert
             Assert.IsTrue(true);
         }
-        //SetAutoLockTimeSetup
         [TearDown]
         public void Teardown()
         {
