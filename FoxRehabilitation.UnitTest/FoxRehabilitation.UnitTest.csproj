@@ -75,6 +75,7 @@
     <Compile Include="PerformAuditServiceUnitTest\PerormAuditServiceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QualityAssuranceServiceUnitTest\EvaluationSetupServiceTest.cs" />
+    <Compile Include="QualityAssuranceServiceUnitTest\PerformAuditServiceTest.cs" />
     <Compile Include="QualityAssuranceServiceUnitTest\QADashboardServiceTest.cs" />
     <Compile Include="RequestForOrderUnitTest\RequestForOrderServiceTest.cs" />
     <Compile Include="RequestForOrderUnitTest\IndexInformationServiceUnitTest\IndexInformationServiceTest.cs" />
