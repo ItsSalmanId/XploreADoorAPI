@@ -80,6 +80,7 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
         public void Teardown()
         {
             _qADashboardService = null;
+            _qADashboardSearch = null;
             _userProfile = null;
         }
     }

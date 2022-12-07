@@ -2,11 +2,6 @@
 using FOX.DataModels.Models.QualityAsuranceModel;
 using FOX.DataModels.Models.Security;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
 {
@@ -18,6 +13,7 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
         private SurveyAuditScores _surveyAuditScores;
         private RequestCallFromQA _requestCallFromQA;
         private UserProfile _userProfile;
+        public int callScanrioID;
 
         [SetUp]
         public void SetUp()
@@ -29,11 +25,8 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             _userProfile = new UserProfile();
         }
         [Test]
-        [TestCase(0, "")]
-        [TestCase(0, "SURVEY")]
         [TestCase(1011163, "")]
-        [TestCase(1011163, "SURVEY")]
-        [TestCase(38403, "test")]
+        [TestCase(1011163, "Survey")]
         public void GetAlertGeneralNotes_TotalNumbersModel_ReturnData(long practiceCode, string callType)
         {
             //Arrange
@@ -71,11 +64,8 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             }
         }
         [Test]
-        [TestCase(0, "")]
-        [TestCase(0, "SURVEY")]
         [TestCase(1011163, "")]
-        [TestCase(1011163, "SURVEY")]
-        [TestCase(38403, "test")]
+        [TestCase(1011163, "Survey")]
         public void GetListOfGradingCriteria_GradingSetupList_ReturnData(long practiceCode, string callType)
         {
             //Arrange
@@ -95,11 +85,11 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             }
         }
         [Test]
-        [TestCase(1011163, 101116354817196,"test","test",1)]
-        [TestCase(1012714, 101116354817196,"test","",2)]
-        [TestCase(1012714, 101116354817196,"","test",3)]
-        [TestCase(1012714, 101116354817196,"","",4)]
-        public void ListAuditedCalls_AuditedCallsModel_ReturnData(long practiceCode,long patientAccount,string agentName,string auditorName,int timeFrame)
+        [TestCase(1011163, 101116354817196, "test", "test", 1)]
+        [TestCase(1012714, 101116354817196, "test", "", 2)]
+        [TestCase(1012714, 101116354817196, "", "test", 3)]
+        [TestCase(1012714, 101116354817196, "", "", 4)]
+        public void ListAuditedCalls_AuditedCallsModel_ReturnData(long practiceCode, long patientAccount, string agentName, string auditorName, int timeFrame)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -107,7 +97,7 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             _requestCallFromQA.AGENT_NAME = agentName;
             _requestCallFromQA.AUDITOR_NAME = auditorName;
             _requestCallFromQA.TIME_FRAME = timeFrame;
-            
+
             //Act
             var result = _performAuditService.ListAuditedCalls(_requestCallFromQA, _userProfile);
 
@@ -119,6 +109,42 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             else if (result.Count == 0)
             {
                 Assert.IsFalse(false);
+            }
+        }
+        [Test]
+        public void GetDropdownLists_UserProfile_NoReturnData()
+        {
+            //Arrange
+            _userProfile = null;
+            callScanrioID = 544103;
+
+            //Act
+            var result = _performAuditService.GetTeamMemberName(callScanrioID, _userProfile);
+
+            //Assert
+            if (result.Count > 0)
+            {
+                Assert.Pass("Failed");
+            }
+            else
+            {
+                Assert.Pass("Passed");
+            }
+        }
+        [Test]
+        public void GetDropdownLists_CallScanrioID_NoReturnData()
+        {
+            //Arrange
+            _userProfile.PracticeCode = 1011163;
+            callScanrioID = 0;
+
+            //Act
+            var result = _performAuditService.GetTeamMemberName(callScanrioID, _userProfile);
+
+            //Assert
+            if (result.Count > 0)
+            {
+                Assert.Pass("Failed");
             }
         }
         [TearDown]

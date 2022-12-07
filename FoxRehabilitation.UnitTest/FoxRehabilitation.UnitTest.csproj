@@ -72,11 +72,10 @@
     <Compile Include="PatientServicesUnitTest\PatientServicesTest.cs" />
     <Compile Include="PatientSurveyServiceUnitTest\SearchSurveyServiceUnitTest\SearchSurveyServiceTest.cs" />
     <Compile Include="PatientSurveyServiceUnitTest\SurveyReportsServiceUnitTest\SurveyReportsServiceTest.cs" />
-    <Compile Include="PerformAuditServiceUnitTest\PerormAuditServiceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QualityAssuranceServiceUnitTest\EvaluationSetupServiceTest.cs" />
-    <Compile Include="QualityAssuranceServiceUnitTest\PerformAuditServiceTest.cs" />
-    <Compile Include="QualityAssuranceServiceUnitTest\QADashboardServiceTest.cs" />
+    <Compile Include="QualityAssuranceServiceUnitTest\EvaluationSetupServiceUnitTest\EvaluationSetupServiceTest.cs" />
+    <Compile Include="QualityAssuranceServiceUnitTest\PerformAuditServiceUnitTest\PerformAuditServiceTest.cs" />
+    <Compile Include="QualityAssuranceServiceUnitTest\QADashboardServiceUnitTest\QADashboardServiceTest.cs" />
     <Compile Include="RequestForOrderUnitTest\RequestForOrderServiceTest.cs" />
     <Compile Include="RequestForOrderUnitTest\IndexInformationServiceUnitTest\IndexInformationServiceTest.cs" />
     <Compile Include="SearchOrderServicesUnitTest\SearchOrderServicesTest.cs" />
