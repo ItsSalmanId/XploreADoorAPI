@@ -17,10 +17,8 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             _requestModelForCallType = new RequestModelForCallType();
         }
         [Test]
-        [TestCase(0, "")]
-        [TestCase(0, "SURVEY")]
         [TestCase(1011163, "")]
-        [TestCase(1011163, "SURVEY")]
+        [TestCase(1011163, "Survey")]
         public void GetAlertGeneralNotes_EvaluationSetupResponseModel_ReturnData(long practiceCode, string callType)
         {
             //Arrange

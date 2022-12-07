@@ -19,10 +19,9 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             _qADashboardSearch = new QADashboardSearch();
             _userProfile = new UserProfile();
         }
-
         [Test]
         [TestCase("", 0)]
-        [TestCase("544110,544109", 0)]
+        [TestCase(",544110,544109,54410118", 1011163)]
         [TestCase("", 1011163)]
         [TestCase("544110,544109", 38403)]
         public void GetEmployeelist_Employeelist_ReturnData(string callScanrioID, long praticeCode)
@@ -44,12 +43,12 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             }
         }
         [Test]
-        [TestCase("544110,544109,544114", "phd", "Both", "", "", ",Client Services,Commercial Team,Followup", "LAST_THREE_MONTHS", false, 1011163)]
-        [TestCase("544110,544109,544114", "survey", "Both", "", "", ",Client Services,Commercial Team,Followup", "LAST_THREE_MONTHS", false, 1011163)]
-        [TestCase("544110,544109,544114", "survey", "", "", "", ",Client Services,Commercial Team,Followup", "LAST_THREE_MONTHS", false, 1011163)]
-        [TestCase("544110,544109,544114", "survey", "", "", "", "", "LAST_THREE_MONTHS", false, 1011163)]
-        [TestCase("544110,544109,544114", "survey", "", "", "", "", "LAST_THREE_MONTHS", true, 1011163)]
-        [TestCase("544110,544109,544114", "survey", "", "", "", "", "LAST_THREE_MONTHS", true, 0)]
+        [TestCase("544110,544109,544114", "phd", ",Both", ",test", ",test test", ",Client Services,Commercial Team,Followup", "LAST_MONTH", false, 1011163)]
+        [TestCase("544110,544109,544114", "Phd and Survey", "Client Experience", ",test", ",test test", ",Client Services,Commercial Team,Followup", "LAST_TWO_MONTHS", false, 1011163)]
+        [TestCase(",544110,544109,544114", "phd", "System and Client", "", "Taseer", ",Client Services,Commercial Team,Followup", "LAST_THREE_MONTHS", true, 1011163)]
+        [TestCase("544110,544109,544114", "phd", "Client Experience", "", "", "", "last_week", false, 1011163)]
+        [TestCase("544110,544109,544114", "Survey", "System Product and Process", "", "", "", "last_two_week", true, 1011163)]
+        [TestCase("544110,544109,544114", "Survey", "", "", "", "", "last_three_week", true, 0)]
         [TestCase("", "", "", "", "", "", "LAST_THREE_MONTHS", true, 0)]
         public void GetDashboardData_EvaluatedData_ReturnData(string calHandlingID, string callType, string evaluatedName, string userName, string userFullName, string teamsName, string timeFrame, bool isActive, long praticeCode)
         {
@@ -74,14 +73,15 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [TearDown]
         public void Teardown()
         {
             _qADashboardService = null;
+            _qADashboardSearch = null;
+            _userProfile = null;
         }
-
     }
 }
