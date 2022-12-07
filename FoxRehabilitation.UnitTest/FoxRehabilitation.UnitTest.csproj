@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="AccountServiceUnitTest\AccountServiceTest.cs" />
     <Compile Include="CommonServiceUnitTest\CommonServiceTest.cs" />
+    <Compile Include="DashboardServiceUnitTest\DashoboardServiceTest.cs" />
     <Compile Include="FoxPHDServiceUnitTest\FoxPHDServiceTest.cs" />
     <Compile Include="FrictionlessReferralUnitTest\SupportStaffUnitTest\SupportStaffServiceTest.cs" />
     <Compile Include="OriginalQueueServiceUnitTest\OriginalQueueServiceTest.cs" />
