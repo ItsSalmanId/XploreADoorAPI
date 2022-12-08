@@ -262,13 +262,13 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     return ProviderReferralSourceInfo;
                 }
             }
-            else if (practiceCode != 0 && !string.IsNullOrEmpty(obj.ProviderFirstName.Trim()) && !string.IsNullOrEmpty(obj.ProviderLastName.Trim()) && !string.IsNullOrEmpty(obj.ProviderState.Trim()))
+            else if (practiceCode != 0 && !string.IsNullOrEmpty(obj.ProviderLastName.Trim()) && !string.IsNullOrEmpty(obj.ProviderState.Trim()))
             {
                 providerResponse = _providerRepository.GetMany(x => x.FIRST_NAME == obj.ProviderFirstName && x.LAST_NAME == obj.ProviderLastName && x.STATE == obj.ProviderState && x.PRACTICE_CODE == practiceCode && !(x.DELETED.HasValue ? x.DELETED.Value : false));
                 // Search on NPPES
                 if (providerResponse.Count == 0)
                 {
-                    string url = AppConfiguration.NPPESNPIRegistry + "&first_name=" + obj.ProviderFirstName.Trim() + "&last_name=" + obj.ProviderLastName.Trim() + "&state=" + obj.ProviderState.Trim();
+                    string url = AppConfiguration.NPPESNPIRegistry + "&first_name=" + obj.ProviderFirstName?.Trim() + "&last_name=" + obj.ProviderLastName.Trim() + "&state=" + obj.ProviderState.Trim();
                     ProviderReferralSourceInfo = GetNPPESNPIResponse(url);
                     return ProviderReferralSourceInfo;
                 }
