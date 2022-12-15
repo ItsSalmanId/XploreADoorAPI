@@ -6,13 +6,15 @@ using System.Threading.Tasks;
 using FOX.DataModels.Models.Patient;
 using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.Settings.Announcement;
+using FOX.DataModels.Models.SurveyAutomation;
 
 namespace FOX.BusinessOperations.SurveyAutomationService
 {
     public interface ISurveyAutomationService
     {
-        List<Patient> GetPatientDetails();
+        List<SurveyAutomation> GetPatientDetails(SurveyAutomation objSurveyAutomation);
         List<FoxRoles> GetFoxRoles(UserProfile userProfile);
+        List<SurveyQuestions> GetSurveyQuestionDetails();
         //Patient GetPatientDetails();
     }
 }

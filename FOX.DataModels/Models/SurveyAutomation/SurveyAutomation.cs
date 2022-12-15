@@ -10,7 +10,27 @@ using System.Threading.Tasks;
 
 namespace FOX.DataModels.Models.SurveyAutomation
 {
-    class SurveyAutomation
+    public class SurveyAutomation
+    {
+        public string Patient_AccountStr { get; set; }
+        public string PROVIDER { get; set; }
+        public string REGION { get; set; }
+        public string PT_OT_SLP { get; set; }
+        public string SERVICE_OR_PAYMENT_DESCRIPTION { get; set; }
+
+    }
+    [Table("FOX_TBL_PATIENT_SURVEY_QUESTIONS")]
+    public class SurveyQuestions
+    {
+        [Key]
+        public long PATIENT_SURVEY_QUESTIONS_ID { get; set; }
+        public string QUESTION_ONE_DESCRIPTION { get; set; }
+        public string QUESTION_TWO_DESCRIPTION { get; set; }
+        public string QUESTION_THREE_DESCRIPTION { get; set; }
+        public bool? DELETED { get; set; }
+
+    }
+    class SurveyAutomations
     {
         [Table("Patient")]
         public class Patient : BaseModel

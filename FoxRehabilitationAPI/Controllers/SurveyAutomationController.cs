@@ -21,17 +21,22 @@ namespace FoxRehabilitationAPI.Controllers
             _surveyAutomationService = surveyAutomationService;
         }
         [HttpPost]
-        public HttpResponseMessage GetPatientDetails(Patient objPatient)
+        public HttpResponseMessage GetPatientDetails(SurveyAutomation objSurveyAutomation)
         {
 
-            if (objPatient != null)
+            if (objSurveyAutomation != null)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.GetPatientDetails());
+                return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.GetPatientDetails(objSurveyAutomation));
             }
             else
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient is empty");
             }
+        }
+        [HttpGet]
+        public HttpResponseMessage GetSurveyQuestionDetails()
+        {
+                return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.GetSurveyQuestionDetails());   
         }
         [HttpGet]
         public HttpResponseMessage GetFoxRoles()

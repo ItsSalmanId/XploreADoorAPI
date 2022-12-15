@@ -93,6 +93,7 @@
     <Compile Include="Context\DbContextSecurity.cs" />
     <Compile Include="Context\DBContextQueue.cs" />
     <Compile Include="Context\DbContextSettings.cs" />
+    <Compile Include="Context\DBContextSurveyAutomation.cs" />
     <Compile Include="Context\DbContextTasks.cs" />
     <Compile Include="Context\SpContext.cs" />
     <Compile Include="EntityHelper.cs" />
@@ -168,6 +169,7 @@
     <Compile Include="Models\SignatureRequired\SignatureRequired.cs" />
     <Compile Include="Models\StatesModel\States.cs" />
     <Compile Include="Models\SupervisorWorkModel\SupervisorWork.cs" />
+    <Compile Include="Models\SurveyAutomation\SurveyAutomation.cs" />
     <Compile Include="Models\TasksModel\TasksModel.cs" />
     <Compile Include="Models\UnAssignedQueueModel\UnAssignedQueue.cs" />
     <Compile Include="Models\UploadWorkOrderFiles\UploadWorkOrderFilesModel.cs" />
