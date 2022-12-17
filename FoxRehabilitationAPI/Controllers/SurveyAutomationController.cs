@@ -8,6 +8,7 @@ using FOX.BusinessOperations.SurveyAutomationService;
 using FOX.DataModels.Models.Patient;
 using FOX.DataModels.Models.SurveyAutomation;
 using FoxRehabilitationAPI.Filters;
+using static FOX.DataModels.Models.SurveyAutomation.SurveyAutomations;
 
 namespace FoxRehabilitationAPI.Controllers
 {
@@ -33,11 +34,25 @@ namespace FoxRehabilitationAPI.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient is empty");
             }
         }
-        [HttpGet]
-        public HttpResponseMessage GetSurveyQuestionDetails()
+        [HttpPost]
+        public HttpResponseMessage UpdatePatientSurvey(FOX.DataModels.Models.PatientSurvey.PatientSurvey objPatientSurvey)
         {
-                return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.GetSurveyQuestionDetails());   
+
+            if (objPatientSurvey != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.UpdatePatientSurvey(objPatientSurvey, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient is empty");
+            }
         }
+        [HttpGet]
+        public HttpResponseMessage GetSurveyQuestionDetails(string patinetAccount)
+        {
+                return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.GetSurveyQuestionDetails(patinetAccount));   
+        }
+
         [HttpGet]
         public HttpResponseMessage GetFoxRoles()
         {
