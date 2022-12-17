@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using FOX.BusinessOperations.SurveyAutomationService;
-using FOX.DataModels.Models.Patient;
-using FOX.DataModels.Models.SurveyAutomation;
 using FoxRehabilitationAPI.Filters;
 using static FOX.DataModels.Models.SurveyAutomation.SurveyAutomations;
 
@@ -40,23 +35,24 @@ namespace FoxRehabilitationAPI.Controllers
 
             if (objPatientSurvey != null)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.UpdatePatientSurvey(objPatientSurvey, GetProfile()));
+                return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.UpdatePatientSurvey(objPatientSurvey));
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient is empty");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient survey model is empty");
             }
         }
         [HttpGet]
         public HttpResponseMessage GetSurveyQuestionDetails(string patinetAccount)
         {
-                return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.GetSurveyQuestionDetails(patinetAccount));   
-        }
-
-        [HttpGet]
-        public HttpResponseMessage GetFoxRoles()
-        {
-            return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.GetFoxRoles(GetProfile()));
+            if (patinetAccount != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.GetSurveyQuestionDetails(patinetAccount));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patinet Account is empty");
+            }
         }
     }
 }

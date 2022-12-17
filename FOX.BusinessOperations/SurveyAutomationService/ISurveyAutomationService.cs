@@ -16,8 +16,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
     public interface ISurveyAutomationService
     {
         SurveyAutomation GetPatientDetails(SurveyAutomation objSurveyAutomation);
-        List<FoxRoles> GetFoxRoles(UserProfile userProfile);
         List<SurveyQuestions> GetSurveyQuestionDetails(string patinetAccount);
-        ResponseModel UpdatePatientSurvey(PatientSurvey objPatientSurvey, UserProfile profile);
+        ResponseModel UpdatePatientSurvey(PatientSurvey objPatientSurvey);
     }
 }
