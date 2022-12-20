@@ -23,11 +23,13 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<SurveyQuestions>().Property(t => t.SURVEY_QUESTIONS_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<PatientSurveyHistory>().Property(t => t.SURVEY_HISTORY_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<PatientSurvey>().Property(t => t.SURVEY_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<SurveyAutomationLog>().Property(t => t.SURVEY_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
         }
 
         public virtual DbSet<Patient> patient { get; set; }
         public virtual DbSet<SurveyQuestions> surveyQuestions { get; set; }
         public virtual DbSet<PatientSurveyHistory> patientSurveyHistory { get; set; }
         public virtual DbSet<PatientSurvey> patientSurvey { get; set; }
+        public virtual DbSet<SurveyAutomationLog> surveyAutomationLog { get; set; }
     }
 }
