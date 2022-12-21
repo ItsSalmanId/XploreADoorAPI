@@ -31,6 +31,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
         private readonly GenericRepository<PatientSurveyCallLog> _patientSurveyCallLogRepository;
         private readonly GenericRepository<PatientSurveyFormatType> _psFormatTypeRepository;
         private readonly GenericRepository<RoleToAdd> _roleRepository;
+        private readonly GenericRepository<SurveyServiceLog> _surveyServiceLogRepository;
         public PatientSurveyService()
         {
             _patientSurveyRepository = new GenericRepository<PatientSurvey>(_patientSurveyContext);
@@ -38,6 +39,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
             _patientSurveyCallLogRepository = new GenericRepository<PatientSurveyCallLog>(_patientSurveyContext);
             _psFormatTypeRepository = new GenericRepository<PatientSurveyFormatType>(_patientSurveyContext);
             _roleRepository = new GenericRepository<RoleToAdd>(_patientSurveyContext);
+            _surveyServiceLogRepository = new GenericRepository<SurveyServiceLog>(_patientSurveyContext);
         }
 
         public bool SetSurveytProgress(long patientAccount, bool progressStatus)
@@ -712,12 +714,20 @@ namespace FOX.BusinessOperations.PatientSurveyService
             }
 
         }
+        public List<SurveyServiceLog> SurveyPerformByUser(long patientAccount, long practiceCode)
+        {
+            List<SurveyServiceLog> performSurveyDetails = new List<SurveyServiceLog>();
+            if (patientAccount != 0 && practiceCode != 0)
+            {
+                performSurveyDetails = _surveyServiceLogRepository.GetMany(r => r.PATIENT_ACCOUNT == patientAccount && r.PRACTICE_CODE == practiceCode && r.DELETED == false);
+            }
+            return performSurveyDetails;
+        }
 
         public List<string> GetPatientSurveytProviderList(long practiceCode)
         {
             return _patientSurveyRepository.GetMany(x => x.PRACTICE_CODE == practiceCode).Select(x => x.PROVIDER).Distinct().ToList();
         }
-
         public PSDResults GetPSDResults(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile) // PSD => Patient Survey Dashboard.
         {
             patientSurveySearchRequest.DATE_TO = Helper.GetCurrentDate();

@@ -133,6 +133,15 @@ namespace FOX.DataModels.Models.PatientSurvey
         [NotMapped]
         public int? HAS_CALL_PATH { get; set; }
     }
+    [Table("FOX_TBL_SURVEY_AUTOMATION_SERVICE_LOG")]
+    public class SurveyServiceLog
+    {
+        [Key]
+        public long SURVEY_AUTOMATION_LOG_ID { get; set; }
+        public long? PATIENT_ACCOUNT { get; set; }
+        public long? PRACTICE_CODE { get; set; }
+        public bool DELETED { get; set; }
+    }
 
     [Table("FOX_TBL_PATIENT_SURVEY_HISTORY")]
     public class PatientSurveyHistory

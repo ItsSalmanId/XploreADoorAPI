@@ -45,7 +45,18 @@ namespace FoxRehabilitationAPI.Controllers
             var response = Request.CreateResponse(HttpStatusCode.OK, result);
             return response;
         }
-
+        [HttpGet]
+        public HttpResponseMessage SurveyPerformByUser(long patientAccount)
+        {     
+            if (patientAccount != 0)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.SurveyPerformByUser(patientAccount, GetProfile().PracticeCode));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Perform survey model is empty");
+            }
+        }
         [HttpGet]
         public HttpResponseMessage GetPatientSurveytProviderList()
         {
