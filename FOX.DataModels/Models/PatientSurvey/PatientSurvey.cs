@@ -132,6 +132,10 @@ namespace FOX.DataModels.Models.PatientSurvey
         public DateTime? SURVEY_COMPLETED_DATE { get; set; }
         [NotMapped]
         public int? HAS_CALL_PATH { get; set; }
+        [NotMapped]
+        public bool? IS_SMS { get; set; }
+        [NotMapped]
+        public bool? IS_EMAIL { get; set; }
     }
     [Table("FOX_TBL_SURVEY_AUTOMATION_SERVICE_LOG")]
     public class SurveyServiceLog
@@ -179,6 +183,10 @@ namespace FOX.DataModels.Models.PatientSurvey
         public bool DELETED { get; set; }
         public bool? IS_EXCEPTIONAL { get; set; }
         public bool? IS_PROTECTIVE_EQUIPMENT { get; set; }
+        [NotMapped]
+        public bool? IS_SMS { get; set; }
+        [NotMapped]
+        public bool? IS_EMAIL { get; set; }
     }
 
     [Table("FOX_TBL_PATIENT_SURVEY_CALL_LOG")]
