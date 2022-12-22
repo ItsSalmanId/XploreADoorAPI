@@ -32,12 +32,12 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         public SurveyAutomation GetPatientDetails(SurveyAutomation objSurveyAutomation)
         {
             SurveyAutomation surveyAutomation = new SurveyAutomation();
-            if (objSurveyAutomation != null && objSurveyAutomation.PATIENT_ACCOUNT_STR != null)
+            if (objSurveyAutomation != null && objSurveyAutomation.PATIENT_ACCOUNT != 0)
             {
                 SurveyAutomationLog surveyAutomationLog = new SurveyAutomationLog();
                 string fromDate = (Helper.GetCurrentDate().AddDays(-21)).ToString();
                 string toDate = (Helper.GetCurrentDate()).ToString();
-                SqlParameter patientAccountNumber = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = objSurveyAutomation.PATIENT_ACCOUNT_STR };
+                SqlParameter patientAccountNumber = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = objSurveyAutomation.PATIENT_ACCOUNT };
                 var existingDetailInfo = SpRepository<SurveyAutomationLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PERFORM_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT", patientAccountNumber);
                 if (existingDetailInfo != null)
                 {
@@ -45,10 +45,15 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                 }
                 else
                 {
-                    SqlParameter patientAccount = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = objSurveyAutomation.PATIENT_ACCOUNT_STR };
+                    SqlParameter patientAccount = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = objSurveyAutomation.PATIENT_ACCOUNT };
                     surveyAutomation = SpRepository<SurveyAutomation>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT", patientAccount);
                 }
             }
+            else
+            {
+                surveyAutomation = null;
+            }
+
             return surveyAutomation;
         }
         public List<SurveyQuestions> GetSurveyQuestionDetails(string patinetAccount)

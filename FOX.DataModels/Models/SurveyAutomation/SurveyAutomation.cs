@@ -15,7 +15,7 @@ namespace FOX.DataModels.Models.SurveyAutomation
 
         public class SurveyAutomation
         {
-            public string PATIENT_ACCOUNT_STR { get; set; }
+            public long PATIENT_ACCOUNT { get; set; }
             public string PROVIDER { get; set; }
             public string REGION { get; set; }
             public string PT_OT_SLP { get; set; }
