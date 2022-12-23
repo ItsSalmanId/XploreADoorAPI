@@ -2,7 +2,6 @@
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.CommonModel;
-using FOX.DataModels.Models.Patient;
 using FOX.DataModels.Models.PatientSurvey;
 using System;
 using System.Collections.Generic;
@@ -18,43 +17,36 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         private readonly DBContextSurveyAutomation _surveyAutomationContext = new DBContextSurveyAutomation();
         private readonly GenericRepository<PatientSurveyHistory> _patientSurveyHistoryRepository;
         private readonly GenericRepository<PatientSurvey> _patientSurveyRepository;
-        private readonly GenericRepository<SurveyAutomationLog> _surveyAutomationLogRepository;
         
         #region CONSTRUCTOR
         public SurveyAutomationService()
         {
             _patientSurveyHistoryRepository = new GenericRepository<PatientSurveyHistory>(_surveyAutomationContext);
             _patientSurveyRepository = new GenericRepository<PatientSurvey>(_surveyAutomationContext);
-            _surveyAutomationLogRepository = new GenericRepository<SurveyAutomationLog>(_surveyAutomationContext);
         }
         #endregion
         #region FUNCTIONS
         public SurveyAutomation GetPatientDetails(SurveyAutomation objSurveyAutomation)
         {
-            SurveyAutomation surveyAutomation = new SurveyAutomation();
             if (objSurveyAutomation != null && objSurveyAutomation.PATIENT_ACCOUNT != 0)
             {
-                SurveyAutomationLog surveyAutomationLog = new SurveyAutomationLog();
-                string fromDate = (Helper.GetCurrentDate().AddDays(-21)).ToString();
-                string toDate = (Helper.GetCurrentDate()).ToString();
                 SqlParameter patientAccountNumber = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = objSurveyAutomation.PATIENT_ACCOUNT };
                 var existingDetailInfo = SpRepository<SurveyAutomationLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PERFORM_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT", patientAccountNumber);
                 if (existingDetailInfo != null)
                 {
-                    surveyAutomation = null;
+                    objSurveyAutomation = null;
                 }
                 else
                 {
                     SqlParameter patientAccount = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = objSurveyAutomation.PATIENT_ACCOUNT };
-                    surveyAutomation = SpRepository<SurveyAutomation>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT", patientAccount);
+                    objSurveyAutomation = SpRepository<SurveyAutomation>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT", patientAccount);
                 }
             }
             else
             {
-                surveyAutomation = null;
+                objSurveyAutomation = null;
             }
-
-            return surveyAutomation;
+            return objSurveyAutomation;
         }
         public List<SurveyQuestions> GetSurveyQuestionDetails(string patinetAccount)
         {
@@ -127,21 +119,23 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                 if (objPatientSurvey != null)
                 {
                     long practiceCode = GetPracticeCode();
-                    PatientSurveyHistory patientSurveyHistory = new PatientSurveyHistory();
-                    patientSurveyHistory.SURVEY_HISTORY_ID = Helper.getMaximumId("SURVEY_HISTORY_ID");
-                    patientSurveyHistory.SURVEY_ID = objPatientSurvey.SURVEY_ID;
-                    patientSurveyHistory.PATIENT_ACCOUNT = objPatientSurvey.PATIENT_ACCOUNT_NUMBER;
-                    patientSurveyHistory.PRACTICE_CODE = practiceCode;
-                    patientSurveyHistory.IS_CONTACT_HQ = objPatientSurvey.IS_CONTACT_HQ;
-                    patientSurveyHistory.IS_REFERABLE = objPatientSurvey.IS_REFERABLE;
-                    patientSurveyHistory.IS_IMPROVED_SETISFACTION = objPatientSurvey.IS_IMPROVED_SETISFACTION;
-                    patientSurveyHistory.FEEDBACK = objPatientSurvey.FEEDBACK;
-                    patientSurveyHistory.SURVEY_STATUS_BASE = "Completed";
-                    patientSurveyHistory.SURVEY_STATUS_CHILD = "Completed Survey";
-                    patientSurveyHistory.SURVEY_FLAG = "Green";
-                    patientSurveyHistory.DELETED = false;
-                    patientSurveyHistory.CREATED_BY = "FOX-TEAM";
-                    patientSurveyHistory.CREATED_DATE = Helper.GetCurrentDate();
+                    PatientSurveyHistory patientSurveyHistory = new PatientSurveyHistory
+                    {
+                        SURVEY_HISTORY_ID = Helper.getMaximumId("SURVEY_HISTORY_ID"),
+                        SURVEY_ID = objPatientSurvey.SURVEY_ID,
+                        PATIENT_ACCOUNT = objPatientSurvey.PATIENT_ACCOUNT_NUMBER,
+                        PRACTICE_CODE = practiceCode,
+                        IS_CONTACT_HQ = objPatientSurvey.IS_CONTACT_HQ,
+                        IS_REFERABLE = objPatientSurvey.IS_REFERABLE,
+                        IS_IMPROVED_SETISFACTION = objPatientSurvey.IS_IMPROVED_SETISFACTION,
+                        FEEDBACK = objPatientSurvey.FEEDBACK,
+                        SURVEY_STATUS_BASE = "Completed",
+                        SURVEY_STATUS_CHILD = "Completed Survey",
+                        SURVEY_FLAG = "Green",
+                        DELETED = false,
+                        CREATED_BY = "FOX-TEAM",
+                        CREATED_DATE = Helper.GetCurrentDate()
+                    };
                     _patientSurveyHistoryRepository.Insert(patientSurveyHistory);
                     _patientSurveyHistoryRepository.Save();
                     response.Message = "Suvery completed successfully";
