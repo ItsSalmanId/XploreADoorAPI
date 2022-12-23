@@ -1,7 +1,6 @@
 ﻿using FOX.BusinessOperations.CommonService;
 using FOX.BusinessOperations.CommonServices;
 using FOX.BusinessOperations.PatientServices;
-using FOX.BusinessOperations.RequestForOrder.UploadOrderImages;
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.CommonModel;
@@ -38,7 +37,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
 {
     public class SupportStaffService : ISupportStaffService
     {
-        private readonly IUploadOrderImagesService _IUploadOrderImagesService;
         private readonly IFaxService _IFaxService = new FaxService();
 
         #region PROPERTIES
@@ -69,7 +67,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         #endregion
 
         #region CONSTRUCTOR
-        public SupportStaffService(IUploadOrderImagesService IUploadOrderImagesService)
+        public SupportStaffService()
         {
             _insurancePayerRepository = new GenericRepository<FoxInsurancePayers>(_dbContextFrictionLess);
             _frictionlessReferralWorkReposistory = new GenericRepository<FrictionlessReferralForm>(_dbContextFrictionLess);
@@ -77,7 +75,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             _providerRepository = new GenericRepository<Provider>(_dbContextCommon);
             _frictionlessReferralRepository = new GenericRepository<FrictionLessReferral>(_dbContextFrictionLess);
             _OriginalQueueFiles = new GenericRepository<OriginalQueueFiles>(_QueueContext);
-            _IUploadOrderImagesService = IUploadOrderImagesService;
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
             _NotesRepository = new GenericRepository<FOX_TBL_NOTES_HISTORY>(_IndexinfoContext);
             _convertPDFToImages = new ConvertPDFToImages();
@@ -222,7 +219,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         {
             ResponseModel responseModel = new ResponseModel();
             int pinCode = Helper.GetRandomPin();
-            if (!string.IsNullOrEmpty(patientDetails.EmailAddress) && !string.IsNullOrEmpty(patientDetails.MobilePhone))
+            if (!string.IsNullOrEmpty(patientDetails.EmailAddress) || !string.IsNullOrEmpty(patientDetails.MobilePhone))
             {
                 string urlLink = GetEncryptedUrlLink(patientDetails.EmailAddress, patientDetails.MobilePhone, "", pinCode.ToString());
                 if (!string.IsNullOrEmpty(urlLink))
@@ -404,12 +401,12 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             long practiceCode = GetPracticeCode();
             if (frictionLessReferralObj != null)
             {
-                if (frictionLessReferralObj.PATIENT_DISCIPLINE_ID.StartsWith(",") && frictionLessReferralObj.PATIENT_DISCIPLINE_ID != null)
+                if (frictionLessReferralObj.PATIENT_DISCIPLINE_ID != null && frictionLessReferralObj.PATIENT_DISCIPLINE_ID.StartsWith(","))
                 {
                     frictionLessReferralObj.PATIENT_DISCIPLINE_ID = frictionLessReferralObj.PATIENT_DISCIPLINE_ID.Remove(0, 1);
                 }
                 var existingFrictionReferral = _frictionlessReferralRepository.GetFirst(f => f.FRICTIONLESS_REFERRAL_ID == frictionLessReferralObj.FRICTIONLESS_REFERRAL_ID && f.PRACTICE_CODE == practiceCode && f.DELETED == false);
-                if ((frictionLessReferralObj.FILE_NAME_LIST.Count > 0 && frictionLessReferralObj.FILE_NAME_LIST != null) || frictionLessReferralObj.IS_SUBMIT_CHECK == true)
+                if ((frictionLessReferralObj.FILE_NAME_LIST != null && frictionLessReferralObj.FILE_NAME_LIST.Count > 0) || frictionLessReferralObj.IS_SUBMIT_CHECK == true)
                 {
                     var WorkID = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = frictionLessReferralObj.WORK_ID };
                     var updatedWorkFiles = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_DELETE_FRICTIONLESS_WORK_FILE @WORK_ID", WorkID);
@@ -427,6 +424,10 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 {
                     frictionLessReferralObj.PATIENT_DOB = null;
                 }
+                if (frictionLessReferralObj.PROVIDER_FAX != null)
+                {
+                    frictionLessReferralObj.PROVIDER_FAX = frictionLessReferralObj.PROVIDER_FAX.Replace("-", "");
+                }
                 if (existingFrictionReferral == null)
                 {
                     frictionLessReferralObj.FRICTIONLESS_REFERRAL_ID = Helper.getMaximumId("FRICTIONLESS_REFERRAL_ID");
@@ -434,10 +435,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     frictionLessReferralObj.CREATED_BY = frictionLessReferralObj.MODIFIED_BY = !string.IsNullOrEmpty(frictionLessReferralObj.SUBMITTER_LAST_NAME) ? frictionLessReferralObj.SUBMITTER_LAST_NAME : "FOX_TEAM";
                     frictionLessReferralObj.CREATED_DATE = frictionLessReferralObj.MODIFIED_DATE = Helper.GetCurrentDate();
                     frictionLessReferralObj.DELETED = false;
-                    if (frictionLessReferralObj.PROVIDER_FAX != null)
-                    {
-                        frictionLessReferralObj.PROVIDER_FAX = frictionLessReferralObj.PROVIDER_FAX.Replace("-", "");
-                    }
                     _frictionlessReferralRepository.Insert(frictionLessReferralObj);
                     frictionLessReferralResponse.Message = "Record Inserted Successfully.";
                     frictionLessReferralResponse.Success = true;
@@ -503,7 +500,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     return new ResponseModel() { Message = "Delete work order successfully.", ErrorMessage = "", Success = true };
                 }
                 else
-                    return new ResponseModel() { Message = "Work order not found.", ErrorMessage = "", Success = true };
+                    return new ResponseModel() { Message = "Work order not found.", ErrorMessage = "", Success = false };
             }
             catch (Exception exception)
             {

@@ -262,6 +262,8 @@
     <Compile Include="QualityAssuranceService\EvaluationSetupService\IEvaluationSetupService.cs" />
     <Compile Include="QualityAssuranceService\PerformAuditService\IPerformAuditService.cs" />
     <Compile Include="QualityAssuranceService\PerformAuditService\PerformAuditService.cs" />
+    <Compile Include="QualityAssuranceService\QADashboardService\IQADashboardService.cs" />
+    <Compile Include="QualityAssuranceService\QADashboardService\QADashboardService.cs" />
     <Compile Include="QualityAssuranceService\QAReportService\IQAReportService.cs" />
     <Compile Include="QualityAssuranceService\QAReportService\QAReportService..cs" />
     <Compile Include="ReconciliationService\IReconciliationService.cs" />
@@ -302,7 +304,6 @@
     <Compile Include="SettingsService\UserMangementService\UserManagementService.cs" />
     <Compile Include="SignatureRequiredServices\ISignatureRequiredService.cs" />
     <Compile Include="SignatureRequiredServices\SignatureRequiredService.cs" />
-    <Compile Include="StoreProcedure\Samar.cs" />
     <Compile Include="SupervisorWorkService\ISupervisorWorkService.cs" />
     <Compile Include="SupervisorWorkService\SupervisorWorkService.cs" />
     <Compile Include="SurveyAutomationService\ISurveyAutomationService.cs" />
