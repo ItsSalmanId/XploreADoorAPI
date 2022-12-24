@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web.Configuration;
 using static FOX.DataModels.Models.SurveyAutomation.SurveyAutomations;
 
@@ -28,8 +30,13 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         #region FUNCTIONS
         public SurveyAutomation GetPatientDetails(SurveyAutomation objSurveyAutomation)
         {
-            if (objSurveyAutomation != null && objSurveyAutomation.PATIENT_ACCOUNT != 0)
+            if (objSurveyAutomation != null && objSurveyAutomation.PATIENT_ACCOUNT != null)
             {
+                var enencryptedPatientAccount = objSurveyAutomation.PATIENT_ACCOUNT;
+                string removeFirst = enencryptedPatientAccount.Remove(0, 1);
+                string replaceString = (removeFirst.Replace("#", ""));
+                string decryptedPatientAccount = Decrypt(replaceString, "sblw-3hn8-sqoy19");
+                objSurveyAutomation.PATIENT_ACCOUNT = decryptedPatientAccount;
                 SqlParameter patientAccountNumber = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = objSurveyAutomation.PATIENT_ACCOUNT };
                 var existingDetailInfo = SpRepository<SurveyAutomationLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PERFORM_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT", patientAccountNumber);
                 if (existingDetailInfo != null)
@@ -47,6 +54,19 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                 objSurveyAutomation = null;
             }
             return objSurveyAutomation;
+        }
+        public static string Decrypt(string input, string key)
+        {
+            byte[] inputArray = Convert.FromBase64String(input);
+            TripleDESCryptoServiceProvider tripleDES = new TripleDESCryptoServiceProvider();
+            tripleDES.Key = UTF8Encoding.UTF8.GetBytes(key);
+            tripleDES.Mode = CipherMode.ECB;
+            tripleDES.Padding = PaddingMode.PKCS7;
+            ICryptoTransform cTransform = tripleDES.CreateDecryptor();
+            byte[] resultArray = cTransform.TransformFinalBlock(inputArray, 0, inputArray.Length);
+            tripleDES.Clear();
+            var x = UTF8Encoding.UTF8.GetString(resultArray);
+            return UTF8Encoding.UTF8.GetString(resultArray);
         }
         public List<SurveyQuestions> GetSurveyQuestionDetails(string patinetAccount)
         {
