@@ -19,7 +19,8 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         private readonly DBContextSurveyAutomation _surveyAutomationContext = new DBContextSurveyAutomation();
         private readonly GenericRepository<PatientSurveyHistory> _patientSurveyHistoryRepository;
         private readonly GenericRepository<PatientSurvey> _patientSurveyRepository;
-        
+        public static string PATIENT_ACCOUNT;
+
         #region CONSTRUCTOR
         public SurveyAutomationService()
         {
@@ -37,6 +38,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                 string replaceString = (removeFirst.Replace("#", ""));
                 string decryptedPatientAccount = Decrypt(replaceString, "sblw-3hn8-sqoy19");
                 objSurveyAutomation.PATIENT_ACCOUNT = decryptedPatientAccount;
+                PATIENT_ACCOUNT = decryptedPatientAccount;
                 SqlParameter patientAccountNumber = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = objSurveyAutomation.PATIENT_ACCOUNT };
                 var existingDetailInfo = SpRepository<SurveyAutomationLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PERFORM_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT", patientAccountNumber);
                 if (existingDetailInfo != null)
@@ -55,6 +57,18 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             }
             return objSurveyAutomation;
         }
+
+        public List<SurveyQuestions> GetSurveyQuestionDetails(string patinetAccount)
+        {
+            List<SurveyQuestions> surveyQuestionsList = new List<SurveyQuestions>();
+            if (patinetAccount != null)
+            {
+                SqlParameter patientAccount = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.VarChar, Value = PATIENT_ACCOUNT };
+                surveyQuestionsList = SpRepository<SurveyQuestions>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_SURVEY_QUESTION  @PATIENT_ACCOUNT", patientAccount);
+            }
+            return surveyQuestionsList;
+        }
+        #region Decryption
         public static string Decrypt(string input, string key)
         {
             byte[] inputArray = Convert.FromBase64String(input);
@@ -65,19 +79,9 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             ICryptoTransform cTransform = tripleDES.CreateDecryptor();
             byte[] resultArray = cTransform.TransformFinalBlock(inputArray, 0, inputArray.Length);
             tripleDES.Clear();
-            var x = UTF8Encoding.UTF8.GetString(resultArray);
             return UTF8Encoding.UTF8.GetString(resultArray);
         }
-        public List<SurveyQuestions> GetSurveyQuestionDetails(string patinetAccount)
-        {
-            List<SurveyQuestions> surveyQuestionsList = new List<SurveyQuestions>();
-            if (patinetAccount != null)
-            {
-                SqlParameter patientAccount = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.VarChar, Value = patinetAccount };
-                surveyQuestionsList = SpRepository<SurveyQuestions>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_SURVEY_QUESTION  @PATIENT_ACCOUNT", patientAccount);
-            }
-            return surveyQuestionsList;
-        }
+        #endregion
         public long GetPracticeCode()
         {
             long practiceCode = Convert.ToInt64(WebConfigurationManager.AppSettings?["GetPracticeCode"]);
@@ -88,8 +92,9 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             ResponseModel response = new ResponseModel();
             try
             {
-                if (objPatientSurvey != null && objPatientSurvey.PATIENT_ACCOUNT_NUMBER != null)
+                if (objPatientSurvey != null && PATIENT_ACCOUNT != null)
                 {
+                    objPatientSurvey.PATIENT_ACCOUNT_NUMBER = Convert.ToInt64(PATIENT_ACCOUNT);
                     long practiceCode = GetPracticeCode();
                     var existingDetailInfo = _patientSurveyRepository.GetFirst(r => r.PATIENT_ACCOUNT_NUMBER == objPatientSurvey.PATIENT_ACCOUNT_NUMBER && r.DELETED == false);
                     objPatientSurvey.SURVEY_ID = existingDetailInfo.SURVEY_ID;
