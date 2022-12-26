@@ -42,12 +42,24 @@ namespace FoxRehabilitationAPI.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient survey model is empty");
             }
         }
-        [HttpGet]
-        public HttpResponseMessage GetSurveyQuestionDetails(string patinetAccount)
+        [HttpPost]
+        public HttpResponseMessage GetSurveyQuestionDetails(SurveyLink objsurveyLink)
         {
-            if (patinetAccount != null)
+            if (objsurveyLink != null)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.GetSurveyQuestionDetails(patinetAccount));
+                return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.GetSurveyQuestionDetails(objsurveyLink));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patinet Account is empty");
+            }
+        }
+        [HttpPost]
+        public HttpResponseMessage DecryptionUrl(SurveyLink objsurveyLink)
+        {
+            if (objsurveyLink != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.DecryptionUrl(objsurveyLink));
             }
             else
             {

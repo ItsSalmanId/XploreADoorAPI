@@ -29,16 +29,25 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         }
         #endregion
         #region FUNCTIONS
+        public SurveyLink DecryptionUrl(SurveyLink objsurveyLink)
+        {
+            if(objsurveyLink != null && objsurveyLink.ENCRYPTED_PATIENT_ACCOUNT != null)
+            {
+                objsurveyLink.ENCRYPTED_PATIENT_ACCOUNT = Decryption(objsurveyLink.ENCRYPTED_PATIENT_ACCOUNT);
+            }
+            return objsurveyLink;
+        }
         public SurveyAutomation GetPatientDetails(SurveyAutomation objSurveyAutomation)
         {
             if (objSurveyAutomation != null && objSurveyAutomation.PATIENT_ACCOUNT != null)
             {
-                var enencryptedPatientAccount = objSurveyAutomation.PATIENT_ACCOUNT;
-                string removeFirst = enencryptedPatientAccount.Remove(0, 1);
-                string replaceString = (removeFirst.Replace("#", ""));
-                string decryptedPatientAccount = Decrypt(replaceString, "sblw-3hn8-sqoy19");
-                objSurveyAutomation.PATIENT_ACCOUNT = decryptedPatientAccount;
-                PATIENT_ACCOUNT = decryptedPatientAccount;
+                //objSurveyAutomation.PATIENT_ACCOUNT = Decryption(objSurveyAutomation.PATIENT_ACCOUNT);
+                //var enencryptedPatientAccount = objSurveyAutomation.PATIENT_ACCOUNT;
+                //string removeFirst = enencryptedPatientAccount.Remove(0, 1);
+                //string replaceString = (removeFirst.Replace("#", ""));
+                //string decryptedPatientAccount = Decrypt(replaceString, "sblw-3hn8-sqoy19");
+                //objSurveyAutomation.PATIENT_ACCOUNT = decryptedPatientAccount;
+                //PATIENT_ACCOUNT = decryptedPatientAccount;
                 SqlParameter patientAccountNumber = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = objSurveyAutomation.PATIENT_ACCOUNT };
                 var existingDetailInfo = SpRepository<SurveyAutomationLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PERFORM_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT", patientAccountNumber);
                 if (existingDetailInfo != null)
@@ -58,12 +67,26 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             return objSurveyAutomation;
         }
 
-        public List<SurveyQuestions> GetSurveyQuestionDetails(string patinetAccount)
+        public static string Decryption(string patientAccount)
+        {
+            string decryptedPatientAccount = string.Empty;
+            if (patientAccount != null)
+            {
+                var enencryptedPatientAccount = patientAccount;
+                string removeFirst = enencryptedPatientAccount.Remove(0, 1);
+                string replaceString = (removeFirst.Replace("#", ""));
+                decryptedPatientAccount = Decrypt(replaceString, "sblw-3hn8-sqoy19");
+            }
+            return decryptedPatientAccount;
+        }
+
+        public List<SurveyQuestions> GetSurveyQuestionDetails(SurveyLink objsurveyLink)
         {
             List<SurveyQuestions> surveyQuestionsList = new List<SurveyQuestions>();
-            if (patinetAccount != null)
+            if (objsurveyLink != null)
             {
-                SqlParameter patientAccount = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.VarChar, Value = PATIENT_ACCOUNT };
+                //objsurveyLink.ENCRYPTED_PATIENT_ACCOUNT = Decryption(objsurveyLink.ENCRYPTED_PATIENT_ACCOUNT);
+                SqlParameter patientAccount = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.VarChar, Value = objsurveyLink.ENCRYPTED_PATIENT_ACCOUNT };
                 surveyQuestionsList = SpRepository<SurveyQuestions>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_SURVEY_QUESTION  @PATIENT_ACCOUNT", patientAccount);
             }
             return surveyQuestionsList;

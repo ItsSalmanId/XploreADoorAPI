@@ -22,6 +22,10 @@ namespace FOX.DataModels.Models.SurveyAutomation
             public string SERVICE_OR_PAYMENT_DESCRIPTION { get; set; }
 
         }
+        public class SurveyLink
+        {
+            public string ENCRYPTED_PATIENT_ACCOUNT { get; set; }
+        }
         [Table("FOX_TBL_SURVEY_QUESTION")]
         public class SurveyQuestions
         {
