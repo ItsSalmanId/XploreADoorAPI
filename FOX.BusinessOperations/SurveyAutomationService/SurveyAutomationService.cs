@@ -38,7 +38,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         }
         public SurveyAutomation GetPatientDetails(SurveyAutomation objSurveyAutomation)
         {
-            if (objSurveyAutomation != null && objSurveyAutomation.PATIENT_ACCOUNT != "")
+            if (objSurveyAutomation != null && !string.IsNullOrEmpty(objSurveyAutomation.PATIENT_ACCOUNT))
             {
                 SqlParameter patientAccountNumber = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = objSurveyAutomation.PATIENT_ACCOUNT };
                 var existingDetailInfo = SpRepository<SurveyAutomationLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PERFORM_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT", patientAccountNumber);
@@ -58,7 +58,20 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             }
             return objSurveyAutomation;
         }
-
+        public List<SurveyQuestions> GetSurveyQuestionDetails(SurveyLink objsurveyLink)
+        {
+            
+            List<SurveyQuestions> surveyQuestionsList = new List<SurveyQuestions>();
+            if (objsurveyLink != null && !string.IsNullOrEmpty(objsurveyLink.ENCRYPTED_PATIENT_ACCOUNT))
+            {
+                long getPracticeCode = GetPracticeCode();
+                SqlParameter patientAccount = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.VarChar, Value = objsurveyLink.ENCRYPTED_PATIENT_ACCOUNT };
+                SqlParameter practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = getPracticeCode };
+                surveyQuestionsList = SpRepository<SurveyQuestions>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_SURVEY_QUESTION  @PATIENT_ACCOUNT, @PRACTICE_CODE", patientAccount, practiceCode);
+            }
+            return surveyQuestionsList;
+        }
+        #region Decryption
         public static string Decryption(string patientAccount)
         {
             string decryptedPatientAccount = string.Empty;
@@ -71,31 +84,27 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             }
             return decryptedPatientAccount;
         }
-
-        public List<SurveyQuestions> GetSurveyQuestionDetails(SurveyLink objsurveyLink)
-        {
-            List<SurveyQuestions> surveyQuestionsList = new List<SurveyQuestions>();
-            if (objsurveyLink != null && objsurveyLink.ENCRYPTED_PATIENT_ACCOUNT !="")
-            {
-                SqlParameter patientAccount = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.VarChar, Value = objsurveyLink.ENCRYPTED_PATIENT_ACCOUNT };
-                surveyQuestionsList = SpRepository<SurveyQuestions>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_SURVEY_QUESTION  @PATIENT_ACCOUNT", patientAccount);
-            }
-            return surveyQuestionsList;
-        }
-        #region Decryption
         public static string Decrypt(string input, string key)
         {
-            byte[] inputArray = Convert.FromBase64String(input);
-            TripleDESCryptoServiceProvider tripleDES = new TripleDESCryptoServiceProvider
+            try
             {
-                Key = UTF8Encoding.UTF8.GetBytes(key),
-                Mode = CipherMode.ECB,
-                Padding = PaddingMode.PKCS7
-            };
-            ICryptoTransform cTransform = tripleDES.CreateDecryptor();
-            byte[] resultArray = cTransform.TransformFinalBlock(inputArray, 0, inputArray.Length);
-            tripleDES.Clear();
-            return UTF8Encoding.UTF8.GetString(resultArray);
+                byte[] inputArray = Convert.FromBase64String(input);
+                TripleDESCryptoServiceProvider tripleDES = new TripleDESCryptoServiceProvider
+                {
+                    Key = UTF8Encoding.UTF8.GetBytes(key),
+                    Mode = CipherMode.ECB,
+                    Padding = PaddingMode.PKCS7
+                };
+                ICryptoTransform cTransform = tripleDES.CreateDecryptor();
+                byte[] resultArray = cTransform.TransformFinalBlock(inputArray, 0, inputArray.Length);
+                tripleDES.Clear();
+
+                return UTF8Encoding.UTF8.GetString(resultArray);
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
         #endregion
         public long GetPracticeCode()
@@ -174,6 +183,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                         SURVEY_FLAG = "Green",
                         DELETED = false,
                         CREATED_BY = "FOX-TEAM",
+                        SURVEY_DATE = Helper.GetCurrentDate(),
                         CREATED_DATE = Helper.GetCurrentDate()
                     };
                     _patientSurveyHistoryRepository.Insert(patientSurveyHistory);
