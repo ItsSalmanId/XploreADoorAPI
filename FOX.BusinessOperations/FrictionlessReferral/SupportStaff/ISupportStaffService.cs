@@ -16,13 +16,10 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         List<ProviderReferralSourceResponse> GetOrderingReferralSource(ProviderReferralSourceRequest obj);
         FrictionLessReferral GetFrictionLessReferralDetails(long referralId);
         FrictionLessReferralResponse SaveFrictionLessReferralDetails(FrictionLessReferral frictionLessReferral);
-        ResponseModel DownloadPdf(RequestDownloadPdfFrictionlessModel requestDownloadPdfModel);
-        ResponseModel SendFAX(FrictionLessRequestSendFAXModel requestSendFAXModel);
-        ResponseModel SendEmail(RequestSendEmailModel requestSendEmailModel);
+        ResponseModel SubmitReferral(SubmitReferralModel submitReferralModel);
         ResponseModel DeleteWorkOrder(RequestDeleteWorkOrder requestDeleteWorkOrder);
         QRCodeModel GenerateQRCode(QRCodeModel obj);
         ResponseUploadFilesModel UploadFiles(RequestUploadFilesModel requestUploadFilesAPIModel);
-        FrictionLessReferral GetFrictionLessReferralDetailsByWorkID(long referralId);
         #endregion
     }
 }
