@@ -75,7 +75,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         public static string Decryption(string patientAccount)
         {
             string decryptedPatientAccount = string.Empty;
-            if (patientAccount != null)
+            if (!string.IsNullOrEmpty(patientAccount))
             {
                 var enencryptedPatientAccount = patientAccount;
                 string removeFirst = enencryptedPatientAccount.Remove(0, 1);
