@@ -3167,12 +3167,12 @@ namespace FOX.BusinessOperations.IndexInfoServices
                         }
                         catch (Exception)
                         {
-                            sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID);
+                            sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID ?? (object)DBNull.Value );
                         }
                     }
                     else
                     {
-                        sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID);
+                        sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID ?? (object)DBNull.Value);
                     }
                     long primaryKey = Helper.getMaximumId("FOX_TASK_ID");
                     SqlParameter id = new SqlParameter("ID", primaryKey);
@@ -5143,7 +5143,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     SqlParameter userName = new SqlParameter("USER_NAME", profile.UserName);
                     SqlParameter isTemplate = new SqlParameter("IS_TEMPLATE", task.IS_TEMPLATE);
                     SqlParameter taskTypeId = new SqlParameter("TASK_TYPE_ID", task.TASK_TYPE_ID);
-                    SqlParameter sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID);
+                    SqlParameter sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID ?? (object)DBNull.Value);
                     SqlParameter finalRouteId = new SqlParameter("FINAL_ROUTE_ID", task.FINAL_ROUTE_ID ?? (object)DBNull.Value);
                     SqlParameter priority = new SqlParameter("PRIORITY", string.IsNullOrEmpty(task.PRIORITY) ? string.Empty : task.PRIORITY);
                     SqlParameter dueDateTime = new SqlParameter("DUE_DATE_TIME", string.IsNullOrEmpty(task.DUE_DATE_TIME_str) ? (object)DBNull.Value : Helper.ConvertStingToDateTime(task.DUE_DATE_TIME_str) ?? Helper.GetCurrentDate());
