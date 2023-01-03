@@ -86,7 +86,7 @@ namespace FOX.ExternalServices
         {
             try
             {
-                string SmsUrl = ConfigurationManager.AppSettings["TwilioURL"];
+                string SmsUrl = Properties.Settings.Default.FOX_NJ_SMS_Service;
                 WebRequest request = WebRequest.Create($"{SmsUrl}?Number={number}&Message={message}");
                 request.Method = "GET";
                 WebResponse response = request.GetResponse();
