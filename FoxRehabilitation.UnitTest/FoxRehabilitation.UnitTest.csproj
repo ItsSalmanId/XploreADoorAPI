@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountServiceUnitTest\AccountServiceTest.cs" />
+    <Compile Include="CaseServicesUnitTest\CaseServiceTest.cs" />
     <Compile Include="CommonServiceUnitTest\CommonServiceTest.cs" />
     <Compile Include="DashboardServiceUnitTest\DashoboardServiceTest.cs" />
     <Compile Include="FoxPHDServiceUnitTest\FoxPHDServiceTest.cs" />
@@ -76,10 +77,13 @@
     <Compile Include="QualityAssuranceServiceUnitTest\EvaluationSetupServiceUnitTest\EvaluationSetupServiceTest.cs" />
     <Compile Include="QualityAssuranceServiceUnitTest\PerformAuditServiceUnitTest\PerformAuditServiceTest.cs" />
     <Compile Include="QualityAssuranceServiceUnitTest\QADashboardServiceUnitTest\QADashboardServiceTest.cs" />
+    <Compile Include="QualityAssuranceServiceUnitTest\QAReportServiceUnitTest\QAReportServiceTest.cs" />
     <Compile Include="RequestForOrderUnitTest\RequestForOrderServiceTest.cs" />
     <Compile Include="RequestForOrderUnitTest\IndexInformationServiceUnitTest\IndexInformationServiceTest.cs" />
+    <Compile Include="SchedulerUnitTest\SchedulerServiceTest.cs" />
     <Compile Include="SearchOrderServicesUnitTest\SearchOrderServicesTest.cs" />
     <Compile Include="SettingServicesUnitTest\AnnouncementUnitTest\AnnouncementTest.cs" />
+    <Compile Include="SettingServicesUnitTest\PracticeOrganizationServiceUnitTest\PracticeOrganizationServiceTest.cs" />
     <Compile Include="UnAssignedQueueServiceUnitTest\UnAssignedQueueServiceTest.cs" />
     <Compile Include="UserManagementServiceUnitTest\UserManagementServiceTest.cs" />
     <Compile Include="SignatureRequiredServiceUnitTest\SignatureRequiredServiceTest.cs" />
