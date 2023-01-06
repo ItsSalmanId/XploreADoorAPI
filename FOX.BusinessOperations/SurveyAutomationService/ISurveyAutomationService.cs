@@ -16,8 +16,8 @@ namespace FOX.BusinessOperations.SurveyAutomationService
     public interface ISurveyAutomationService
     {
         SurveyAutomation GetPatientDetails(SurveyAutomation objSurveyAutomation);
-        List<SurveyQuestions> GetSurveyQuestionDetails(SurveyLink objsurveyLink);
+        List<SurveyQuestions> GetSurveyQuestionDetails(SurveyLink objSurveyLink);
         ResponseModel UpdatePatientSurvey(PatientSurvey objPatientSurvey);
-        SurveyLink DecryptionUrl(SurveyLink objsurveyLink);
+        SurveyLink DecryptionUrl(SurveyLink objSurveyLink);
     }
 }

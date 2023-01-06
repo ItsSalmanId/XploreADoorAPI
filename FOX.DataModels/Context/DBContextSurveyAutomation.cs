@@ -26,10 +26,10 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<SurveyAutomationLog>().Property(t => t.SURVEY_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
         }
 
-        public virtual DbSet<Patient> patient { get; set; }
-        public virtual DbSet<SurveyQuestions> surveyQuestions { get; set; }
-        public virtual DbSet<PatientSurveyHistory> patientSurveyHistory { get; set; }
-        public virtual DbSet<PatientSurvey> patientSurvey { get; set; }
-        public virtual DbSet<SurveyAutomationLog> surveyAutomationLog { get; set; }
+        public virtual DbSet<Patient> Patient { get; set; }
+        public virtual DbSet<SurveyQuestions> SurveyQuestions { get; set; }
+        public virtual DbSet<PatientSurveyHistory> PatientSurveyHistory { get; set; }
+        public virtual DbSet<PatientSurvey> PatientSurvey { get; set; }
+        public virtual DbSet<SurveyAutomationLog> SurveyAutomationLog { get; set; }
     }
 }

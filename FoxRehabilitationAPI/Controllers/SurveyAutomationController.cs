@@ -26,7 +26,7 @@ namespace FoxRehabilitationAPI.Controllers
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient is empty");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient survey model is empty");
             }
         }
         [HttpPost]
@@ -43,27 +43,27 @@ namespace FoxRehabilitationAPI.Controllers
             }
         }
         [HttpPost]
-        public HttpResponseMessage GetSurveyQuestionDetails(SurveyLink objsurveyLink)
+        public HttpResponseMessage GetSurveyQuestionDetails(SurveyLink objSurveyLink)
         {
-            if (objsurveyLink != null)
+            if (objSurveyLink != null)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.GetSurveyQuestionDetails(objsurveyLink));
+                return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.GetSurveyQuestionDetails(objSurveyLink));
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patinet Account is empty");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patinet account number is empty");
             }
         }
         [HttpPost]
-        public HttpResponseMessage DecryptionUrl(SurveyLink objsurveyLink)
+        public HttpResponseMessage DecryptionUrl(SurveyLink objSurveyLink)
         {
-            if (objsurveyLink != null)
+            if (objSurveyLink != null)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.DecryptionUrl(objsurveyLink));
+                return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.DecryptionUrl(objSurveyLink));
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patinet Account is empty");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patinet account number is empty");
             }
         }
     }

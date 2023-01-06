@@ -68,7 +68,6 @@ namespace FoxRehabilitation.UnitTest.SurveyAutomationUnitTest
         [TestCase("101116354816636")]
         [TestCase("")]
         [TestCase("1234")]
-
         public void GetSurveyQuestionDetails_SurveyQuestions_ReturnString(string patientAccount)
         {
             //Arrange

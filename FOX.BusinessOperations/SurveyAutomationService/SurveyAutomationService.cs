@@ -28,21 +28,23 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         }
         #endregion
         #region FUNCTIONS
-        public SurveyLink DecryptionUrl(SurveyLink objsurveyLink)
+        // Description: This function is decrypt patient account number
+        public SurveyLink DecryptionUrl(SurveyLink objSurveyLink)
         {
-            if(objsurveyLink != null && objsurveyLink.ENCRYPTED_PATIENT_ACCOUNT != null)
+            if(objSurveyLink != null && objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT != null)
             {
-                objsurveyLink.ENCRYPTED_PATIENT_ACCOUNT = Decryption(objsurveyLink.ENCRYPTED_PATIENT_ACCOUNT);
+                objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT = Decryption(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT);
             }
-            return objsurveyLink;
+            return objSurveyLink;
         }
+        // Description: This function is get patient details
         public SurveyAutomation GetPatientDetails(SurveyAutomation objSurveyAutomation)
         {
             if (objSurveyAutomation != null && !string.IsNullOrEmpty(objSurveyAutomation.PATIENT_ACCOUNT))
             {
                 SqlParameter patientAccountNumber = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = objSurveyAutomation.PATIENT_ACCOUNT };
-                var existingDetailInfo = SpRepository<SurveyAutomationLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PERFORM_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT", patientAccountNumber);
-                if (existingDetailInfo != null)
+                var performSurveyhistory = SpRepository<SurveyAutomationLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PERFORM_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT", patientAccountNumber);
+                if (performSurveyhistory != null)
                 {
                     objSurveyAutomation = null;
                 }
@@ -58,20 +60,21 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             }
             return objSurveyAutomation;
         }
-        public List<SurveyQuestions> GetSurveyQuestionDetails(SurveyLink objsurveyLink)
+        // Description: This function is get patient survey questions details
+        public List<SurveyQuestions> GetSurveyQuestionDetails(SurveyLink objSurveyLink)
         {
-            
             List<SurveyQuestions> surveyQuestionsList = new List<SurveyQuestions>();
-            if (objsurveyLink != null && !string.IsNullOrEmpty(objsurveyLink.ENCRYPTED_PATIENT_ACCOUNT))
+            if (objSurveyLink != null && !string.IsNullOrEmpty(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT))
             {
                 long getPracticeCode = GetPracticeCode();
-                SqlParameter patientAccount = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.VarChar, Value = objsurveyLink.ENCRYPTED_PATIENT_ACCOUNT };
+                SqlParameter patientAccount = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.VarChar, Value = objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT };
                 SqlParameter practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = getPracticeCode };
                 surveyQuestionsList = SpRepository<SurveyQuestions>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_SURVEY_QUESTION  @PATIENT_ACCOUNT, @PRACTICE_CODE", patientAccount, practiceCode);
             }
             return surveyQuestionsList;
         }
         #region Decryption
+        // Description: This function is decrypt patient account number (Sub function of DecryptionUrl)
         public static string Decryption(string patientAccount)
         {
             string decryptedPatientAccount = string.Empty;
@@ -84,6 +87,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             }
             return decryptedPatientAccount;
         }
+        // Description: This function is decrypt patient account number (Sub function of DecryptionUrl)
         public static string Decrypt(string input, string key)
         {
             try
@@ -107,11 +111,13 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             }
         }
         #endregion
+        // Description: This function is trigger to get practice code
         public long GetPracticeCode()
         {
             long practiceCode = Convert.ToInt64(WebConfigurationManager.AppSettings?["GetPracticeCode"]);
             return practiceCode;
         }
+        // Description: This function is trigger to update patient survey model
         public ResponseModel UpdatePatientSurvey(PatientSurvey objPatientSurvey)
         {
             ResponseModel response = new ResponseModel();
@@ -120,27 +126,27 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                 if (objPatientSurvey != null && objPatientSurvey.PATIENT_ACCOUNT_NUMBER != 0)
                 {
                     long practiceCode = GetPracticeCode();
-                    var existingDetailInfo = _patientSurveyRepository.GetFirst(r => r.PATIENT_ACCOUNT_NUMBER == objPatientSurvey.PATIENT_ACCOUNT_NUMBER && r.DELETED == false);
+                    var existingPatientDetails = _patientSurveyRepository.GetFirst(r => r.PATIENT_ACCOUNT_NUMBER == objPatientSurvey.PATIENT_ACCOUNT_NUMBER && r.DELETED == false);
                     PatientSurvey patientSurvey = new PatientSurvey();
-                    if (existingDetailInfo != null)
+                    if (existingPatientDetails != null)
                     {
-                        objPatientSurvey.SURVEY_ID = existingDetailInfo.SURVEY_ID;
+                        objPatientSurvey.SURVEY_ID = existingPatientDetails.SURVEY_ID;
                         AddPatientSurvey(objPatientSurvey);
-                        existingDetailInfo.IS_CONTACT_HQ = objPatientSurvey.IS_CONTACT_HQ;
-                        existingDetailInfo.IS_REFERABLE = objPatientSurvey.IS_REFERABLE;
-                        existingDetailInfo.IS_IMPROVED_SETISFACTION = objPatientSurvey.IS_IMPROVED_SETISFACTION;
-                        existingDetailInfo.FEEDBACK = objPatientSurvey.FEEDBACK;
-                        existingDetailInfo.SURVEY_STATUS_BASE = "Completed";
-                        existingDetailInfo.SURVEY_STATUS_CHILD = "Completed Survey";
-                        existingDetailInfo.MODIFIED_BY = "1163testing";
-                        existingDetailInfo.SURVEY_FLAG = "Green";
-                        existingDetailInfo.IS_SURVEYED = true;
-                        existingDetailInfo.IN_PROGRESS = false;
-                        existingDetailInfo.SURVEY_FORMAT_TYPE = "New Format";
-                        existingDetailInfo.SURVEY_COMPLETED_DATE = Helper.GetCurrentDate();
-                        existingDetailInfo.MODIFIED_DATE = Helper.GetCurrentDate();
-                        existingDetailInfo.DELETED = false;
-                        _patientSurveyRepository.Update(existingDetailInfo);
+                        existingPatientDetails.IS_CONTACT_HQ = objPatientSurvey.IS_CONTACT_HQ;
+                        existingPatientDetails.IS_REFERABLE = objPatientSurvey.IS_REFERABLE;
+                        existingPatientDetails.IS_IMPROVED_SETISFACTION = objPatientSurvey.IS_IMPROVED_SETISFACTION;
+                        existingPatientDetails.FEEDBACK = objPatientSurvey.FEEDBACK;
+                        existingPatientDetails.SURVEY_STATUS_BASE = "Completed";
+                        existingPatientDetails.SURVEY_STATUS_CHILD = "Completed Survey";
+                        existingPatientDetails.MODIFIED_BY = "1163testing";
+                        existingPatientDetails.SURVEY_FLAG = "Green";
+                        existingPatientDetails.IS_SURVEYED = true;
+                        existingPatientDetails.IN_PROGRESS = false;
+                        existingPatientDetails.SURVEY_FORMAT_TYPE = "New Format";
+                        existingPatientDetails.SURVEY_COMPLETED_DATE = Helper.GetCurrentDate();
+                        existingPatientDetails.MODIFIED_DATE = Helper.GetCurrentDate();
+                        existingPatientDetails.DELETED = false;
+                        _patientSurveyRepository.Update(existingPatientDetails);
                         _patientSurveyRepository.Save();
                         response.ErrorMessage = "";
                         response.Message = "Suvery completed successfully";
@@ -160,6 +166,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             }
             return response;
         }
+        // Description: This function is trigger to add patient survey model
         private void AddPatientSurvey(PatientSurvey objPatientSurvey)
         {
             ResponseModel response = new ResponseModel();
