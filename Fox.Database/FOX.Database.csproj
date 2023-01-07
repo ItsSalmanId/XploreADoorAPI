@@ -100,6 +100,7 @@
     <Content Include="StoredProcedure\FOX_PROC_CHECK_DATE_AN_TASK.sql" />
     <Content Include="StoredProcedure\FOX_PROC_CHECK_DUPLICATE_PATIENT.sql" />
     <Content Include="StoredProcedure\FOX_PROC_CHECK_EXPIRED_TOKEN.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_CHECK_HIGH_BALANCE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_CHECK_HIGH_BALANCE_OF_PATIENT.sql" />
     <Content Include="StoredProcedure\FOX_PROC_CHECK_REFERRAL_MARK_COMPLETED.sql" />
     <Content Include="StoredProcedure\FOX_PROC_CREATED_TASK_TYPE_DATA_ALTERNATIVE.sql" />
@@ -380,6 +381,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_TASK_SUB_TYPE_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TASK_TASK_SUB_TYPE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TASK_TYPES.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_TASK_TYPE_AND_SEND_TO_AND_SUB_TYPE_ID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TASK_TYPE_AND_SEND_TO_ID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TEAM_MEMBER_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TOTAL_PAGES.sql" />
