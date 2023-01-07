@@ -1476,7 +1476,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 _body += "<br />📞Mobile: ";
                 if (!string.IsNullOrEmpty(emailData.PATIENT_PHONE_NO))
                 {
-                    emailData.PATIENT_PHONE_NO = String.Format("{0:(###) ###-####}", Int64.Parse(emailData.PATIENT_PHONE_NO));
+                    emailData.PATIENT_PHONE_NO = String.Format("{0:(###) ###-####}", Int64.Parse(emailData.PATIENT_PHONE_NO.Trim()));
                     _body += emailData.PATIENT_PHONE_NO;
                 }
                 _body += "<br />Pri. Ins: ";

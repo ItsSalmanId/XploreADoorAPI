@@ -28,7 +28,7 @@ namespace FoxRehabilitationAPI.Filters
                 var excpStackTrace = context.Exception.StackTrace;
                 var excpInnerMessage = ((context.Exception.InnerException != null && context.Exception.InnerException.Message != null) ? (context.Exception.InnerException.Message.ToLower().Contains("inner exception") ? context.Exception.InnerException.InnerException.Message : context.Exception.InnerException.Message) : "NULL");
                 //FOX DEV ONLY LOGIC START 
-                if (context.Exception is BusinessException && (excpMsg.Contains("google") || excpMsg.Contains("no pages") || excpMsg.Contains("@SEND_TO_ID', which was not supplied.")))
+                if (context.Exception is BusinessException && (excpMsg.Contains("google") || excpMsg.Contains("no pages") || excpMsg.Contains("@SEND_TO_ID', which was not supplied.") || excpMsg.Contains("Object reference not set to an instance of an object")))
                 {
                     //string directory = System.Web.HttpContext.Current.Server.MapPath(AppConfiguration.ErrorLogPath + "\\FoxBussinessErrors");
                     string directory = System.Web.HttpContext.Current.Server.MapPath("\\FoxDevErrorsLog");
