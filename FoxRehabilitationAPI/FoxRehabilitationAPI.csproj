@@ -427,6 +427,7 @@
     <Content Include="About Project\FoxEmailsMigration.xlsx" />
     <Content Include="About Project\DevOps Database Implementation for FOX Portal Scripts.pptx" />
     <Content Include="About Project\Services Execution Details.xlsx" />
+    <Content Include="About Project\FoxPortalTablesProcedures.xlsx" />
     <None Include="Properties\PublishProfiles\LocalFiles.pubxml" />
     <None Include="Properties\PublishProfiles\UAT.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />

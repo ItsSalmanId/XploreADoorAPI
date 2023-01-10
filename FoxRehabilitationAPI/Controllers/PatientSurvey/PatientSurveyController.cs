@@ -142,7 +142,18 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetPSCallLogList(Convert.ToInt64(patientAccount), GetProfile().PracticeCode));
         }
-
+        [HttpGet]
+        public HttpResponseMessage GetPatientSurveyInboundCall(string patientAccount)
+        {
+            if (!string.IsNullOrEmpty(patientAccount))
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetPatientSurveyInBoundCalls(Convert.ToInt64(patientAccount), GetProfile().PracticeCode));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient Account is missing");
+            }
+        }
         [HttpGet]
         public HttpResponseMessage GetPSStatesList(string region)
         {
