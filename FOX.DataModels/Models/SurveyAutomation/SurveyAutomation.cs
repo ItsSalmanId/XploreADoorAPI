@@ -12,7 +12,6 @@ namespace FOX.DataModels.Models.SurveyAutomation
 {
     public class SurveyAutomations
     {
-
         public class SurveyAutomation
         {
             public string PATIENT_ACCOUNT { get; set; }

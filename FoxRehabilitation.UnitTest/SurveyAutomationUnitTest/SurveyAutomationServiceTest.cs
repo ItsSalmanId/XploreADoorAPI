@@ -40,7 +40,7 @@ namespace FoxRehabilitation.UnitTest.SurveyAutomationUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -61,7 +61,7 @@ namespace FoxRehabilitation.UnitTest.SurveyAutomationUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -83,7 +83,7 @@ namespace FoxRehabilitation.UnitTest.SurveyAutomationUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -100,7 +100,7 @@ namespace FoxRehabilitation.UnitTest.SurveyAutomationUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -122,7 +122,7 @@ namespace FoxRehabilitation.UnitTest.SurveyAutomationUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [TearDown]

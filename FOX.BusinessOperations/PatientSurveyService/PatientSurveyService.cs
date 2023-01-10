@@ -722,7 +722,6 @@ namespace FOX.BusinessOperations.PatientSurveyService
             }
             return performSurveyDetails;
         }
-
         public List<string> GetPatientSurveytProviderList(long practiceCode)
         {
             return _patientSurveyRepository.GetMany(x => x.PRACTICE_CODE == practiceCode).Select(x => x.PROVIDER).Distinct().ToList();

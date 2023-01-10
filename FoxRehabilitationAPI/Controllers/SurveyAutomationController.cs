@@ -51,7 +51,7 @@ namespace FoxRehabilitationAPI.Controllers
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patinet account number is empty");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "SurveyLink model is empty");
             }
         }
         [HttpPost]
@@ -63,7 +63,7 @@ namespace FoxRehabilitationAPI.Controllers
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patinet account number is empty");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "SurveyLink model is empty");
             }
         }
     }
