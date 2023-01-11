@@ -1,4 +1,5 @@
-﻿using FOX.BusinessOperations.Scheduler;
+﻿using FOX.BusinessOperations.CommonService;
+using FOX.BusinessOperations.Scheduler;
 using FOX.DataModels.Models.Security;
 using NUnit.Framework;
 using System;
@@ -494,7 +495,7 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
         }
         [Test]
         [TestCase(1011163, true, "04:43 PM", 544100, 54810699, "2019-09-14")]
-        [TestCase(1011163, false, "04:44 PM", 544100, 54810699, "2019-09-14")]
+        [TestCase(1011163, true, "04:44 PM", 544100, 54810699, "2019-09-14")]
         [TestCase(1011163, true, "04:42 PM", 544100, 54810699, "2019-09-14")]
         [TestCase(1011163, true, "05:42 PM", 544100, 54810699, "2019-09-14")]
         [TestCase(1011163, false, "06:42 PM", 544100, 54810699, "2019-09-14")]
@@ -513,7 +514,7 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
             _appointment.APPOINTMENT_DATE_STR = appointmentDateStr;
             _appointment.PATIENT_ACCOUNT = 0;
             _appointment.IS_NEW = isNew;
-
+           
             //Act
             var result = _scheduler.OnSaveAddBlock(_appointment, _userProfile);
 
