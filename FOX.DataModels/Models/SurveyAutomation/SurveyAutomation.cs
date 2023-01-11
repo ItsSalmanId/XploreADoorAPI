@@ -20,7 +20,6 @@ namespace FOX.DataModels.Models.SurveyAutomation
             public string PT_OT_SLP { get; set; }
             public string SERVICE_OR_PAYMENT_DESCRIPTION { get; set; }
             public long SURVEY_ID { get; set; }
-
         }
         public class SurveyLink
         {
