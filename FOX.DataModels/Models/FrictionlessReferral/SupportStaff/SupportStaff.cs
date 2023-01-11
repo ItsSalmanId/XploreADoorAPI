@@ -128,6 +128,7 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public DateTime MODIFIED_DATE { get; set; }
         public string MODIFIED_BY { get; set; }
         public bool DELETED { get; set; }
+        public long PRACTICE_CODE { get; set; }
     }
     public class SubmitReferralModel : BaseModel
     {

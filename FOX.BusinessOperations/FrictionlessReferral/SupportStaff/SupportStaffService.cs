@@ -418,12 +418,12 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 {
                     frictionLessReferralObj.PATIENT_DOB = null;
                 }
-                if (frictionLessReferralObj.PROVIDER_FAX != null)
+                if (!string.IsNullOrEmpty(frictionLessReferralObj.PROVIDER_FAX))
                 {
                     frictionLessReferralObj.PROVIDER_FAX = frictionLessReferralObj.PROVIDER_FAX.Replace("-", "");
                 }
-                if (frictionLessReferralObj.PROVIDER_PHONE_NO != null)
-                {
+                if (!string.IsNullOrEmpty(frictionLessReferralObj.PROVIDER_PHONE_NO))
+                    {
                     frictionLessReferralObj.PROVIDER_PHONE_NO = frictionLessReferralObj.PROVIDER_PHONE_NO.Replace("-", "");
                 }
                 if (existingFrictionReferral == null)
@@ -595,9 +595,9 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 var parmWorkID = new SqlParameter("WORKID", SqlDbType.BigInt) { Value = workId };
                 var parmFilePath = new SqlParameter("FILEPATH", SqlDbType.VarChar) { Value = filePath };
                 var parmLogoPath = new SqlParameter("LOGOPATH", SqlDbType.VarChar) { Value = logoPath };
-                var _isFromIndexInfo = new SqlParameter("IS_FROM_INDEX_INFO", SqlDbType.Bit) { Value = false };
+                var isFromIndexInfo = new SqlParameter("IS_FROM_INDEX_INFO", SqlDbType.Bit) { Value = false };
                 var result = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_AD_FILES_TO_DB_FROM_RFO @FILE_ID, @WORKID, @FILEPATH, @LOGOPATH, @IS_FROM_INDEX_INFO",
-                    fileId, parmWorkID, parmFilePath, parmLogoPath, _isFromIndexInfo);
+                    fileId, parmWorkID, parmFilePath, parmLogoPath, isFromIndexInfo);
             }
             catch (Exception exception)
             {
@@ -646,7 +646,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 return new ResponseHTMLToPDF() { FileName = "", FilePath = "", Success = false, ErrorMessage = exception.ToString() };
             }
         }
-        private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, string sorcetype, string sorceName, string userName, bool _isFromIndexInfo)
+        private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, string sorcetype, string sorceName, string userName, bool isFromIndexInfo)
         {
             List<int> threadCounter = new List<int>();
             var originalQueueFilesCount = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
@@ -686,7 +686,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     thread.Abort();
                 }
                 noOfPages = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
-                AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, config.PRACTICE_CODE, _isFromIndexInfo);
+                AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, config.PRACTICE_CODE, isFromIndexInfo);
             }
         }
         private void AddToDatabase(string filePath, int noOfPages, long workId, string sorcetype, string sorceName, string userName, long? practice_code, bool fromindexinf)
@@ -789,7 +789,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             UserProfile userProfile = new UserProfile();
             userProfile.PracticeCode = GetPracticeCode();
             userProfile.UserName = "FRICTIONLESS_REFERRAL_SOURCE";
-            var frictionlessReferralTempFiles = _frictionlessReferralWorkReposistory.GetMany(t => t.WORK_ID == submitReferralModel.WorkId && t.DELETED == false);
+            var frictionlessReferralTempFiles = _frictionlessReferralWorkReposistory.GetMany(t => t.WORK_ID == submitReferralModel.WorkId && t.DELETED == false && t.PRACTICE_CODE == userProfile.PracticeCode);
             if (frictionlessReferralTempFiles != null && frictionlessReferralTempFiles.Count != 0)
             {
                 foreach (var item in frictionlessReferralTempFiles)
@@ -965,13 +965,15 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         {
             try
             {
+                long practiceCode = GetPracticeCode();
                 long frictionlessRefID = Helper.getMaximumId("FRICTIONLESS_REFERRAL_FILE_ID");
                 var frictionlessRefId = new SqlParameter("FRICTIONLESS_ID", SqlDbType.BigInt) { Value = frictionlessRefID };
                 var parmWorkID = new SqlParameter("WORKID", SqlDbType.BigInt) { Value = workId };
                 var parmFilePath = new SqlParameter("FILEPATH", SqlDbType.VarChar) { Value = filePath };
                 var parmLogoPath = new SqlParameter("LOGOPATH", SqlDbType.VarChar) { Value = logoPath };
-                var result = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_ADD_FRICTIONLESS_FILES_TO_DB_FROM_RFO @FRICTIONLESS_ID,  @WORKID, @FILEPATH, @LOGOPATH",
-                    frictionlessRefId, parmWorkID, parmFilePath, parmLogoPath);
+                var pracCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practiceCode };
+                var result = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_ADD_FRICTIONLESS_FILES_TO_DB_FROM_RFO @FRICTIONLESS_ID,  @WORKID, @FILEPATH, @LOGOPATH ,@PRACTICE_CODE",
+                    frictionlessRefId, parmWorkID, parmFilePath, parmLogoPath, pracCode);
             }
             catch (Exception exception)
             {
