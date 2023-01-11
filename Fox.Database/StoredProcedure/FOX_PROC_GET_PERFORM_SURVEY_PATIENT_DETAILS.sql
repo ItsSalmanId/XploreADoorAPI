@@ -20,10 +20,10 @@ SL.CREATED_DATE BETWEEN @FROMDATE  AND @TODATE
 AND               
 PS.PATIENT_ACCOUNT_NUMBER =  @PATIENT_ACCOUNT                 
 AND  PS.SURVEY_STATUS_BASE = 'Completed'                 
-AND PS.IN_PROGRESS = 0                
-AND PS.IS_SURVEYED = 1                
-AND SL.DELETED = 0                        
-AND PS.DELETED = 0     
+AND ISNULL(PS.IN_PROGRESS, 0) = 0  
+AND PS.IS_SURVEYED = 1 
+AND ISNULL(SL.DELETED, 0) = 0                       
+AND ISNULL(PS.DELETED, 0) = 0   
 AND SL.PRACTICE_CODE = @PRACTICE_CODE  
 AND SL.PRACTICE_CODE = @PRACTICE_CODE                      
 END 

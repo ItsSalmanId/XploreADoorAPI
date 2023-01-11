@@ -1,11 +1,10 @@
-
 -- AUTHOR:  <MUHAMMAD SALMAN>                                                                
 -- CREATE DATE: <CREATE DATE, 12/15/2022>                                                                
 -- DESCRIPTION: <GET LIST OF PATIENT DETAILS>                                                          
 CREATE PROCEDURE [dbo].[FOX_PROC_GET_SURVEY_PATIENT_DETAILS]                                                                             
 (                                                                               
   @PATIENT_ACCOUNT BIGINT,  
-   @PRACTICE_CODE BIGINT                                                                                                        
+  @PRACTICE_CODE BIGINT                                                                                                        
 )                                                                                  
 AS                                                                                  
 BEGIN       

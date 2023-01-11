@@ -1,12 +1,9 @@
-
-
 -- =============================================          
 -- Modified By :  Muhammad Salman          
 -- Modified date: 12/03/2022          
 -- =============================================                                                                
 -- EXEC [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT_AFTAB1]   '1011163', '8/20/2021', '9/7/2021', '', '', '', 'Both', 'ALL', '', 'Completed Survey ,Deceased,Unable to Complete Survey,Not Interested', 1,30, '', 'SURVEYCOMPLETEDDATE', 'DESC'                    
-  
--- EXEC [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT_AFTAB2]  '1011163', '10/01/2021', '10/19/2021', '', '', '', 'Both', 'ALL', '', 'Completed Survey,Deceased,Unable to complete survey,Callback,Not Answered,Not Interested,Not Enough Services Provided',1, 5000,'','SURVEYCOMPLETEDDATE', 'DESC'                                               
+ -- EXEC [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT_AFTAB2]  '1011163', '10/01/2021', '10/19/2021', '', '', '', 'Both', 'ALL', '', 'Completed Survey,Deceased,Unable to complete survey,Callback,Not Answered,Not Interested,Not Enough Services Provided',1, 5000,'','SURVEYCOMPLETEDDATE', 'DESC'                                               
                                                         
 ALTER PROCEDURE [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT]                                                                                          
  (@PRACTICE_CODE   BIGINT,                                                     
