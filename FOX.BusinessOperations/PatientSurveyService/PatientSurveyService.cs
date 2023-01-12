@@ -713,6 +713,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
             }
 
         }
+        // Description: This function is trigger to get details of survey, performed by patient (Survey Automation)
         public List<SurveyServiceLog> SurveyPerformByUser(long patientAccount, long practiceCode)
         {
             List<SurveyServiceLog> performSurveyDetails = new List<SurveyServiceLog>();

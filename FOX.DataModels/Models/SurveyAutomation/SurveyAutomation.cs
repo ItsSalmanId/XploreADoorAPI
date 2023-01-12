@@ -1,12 +1,6 @@
-﻿using FOX.DataModels.Models.Patient;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FOX.DataModels.Models.SurveyAutomation
 {
@@ -41,7 +35,7 @@ namespace FOX.DataModels.Models.SurveyAutomation
             public long SURVEY_ID { get; set; }
             public string FILE_NAME { get; set; }
             public long PRACTICE_CODE { get; set; }
-            public string CREATED_DATE { get; set; }
+            public DateTime CREATED_DATE { get; set; }
             public string CREATED_BY { get; set; }
             public DateTime MODIFIED_DATE { get; set; }
             public string MODIFIED_BY { get; set; }

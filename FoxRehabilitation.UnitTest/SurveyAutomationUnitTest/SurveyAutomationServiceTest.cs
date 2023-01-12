@@ -87,23 +87,6 @@ namespace FoxRehabilitation.UnitTest.SurveyAutomationUnitTest
             }
         }
         [Test]
-        public void GetPracticeCode_PracticeCode_ReturnData()
-        {
-            //Arrange
-            //Act
-            var result = _surveyAutomationService.GetPracticeCode();
-
-            //Assert
-            if (result != 0)
-            {
-                Assert.IsTrue(true);
-            }
-            else
-            {
-                Assert.IsFalse(false);
-            }
-        }
-        [Test]
         [TestCase(101116354816636)]
         [TestCase(0)]
         [TestCase(123456789456)]

@@ -19,7 +19,6 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpPost]
         public HttpResponseMessage GetPatientDetails(SurveyAutomation objSurveyAutomation)
         {
-
             if (objSurveyAutomation != null)
             {
                 return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.GetPatientDetails(objSurveyAutomation));
@@ -32,7 +31,6 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpPost]
         public HttpResponseMessage UpdatePatientSurvey(FOX.DataModels.Models.PatientSurvey.PatientSurvey objPatientSurvey)
         {
-
             if (objPatientSurvey != null)
             {
                 return Request.CreateResponse(HttpStatusCode.OK, _surveyAutomationService.UpdatePatientSurvey(objPatientSurvey));

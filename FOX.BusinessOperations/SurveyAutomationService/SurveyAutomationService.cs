@@ -1,4 +1,5 @@
 ﻿using FOX.BusinessOperations.CommonService;
+using FOX.BusinessOperations.CommonServices;
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.CommonModel;
@@ -9,7 +10,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Text;
-using System.Web.Configuration;
 using static FOX.DataModels.Models.SurveyAutomation.SurveyAutomations;
 
 namespace FOX.BusinessOperations.SurveyAutomationService
@@ -31,7 +31,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         // Description: This function is decrypt patient account number
         public SurveyLink DecryptionUrl(SurveyLink objSurveyLink)
         {
-            if(objSurveyLink != null && objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT != null)
+            if(objSurveyLink != null && !string.IsNullOrEmpty(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT))
             {
                 objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT = Decryption(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT);
             }
@@ -42,11 +42,11 @@ namespace FOX.BusinessOperations.SurveyAutomationService
          {
             if (objSurveyAutomation != null && !string.IsNullOrEmpty(objSurveyAutomation.PATIENT_ACCOUNT))
             {
-                long getPracticeCode = GetPracticeCode();
+                long getPracticeCode = AppConfiguration.GetPracticeCode;
                 SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = getPracticeCode };
                 SqlParameter patientAccountNumber = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = objSurveyAutomation.PATIENT_ACCOUNT };
-                var performSurveyhistory = SpRepository<SurveyAutomationLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PERFORM_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT, @PRACTICE_CODE", patientAccountNumber, pracCode);
-                if (performSurveyhistory != null)
+                var performSurveyHistory = SpRepository<SurveyAutomationLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PERFORM_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT, @PRACTICE_CODE", patientAccountNumber, pracCode);
+                if (performSurveyHistory != null)
                 {
                     objSurveyAutomation = null;
                 }
@@ -69,7 +69,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             List<SurveyQuestions> surveyQuestionsList = new List<SurveyQuestions>();
             if (objSurveyLink != null && !string.IsNullOrEmpty(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT))
             {
-                long getPracticeCode = GetPracticeCode();
+                long getPracticeCode = AppConfiguration.GetPracticeCode;
                 SqlParameter patientAccount = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.VarChar, Value = objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT };
                 SqlParameter practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = getPracticeCode };
                 surveyQuestionsList = SpRepository<SurveyQuestions>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_SURVEY_QUESTION  @PATIENT_ACCOUNT, @PRACTICE_CODE", patientAccount, practiceCode);
@@ -114,12 +114,6 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             }
         }
         #endregion
-        // Description: This function is trigger to get practice code
-        public long GetPracticeCode()
-        {
-            long practiceCode = Convert.ToInt64(WebConfigurationManager.AppSettings?["GetPracticeCode"]);
-            return practiceCode;
-        }
         // Description: This function is trigger to update patient survey model
         public ResponseModel UpdatePatientSurvey(PatientSurvey objPatientSurvey)
         {
@@ -128,7 +122,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             {
                 if (objPatientSurvey != null && objPatientSurvey.PATIENT_ACCOUNT_NUMBER != 0)
                 {
-                    long practiceCode = GetPracticeCode();
+                    long practiceCode = AppConfiguration.GetPracticeCode;
                     var existingPatientDetails = _patientSurveyRepository.GetFirst(r => r.PATIENT_ACCOUNT_NUMBER == objPatientSurvey.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == objPatientSurvey.SURVEY_ID && r.DELETED == false);
                     PatientSurvey patientSurvey = new PatientSurvey();
                     if (existingPatientDetails != null)
@@ -142,7 +136,6 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                         existingPatientDetails.SURVEY_STATUS_BASE = "Completed";
                         existingPatientDetails.SURVEY_STATUS_CHILD = "Completed Survey";
                         existingPatientDetails.MODIFIED_BY = "1163testing";
-                        existingPatientDetails.SURVEY_FLAG = "Green";
                         existingPatientDetails.IS_SURVEYED = true;
                         existingPatientDetails.IN_PROGRESS = false;
                         existingPatientDetails.SURVEY_FORMAT_TYPE = "New Format";
@@ -172,13 +165,10 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         // Description: This function is trigger to add patient survey model
         private void AddPatientSurvey(PatientSurvey objPatientSurvey)
         {
-            ResponseModel response = new ResponseModel();
-            try
-            {
-                if (objPatientSurvey != null)
+            if (objPatientSurvey != null)
                 {
-                    long practiceCode = GetPracticeCode();
-                    PatientSurveyHistory patientSurveyHistory = new PatientSurveyHistory
+                    long practiceCode = AppConfiguration.GetPracticeCode;
+                PatientSurveyHistory patientSurveyHistory = new PatientSurveyHistory
                     {
                         SURVEY_HISTORY_ID = Helper.getMaximumId("SURVEY_HISTORY_ID"),
                         SURVEY_ID = objPatientSurvey.SURVEY_ID,
@@ -190,7 +180,6 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                         FEEDBACK = objPatientSurvey.FEEDBACK,
                         SURVEY_STATUS_BASE = "Completed",
                         SURVEY_STATUS_CHILD = "Completed Survey",
-                        SURVEY_FLAG = "Green",
                         DELETED = false,
                         CREATED_BY = "FOX-TEAM",
                         SURVEY_DATE = Helper.GetCurrentDate(),
@@ -198,19 +187,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                     };
                     _patientSurveyHistoryRepository.Insert(patientSurveyHistory);
                     _patientSurveyHistoryRepository.Save();
-                    response.Message = "Suvery completed successfully";
-                    response.Success = true;
                 }
-                else
-                {
-                    response.ErrorMessage = "Suvery not completed successfully";
-                    response.Success = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
         }
         #endregion
     }
