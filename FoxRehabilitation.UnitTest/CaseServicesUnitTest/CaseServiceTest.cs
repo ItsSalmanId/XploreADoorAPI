@@ -634,14 +634,15 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             {
                 new FOX_TBL_ORDER_INFORMATION
                 {
-                    ORDER_INFO_ID = 544100
+                    ORDER_INFO_ID = 544100,
+                    MODIFIED_BY = "FOX-Team"
                 }
             };
             _foxTblCase.openIssueList = new List<OpenIssueList>()
             {
                 new OpenIssueList
                 {
-                    TASK_TYPE_ID = 544100
+                    TASK_TYPE_ID = 544100,
                 }
             };
             if (caseExist == false)
@@ -652,6 +653,26 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             {
                 _foxTblCase.CASE_ID = 544181;
             }
+            _foxTblCase.OrderInformationList = new List<FOX_TBL_ORDER_INFORMATION>()
+            {
+                new FOX_TBL_ORDER_INFORMATION
+                {
+                    ORDER_INFO_ID = 544100,
+                    MODIFIED_BY = "FOX-Team"
+                }
+            };
+            _foxTblCase.CallsLogList = new List<FOX_TBL_CALLS_LOG>()
+            {
+                new FOX_TBL_CALLS_LOG
+                {
+                    FOX_CALLS_LOG_ID = 544100,
+                    MODIFIED_BY = "FOX-Team"
+                }
+            };
+            _foxTblCase.Comments = "test";
+            _foxTblCase.ImportantNotes = "test";
+            _foxTblCase.VoidReason = "test";
+
 
             //Act
             var result = _caseServices.AddEditCase(_foxTblCase, _userProfile);
@@ -751,7 +772,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
         [TestCase(1011163, "ST", 600174)]
         [TestCase(1011163, "EP", 600174)]
         [TestCase(1011163, "", 600174)]
-        [TestCase(0, "")]
+        [TestCase(0, "", 600174)]
         public void UpdatePCPInPatientDemographics_PassModel_ReturnData(long practiceCode, string caseDesciplineName, long posId)
         {
             //Arrange
