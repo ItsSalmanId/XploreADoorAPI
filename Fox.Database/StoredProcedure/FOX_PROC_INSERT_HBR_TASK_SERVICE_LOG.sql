@@ -1,5 +1,3 @@
-IF (OBJECT_ID('FOX_PROC_INSERT_HBR_TASK_SERVICE_LOG') IS NOT NULL ) DROP PROCEDURE FOX_PROC_INSERT_HBR_TASK_SERVICE_LOG  
-GO 
 -- =============================================                      
 -- Author:  <Author,Abdur Rafey>                      
 -- Create date: <Create Date,21/12/2021>                      

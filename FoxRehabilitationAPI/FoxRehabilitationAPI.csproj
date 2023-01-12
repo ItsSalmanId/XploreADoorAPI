@@ -341,6 +341,7 @@
     <Compile Include="Controllers\PatientSurvey\UploadData\UploadDataController.cs" />
     <Compile Include="Controllers\QualityAssurance\EvaluationSetupController.cs" />
     <Compile Include="Controllers\QualityAssurance\PerformAuditController.cs" />
+    <Compile Include="Controllers\QualityAssurance\QADashboardController.cs" />
     <Compile Include="Controllers\QualityAssurance\QAReportController.cs" />
     <Compile Include="Controllers\ReconciliationController.cs" />
     <Compile Include="Controllers\ReportingController.cs" />
@@ -425,6 +426,7 @@
     <Content Include="About Project\FoxEmailsMigration.xlsx" />
     <Content Include="About Project\DevOps Database Implementation for FOX Portal Scripts.pptx" />
     <Content Include="About Project\Services Execution Details.xlsx" />
+    <Content Include="About Project\FoxPortalTablesProcedures.xlsx" />
     <None Include="Properties\PublishProfiles\LocalFiles.pubxml" />
     <None Include="Properties\PublishProfiles\UAT.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -455,11 +457,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\EvaluationSetup\" />
-    <Folder Include="Views\Group\" />
-    <Folder Include="Views\PerformAudit\" />
-    <Folder Include="Views\QAReport\" />
-    <Folder Include="Views\SignatureRequired\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

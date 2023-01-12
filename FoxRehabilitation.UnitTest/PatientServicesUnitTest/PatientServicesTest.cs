@@ -1,5 +1,4 @@
 ﻿using FOX.BusinessOperations.PatientServices;
-using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.Patient;
 using FOX.DataModels.Models.Security;
@@ -8,10 +7,6 @@ using FOX.DataModels.Models.TasksModel;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 
 namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
 {
@@ -1018,7 +1013,6 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         public void AddUpdatePatient_AddToPatientTable_ReturnData(long practiceCode, long patientAccount)
         {
             //Arrange
-           
             _userProfile.PracticeCode = practiceCode;
             _userProfile.UserName = "1163testing";
             _patient.PCP = 544100;
@@ -1045,6 +1039,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _patient.Patient_Contacts_List = _patientContact;
             _patient.Patient_Contacts_List = new List<PatientContact>();
             _patient.Patient_Address = new List<PatientAddress>();
+
             //Act
             var result = _patientService.AddUpdatePatient(_patient, _userProfile);
 
@@ -1064,7 +1059,6 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         public void GetPatientAddressesIncludingPOS_PatientAddressesIncludingPOSe_ReturnData(long patientAccount)
         {
             //Arrange
-
             //Act
             var result = _patientService.GetPatientAddressesIncludingPOS(patientAccount);
 
@@ -1086,6 +1080,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             //Arrange
             _userProfile.PracticeCode = 1011163;
             _userProfile.UserName = "1163testing";
+            
             //Act
             var result = _patientService.GetPatientInsurance(patientAccount, _userProfile);
 
