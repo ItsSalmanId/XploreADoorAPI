@@ -7,10 +7,12 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
 {
     public interface IAnnouncementService
     {
+        #region FUNCTIONS
         List<FoxRoles> GetFoxRoles(UserProfile userProfile);
         List<Announcements> GetAnnouncement(Announcements objAnnouncement, UserProfile profile);
         Announcements GetAnnouncementDetails(Announcements objAnnouncement, UserProfile profile);
         ResponseModel InsertAnnouncement(AddEditFoxAnnouncement objAnnouncement, UserProfile profile);
         ResponseModel DeleteAnnouncement(Announcements objAnnouncement, UserProfile profile);
+        #endregion
     }
 }
