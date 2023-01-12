@@ -1,11 +1,8 @@
 ﻿using FOX.BusinessOperations.FrictionlessReferral.SupportStaff;
 using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
 using FOX.DataModels.Models.IndexInfo;
-using FOX.DataModels.Models.Patient;
 using FoxRehabilitationAPI.Filters;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;

@@ -1,7 +1,6 @@
 ﻿using FOX.DataModels.Models.CommonModel;
 using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
 using FOX.DataModels.Models.IndexInfo;
-using FOX.DataModels.Models.Patient;
 using FOX.DataModels.Models.RequestForOrder;
 using System.Collections.Generic;
 

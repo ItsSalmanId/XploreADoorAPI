@@ -743,7 +743,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         }
         public QRCodeModel GenerateQRCode(QRCodeModel obj)
         {
-            Bitmap result = null;
+            Bitmap result;
             string base64Image = "";
             try
             {
@@ -783,7 +783,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             }
             return obj;
         }
-
         public ResponseModel SubmitReferral(SubmitReferralModel submitReferralModel)
         {
             UserProfile userProfile = new UserProfile();
@@ -799,10 +798,8 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             }
             return SubmitReferral(submitReferralModel, userProfile);
         }
-
         public ResponseUploadFilesModel UploadFiles(RequestUploadFilesModel requestUploadFilesModel)
         {
-
             ResponseUploadFilesModel responseUploadFilesModel = new ResponseUploadFilesModel();
             string message = "Please upload file of type " + String.Join(", ", requestUploadFilesModel?.AllowedFileExtensions) + ".";
             try
@@ -812,15 +809,11 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     var postedFile = requestUploadFilesModel?.Files[file];
                     if (postedFile != null && postedFile.ContentLength > 0)
                     {
-                        //int MaxContentLength = 1024 * 1024 * 5; //Size = 5 MB  
-                        //IList<string> AllowedFileExtensions = new List<string> { ".pdf", ".png", ".jpg", ".JPG", ".jpeg", ".tiff", ".tif", ".docx" };
-
                         string fileName = Path.GetFileNameWithoutExtension(postedFile.FileName);
                         if (fileName?.Length > 30)
                             fileName = fileName.Substring(0, 30);
 
                         string fileExtension = Path.GetExtension(postedFile.FileName);
-
                         if (!(requestUploadFilesModel?.AllowedFileExtensions.Contains(fileExtension?.ToLower()) ?? false))
                         {
                             responseUploadFilesModel.FilePath = "";
@@ -863,7 +856,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 responseUploadFilesModel.FilePath = "";
                 return responseUploadFilesModel;
             }
-
         }
         public void GenerateAndSaveImagesOfUploadedFiles(long workId, FrictionLessReferral frictionLessReferralObj, UserProfile profile, int originalQueueFilesCount = 0)
         {
@@ -884,7 +876,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     }
                     if (ext == ".tiff" || ext == ".tif" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".gif" || ext == ".bmp")
                     {
-                        int numberOfPages = tifToImage(filePath, config.IMAGES_PATH_SERVER, workId, pageCounter, config.IMAGES_PATH_DB, out pageCounter, true, frictionLessReferralObj);
+                        int numberOfPages = TifToImage(filePath, config.IMAGES_PATH_SERVER, workId, pageCounter, config.IMAGES_PATH_DB, out pageCounter, true, frictionLessReferralObj);
                         totalPages += numberOfPages;
                     }
                     else
@@ -894,7 +886,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                         totalPages += numberOfPages;
                     }
                 }
-
                 AddToDatabase("", totalPages + originalQueueFilesCount, profile.UserName, workId, config.PRACTICE_CODE);
             }
             else
@@ -920,7 +911,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 //throw exception;
             }
         }
-        public int tifToImage(string tifImagePath, string imagePath, long workId, long pageCounter, string ImgDirPath, out long pageCounterOut, bool _isStoreToDB, FrictionLessReferral frictionLessReferralObj)
+        public int TifToImage(string tifImagePath, string imagePath, long workId, long pageCounter, string ImgDirPath, out long pageCounterOut, bool _isStoreToDB, FrictionLessReferral frictionLessReferralObj)
         {
             if (!Directory.Exists(imagePath))
                 Directory.CreateDirectory(imagePath);
@@ -952,10 +943,8 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                         {
                             AddFilesToDatabase(imgPath, workId, logoImgPath);
                         }
-
                     }
                     bmp.Dispose();
-                    // encoderParameters.Dispose();
                 }
             }
             pageCounterOut = pageCounter;
@@ -1036,39 +1025,39 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 {
                     if (work_order.DEPARTMENT_ID.Contains("1"))
                     {
-                        discipline = discipline + " Occupational Therapy (OT), ";
+                        discipline += " Occupational Therapy (OT), ";
                     }
                     if (work_order.DEPARTMENT_ID.Contains("2"))
                     {
-                        discipline = discipline + " Physical Therapy (PT), ";
+                        discipline += " Physical Therapy (PT), ";
                     }
                     if (work_order.DEPARTMENT_ID.Contains("3"))
                     {
-                        discipline = discipline + " Speech Therapy (ST), ";
+                        discipline += " Speech Therapy (ST), ";
                     }
                     if (work_order.DEPARTMENT_ID == "4")
                     {
-                        discipline = discipline + "Physical/Occupational/Speech Therapy(PT/OT/ST)";
+                        discipline += "Physical/Occupational/Speech Therapy(PT/OT/ST)";
                     }
                     if (work_order.DEPARTMENT_ID == "5")
                     {
-                        discipline = discipline + "Physical/Occupational Therapy(PT/OT)";
+                        discipline += "Physical/Occupational Therapy(PT/OT)";
                     }
                     if (work_order.DEPARTMENT_ID == "6")
                     {
-                        discipline = discipline + "Physical/Speech Therapy(PT/ST)";
+                        discipline += "Physical/Speech Therapy(PT/ST)";
                     }
                     if (work_order.DEPARTMENT_ID == "7")
                     {
-                        discipline = discipline + "Occupational/Speech Therapy(OT/ST)";
+                        discipline += "Occupational/Speech Therapy(OT/ST)";
                     }
                     if (work_order.DEPARTMENT_ID.Contains("8"))
                     {
-                        discipline = discipline + " Unknown, ";
+                        discipline += " Unknown, ";
                     }
                     if (work_order.DEPARTMENT_ID.Contains("9"))
                     {
-                        discipline = discipline + " Exercise Physiology (EP), ";
+                        discipline += " Exercise Physiology (EP), ";
                     }
                 }
                 else
@@ -1080,9 +1069,11 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     discipline = discipline.TrimEnd(discipline[discipline.Length - 1]);
                 }
             }
-            QRCodeModel qr = new QRCodeModel();
-            qr.AbsolutePath = System.Web.HttpContext.Current.Server.MapPath("~/" + AppConfiguration.QRCodeTempPath);
-            qr.WORK_ID = FrictionLessReferralObj.WORK_ID;
+            QRCodeModel qr = new QRCodeModel
+            {
+                AbsolutePath = System.Web.HttpContext.Current.Server.MapPath("~/" + AppConfiguration.QRCodeTempPath),
+                WORK_ID = FrictionLessReferralObj.WORK_ID
+             };
             var qrCode = GenerateQRCode(qr);
             string body = string.Empty;
             string templatePathOfSenderEmail = HttpContext.Current.Server.MapPath(@"~/HtmlTemplates/print-send-submit-order.html");
@@ -1093,11 +1084,8 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 body = File.ReadAllText(templatePathOfSenderEmail);
                 HtmlDocument htmldoc = new HtmlDocument();
                 htmldoc.LoadHtml(body);
-
                 body = htmldoc.DocumentNode.OuterHtml;
-
                 body = body.Replace("[[PATIENT_NAME]]", FrictionLessReferralObj.PATIENT_LAST_NAME + ", " + FrictionLessReferralObj.PATIENT_FIRST_NAME);
-                //      body = body.Replace("[[PATIENT_DOB]]", FrictionLessReferralObj.PATIENT_DOB_STRING.ToString() ?? "");
                 body = body.Replace("[[PATIENT_PRI_INS]]", pri_insurance ?? "");
                 if (qrCode != null)
                 {
