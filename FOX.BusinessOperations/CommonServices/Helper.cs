@@ -1159,6 +1159,7 @@ namespace FOX.BusinessOperations.CommonService
             cc.Add("ismailahmad@carecloud.com");
             cc.Add("ayazkhan2@carecloud.com");
             cc.Add("asadinayat@carecloud.com");
+            cc.Add("irfanullah3@carecloud.com");
 
             //string ccvalues = ConfigurationManager.AppSettings["CCListException"];
             //if (!string.IsNullOrWhiteSpace(ccvalues))
@@ -1267,6 +1268,10 @@ namespace FOX.BusinessOperations.CommonService
         {
             try
             {
+                if (msg.Contains("it is being used by another process"))
+                {
+                    return;
+                }
                 string directoryOther = System.Web.HttpContext.Current.Server.MapPath("\\FoxCriticalTokenExceptionLog");
                 if (!Directory.Exists(directoryOther))
                 {
