@@ -160,8 +160,10 @@ namespace FOX.BusinessOperations.FoxPHDService
             }
             catch (Exception ex)
             {
-
-                if (retrycatch <= 2 && ex.InnerException.Message.Contains("deadlocked on lock resources with another process"))
+                if ((retrycatch <= 2 && !string.IsNullOrEmpty(ex.Message) && (ex.Message.Contains("deadlocked on lock resources with another process") || ex.Message.Contains("Timeout")))
+                    || (ex.InnerException != null && !string.IsNullOrEmpty(ex.InnerException.Message)
+                    && (ex.InnerException.Message.Contains("deadlocked on lock resources with another process") || ex.InnerException.Message.Contains("Timeout"))
+                    ))
                 {
                     retrycatch = retrycatch + 1;
                     return GetPatientInformation(ObjPatientSearchRequest, profile);
