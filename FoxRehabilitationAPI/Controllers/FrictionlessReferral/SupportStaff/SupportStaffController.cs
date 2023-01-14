@@ -1,11 +1,8 @@
 ﻿using FOX.BusinessOperations.FrictionlessReferral.SupportStaff;
 using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
 using FOX.DataModels.Models.IndexInfo;
-using FOX.DataModels.Models.Patient;
 using FoxRehabilitationAPI.Filters;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -97,23 +94,9 @@ namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
             }
         }
         [HttpPost]
-        public HttpResponseMessage DownloadPdf(RequestDownloadPdfFrictionlessModel requestDownloadPdfModel)
+        public HttpResponseMessage SubmitReferral(SubmitReferralModel submitReferralModel)
         {
-            var responseModel = _supportStaffService.DownloadPdf(requestDownloadPdfModel);
-            var response = Request.CreateResponse(HttpStatusCode.OK, responseModel);
-            return response;
-        }
-        [HttpPost]
-        public HttpResponseMessage SendFAX(FrictionLessRequestSendFAXModel requestSendFAXModel)
-        {
-            var responseModel = _supportStaffService.SendFAX(requestSendFAXModel);
-            var response = Request.CreateResponse(HttpStatusCode.OK, responseModel);
-            return response;
-        }
-        [HttpPost]
-        public HttpResponseMessage SendEmail(RequestSendEmailModel requestSendEmailModel)
-        {
-            var responseModel = _supportStaffService.SendEmail(requestSendEmailModel);
+            var responseModel = _supportStaffService.SubmitReferral(submitReferralModel);
             var response = Request.CreateResponse(HttpStatusCode.OK, responseModel);
             return response;
         }
@@ -143,18 +126,6 @@ namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
             var uploadFiles = _supportStaffService.UploadFiles(requestUploadFilesAPIModel);
             var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
             return Task.FromResult(response);
-        }
-        [HttpGet]
-        public HttpResponseMessage getFrictionLessReferralDetailsByWorkID(long workId)
-        {
-            if (workId != 0)
-            {
-                return Request.CreateResponse(HttpStatusCode.OK, _supportStaffService.GetFrictionLessReferralDetailsByWorkID(workId));
-            }
-            else
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Frictionless Referral ID is Empty");
-            }
         }
         #endregion
     }

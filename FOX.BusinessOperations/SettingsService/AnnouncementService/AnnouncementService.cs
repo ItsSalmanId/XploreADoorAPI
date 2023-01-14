@@ -14,16 +14,23 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
 {
     public class AnnouncementService : IAnnouncementService
     {
+        #region PROPERTIES
         private readonly DbContextSettings _settingsContext = new DbContextSettings();
         private readonly GenericRepository<FoxRoles> _foxRolesRepository;
         private readonly GenericRepository<Announcements> _announcementRepository;
         private readonly GenericRepository<AnnouncementRoles> _announcementRoleRepository;
+        #endregion
+
+        #region CONSTRUCTOR
         public AnnouncementService()
         {
             _foxRolesRepository = new GenericRepository<FoxRoles>(_settingsContext);
             _announcementRepository = new GenericRepository<Announcements>(_settingsContext);
             _announcementRoleRepository = new GenericRepository<AnnouncementRoles>(_settingsContext);
         }
+        #endregion
+
+        #region FUNCTIONS
         // Description: This function is trigger to get role names
         public List<FoxRoles> GetFoxRoles(UserProfile userProfile)
         {
@@ -67,7 +74,7 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                                 SqlParameter anouncementDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", Convert.ToDateTime(objAddEditAnnouncement.ANNOUNCEMENT_DATE_FROM));
                                 SqlParameter anouncementDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO", objAddEditAnnouncement.ANNOUNCEMENT_DATE_TO);
                                 SqlParameter rolesIds = new SqlParameter("ROLES_IDs", objAddEditAnnouncement.EditSelectedRolesID.Substring(1));
-                                var duplicationCheckInAnnouncment = SpRepository<Announcements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_CHECK_ANNOUNCEMENT_DUPLICATION @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @ROLES_IDs", anouncementDateFrom, anouncementDateTo, rolesIds);                               
+                                var duplicationCheckInAnnouncment = SpRepository<Announcements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_CHECK_ANNOUNCEMENT_DUPLICATION @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @ROLES_IDs", anouncementDateFrom, anouncementDateTo, rolesIds);
                                 if (duplicationCheckInAnnouncment == null)
                                 {
                                     for (int i = 0; i < totalDays; i++)
@@ -166,7 +173,7 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
         {
             List<Announcements> announcementsList = new List<Announcements>();
             if (objAnnouncement != null && profile.PracticeCode != 0 && profile != null)
-            { 
+            {
                 if (!string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR))
                 {
                     objAnnouncement.ANNOUNCEMENT_DATE_FROM = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_FROM_STR);
@@ -184,8 +191,8 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
                     var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
                     SqlParameter announcementsDateFrom = new SqlParameter("ANNOUNCEMENT_DATE_FROM", objAnnouncement.ANNOUNCEMENT_DATE_FROM ?? (object)DBNull.Value);
                     SqlParameter announcementsDateTo = new SqlParameter("ANNOUNCEMENT_DATE_TO", objAnnouncement.ANNOUNCEMENT_DATE_TO ?? (object)DBNull.Value);
-                    SqlParameter roleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = objAnnouncement.ROLE_ID ?? (object)DBNull.Value};
-                    SqlParameter announcementTitle = new SqlParameter { ParameterName = "ANNOUNCEMENT_TITLE", SqlDbType = SqlDbType.VarChar, Value = objAnnouncement.ANNOUNCEMENT_TITLE == null ? null : objAnnouncement.ANNOUNCEMENT_TITLE};
+                    SqlParameter roleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.VarChar, Value = objAnnouncement.ROLE_ID ?? (object)DBNull.Value };
+                    SqlParameter announcementTitle = new SqlParameter { ParameterName = "ANNOUNCEMENT_TITLE", SqlDbType = SqlDbType.VarChar, Value = objAnnouncement.ANNOUNCEMENT_TITLE == null ? null : objAnnouncement.ANNOUNCEMENT_TITLE };
                     announcementsList = SpRepository<Announcements>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS @PRACTICE_CODE, @ANNOUNCEMENT_DATE_FROM, @ANNOUNCEMENT_DATE_TO, @ROLE_ID, @ANNOUNCEMENT_TITLE", practiceCode, announcementsDateFrom, announcementsDateTo, roleId, announcementTitle);
                 }
             }
@@ -197,21 +204,21 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
             Announcements announcementsList = new Announcements();
             if (objAnnouncement != null && profile.PracticeCode != 0 && profile != null && !string.IsNullOrEmpty(objAnnouncement.ANNOUNCEMENT_ID.ToString()))
             {
-                    if (objAnnouncement.ANNOUNCEMENT_DATE_FROM != null)
-                    {
-                        objAnnouncement.ANNOUNCEMENT_DATE_FROM = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_FROM);
-                    }
-                    if (objAnnouncement.ANNOUNCEMENT_DATE_TO != null)
-                    {
-                        objAnnouncement.ANNOUNCEMENT_DATE_TO = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_TO);
-                    }
-                    var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode};
-                    var accouncmentId = new SqlParameter { ParameterName = "ANNOUNCEMENT_ID", SqlDbType = SqlDbType.BigInt, Value = objAnnouncement.ANNOUNCEMENT_ID};
-                    announcementsList = SpRepository<Announcements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS_FOR_UPDATE  @PRACTICE_CODE, @ANNOUNCEMENT_ID", practiceCode, accouncmentId);
-                    if (announcementsList != null)
-                    {
-                        announcementsList.AnnouncementRoles = _announcementRoleRepository.GetMany(x => x.ANNOUNCEMENT_ID == announcementsList.ANNOUNCEMENT_ID && !(x.DELETED) && x.PRACTICE_CODE == profile.PracticeCode);
-                    }
+                if (objAnnouncement.ANNOUNCEMENT_DATE_FROM != null)
+                {
+                    objAnnouncement.ANNOUNCEMENT_DATE_FROM = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_FROM);
+                }
+                if (objAnnouncement.ANNOUNCEMENT_DATE_TO != null)
+                {
+                    objAnnouncement.ANNOUNCEMENT_DATE_TO = Convert.ToDateTime(objAnnouncement.ANNOUNCEMENT_DATE_TO);
+                }
+                var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                var accouncmentId = new SqlParameter { ParameterName = "ANNOUNCEMENT_ID", SqlDbType = SqlDbType.BigInt, Value = objAnnouncement.ANNOUNCEMENT_ID };
+                announcementsList = SpRepository<Announcements>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ANNOUNCEMENT_DETAILS_FOR_UPDATE  @PRACTICE_CODE, @ANNOUNCEMENT_ID", practiceCode, accouncmentId);
+                if (announcementsList != null)
+                {
+                    announcementsList.AnnouncementRoles = _announcementRoleRepository.GetMany(x => x.ANNOUNCEMENT_ID == announcementsList.ANNOUNCEMENT_ID && !(x.DELETED) && x.PRACTICE_CODE == profile.PracticeCode);
+                }
             }
             return announcementsList;
         }
@@ -245,5 +252,6 @@ namespace FOX.BusinessOperations.SettingsService.AnnouncementService
             }
             return response;
         }
+        #endregion
     }
 }
