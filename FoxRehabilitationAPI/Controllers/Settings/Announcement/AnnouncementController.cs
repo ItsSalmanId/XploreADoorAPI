@@ -1,7 +1,6 @@
 ﻿using FOX.BusinessOperations.SettingsService.AnnouncementService;
 using FOX.DataModels.Models.Settings.Announcement;
 using FoxRehabilitationAPI.Filters;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -12,11 +11,18 @@ namespace FoxRehabilitationAPI.Controllers.Settings.Announcement
     [ExceptionHandlingFilter]
     public class AnnouncementController : BaseApiController
     {
+        #region #PROPERTIES
         private readonly IAnnouncementService _announcementService;
+        #endregion
+
+        #region #CONSTRUCTOR
         public AnnouncementController(IAnnouncementService announcementService)
         {
             _announcementService = announcementService;
         }
+        #endregion
+
+        #region #FUNCTIONS
         [HttpGet]
         public HttpResponseMessage GetFoxRoles()
         {
@@ -25,7 +31,7 @@ namespace FoxRehabilitationAPI.Controllers.Settings.Announcement
         [HttpPost]
         public HttpResponseMessage InsertAnnouncement(AddEditFoxAnnouncement objAnnouncement)
         {
-            if(objAnnouncement != null)
+            if (objAnnouncement != null)
             {
                 return Request.CreateResponse(HttpStatusCode.OK, _announcementService.InsertAnnouncement(objAnnouncement, GetProfile()));
             }
@@ -37,7 +43,7 @@ namespace FoxRehabilitationAPI.Controllers.Settings.Announcement
         [HttpPost]
         public HttpResponseMessage GetAnnouncement(Announcements objAnnouncement)
         {
-            if(objAnnouncement != null)
+            if (objAnnouncement != null)
             {
                 return Request.CreateResponse(HttpStatusCode.OK, _announcementService.GetAnnouncement(objAnnouncement, GetProfile()));
             }
@@ -49,7 +55,7 @@ namespace FoxRehabilitationAPI.Controllers.Settings.Announcement
         [HttpPost]
         public HttpResponseMessage GetAnnouncementDetails(Announcements objAnnouncement)
         {
-            if(objAnnouncement != null)
+            if (objAnnouncement != null)
             {
                 return Request.CreateResponse(HttpStatusCode.OK, _announcementService.GetAnnouncementDetails(objAnnouncement, GetProfile()));
             }
@@ -61,7 +67,7 @@ namespace FoxRehabilitationAPI.Controllers.Settings.Announcement
         [HttpPost]
         public HttpResponseMessage DeleteAnnouncement(Announcements objAnnouncementRoles)
         {
-            if(objAnnouncementRoles != null)
+            if (objAnnouncementRoles != null)
             {
                 return Request.CreateResponse(HttpStatusCode.OK, _announcementService.DeleteAnnouncement(objAnnouncementRoles, GetProfile()));
             }
@@ -71,4 +77,5 @@ namespace FoxRehabilitationAPI.Controllers.Settings.Announcement
             }
         }
     }
+    #endregion
 }
