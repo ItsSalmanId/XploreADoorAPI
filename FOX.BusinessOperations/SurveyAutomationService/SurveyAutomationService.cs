@@ -142,6 +142,14 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                         existingPatientDetails.SURVEY_COMPLETED_DATE = Helper.GetCurrentDate();
                         existingPatientDetails.MODIFIED_DATE = Helper.GetCurrentDate();
                         existingPatientDetails.DELETED = false;
+                        if(objPatientSurvey.IS_REFERABLE == true && objPatientSurvey.IS_REFERABLE != null)
+                        {
+                            existingPatientDetails.SURVEY_FLAG = "Green";
+                        }
+                        else
+                        {
+                            existingPatientDetails.SURVEY_FLAG = "Red";
+                        }  
                         _patientSurveyRepository.Update(existingPatientDetails);
                         _patientSurveyRepository.Save();
                         response.ErrorMessage = "";
