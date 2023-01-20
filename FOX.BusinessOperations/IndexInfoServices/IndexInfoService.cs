@@ -555,7 +555,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             //    _InsertSourceAddRepository.Save();
             //}
 
-            sourceAddDetail.FOX_SOURCE_CATEGORY_ID = obj.FOX_SOURCE_CATEGORY_ID;
+            sourceAddDetail.FOX_SOURCE_CATEGORY_ID = obj.FOX_SOURCE_CATEGORY_ID ?? 0;
             if (string.IsNullOrEmpty(sourceAddDetail.DEPARTMENT_ID) || sourceAddDetail.DEPARTMENT_ID == "0")
             {
                 sourceAddDetail.DEPARTMENT_ID = null;
@@ -2069,8 +2069,8 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     //}
                     //else
                     //{
-                        senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == usr.PRACTICE_CODE) && !t.DELETED);
-                   // }
+                    senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == usr.PRACTICE_CODE) && !t.DELETED);
+                    // }
                     result.SENDER_TYPE = senderType != null ? !string.IsNullOrWhiteSpace(senderType.SENDER_TYPE_NAME) ? senderType.SENDER_TYPE_NAME : "" : "";
                     return result;
 
@@ -2639,9 +2639,12 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     if (workId != null && workId.Contains("_"))
                     {
                         var uWorkId = _OriginalQueueFiles.GetFirst(t => t.UNIQUE_ID == workId);
-                        workId = Convert.ToString(uWorkId.WORK_ID);
+                        if (uWorkId != null)
+                        {
+                            workId = Convert.ToString(uWorkId.WORK_ID);
+                        }
                     }
-                        threadsList.Add(myThread);
+                    threadsList.Add(myThread);
                     AddFilesToDatabase(imgPath, workId, lworkid, logoImgPath);
                 }
                 while (noOfPages > threadCounter.Count)
@@ -3167,7 +3170,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                         }
                         catch (Exception)
                         {
-                            sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID ?? (object)DBNull.Value );
+                            sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID ?? (object)DBNull.Value);
                         }
                     }
                     else
@@ -3376,7 +3379,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 //var sourceDetail = _InsertSourceAddRepository.GetFirst(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode && t.WORK_ID == WORK_QUEUE.WORK_ID && WORK_QUEUE.WORK_ID != 0);
                 var documentType = GetDocumentType(WORK_QUEUE);
                 //var documentType = _foxdocumenttypeRepository.GetFirst(t => t.DOCUMENT_TYPE_ID == sourceDetail.DOCUMENT_TYPE);
-                var ORS = GetOrderingRefrralSource(sourceDetail.SENDER_ID);
+                var ORS = new ReferralSource();
+                if (sourceDetail != null)
+                {
+                    ORS = GetOrderingRefrralSource(sourceDetail.SENDER_ID ?? 0);
+                }
                 //var ORS = _InsertUpdateOrderingSourceRepository.GetFirst(t => t.SOURCE_ID == sourceDetail.SENDER_ID);
                 var Indexer = GetIndexer(sourceDetail.COMPLETED_BY, profile.PracticeCode);
                 //var Indexer = _User.GetFirst(T => T.USER_NAME == sourceDetail.COMPLETED_BY);
@@ -5196,7 +5203,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             if (task.TASK_TYPE_ID != null)
             {
                 var sourceDetail = GetSourceDetail(profile.PracticeCode, WORK_QUEUE.WORK_ID);
-                var ORS = GetOrderingRefrralSource(sourceDetail.SENDER_ID);
+                var ORS = GetOrderingRefrralSource(sourceDetail.SENDER_ID ?? 0);
                 var discipline = "";
                 if (sourceDetail != null)
                 {
@@ -5313,8 +5320,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 req.Date_Of_Birth = null;
             }
-            var first_Name = new SqlParameter("@First_Name", SqlDbType.VarChar) { Value = !string.IsNullOrWhiteSpace(req.First_Name) ? req.First_Name.Trim() : req.First_Name };
-            var last_Name = new SqlParameter("@Last_Name", SqlDbType.VarChar) { Value = !string.IsNullOrWhiteSpace(req.Last_Name) ? req.Last_Name.Trim() : req.Last_Name };
+            req.First_Name = string.IsNullOrEmpty(req.First_Name) ? " " : Helper.RemoveSpecialCharacters(req.First_Name.Trim());
+            req.Last_Name = string.IsNullOrEmpty(req.First_Name) ? " " : Helper.RemoveSpecialCharacters(req.Last_Name.Trim());
+            req.Middle_Name = string.IsNullOrEmpty(req.First_Name) ? " " : Helper.RemoveSpecialCharacters(req.Middle_Name.Trim());
+            var first_Name = new SqlParameter("@First_Name", SqlDbType.VarChar) { Value = req.First_Name };
+            var last_Name = new SqlParameter("@Last_Name", SqlDbType.VarChar) { Value = req.Last_Name };
             var middle_Name = new SqlParameter("@Middle_Name", SqlDbType.VarChar) { Value = req.Middle_Name };
             var chart_Id = new SqlParameter("@Chart_Id", SqlDbType.VarChar) { Value = req.Chart_Id };
             var SSN = new SqlParameter("@SSN", SqlDbType.VarChar) { Value = req.SSN };

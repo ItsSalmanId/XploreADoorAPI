@@ -83,7 +83,7 @@ namespace FOX.BusinessOperations.AssignedQueueService
             var parmSortOrder = new SqlParameter("SORT_ORDER", SqlDbType.VarChar) { Value = req.SortOrder };
             var parmWorkId = new SqlParameter("WORK_ID", SqlDbType.VarChar) { Value = req.WorkID };
             var parmAssignTo = new SqlParameter("ASSIGNED_TO", SqlDbType.VarChar) { Value = req.AssignTo };
-            var parmStatus = new SqlParameter("STATUS", SqlDbType.VarChar) { Value = req.Status };
+            var parmStatus = new SqlParameter("STATUS", SqlDbType.VarChar) { Value = req.Status??"" };
             var USER_NAME = new SqlParameter("USER_NAME", SqlDbType.VarChar) { Value = Profile.UserName };
             var dATE_FROM = Helper.getDBNullOrValue("DATE_FROM", req.DATE_FROM.HasValue ? req.DATE_FROM.Value.ToString() : "");
             var dATE_TO = Helper.getDBNullOrValue("DATE_TO", req.DATE_TO.HasValue ? req.DATE_TO.Value.ToString() : "");
