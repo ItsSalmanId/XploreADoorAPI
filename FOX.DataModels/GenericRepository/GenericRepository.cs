@@ -311,6 +311,10 @@ namespace FOX.DataModels.GenericRepository
             {
                 Context.Database.Connection.ConnectionString = ConfigurationManager.ConnectionStrings["FOXConnection"].ConnectionString;
             }
+            else
+            {
+                Context.Database.Connection.ConnectionString = ConfigurationManager.ConnectionStrings["FOXConnection"].ConnectionString;
+            }
         }
     }
 
