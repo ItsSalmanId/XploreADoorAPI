@@ -26,9 +26,10 @@ namespace FOX.BusinessOperations.IndexedQueueService
         private readonly GenericRepository<WorkTransfer> _WorkTransferRepository;
         private readonly GenericRepository<User> _userRepository;
         private readonly GenericRepository<RoleToAdd> _roleRepository;
-
+        static long retrycatch = 0;
         public IndexedQueueServices()
         {
+            retrycatch = 0;
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
             _AssignmentQueueRepository = new GenericRepository<Referral_Assignment_details>(_QueueContext);
             _WorkTransferRepository = new GenericRepository<WorkTransfer>(_QueueContext);
@@ -182,7 +183,7 @@ namespace FOX.BusinessOperations.IndexedQueueService
                 SqlParameter workId = new SqlParameter("WORK_ID", item.WORK_ID);
                 SqlParameter userName = new SqlParameter("USER_NAME", Profile.UserName);
                 SqlParameter assignedTo = new SqlParameter("ASSIGNED_TO", item.RE_ASSIGNED_TO);
-                SqlParameter workStatus = new SqlParameter("WORK_STATUS",string.Empty);
+                SqlParameter workStatus = new SqlParameter("WORK_STATUS", string.Empty);
                 SqlParameter updateWorkStatus = new SqlParameter("UPDATE_WORK_STATUS", false);
                 SqlParameter updateIndexDate = new SqlParameter("UPDATE_INDEX_DATE", false);
                 SqlParameter updateAgentDate = new SqlParameter("UPDATE_AGENT_DATE", false);
@@ -199,7 +200,7 @@ namespace FOX.BusinessOperations.IndexedQueueService
                     {
                         RoleID = GetUserRole(Profile, item.RE_ASSIGNED_TO)?.ROLE_ID ?? 0;// _userRepository.GetFirst(x => x.USER_NAME == workQueue.ASSIGNED_TO).ROLE_ID;
                         AssignToDesign = RoleID.HasValue ? GetRoleById(RoleID.Value)?.ROLE_NAME : string.Empty ?? string.Empty; //_roleRepository.GetFirst(x => x.ROLE_ID == RoleID).ROLE_NAME;
-                        AssignByDesignation = GetRoleById( Profile.RoleId)?.ROLE_NAME ?? string.Empty;
+                        AssignByDesignation = GetRoleById(Profile.RoleId)?.ROLE_NAME ?? string.Empty;
                         if (AssignToDesign.ToLower().Equals("INDEXER".ToLower()))
                         {
                             updateIndexDate.Value = true;
@@ -223,14 +224,14 @@ namespace FOX.BusinessOperations.IndexedQueueService
                         ///workQueue.WORK_STATUS = "Index Pending";//when moved from unassigned to assigned
                         ///workQueue.INDEXER_ASSIGN_DATE = Helper.GetCurrentDate();
                     }
-                   
-                    InsertAssignmentData(workQueue.ASSIGNED_BY, workQueue.ASSIGNED_TO, AssignToDesign, AssignByDesignation,item.WORK_ID, Profile);
+
+                    InsertAssignmentData(workQueue.ASSIGNED_BY, workQueue.ASSIGNED_TO, AssignToDesign, AssignByDesignation, item.WORK_ID, Profile);
                     SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_UPDATE_WORK_QUEUE @WORK_ID, @USER_NAME, @ASSIGNED_TO, @WORK_STATUS, @UPDATE_WORK_STATUS, @UPDATE_INDEX_DATE, @UPDATE_AGENT_DATE, @SUPERVISOR_STATUS", workId, userName, assignedTo, workStatus, updateWorkStatus, updateIndexDate, updateAgentDate, supervisor_status);
                     //_QueueRepository.Update(workQueue);
                     //_QueueRepository.Save();
 
                     //Log Changes
-                     string logMsg = "";
+                    string logMsg = "";
                     if (string.IsNullOrEmpty(prevAssignedTo))
                         logMsg = string.Format("ID: {0} has been assigned to {1}.", workQueue.UNIQUE_ID, Helper.GetFullName(item.RE_ASSIGNED_TO));
                     else
@@ -241,20 +242,34 @@ namespace FOX.BusinessOperations.IndexedQueueService
                 }
             }
         }
-        public void InsertAssignmentData(string ASSIGNED_BY, string ASSIGNED_TO,string AssignToDesignation,string AssignByDesignation, long WORK_ID, UserProfile Profile)
+        public void InsertAssignmentData(string ASSIGNED_BY, string ASSIGNED_TO, string AssignToDesignation, string AssignByDesignation, long WORK_ID, UserProfile Profile)
         {
-            long Pid = Helper.getMaximumId("FOX_REFRRAL_ASSIGNMENT_ID");
-            SqlParameter id = new SqlParameter("ID", Pid);
-            SqlParameter workId = new SqlParameter("WORK_ID", WORK_ID);
-            SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", Profile.PracticeCode);
-            SqlParameter assignedBy = new SqlParameter("ASSIGNED_BY", string.IsNullOrEmpty(ASSIGNED_BY) ? string.Empty : ASSIGNED_BY);
-            SqlParameter assignedByDesignation = new SqlParameter("ASSIGNED_BY_DESIGNATION", string.IsNullOrEmpty(AssignByDesignation) ? string.Empty : AssignByDesignation);
-            SqlParameter assignedTo = new SqlParameter("ASSIGNED_TO", string.IsNullOrEmpty(ASSIGNED_TO) ? string.Empty : ASSIGNED_TO);
-            SqlParameter assignedToDesignation = new SqlParameter("ASSIGNED_TO_DESIGNATION", string.IsNullOrEmpty(AssignToDesignation) ? string.Empty : AssignToDesignation);
-            SqlParameter userName = new SqlParameter("USER_NAME", Profile.UserName);
-            SpRepository<Referral_Assignment_details>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_INSERT_REFERRAL_ASSIGNMENT_DETAILS  @ID, @WORK_ID, @PRACTICE_CODE, @ASSIGNED_BY, @ASSIGNED_BY_DESIGNATION, @ASSIGNED_TO, @ASSIGNED_TO_DESIGNATION, @USER_NAME",
-                                                                                                                                    id, workId, practiceCode, assignedBy, assignedByDesignation, assignedTo, assignedToDesignation, userName);
-            
+            try
+            {
+                long Pid = Helper.getMaximumId("FOX_REFRRAL_ASSIGNMENT_ID");
+                SqlParameter id = new SqlParameter("ID", Pid);
+                SqlParameter workId = new SqlParameter("WORK_ID", WORK_ID);
+                SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", Profile.PracticeCode);
+                SqlParameter assignedBy = new SqlParameter("ASSIGNED_BY", string.IsNullOrEmpty(ASSIGNED_BY) ? string.Empty : ASSIGNED_BY);
+                SqlParameter assignedByDesignation = new SqlParameter("ASSIGNED_BY_DESIGNATION", string.IsNullOrEmpty(AssignByDesignation) ? string.Empty : AssignByDesignation);
+                SqlParameter assignedTo = new SqlParameter("ASSIGNED_TO", string.IsNullOrEmpty(ASSIGNED_TO) ? string.Empty : ASSIGNED_TO);
+                SqlParameter assignedToDesignation = new SqlParameter("ASSIGNED_TO_DESIGNATION", string.IsNullOrEmpty(AssignToDesignation) ? string.Empty : AssignToDesignation);
+                SqlParameter userName = new SqlParameter("USER_NAME", Profile.UserName);
+                SpRepository<Referral_Assignment_details>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_INSERT_REFERRAL_ASSIGNMENT_DETAILS  @ID, @WORK_ID, @PRACTICE_CODE, @ASSIGNED_BY, @ASSIGNED_BY_DESIGNATION, @ASSIGNED_TO, @ASSIGNED_TO_DESIGNATION, @USER_NAME",
+                                                                                                                                  id, workId, practiceCode, assignedBy, assignedByDesignation, assignedTo, assignedToDesignation, userName);
+            }
+            catch (Exception ex)
+            {
+                if (retrycatch <= 2 && !string.IsNullOrEmpty(ex.Message) && ex.Message.Contains("Violation of PRIMARY KEY constraint"))
+                {
+                    retrycatch = retrycatch + 1;
+                    InsertAssignmentData(ASSIGNED_BY, ASSIGNED_TO, AssignToDesignation, AssignByDesignation, WORK_ID, Profile);
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
             //Referral_Assignment_details obj = new Referral_Assignment_details();
             //obj.FOX_REFRRAL_ASSIGNMENT_ID = Helper.getMaximumId("FOX_REFRRAL_ASSIGNMENT_ID");
             //obj.WORK_ID = WORK_ID;
@@ -301,7 +316,7 @@ namespace FOX.BusinessOperations.IndexedQueueService
 
         private OriginalQueue GetQueueById(long workId)
         {
-            SqlParameter work_Id = new SqlParameter("WORK_ID", workId);            
+            SqlParameter work_Id = new SqlParameter("WORK_ID", workId);
             return SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_GET_WORKQUEUE_BY_ID @WORK_ID", work_Id);
         }
 

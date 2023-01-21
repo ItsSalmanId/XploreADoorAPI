@@ -203,7 +203,8 @@ namespace FOX.BusinessOperations.CommonServices
         {
             "muhammadarslan3@carecloud.com",
             "abdulsattar@carecloud.com",
-            "aftabkhan@carecloud.com"
+            "aftabkhan@carecloud.com",
+            "irfanullah3@carecloud.com",
         };
 
         public static string SendADExceptionTo => "abdulsattar@carecloud.com";

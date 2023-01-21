@@ -225,7 +225,7 @@ namespace FOX.BusinessOperations.PatientServices
                 patient.Created_By = patient.Modified_By = profile.UserName;
                 patient.Created_Date = patient.Modified_Date = Helper.GetCurrentDate();
                 patient.DELETED = false;
-
+                patient.cell_phone = String.IsNullOrEmpty(patient.cell_phone) ? "" : patient.cell_phone.Trim();
                 _PatientRepository.Insert(patient);
                 if (patient.PCP!=null && profile.isTalkRehab)
                 {
@@ -1853,9 +1853,9 @@ namespace FOX.BusinessOperations.PatientServices
             mtbcData.ClientType = "PATIENT";    //  ClientType can be CLAIM, PATIENT, APPOINTMENT or any other like FOX_CLIENT, from patient form it will be PATIENT.
             mtbcData.ServerName = "10.10.30.76";    // Database Server IP
             mtbcData.UserID = userId.ToString();    //  User that is using WebSoft. User like IA32, MS147 etc.
-            mtbcData.InsuranceID = patientInsuranceInformation.INSURANCE_ID.ToString(); //  Id of Insurance table in MTBC system
-            mtbcData.insPayerID = patientInsuranceInformation.INSPAYER_ID.ToString();   //  Optional
-            mtbcData.PayerType = patientInsuranceInformation.INS_TYPE.ToString();   //  Payer type in MTBC's system. Primary, Secondary or OTHER etc.
+            mtbcData.InsuranceID = patientInsuranceInformation?.INSURANCE_ID.ToString() ?? ""; //  Id of Insurance table in MTBC system
+            mtbcData.insPayerID = patientInsuranceInformation?.INSPAYER_ID.ToString() ?? "";   //  Optional
+            mtbcData.PayerType = patientInsuranceInformation?.INS_TYPE.ToString()?? "";   //  Payer type in MTBC's system. Primary, Secondary or OTHER etc.
             mtbcData.PatientAccount = patientInsuranceInformation.PATIENT_ACCOUNT.ToString();  //  Required value
             mtbcData.ClaimNo = string.Empty;    //  Optional
             mtbcData.AppointmentID = string.Empty;  //  Optional
@@ -1987,7 +1987,7 @@ namespace FOX.BusinessOperations.PatientServices
         {
             Patient patient_Details = new Patient();
             var restOfPatientData = new FOX_TBL_PATIENT();
-            patient_Details = _PatientRepository.GetSingle(e => e.Patient_Account == patient_Account);
+            patient_Details = _PatientRepository.GetSingleOrDefault(e => e.Patient_Account == patient_Account);
             var restOfDetails = _FoxTblPatientRepository.GetFirst(e => e.Patient_Account == patient_Details.Patient_Account);
             var activecases = _vwPatientCaseRepository.GetMany(c => c.PATIENT_ACCOUNT == patient_Account && (c.CASE_STATUS_NAME.ToUpper() == "ACT" || c.CASE_STATUS_NAME.ToUpper() == "HOLD") && c.DELETED == false);
             if (patient_Details != null)// if patient is not null, get rest of the info
@@ -11046,6 +11046,7 @@ namespace FOX.BusinessOperations.PatientServices
             {
                 //try
                 //{
+                loc.FACILITY_TYPE_NAME = String.IsNullOrEmpty(loc.FACILITY_TYPE_NAME) ? "" : loc.FACILITY_TYPE_NAME;
                     if (loc.UpdatePatientAddress == true && loc.FACILITY_TYPE_NAME.ToLower() == "private home")
                     {
                         FacilityLocation patientAddress = new FacilityLocation();
