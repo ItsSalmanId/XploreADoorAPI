@@ -303,18 +303,28 @@ namespace FOX.DataModels.GenericRepository
         }
         private void SetDataBaseConfigurationString()
         {
-            if (EntityHelper.isTalkRehab && (Context.Database.Connection.ConnectionString != ConfigurationManager.ConnectionStrings["TalkRehabConnection"].ConnectionString))
+            if (EntityHelper.isTalkRehab)
             {
-                Context.Database.Connection.ConnectionString = ConfigurationManager.ConnectionStrings["TalkRehabConnection"].ConnectionString;
-            }
-            else if (!EntityHelper.isTalkRehab && (Context.Database.Connection.ConnectionString != ConfigurationManager.ConnectionStrings["FOXConnection"].ConnectionString))
-            {
-                Context.Database.Connection.ConnectionString = ConfigurationManager.ConnectionStrings["FOXConnection"].ConnectionString;
+                if (Context.Database.Connection.ConnectionString != ConfigurationManager.ConnectionStrings["TalkRehabConnection"].ConnectionString)
+                {
+                    Context.Database.Connection.ConnectionString = ConfigurationManager.ConnectionStrings["TalkRehabConnection"].ConnectionString;
+                }
             }
             else
             {
-                Context.Database.Connection.ConnectionString = ConfigurationManager.ConnectionStrings["FOXConnection"].ConnectionString;
-            }
+                if (!EntityHelper.isTalkRehab && (Context.Database.Connection.ConnectionString != ConfigurationManager.ConnectionStrings["FOXConnection"].ConnectionString))
+                {
+                    Context.Database.Connection.ConnectionString = ConfigurationManager.ConnectionStrings["FOXConnection"].ConnectionString;
+                }
+            }            
+            //if (EntityHelper.isTalkRehab && (Context.Database.Connection.ConnectionString != ConfigurationManager.ConnectionStrings["TalkRehabConnection"].ConnectionString))
+            //{
+            //    Context.Database.Connection.ConnectionString = ConfigurationManager.ConnectionStrings["TalkRehabConnection"].ConnectionString;
+            //}
+            //else if (!EntityHelper.isTalkRehab && (Context.Database.Connection.ConnectionString != ConfigurationManager.ConnectionStrings["FOXConnection"].ConnectionString))
+            //{
+            //    Context.Database.Connection.ConnectionString = ConfigurationManager.ConnectionStrings["FOXConnection"].ConnectionString;
+            //}
         }
     }
 
