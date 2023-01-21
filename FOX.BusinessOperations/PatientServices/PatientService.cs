@@ -227,9 +227,9 @@ namespace FOX.BusinessOperations.PatientServices
                 patient.DELETED = false;
                 patient.cell_phone = String.IsNullOrEmpty(patient.cell_phone) ? "" : patient.cell_phone.Trim();
                 _PatientRepository.Insert(patient);
-                if (patient.PCP!=null && profile.isTalkRehab)
+                if (patient.PCP != null && profile.isTalkRehab)
                 {
-                    if (patient.PCP_Name!=null)
+                    if (patient.PCP_Name != null)
                     {
                         CreateUpdateCareTeam(patient, profile, "", "");
                     }
@@ -1105,7 +1105,7 @@ namespace FOX.BusinessOperations.PatientServices
             //var _patientAddressRepository = new GenericRepository<PatientAddress>(_patientContext);
             for (int i = 0; i < patientAddress.Count; i++)
             {
-                 var dbPatientAddress = _PatientAddressRepository.GetByID(patientAddress[i].PATIENT_ADDRESS_HISTORY_ID);
+                var dbPatientAddress = _PatientAddressRepository.GetByID(patientAddress[i].PATIENT_ADDRESS_HISTORY_ID);
                 if (dbPatientAddress == null) //add
                 {
                     patientAddress[i].PATIENT_ADDRESS_HISTORY_ID = Helper.getMaximumId("PATIENT_ADDRESS_HISTORY_ID");
@@ -1504,7 +1504,7 @@ namespace FOX.BusinessOperations.PatientServices
 
             spName = profile.isTalkRehab ? "FOX_PROC_GET_PATIENT_LIST_TALKREHAB" : "FOX_PROC_GET_PATIENT_LIST";
 
-            var PatientList = SpRepository<Patient>.GetListWithStoreProcedure(@"exec "+ spName + " @Patient_Account, @First_Name, @Last_Name, @Middle_Name, @CHART_ID, @SSN, @Gender, @Created_Date, @CreatedBy, @ModifiedBy, @PRACTICE_CODE, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORT_BY, @SORT_ORDER,@DOB, @Patient_Alias",
+            var PatientList = SpRepository<Patient>.GetListWithStoreProcedure(@"exec " + spName + " @Patient_Account, @First_Name, @Last_Name, @Middle_Name, @CHART_ID, @SSN, @Gender, @Created_Date, @CreatedBy, @ModifiedBy, @PRACTICE_CODE, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORT_BY, @SORT_ORDER,@DOB, @Patient_Alias",
                 accountNo, FirstName, LastName, MiddleName, MRN, SSN, Gender, CreatedDate, CreatedBy, ModifiedBy, PracticeCode, CurrentPage, RecordPerPage, SearchText, SortBy, SortOrder, dob, Patient_Alias);
 
             return PatientList;
@@ -1855,7 +1855,7 @@ namespace FOX.BusinessOperations.PatientServices
             mtbcData.UserID = userId.ToString();    //  User that is using WebSoft. User like IA32, MS147 etc.
             mtbcData.InsuranceID = patientInsuranceInformation?.INSURANCE_ID.ToString() ?? ""; //  Id of Insurance table in MTBC system
             mtbcData.insPayerID = patientInsuranceInformation?.INSPAYER_ID.ToString() ?? "";   //  Optional
-            mtbcData.PayerType = patientInsuranceInformation?.INS_TYPE.ToString()?? "";   //  Payer type in MTBC's system. Primary, Secondary or OTHER etc.
+            mtbcData.PayerType = patientInsuranceInformation?.INS_TYPE.ToString() ?? "";   //  Payer type in MTBC's system. Primary, Secondary or OTHER etc.
             mtbcData.PatientAccount = patientInsuranceInformation.PATIENT_ACCOUNT.ToString();  //  Required value
             mtbcData.ClaimNo = string.Empty;    //  Optional
             mtbcData.AppointmentID = string.Empty;  //  Optional
@@ -2103,9 +2103,9 @@ namespace FOX.BusinessOperations.PatientServices
                                         loc.Country = patientPrivateHomeAddress.POS_County;
                                     }
                                 }
-                                if (facilityType!=null)
+                                if (facilityType != null)
                                 {
-                                loc.FACILITY_TYPE_NAME = !string.IsNullOrWhiteSpace(facilityType.DISPLAY_NAME) ? facilityType.DISPLAY_NAME : "";
+                                    loc.FACILITY_TYPE_NAME = !string.IsNullOrWhiteSpace(facilityType.DISPLAY_NAME) ? facilityType.DISPLAY_NAME : "";
                                 }
                                 else
                                 {
@@ -3089,8 +3089,8 @@ namespace FOX.BusinessOperations.PatientServices
             //}
             //else
             //{
-                conTypes = _ContactTypeRepository.GetMany(x => !(x.Deleted ?? false) && x.Practice_Code == profile.PracticeCode).ToList();
-           // }
+            conTypes = _ContactTypeRepository.GetMany(x => !(x.Deleted ?? false) && x.Practice_Code == profile.PracticeCode).ToList();
+            // }
 
             if (conTypes.Any())
             {
@@ -3255,7 +3255,7 @@ namespace FOX.BusinessOperations.PatientServices
         {
             WebehrTblPatientCareTeams dbContact = _WebehrTblPatientCareTeamsRepository.GetFirst(patientContact => patientContact.Patient_Account == patientContactObj.Patient_Account && patientContact.FirstName == oldFname && patientContact.LastName == oldLname);
 
-            if (dbContact==null)
+            if (dbContact == null)
             {
                 WebehrTblPatientCareTeams patientCareObj = new WebehrTblPatientCareTeams();
                 patientCareObj.PatientCareTeamID = Helper.getMaximumId("PatientCareTeamID");
@@ -3263,7 +3263,7 @@ namespace FOX.BusinessOperations.PatientServices
                 patientCareObj.FirstName = patientContactObj.First_Name;
                 patientCareObj.LastName = patientContactObj.Last_Name;
                 patientCareObj.Patient_Account = patientContactObj.Patient_Account;
-               
+
                 if (patientContactObj.Home_Phone != null)
                 {
                     patientCareObj.Phone = patientContactObj.Home_Phone;
@@ -3284,7 +3284,7 @@ namespace FOX.BusinessOperations.PatientServices
                 patientCareObj.Zip = patientContactObj.Zip;
                 patientCareObj.City = patientContactObj.City;
                 patientCareObj.State = patientContactObj.State;
-               
+
 
                 if (patientContactObj.Contact_Type_Id == 600115)
                 {
@@ -3337,11 +3337,11 @@ namespace FOX.BusinessOperations.PatientServices
             }
             _WebehrTblPatientCareTeamsRepository.Save();
         }
-        private void CreateUpdateCareTeam(Patient patientContactObj, UserProfile profile, string oldFname="", string oldLname="")
+        private void CreateUpdateCareTeam(Patient patientContactObj, UserProfile profile, string oldFname = "", string oldLname = "")
         {
             WebehrTblPatientCareTeams dbContact = _WebehrTblPatientCareTeamsRepository.GetFirst(patientContact => patientContact.Patient_Account == patientContactObj.Patient_Account && patientContact.FirstName == oldFname && patientContact.LastName == oldLname);
 
-            if (dbContact == null && patientContactObj.SmartOrderSource!=null)
+            if (dbContact == null && patientContactObj.SmartOrderSource != null)
             {
                 WebehrTblPatientCareTeams patientCareObj = new WebehrTblPatientCareTeams();
                 patientCareObj.PatientCareTeamID = Helper.getMaximumId("PatientCareTeamID");
@@ -3399,7 +3399,7 @@ namespace FOX.BusinessOperations.PatientServices
                 dbContact.State = patientContactObj.State;
                 dbContact.Fax = patientContactObj.Fax_Number;
                 dbContact.EMAIL = patientContactObj.Email_Address;
-                
+
 
 
                 if (patientContactObj.PCP != null)
@@ -3516,12 +3516,12 @@ namespace FOX.BusinessOperations.PatientServices
             _AF_TBL_PATIENT_NEXT_OF_KINRepository.Save();
             return true;
         }
-        private bool CreateUpdateTalkRehabContactsGuarantor(PatientContact patientContactObj, UserProfile profile,string oldFname, string oldLname)
+        private bool CreateUpdateTalkRehabContactsGuarantor(PatientContact patientContactObj, UserProfile profile, string oldFname, string oldLname)
         {
             var currentDate = Helper.GetCurrentDate();
             Subscriber guarantorObj = new Subscriber();
             var dbContact = _SubscriberRepository.GetFirst(patientContact => patientContact.GUARANT_FNAME == oldFname && patientContact.GUARANT_LNAME == oldLname);
-            if (dbContact == null || oldFname=="")
+            if (dbContact == null || oldFname == "")
             {
                 guarantorObj.GUARANTOR_CODE = Helper.getMaximumId("GUARANTOR_CODE");
 
@@ -3534,14 +3534,14 @@ namespace FOX.BusinessOperations.PatientServices
                 guarantorObj.GUARANT_ZIP = patientContactObj.Zip;
                 guarantorObj.GUARANT_CITY = patientContactObj.City;
                 guarantorObj.GUARANT_STATE = patientContactObj.State;
-                if (patientContactObj.Home_Phone!=null)
+                if (patientContactObj.Home_Phone != null)
                 {
                     guarantorObj.GUARANT_HOME_PHONE = patientContactObj.Home_Phone;
                     guarantorObj.GUARANT_PHONE_TYPE = "Home Phone";
                 }
                 else
                 {
-                    if (patientContactObj.Work_Phone!=null)
+                    if (patientContactObj.Work_Phone != null)
                     {
                         guarantorObj.GUARANT_HOME_PHONE = patientContactObj.Work_Phone;
                         guarantorObj.GUARANT_PHONE_TYPE = "Office Phone";
@@ -3551,7 +3551,7 @@ namespace FOX.BusinessOperations.PatientServices
                         guarantorObj.GUARANT_HOME_PHONE = patientContactObj.Cell_Phone;
                         guarantorObj.GUARANT_PHONE_TYPE = "Cell Phone";
                     }
-                    
+
                 }
 
                 guarantorObj.created_date = currentDate;
@@ -3602,7 +3602,7 @@ namespace FOX.BusinessOperations.PatientServices
                 _SubscriberRepository.Update(dbContact);
 
             }
-            _SubscriberRepository.Save();            
+            _SubscriberRepository.Save();
             return true;
         }
         private void SaveGuarantorCodeInPatient(long patientAccount, long guarantorCode)
@@ -3619,8 +3619,8 @@ namespace FOX.BusinessOperations.PatientServices
         private string FieldWiseComparison(long? contactType)
         {
             string typeId = string.Empty;
-           
-            if (contactType== 600104)
+
+            if (contactType == 600104)
             {
                 typeId = "OTH";
             }
@@ -6001,7 +6001,7 @@ namespace FOX.BusinessOperations.PatientServices
             var newData = currentMedicareLimitList.Where(e => e.MEDICARE_LIMIT_TYPE_NAME == "Home Health Episode").FirstOrDefault();
             if (hh_Id != null)
             {
-               // var oldData = _MedicareLimitRepository.GetByID(hh_Id ?? 0);
+                // var oldData = _MedicareLimitRepository.GetByID(hh_Id ?? 0);
                 var oldData = _MedicareLimitRepository.GetFirst(l => l.MEDICARE_LIMIT_ID == hh_Id);
                 if (oldData != null)
                 {
@@ -6190,7 +6190,7 @@ namespace FOX.BusinessOperations.PatientServices
             //long insType = eligibilitySearchReq.INS_TYPE;
             var _patientAccount = new SqlParameter { ParameterName = "PATIENTACCOUNT", Value = patientAccount };
             var _result = SpRepository<PatientInsuranceInformation>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_INSURANCES_INFO @PATIENTACCOUNT", _patientAccount);
-            if(_result.Count() > 0 && _result != null)
+            if (_result.Count() > 0 && _result != null)
             {
                 //var patientInsuranceInformation = _result.Where(x => x.INS_TYPE == insType).FirstOrDefault();
                 var patientInsuranceInformation = _result.Where(x => x.INS_TYPE == 1).FirstOrDefault();
@@ -6255,9 +6255,9 @@ namespace FOX.BusinessOperations.PatientServices
             reconcileObj.ADDRESS = obj.PayorAdress;
             reconcileObj.CITY = obj.PayorCity;
             reconcileObj.ZIP = obj.PayorZip;
-            if (reconcileObj.ZIP !=  null && reconcileObj.ZIP.Contains("-"))
+            if (reconcileObj.ZIP != null && reconcileObj.ZIP.Contains("-"))
             {
-                reconcileObj.ZIP = reconcileObj.ZIP.Replace("-","");
+                reconcileObj.ZIP = reconcileObj.ZIP.Replace("-", "");
             }
             if (obj.PayorDOB == string.Empty)
             {
@@ -6484,7 +6484,7 @@ namespace FOX.BusinessOperations.PatientServices
             bool allowSave = true;
             bool isValidDate = true;
 
-            string[] plans = {"HN", "IN", "PR", "PS", "HM"};
+            string[] plans = { "HN", "IN", "PR", "PS", "HM" };
             string[] codes = { "30", "CQ" };
 
             foreach (var plan in plans)
@@ -7254,7 +7254,7 @@ namespace FOX.BusinessOperations.PatientServices
                 ObjPatientPATDocument.PATIENT_ACCOUNT_str = patient_account_str;
                 ObjPatientPATDocument.PATIENT_ACCOUNT = Convert.ToInt64(patient_account_str);
                 ObjPatientPATDocument.PRACTICE_CODE = Profile.PracticeCode;
-                if(work_id != 0)
+                if (work_id != 0)
                 {
                     ObjPatientPATDocument.WORK_ID = work_id;
                 }
@@ -7339,7 +7339,7 @@ namespace FOX.BusinessOperations.PatientServices
             InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
             PatientPATDocument ExistingDocumentInfo = new PatientPATDocument();
             string AddorUpdate = "";
-            if(ObjPatientPATDocument.WORK_ID == 0)
+            if (ObjPatientPATDocument.WORK_ID == 0)
             {
                 ObjPatientPATDocument.WORK_ID = null;
             }
@@ -9235,7 +9235,7 @@ namespace FOX.BusinessOperations.PatientServices
 
         public List<FinancialClass> GetFinancialClassDDValues(string practiceCode)
         {
-            if (practiceCode=="0")
+            if (practiceCode == "0")
             {
                 return _financialClassRepository.GetMany(e => !e.DELETED);
             }
@@ -9935,7 +9935,7 @@ namespace FOX.BusinessOperations.PatientServices
                 if (!string.IsNullOrWhiteSpace(obj.EMAIL_ADDRESS))
                 {
                     invitedPatientData = _PatientPHR.Get(e => e.EMAIL_ADDRESS == obj.EMAIL_ADDRESS && e.PRACTICE_CODE == profile.PracticeCode && !(e.DELETED.HasValue ? e.DELETED.Value : false));
-                    if(invitedPatientData != null)
+                    if (invitedPatientData != null)
                     {
                         var _parmPracticeCode = new SqlParameter("Practice_Code", SqlDbType.BigInt) { Value = profile.PracticeCode };
                         var _patientAccount = new SqlParameter("Patient_Account", SqlDbType.BigInt) { Value = invitedPatientData.PATIENT_ACCOUNT };
@@ -11039,7 +11039,7 @@ namespace FOX.BusinessOperations.PatientServices
             return insurance;
         }
 
-        public POSCoordinates ResetCoordinates(FacilityLocation loc, UserProfile profile)   
+        public POSCoordinates ResetCoordinates(FacilityLocation loc, UserProfile profile)
         {
             POSCoordinates response = new POSCoordinates();
             if (loc != null)
@@ -11047,11 +11047,11 @@ namespace FOX.BusinessOperations.PatientServices
                 //try
                 //{
                 loc.FACILITY_TYPE_NAME = String.IsNullOrEmpty(loc.FACILITY_TYPE_NAME) ? "" : loc.FACILITY_TYPE_NAME;
-                    if (loc.UpdatePatientAddress == true && loc.FACILITY_TYPE_NAME.ToLower() == "private home")
-                    {
-                        FacilityLocation patientAddress = new FacilityLocation();
-                       
-                        var patientPos = _PatientPOSLocationRepository.GetMany(e =>e.Patient_Account == loc.PATIENT_ACCOUNT && e.Is_Default == true && e.Loc_ID !=0 && e.Deleted == false).OrderByDescending(t => t.Modified_Date).FirstOrDefault();
+                if (loc.UpdatePatientAddress == true && loc.FACILITY_TYPE_NAME?.ToLower() == "private home")
+                {
+                    FacilityLocation patientAddress = new FacilityLocation();
+
+                    var patientPos = _PatientPOSLocationRepository.GetMany(e => e.Patient_Account == loc.PATIENT_ACCOUNT && e.Is_Default == true && e.Loc_ID != 0 && e.Deleted == false).OrderByDescending(t => t.Modified_Date).FirstOrDefault();
                     if (patientPos != null)
                     {
                         PatientAddress address = _PatientAddressRepository.GetFirst(e => e.PATIENT_ACCOUNT == patientPos.Patient_Account && e.PATIENT_POS_ID == patientPos.Patient_POS_ID && e.DELETED == false);
@@ -11095,42 +11095,42 @@ namespace FOX.BusinessOperations.PatientServices
 
                         }
                     }
-                    }
-                    else
+                }
+                else
+                {
+                    FacilityLocation pos = _FacilityLocationRepository.GetFirst(e => e.LOC_ID == loc.LOC_ID && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
+                    if (pos != null)
                     {
-                        FacilityLocation pos = _FacilityLocationRepository.GetFirst(e => e.LOC_ID == loc.LOC_ID && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
-                        if (pos != null)
+                        if (loc.SetCoordinatesManually == false)
                         {
-                            if (loc.SetCoordinatesManually == false)
+                            POSCoordinates coordinates = GetCoordinates(pos);
+                            if (coordinates != null)
                             {
-                                POSCoordinates coordinates = GetCoordinates(pos);
-                                if (coordinates != null)
-                                {
-                                    pos.Longitude = Convert.ToDouble(coordinates.Longitude);
-                                    pos.Latitude = Convert.ToDouble(coordinates.Latitude);
-                                    pos.Address = coordinates.Address;
-                                }
+                                pos.Longitude = Convert.ToDouble(coordinates.Longitude);
+                                pos.Latitude = Convert.ToDouble(coordinates.Latitude);
+                                pos.Address = coordinates.Address;
                             }
-                            else
-                            {
-                                pos.Longitude = Convert.ToDouble(loc.Longitude);
-                                pos.Latitude = Convert.ToDouble(loc.Latitude);
-                                //pos.Address = loc.Address;
-                                //pos.City = loc.City;
-                                //pos.State = loc.State;
-                                //pos.Zip = loc.Zip;
-                                //pos.Country = loc.Country;
-
-
-                            }
-                            pos.MODIFIED_BY = profile.UserName;
-                            pos.MODIFIED_DATE = Helper.GetCurrentDate();
-                            _FacilityLocationRepository.Update(pos);
-                            _FacilityLocationRepository.Save();
-                            response.Latitude = pos.Latitude.ToString();
-                            response.Longitude = pos.Longitude.ToString();
                         }
+                        else
+                        {
+                            pos.Longitude = Convert.ToDouble(loc.Longitude);
+                            pos.Latitude = Convert.ToDouble(loc.Latitude);
+                            //pos.Address = loc.Address;
+                            //pos.City = loc.City;
+                            //pos.State = loc.State;
+                            //pos.Zip = loc.Zip;
+                            //pos.Country = loc.Country;
+
+
+                        }
+                        pos.MODIFIED_BY = profile.UserName;
+                        pos.MODIFIED_DATE = Helper.GetCurrentDate();
+                        _FacilityLocationRepository.Update(pos);
+                        _FacilityLocationRepository.Save();
+                        response.Latitude = pos.Latitude.ToString();
+                        response.Longitude = pos.Longitude.ToString();
                     }
+                }
                 //}
                 //catch (Exception ex)
                 //{
