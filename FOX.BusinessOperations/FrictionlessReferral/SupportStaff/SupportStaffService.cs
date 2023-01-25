@@ -251,7 +251,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             {
                 var providerNPI = new SqlParameter("PROVIDER_NPI", SqlDbType.VarChar) { Value = obj.ProviderNpi };
                 var practicecode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practiceCode };
-                 providerResponse = SpRepository<Provider>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PROVIDER_DETAILS_BY_NPI @PROVIDER_NPI,@PRACTICE_CODE", providerNPI, practicecode);
+                 providerResponse = SpRepository<Provider>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PROVIDER_DETAILS_BY_NPI @PROVIDER_NPI, @PRACTICE_CODE", providerNPI, practicecode);
                 // Search on NPPES
                 if (providerResponse.Count == 0)
                 {
@@ -378,7 +378,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             if (referralId != 0 && practiceCode != 0)
             {
                 frictionLessReferral = _frictionlessReferralRepository.GetFirst(f => f.FRICTIONLESS_REFERRAL_ID == referralId && f.PRACTICE_CODE == practiceCode && f.DELETED == false);
-                if (frictionLessReferral.PATIENT_DOB != null)
+                if (frictionLessReferral != null && frictionLessReferral.PATIENT_DOB != null)
                 {
                     var date = Convert.ToDateTime(frictionLessReferral.PATIENT_DOB);
                     frictionLessReferral.PATIENT_DOB_STRING = date.ToShortDateString();
