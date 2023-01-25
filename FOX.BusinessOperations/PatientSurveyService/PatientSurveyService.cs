@@ -12,10 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net;
 using System.Web;
 using System.Web.Configuration;
@@ -694,21 +691,23 @@ namespace FOX.BusinessOperations.PatientSurveyService
             }
             catch (Exception ex)
             {
-                if ( retrycatch <= 2 &&(!string.IsNullOrEmpty(ex.Message) && 
-                    ex.Message.Contains("deadlocked on lock resources with another process")) 
+                if (retrycatch <= 2 && (!string.IsNullOrEmpty(ex.Message) &&
+                    ex.Message.Contains("deadlocked on lock resources with another process"))
                     || ((ex.InnerException != null) &&
                     !string.IsNullOrEmpty(ex.InnerException.Message)
-                    &&  
-                    ex.InnerException.Message.Contains("deadlocked on lock resources with another process")))         {
+                    &&
+                    ex.InnerException.Message.Contains("deadlocked on lock resources with another process")))
+                {
                     retrycatch = retrycatch + 1;
                     return GetPatientSurveytList(patientSurveySearchRequest, practiceCode);
-                   
+
 
                 }
-                else { 
+                else
+                {
                     throw ex;
                 }
-                
+
             }
 
         }
@@ -1190,6 +1189,23 @@ namespace FOX.BusinessOperations.PatientSurveyService
                     _patientSurveyRepository.Save();
                 }
             }
+        }
+        /// <summary>
+        /// This function get inbound survey call recordings
+        /// </summary>
+        /// <param name="patientAccountNumber"></param>
+        /// <param name="profilePracticeCode"></param>
+        /// <returns></returns>
+        public List<PatientSurveyInBoundCallResponse> GetPatientSurveyInBoundCalls(long patientAccountNumber, long profilePracticeCode)
+        {
+            List<PatientSurveyInBoundCallResponse> result = new List<PatientSurveyInBoundCallResponse>();
+            if (patientAccountNumber != 0 && profilePracticeCode != 0)
+            {
+                var patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = patientAccountNumber };
+                var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profilePracticeCode };
+                result = SpRepository<PatientSurveyInBoundCallResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SURVEY_INBOUND_CALL_DETAILS @PATIENT_ACCOUNT, @PRACTICE_CODE", patientAccount, practiceCode);
+            }
+            return result;
         }
     }
 }

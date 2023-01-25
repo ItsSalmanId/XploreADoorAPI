@@ -530,6 +530,8 @@ namespace FOX.BusinessOperations.ReportingServices.ReferralReportServices
                 string fileName = "PHR_Users_Last_Login_Report";
                 string exportPath = "";
                 string path = string.Empty;
+                request.CURRENT_PAGE = 1;
+                request.RECORD_PER_PAGE = 0;
                 bool exported;
                 var CalledFrom = "PHR_Users_Last_Login_Report";
                 string virtualPath = @"/" + profile.PracticeDocumentDirectory + "/" + "Fox/ExportedFiles/";

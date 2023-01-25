@@ -11,6 +11,7 @@ using FOX.BusinessOperations.GeneralNotesService;
 using FOX.BusinessOperations.TaskServices;
 using FOX.BusinessOperations.CaseServices;
 using FOX.BusinessOperations.GroupServices;
+using FOX.BusinessOperations.FrictionlessReferral.SupportStaff;
 
 namespace FoxRehabilitationAPI.App_Start
 {
@@ -63,10 +64,12 @@ namespace FoxRehabilitationAPI.App_Start
             container.RegisterType<FOX.BusinessOperations.IndexInfoServices.UploadWorkOrderFiles.IUploadWorkOrderFilesService, FOX.BusinessOperations.IndexInfoServices.UploadWorkOrderFiles.UploadWorkOrderFilesService>();
             container.RegisterType<FOX.BusinessOperations.QualityAssuranceService.EvaluationSetupService.IEvaluationSetupService, FOX.BusinessOperations.QualityAssuranceService.EvaluationSetupService.EvaluationSetupService>();
             container.RegisterType<FOX.BusinessOperations.QualityAssuranceService.PerformAuditService.IPerformAuditService, FOX.BusinessOperations.QualityAssuranceService.PerformAuditService.PerformAuditService>();
+            container.RegisterType<FOX.BusinessOperations.QualityAssuranceService.QADashboardService.IQADashboardService, FOX.BusinessOperations.QualityAssuranceService.QADashboardService.QADashboardService>();
             container.RegisterType<FOX.BusinessOperations.QualityAssuranceService.QAReportService.IQAReportService, FOX.BusinessOperations.QualityAssuranceService.QAReportService.QAReportService>();
             container.RegisterType<FOX.BusinessOperations.Scheduler.ISchedulerService, FOX.BusinessOperations.Scheduler.SchedulerService>();
             container.RegisterType<FOX.BusinessOperations.HrAutoEmail.IHrAutoEmailService, FOX.BusinessOperations.HrAutoEmail.HrAutoEmailService>();
             container.RegisterType<FOX.BusinessOperations.SignatureRequiredServices.ISignatureRequiredService, FOX.BusinessOperations.SignatureRequiredServices.SignatureRequiredService>();
+            container.RegisterType<ISupportStaffService, SupportStaffService>();
             return container;
         }
     }
