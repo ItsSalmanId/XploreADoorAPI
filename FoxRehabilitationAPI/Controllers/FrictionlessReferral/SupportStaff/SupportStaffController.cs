@@ -11,6 +11,7 @@ using FOX.DataModels.Models.RequestForOrder;
 using FOX.DataModels.Models.CommonModel;
 using System.Threading.Tasks;
 using System.Web;
+using FOX.DataModels;
 
 namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
 {
@@ -25,6 +26,7 @@ namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
         public SupportStaffController(ISupportStaffService supportStaffService)
         {
             _supportStaffService = supportStaffService;
+            EntityHelper.isTalkRehab = false;
         }
         #endregion
         #region FUNCTIONS
