@@ -150,7 +150,6 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.AnnouncementUnitTes
         }
         [Test]
         [TestCase(1011163)]
-        [TestCase(1012714)]
         public void GetFoxRoles_FoxRolesModel_ReturnData(long practiceCode)
         {
             //Arrange

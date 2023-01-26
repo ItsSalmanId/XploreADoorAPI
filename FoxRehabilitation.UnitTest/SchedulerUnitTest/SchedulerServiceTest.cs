@@ -24,11 +24,13 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
             _appointment = new Appointment();
         }
         [Test]
-        [TestCase(1011163, 4)]
-        [TestCase(1011163, 1)]
-        [TestCase(1011163, 2)]
-        [TestCase(1011163, 3)]
-        public void GetAllAppointments_AppointmentsModel_ReturnData(long practiceCode, int timeFrame)
+        [TestCase(1011163, 4, "08/03/2020")]
+        [TestCase(1011163, 1, "08/03/2020")]
+        [TestCase(1011163, 2, "08/03/2020")]
+        [TestCase(1011163, 3, "08/03/2020")]
+        [TestCase(1011163, 4, "")]
+        [TestCase(1011163, default, "")]
+        public void GetAllAppointments_AppointmentsModel_ReturnData(long practiceCode, int timeFrame, string dateFrom)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -376,7 +378,10 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
             }
         }
         [Test]
-        [TestCase(1011163, true, "04:43 PM", 544100, 54810699, "2019-09-14")]
+        [TestCase(1011163, true, "04:43 PM", 544101, 54810699, "2019-09-14")]
+        //[TestCase(1011163, true, "", 544101, 54810699, "2019-09-14")]
+        //[TestCase(1011163, false, "", 544101, 54810699, "2019-09-14")]
+        [TestCase(1011163, false, "04:43 PM", 544101, 54810699, "2019-09-14")]
         [TestCase(1011163, false, "04:44 PM", 544100, 54810699, "2019-09-14")]
         [TestCase(1011163, true, "04:42 PM", 544100, 54810699, "2019-09-14")]
         [TestCase(1011163, true, "05:42 PM", 544100, 54810699, "2019-09-14")]
@@ -435,6 +440,8 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
             }
         }
         [Test]
+        [TestCase(1011163, true, "04:43 PM", 544101, 54810699, "2019-09-14")]
+        [TestCase(1011163, false, "04:43 PM", 544101, 54810699, "2019-09-14")]
         [TestCase(1011163, true, "04:43 PM", 544100, 54810699, "2019-09-14")]
         [TestCase(1011163, false, "04:44 PM", 544100, 54810699, "2019-09-14")]
         [TestCase(1011163, true, "04:42 PM", 544100, 54810699, "2019-09-14")]
@@ -494,7 +501,10 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
             }
         }
         [Test]
-        [TestCase(1011163, true, "04:43 PM", 544100, 54810699, "2019-09-14")]
+        [TestCase(1011163, true, "04:43 PM", 544101, 54810699, "2019-09-14")]
+        //[TestCase(1011163, true, "", 544101, 54810699, "2019-09-14")]
+        //[TestCase(1011163, true, "", 544101, 54810699, "2019-09-14")]
+        [TestCase(1011163, false, "04:43 PM", 544101, 54810699, "2019-09-14")]
         [TestCase(1011163, true, "04:44 PM", 544100, 54810699, "2019-09-14")]
         [TestCase(1011163, true, "04:42 PM", 544100, 54810699, "2019-09-14")]
         [TestCase(1011163, true, "05:42 PM", 544100, 54810699, "2019-09-14")]

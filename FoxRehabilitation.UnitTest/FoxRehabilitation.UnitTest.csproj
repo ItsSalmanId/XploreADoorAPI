@@ -101,6 +101,10 @@
       <Project>{9c6c8755-6d00-4077-aa6c-2df8f811ac8c}</Project>
       <Name>FOX.DataModels</Name>
     </ProjectReference>
+    <ProjectReference Include="..\FoxRehabilitationAPI\FoxRehabilitationAPI.csproj">
+      <Project>{7B67705C-27C3-4BBD-B689-1F43F56C9665}</Project>
+      <Name>FoxRehabilitationAPI</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

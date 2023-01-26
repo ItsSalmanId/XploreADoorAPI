@@ -26,6 +26,8 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
         private FOX_TBL_CASE_TYPE _foxTblCaseType;
         private OpenIssueListToDelete _openIssueListToDelete;
         private GetTreatingProviderReq _getTreatingProviderReq;
+        private CasesSearchRequest _casesSearchRequest;
+        private SmartSearchCasesRequestModel _smartSearchCasesRequestModel;
 
         [SetUp]
         public void SetUp()
@@ -46,11 +48,15 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             _foxTblCaseType = new FOX_TBL_CASE_TYPE();
             _openIssueListToDelete = new OpenIssueListToDelete();
             _getTreatingProviderReq = new GetTreatingProviderReq();
+            _casesSearchRequest = new CasesSearchRequest();
+            _smartSearchCasesRequestModel = new SmartSearchCasesRequestModel();
         }
         [Test]
         [TestCase("1010624506101487", 1011163)]
         [TestCase("", 0)]
+        [TestCase("", 1011163)]
         [TestCase("101116354813319", 0)]
+        [TestCase("101116354813319", 1011163)]
         [TestCase("", 1011163)]
         [TestCase("101116354813321", 1011163)]
         public void GetCasesDDL_ResponseGetCasesDDLModel_ReturnData(string patientAccount, long practiceCode)
@@ -70,8 +76,9 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
         }
         [Test]
+        [TestCase("101116354813759", 1011163)]
         [TestCase("", 0)]
-        [TestCase("101116354813733", 0)]
+        [TestCase("101116354813756", 0)]
         [TestCase("", 1011163)]
         [TestCase("101116354813733", 1011163)]
         public void GetCasesDDLTalRehab_ResponseGetCasesDDLModel_ReturnData(string patientAccount, long practiceCode)
@@ -112,7 +119,9 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
         }
         [Test]
+        [TestCase("", null, 0)]
         [TestCase("", "", 0)]
+        [TestCase("", "]", 0)]
         [TestCase("ACO Identifier", "", 0)]
         [TestCase("", "Mssp_car", 0)]
         [TestCase("", "", 1011163)]
@@ -183,6 +192,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
         }
         [Test]
+        [TestCase("NON", 0)]
         [TestCase("", 0)]
         [TestCase("HOLD", 0)]
         [TestCase("", 1011163)]
@@ -208,6 +218,8 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
                 Assert.IsTrue(true);
             }
         }
+        [Test]
+        [TestCase(null, 0)]
         [TestCase("", 0)]
         [TestCase("CT065", 0)]
         [TestCase("", 1011163)]
@@ -617,14 +629,19 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
         }
         [Test]
-        [TestCase(1011163, false, 544100, 54412155)]
-        [TestCase(1011163, true, 544101, 5443304)]
-        [TestCase(1011163, true, 544105, 0)]
-        public void AddEditCase_CaseModel_ReturnData(long practiceCode, bool caseExist, int caseStatus, long phyId)
+        [TestCase(1011163, false, 544100, 54412155, "101116354412385")]
+        [TestCase(1011163, false, 544100, 54412155, "")]
+        [TestCase(1011163, true, 544101, 5443304, "")]
+        [TestCase(1011163, false, 544100, 54412155, "101116354813015")]
+        [TestCase(1011163, true, 544101, 5443304, "101116354813120")]
+        [TestCase(1011163, true, 544101, 5443304, "101116354412385")]
+        [TestCase(1011163, true, 544105, 0, "101116354412395")]
+        public void AddEditCase_CaseModel_ReturnData(long practiceCode, bool caseExist, int caseStatus, long phyId, string patientAccountStr)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
-            _foxTblCase.PATIENT_ACCOUNT_STR = "101116354817686";
+            _userProfile.UserName = "N_Unit_Testing";
+            _foxTblCase.PATIENT_ACCOUNT_STR = patientAccountStr;
             _foxTblCase.CASE_STATUS_ID = caseStatus;
             _foxTblCase.ADMISSION_DATE_String = Helper.GetCurrentDate().ToString();
             _foxTblCase.END_CARE_DATE_String = Helper.GetCurrentDate().ToString();
@@ -643,6 +660,14 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
                 new OpenIssueList
                 {
                     TASK_TYPE_ID = 544100,
+                    TaskSubTypeList = new List<OpenIssueViewModel>()
+                    {
+                        new OpenIssueViewModel
+                        {
+                          TASK_ID = 544100,
+                          IS_CHECKED = true
+                        }
+                    }
                 }
             };
             if (caseExist == false)
@@ -666,7 +691,8 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
                 new FOX_TBL_CALLS_LOG
                 {
                     FOX_CALLS_LOG_ID = 544100,
-                    MODIFIED_BY = "FOX-Team"
+                    MODIFIED_BY = "FOX-Team",
+                    GROUP_IDENTIFIER_ID = 544101
                 }
             };
             _foxTblCase.Comments = "test";
@@ -694,7 +720,8 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
-            _getOpenIssueListReq.CASE_ID = 0;
+            _userProfile.userID = 1011163415;
+            _getOpenIssueListReq.CASE_ID = 1011163415;
             _getOpenIssueListReq.CASE_STATUS_ID = 544104;
 
             //Act
@@ -712,9 +739,10 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
         }
         [Test]
-        [TestCase(1011163)]
-        [TestCase(0)]
-        public void DeleteOrderInformation_PassModel_ReturnData(long practiceCode)
+        [TestCase(1011163, 544100)]
+        [TestCase(1011163, 123456)]
+        [TestCase(0,0)]
+        public void DeleteOrderInformation_PassModel_ReturnData(long practiceCode, long orderInfoId)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -738,7 +766,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
         [Test]
         [TestCase(1011163)]
         [TestCase(0)]
-        public void GetSmartCases_PassModel_ReturnData(long practiceCode)
+        public void DeleteTask_PassModel_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -794,7 +822,33 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
                 Assert.IsTrue(true);
             }
         }
-        //UpdatePCPInPatientDemographics
+        [Test]
+        [TestCase(5441645)]
+        [TestCase(544113)]
+        [TestCase(544141)]
+        [TestCase(5481855)]
+        public void GetCasesDDLTalkrehab_PassModel_ReturnData(long providerCode)
+        {
+            //Arrange
+            _casesSearchRequest.LocationCode = 1234567;
+            _casesSearchRequest.StatusId = 1234567;
+            _casesSearchRequest.ProviderCode = 1234567;
+            _casesSearchRequest.PracticeCode = 1011163;
+            _casesSearchRequest.ProviderCode = providerCode;
+
+            //Act
+            var result = _caseServices.GetCasesDDLTalkrehab(_casesSearchRequest);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsTrue(true);
+            }
+        }
         [TearDown]
         public void Teardown()
         {
