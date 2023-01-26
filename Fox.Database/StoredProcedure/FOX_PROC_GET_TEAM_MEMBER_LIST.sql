@@ -1,5 +1,8 @@
-IF (OBJECT_ID('FOX_PROC_GET_TEAM_MEMBER_LIST') IS NOT NULL ) DROP PROCEDURE FOX_PROC_GET_TEAM_MEMBER_LIST  
-GO     
+-- =============================================              
+-- AUTHOR:  <DEVELOPER, TASEER IQBAL>              
+-- CREATE DATE: <CREATE DATE, 23/06/2022>              
+-- Description:  This procedure is Get Team member list on the basis of team ID          
+-- =============================================     
 create PROCEDURE FOX_PROC_GET_TEAM_MEMBER_LIST               
   @PRACTICE_CODE BIGINT,                
   @CALL_SCANRIO_ID BIGINT                

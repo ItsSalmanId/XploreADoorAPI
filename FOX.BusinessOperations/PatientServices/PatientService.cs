@@ -11043,7 +11043,7 @@ namespace FOX.BusinessOperations.PatientServices
             {
                 //try
                 //{
-                    if (loc.UpdatePatientAddress == true && loc.FACILITY_TYPE_NAME.ToLower() == "private home")
+                    if (loc.UpdatePatientAddress == true && loc.FACILITY_TYPE_NAME?.ToLower() == "private home")
                     {
                         FacilityLocation patientAddress = new FacilityLocation();
                        

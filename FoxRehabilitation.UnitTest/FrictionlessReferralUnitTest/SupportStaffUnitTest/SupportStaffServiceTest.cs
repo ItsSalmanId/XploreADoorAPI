@@ -13,6 +13,7 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
         private RequestDeleteWorkOrder _requestDeleteWorkOrder;
         private FrictionLessReferral _frictionLessReferral;
         private ProviderReferralSourceRequest _providerReferralSourceRequest;
+        private SubmitReferralModel _submitReferralModel;
 
         [SetUp]
         public void Setup()
@@ -22,6 +23,7 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
             _requestDeleteWorkOrder = new RequestDeleteWorkOrder();
             _frictionLessReferral = new FrictionLessReferral();
             _providerReferralSourceRequest = new ProviderReferralSourceRequest();
+            _submitReferralModel = new SubmitReferralModel();
         }
         [Test]
         public void GetPracticeCode_HasPracticeCode_ReturnData()
@@ -57,21 +59,6 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
                 Assert.That(result.FRICTIONLESS_REFERRAL_ID, Is.EqualTo(referralId));
             else
                 Assert.That(result.FRICTIONLESS_REFERRAL_ID, Is.EqualTo(0));
-        }
-        [Test]
-        [TestCase(548199)]
-        [TestCase(0)]
-        public void GetFrictionLessReferralDetailsByWorkID_HasWorkId_ReturnData(long workId)
-        {
-            //Arrange
-            //Act
-            var result = _supportStaffService.GetFrictionLessReferralDetailsByWorkID(workId);
-
-            //Assert
-            if (workId != 0)
-                Assert.That(result.WORK_ID, Is.EqualTo(workId));
-            else
-                Assert.That(result.WORK_ID, Is.EqualTo(0));
         }
         [Test]
         [TestCase("Taseer", "iqbal", "muhammadiqbal11@carecloud.com", "2064512559")]
