@@ -13,13 +13,10 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
     {
         private TaskServices _taskServices;
         private UserProfile _userProfile;
-        private TaskSearchRequest _tasksearchRequest;
         private getCatFieldReq _getCatFieldReq;
-        private TaskHistory _taskHistory;
         private NotificationRequestModel _notificationRequestModel;
         private FOX_TBL_TASK_SUB_TYPE _foxTblTaskSubType;
         private FOX_TBL_TASK_TYPE _foxTblTaskType;
-        private TaskSearchRequest _taskSearchRequest;
         private GetCategoryFieldResp _getCategoryFieldResp;
         private CatFieldRes _catFieldRes;
 
@@ -28,13 +25,10 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
         {
             _taskServices = new TaskServices();
             _userProfile = new UserProfile();
-            _tasksearchRequest = new TaskSearchRequest();
             _getCatFieldReq = new getCatFieldReq();
-            _taskHistory = new TaskHistory();
             _notificationRequestModel = new NotificationRequestModel();
             _foxTblTaskSubType = new FOX_TBL_TASK_SUB_TYPE();
             _foxTblTaskType = new FOX_TBL_TASK_TYPE();
-            _taskSearchRequest = new TaskSearchRequest();
             _getCategoryFieldResp = new GetCategoryFieldResp();
             _catFieldRes = new CatFieldRes();
         }
@@ -675,9 +669,7 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
         {
             // Optionally dispose or cleanup objects
             _taskServices = null;
-            _tasksearchRequest = null;
             _getCatFieldReq = null;
-            _taskHistory = null;
             _notificationRequestModel = null;
             _userProfile = null;
         }
