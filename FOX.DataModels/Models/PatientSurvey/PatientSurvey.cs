@@ -211,6 +211,20 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string SERVICE_OR_PAYMENT_DESCRIPTION { get; set; }
 
     }
+    public class PatientSurveyInBoundCallResponse
+    {
+        public long SURVEY_INBOUND_CALL_ID { get; set; }
+        public DateTime? CALL_DATE { get; set; }
+        public DateTime? CALL_START_TIME { get; set; }
+        public DateTime? CALL_END_TIME { get; set; }
+        public string CALL_NO { get; set; }
+        public string CALL_BY { get; set; }
+        public string OFFICE_NAME { get; set; }
+        public string EXTENSION { get; set; }
+        public string CALL_RECORDING_PATH { get; set; }
+        public string SERVICE_OR_PAYMENT_DESCRIPTION { get; set; }
+        public string CALL_DURATION { get; set; }
+    }
 
     [Table("FOX_TBL_PATIENT_SURVEY_FORMAT_TYPE")]
     public class PatientSurveyFormatType

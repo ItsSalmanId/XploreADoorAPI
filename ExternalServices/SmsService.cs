@@ -76,7 +76,26 @@ namespace FOX.ExternalServices
             }
 
         }
-
-
+        /// <summary>
+        /// NJ SMS Service is used for sending SMS to USA Clients.
+        /// </summary>
+        /// <param name="number"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static WebResponse SMSTwilio(string number, string message)
+        {
+            try
+            {
+                string SmsUrl = Properties.Settings.Default.FOX_NJ_SMS_Service;
+                WebRequest request = WebRequest.Create($"{SmsUrl}?Number={number}&Message={message}");
+                request.Method = "GET";
+                WebResponse response = request.GetResponse();
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentNullException("Failed", ex);
+            }
+        }
     }
 }

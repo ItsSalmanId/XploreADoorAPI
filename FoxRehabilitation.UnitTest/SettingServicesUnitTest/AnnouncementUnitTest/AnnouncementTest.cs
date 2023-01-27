@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.AnnouncementUnitTest
 {
     [TestFixture]
-    class AnnouncementTest
+    public class AnnouncementTest
     {
         private AnnouncementService _announcementService;
         private UserProfile _userProfile;
@@ -41,6 +41,7 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.AnnouncementUnitTes
             var curruntDate = Helper.GetCurrentDate();
             _announcements.ANNOUNCEMENT_DATE_FROM_STR = curruntDate.ToString();
             _announcements.ANNOUNCEMENT_DATE_TO_STR = curruntDate.ToString();
+            _announcements.ANNOUNCEMENT_TITLE = "test";
 
             //Act
             var result = _announcementService.GetAnnouncement(_announcements, _userProfile);
@@ -82,20 +83,18 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.AnnouncementUnitTes
             }
         }
         [Test]
-        [TestCase(1011163, 548667)]
-        [TestCase(1011163, 548668)]
-        [TestCase(0, 548668)]
-        [TestCase(0, 0)]
-        public void InsertAnnouncement_AnnouncementAddModel_SaveData(long practiceCode, long announcementId)
+        [TestCase(1011163, true)]
+        [TestCase(1011163, false)]
+        public void InsertAnnouncement_AnnouncementAddModel_SaveData(long practiceCode, bool add)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
             _userProfile.UserName = "1163testing";
-            _addEditFoxAnnouncement.ANNOUNCEMENT_ID = announcementId;
             _addEditFoxAnnouncement.ANNOUNCEMENT_DATE_FROM = Helper.GetCurrentDate();
             _addEditFoxAnnouncement.ANNOUNCEMENT_DATE_TO = Helper.GetCurrentDate();
-            _addEditFoxAnnouncement.ANNOUNCEMENT_TITLE = "test";
-            _addEditFoxAnnouncement.ANNOUNCEMENT_DETAILS = "test";
+            _addEditFoxAnnouncement.ANNOUNCEMENT_TITLE = "N_Unit Testing";
+            _addEditFoxAnnouncement.ANNOUNCEMENT_DETAILS = "N_Unit Testing";
+            _addEditFoxAnnouncement.EditSelectedRolesID = "103";
             _addEditFoxAnnouncement.RoleRequest = new List<FoxRoleRequest>()
             {
                 new FoxRoleRequest
@@ -104,6 +103,10 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.AnnouncementUnitTes
                     ROLE_NAME = ""
                 }
             };
+            if (add == false)
+            {
+                _addEditFoxAnnouncement.ANNOUNCEMENT_ID = Helper.getMaximumId("ANNOUNCEMENT_ID") - 1;
+            }
 
             //Act
             var result = _announcementService.InsertAnnouncement(_addEditFoxAnnouncement, _userProfile);
@@ -119,19 +122,42 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.AnnouncementUnitTes
             }
         }
         [Test]
-        [TestCase(1011163, 548667)]
-        [TestCase(1011163, 548668)]
-        [TestCase(0, 548668)]
-        [TestCase(0, 0)]
-        public void DeleteAnnouncement_AnnouncementDeleteModel_DeleteData(long practiceCode, long announcementId)
+        [TestCase(1011163, true)]
+        [TestCase(1011163, false)]
+        public void DeleteAnnouncement_AnnouncementDeleteModel_DeleteData(long practiceCode, bool delete)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
             _userProfile.UserName = "1163testing";
-            _announcements.ANNOUNCEMENT_ID = announcementId;
+            _announcements.ANNOUNCEMENT_TITLE = "test";
+            if (delete == false)
+            {
+                _announcements.ANNOUNCEMENT_ID = Helper.getMaximumId("ANNOUNCEMENT_ID") - 2;
+            }
 
             //Act
             var result = _announcementService.DeleteAnnouncement(_announcements, _userProfile);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
+        [Test]
+        [TestCase(1011163)]
+        public void GetFoxRoles_FoxRolesModel_ReturnData(long practiceCode)
+        {
+            //Arrange
+            _userProfile.PracticeCode = practiceCode;
+            _userProfile.UserName = "1163testing";
+
+            //Act
+            var result = _announcementService.GetFoxRoles(_userProfile);
 
             //Assert
             if (result != null)

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace FoxRehabilitation.UnitTest.RequestForOrderUnitTest.IndexInformationServiceUnitTest
 {
     [TestFixture]
-    class IndexInformationServiceTest
+    public class IndexInformationServiceTest
     {
         private IndexInformationService _indexInformationService;
         private UserProfile _userProfile;

@@ -1189,5 +1189,22 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 }
             }
         }
+        /// <summary>
+        /// This function get inbound survey call recordings
+        /// </summary>
+        /// <param name="patientAccountNumber"></param>
+        /// <param name="profilePracticeCode"></param>
+        /// <returns></returns>
+        public List<PatientSurveyInBoundCallResponse> GetPatientSurveyInBoundCalls(long patientAccountNumber, long profilePracticeCode)
+        {
+            List<PatientSurveyInBoundCallResponse> result = new List<PatientSurveyInBoundCallResponse>();
+            if (patientAccountNumber != 0 && profilePracticeCode != 0)
+            {
+                var patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = patientAccountNumber };
+                var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profilePracticeCode };
+                result = SpRepository<PatientSurveyInBoundCallResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SURVEY_INBOUND_CALL_DETAILS @PATIENT_ACCOUNT, @PRACTICE_CODE", patientAccount, practiceCode);
+            }
+            return result;
+        }
     }
 }

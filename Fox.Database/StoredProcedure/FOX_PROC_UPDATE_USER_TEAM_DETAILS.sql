@@ -1,6 +1,8 @@
-IF (OBJECT_ID('FOX_PROC_UPDATE_USER_TEAM_DETAILS') IS NOT NULL ) DROP PROCEDURE FOX_PROC_UPDATE_USER_TEAM_DETAILS  
-GO
--- =============================================         
+-- =============================================              
+-- Author:    Muhammad Taseer Iqbal              
+-- Create date: 05/09/2022              
+-- Description:  This procedure is Update user team             
+-- =============================================   
 CREATE PROCEDURE FOX_PROC_UPDATE_USER_TEAM_DETAILS                
  @USER_ID BIGINT                  
 AS                 

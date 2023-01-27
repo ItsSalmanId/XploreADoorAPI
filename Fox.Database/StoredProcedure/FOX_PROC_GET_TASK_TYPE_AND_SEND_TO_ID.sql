@@ -1,5 +1,3 @@
-IF (OBJECT_ID('FOX_PROC_GET_TASK_TYPE_AND_SEND_TO_ID') IS NOT NULL ) DROP PROCEDURE FOX_PROC_GET_TASK_TYPE_AND_SEND_TO_ID  
-GO 
 -- =============================================                                      
 -- Author:  <Abdur Rafay>                                      
 -- Create date: <12/27/2021>                                      
