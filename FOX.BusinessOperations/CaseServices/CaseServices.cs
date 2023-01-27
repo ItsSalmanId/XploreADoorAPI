@@ -842,10 +842,10 @@ namespace FOX.BusinessOperations.CaseServices
                 }
                 _CaseContext.SaveChanges();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //To Do Log Exception here
-                throw ex;
+                throw;
             }
         }
 

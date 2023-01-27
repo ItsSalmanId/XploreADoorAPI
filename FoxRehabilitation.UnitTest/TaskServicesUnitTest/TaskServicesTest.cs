@@ -455,59 +455,6 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
                 Assert.IsFalse(false);
             }
         }
-        //[Test]
-        //[TestCase(1)]
-        //[TestCase(2)]
-        //[TestCase(3)]
-        //[TestCase(4)]
-        //[TestCase(5)]
-        //[TestCase(default)]
-
-        //public void GetTaskDetailList_PassModel_ReturnData(int timeFrame)
-        //{
-        //    //Arrange
-        //    _userProfile.PracticeCode = 1011163;
-        //    _userProfile.UserName = "N_UnitTesting";
-        //    _foxTblTaskSubType.TASK_SUB_TYPE_ID = 544100;
-        //    _taskSearchRequest.TIME_FRAME = timeFrame;
-        //    _taskSearchRequest.statusOption = "test";
-        //    _taskSearchRequest.RecordPerPage = 10;
-        //    _taskSearchRequest.SearchText = "";
-        //    _taskSearchRequest.SortBy = "";
-        //    _taskSearchRequest.SortOrder = "";
-        //    _taskSearchRequest.PATIENT_ACCOUNT = null;
-        //    _taskSearchRequest.CASE_ID = null;
-        //    _taskSearchRequest.statusOption = "ALL";
-        //    _taskSearchRequest.USER_ID = null;
-        //    _taskSearchRequest.INSURANCE_ID = null;
-        //    _taskSearchRequest.TASK_TYPE_ID = null;
-        //    _taskSearchRequest.TASK_SUB_TYPE_ID = null;
-        //    _taskSearchRequest.PROVIDER_ID = null;
-        //    _taskSearchRequest.REGION = null;
-        //    _taskSearchRequest.LOC_ID = null;
-        //    _taskSearchRequest.CERTIFYING_REF_SOURCE_ID = null;
-        //    _taskSearchRequest.CERTIFYING_REF_SOURCE_FAX = null;
-        //    _taskSearchRequest.PATIENT_ZIP_CODE = null;
-        //    _taskSearchRequest.DUE_DATE_TIME = null;
-        //    _taskSearchRequest.DATE_FROM = null;
-        //    _taskSearchRequest.DATE_TO = null;
-        //    _taskSearchRequest.OWNER_ID = null;
-        //    _taskSearchRequest.Modified_By = null;
-        //    _taskSearchRequest.isUserLevel = false;
-
-        //    //Act
-        //    var result = _taskServices.GetTaskDetailList(_taskSearchRequest, _userProfile);
-
-        //    //Assert
-        //    if (result != null)
-        //    {
-        //        Assert.IsTrue(true);
-        //    }
-        //    else
-        //    {
-        //        Assert.IsFalse(false);
-        //    }
-        //}
         [Test]
         [TestCase(true)]
         [TestCase(false)]
@@ -673,28 +620,56 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
                 Assert.IsFalse(false);
             }
         }
-        //[Test]
-        //public void GetTaskDashBoardData_PassModel_ReturnData()
-        //{
-        //    //Arrange
-        //    _userProfile.PracticeCode = 1011163;
-        //    _userProfile.UserName = "N_UnitTesting";
-        //    _taskDashboardSearchRequest.CREATED_DATE = DateTime.Now.ToString();
+        [Test]
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        [TestCase(4)]
+        [TestCase(5)]
+        public void GetTasksNotificationsList_PassModel_ReturnData(int timeFrame)
+        {
+            //Arrange
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "N_UnitTesting";
+            _notificationRequestModel.TIME_FRAME = timeFrame;
 
-        //     //Act
-        //     var result = _taskServices.GetTaskDashBoardData(_taskDashboardSearchRequest, _userProfile);
+            //Act
+            var result = _taskServices.GetTasksNotificationsList(_notificationRequestModel, _userProfile);
 
-        //    //Assert
-        //    if (result != null)
-        //    {
-        //        Assert.IsTrue(true);
-        //    }
-        //    else
-        //    {
-        //        Assert.IsFalse(false);
-        //    }
-        //}
-        //GetTaskDashBoardData
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
+        [Test]
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void DeleteNotification_PassModel_ReturnData(long id)
+        {
+            //Arrange
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "N_UnitTesting";
+
+            //Act
+            var result = _taskServices.DeleteNotification(id, _userProfile);
+
+            //Assert
+            if (result != true)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
+        //DeleteNotification
         [TearDown]
         public void Teardown()
         {
