@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.AnnouncementUnitTest
 {
     [TestFixture]
-    class AnnouncementTest
+    public class AnnouncementTest
     {
         private AnnouncementService _announcementService;
         private UserProfile _userProfile;
@@ -134,7 +134,7 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.AnnouncementUnitTes
             {
                 _announcements.ANNOUNCEMENT_ID = Helper.getMaximumId("ANNOUNCEMENT_ID") - 2;
             }
-            
+
             //Act
             var result = _announcementService.DeleteAnnouncement(_announcements, _userProfile);
 

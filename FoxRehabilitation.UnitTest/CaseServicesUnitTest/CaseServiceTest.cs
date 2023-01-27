@@ -704,7 +704,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
         }
         [Test]
         [TestCase(1011163)]
-        [TestCase(0)]  
+        [TestCase(0)]
         public void GetOpenIssueList_PassModel_ReturnData(long practiceCode)
         {
             //Arrange
@@ -729,7 +729,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
         [Test]
         [TestCase(1011163, 544100)]
         [TestCase(1011163, 123456)]
-        [TestCase(0,0)]
+        [TestCase(0, 0)]
         public void DeleteOrderInformation_PassModel_ReturnData(long practiceCode, long orderInfoId)
         {
             //Arrange
@@ -794,7 +794,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             _userProfile.UserName = "1163testing";
             _getTreatingProviderReq.CASE_DISCIPLINE_NAME = caseDesciplineName;
             _getTreatingProviderReq.POS_ID = posId;
-            
+
             //Act
             var result = _caseServices.PopulateTreatingProviderbasedOnPOS(_getTreatingProviderReq, _userProfile);
 
