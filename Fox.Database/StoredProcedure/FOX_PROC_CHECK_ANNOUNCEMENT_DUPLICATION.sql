@@ -13,7 +13,7 @@ CREATE PROCEDURE [dbo].[FOX_PROC_CHECK_ANNOUNCEMENT_DUPLICATION]
 AS                                              
 BEGIN                      
                     
- select * from FOX_TBL_ANNOUNCEMENT a         
+ select * from FOX_TBL_ANNOUNCEMENT a WITH (NOLOCK)     
  inner join FOX_TBL_ANNOUNCEMENT_ROLE r WITH (NOLOCK) on a.ANNOUNCEMENT_ID=r.ANNOUNCEMENT_ID         
   where a.ANNOUNCEMENT_DATE_FROM between @ANNOUNCEMENT_DATE_FROM and @ANNOUNCEMENT_DATE_TO and        
    r.ROLE_ID in (  SELECT val FROM STRING_SPLIT(@ROLES_IDs, ','))       and      
