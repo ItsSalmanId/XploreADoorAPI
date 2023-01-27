@@ -36,7 +36,7 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             }
             else if(result.Count > 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -57,7 +57,7 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             }
             else if (result.Count > 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]

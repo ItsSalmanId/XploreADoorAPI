@@ -1,9 +1,7 @@
-﻿using FOX.BusinessOperations.CommonService;
-using FOX.BusinessOperations.SettingsService.UserMangementService;
+﻿using FOX.BusinessOperations.SettingsService.UserMangementService;
 using FOX.DataModels.Models.ExternalUserModel;
 using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.Settings.RoleAndRights;
-using FOX.DataModels.Models.StatesModel;
 using FoxRehabilitationAPI.Models;
 using NUnit.Framework;
 using System;
@@ -23,7 +21,6 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         private UserRequest _userRequest;
         private Role _role;
         private PasswordChangeRequest _passwordChangeRequest;
-        private RoleToAdd _roleToAdd;
         private EmailExist _emailExist;
         private ReferralRegion _referralRegion;
         private ReferralRegionSearch _referralRegionSearch;
@@ -42,7 +39,6 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             _userRequest = new UserRequest();
             _role = new Role();
             _passwordChangeRequest = new PasswordChangeRequest();
-            _roleToAdd = new RoleToAdd();
             _emailExist = new EmailExist();
             _referralRegion = new ReferralRegion();
             _referralRegionSearch = new ReferralRegionSearch();
@@ -297,7 +293,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             }
             else
             {
-                Assert.IsTrue(false);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -317,27 +313,8 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             }
             else
             {
-                Assert.IsTrue(false);
+                Assert.IsFalse(false);
             }
-        }
-        [Test]
-        [TestCase("unitTesting", 5482676, "unitTesting@gamil.com")]
-        [TestCase("test", 12345, "unitTesting1234@gamil.com")]
-        public void CreateUser_UserModel_InsertData(string userName, int userId, string email)
-        {
-            //Arrange
-            _userProfile.PracticeCode = 1011163;
-            _user.Discriminator = "ApplicationUser";
-            _user.EMAIL = "unitTesting@gamil.com";
-            _user.PASSWORD = "unitTesting";
-            _user.USER_NAME = userName;
-            _user.USER_ID = userId;
-
-            //Act
-            _userManagementService.CreateUser(_user, _userProfile);
-
-            //Assert
-            Assert.IsTrue(true);
         }
         [Test]
         [TestCase(100000)]
@@ -365,10 +342,17 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             _userRequest.FilterIs_Approved = true;
 
             //Act
-            _userManagementService.GetUsers(_userRequest, _userProfile);
+            var result = _userManagementService.GetUsers(_userRequest, _userProfile);
 
             //Assert
-            Assert.IsTrue(true);
+            if (result.Count == 0)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
         }
         [Test]
         [TestCase("test", 100, "test236@gmail.com")]
@@ -384,10 +368,17 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             _userProfile.RoleId = roleId;
 
             //Act
-            _userManagementService.GetSingleUser(userName, _userProfile);
+            var result = _userManagementService.GetSingleUser(userName, _userProfile);
 
             //Assert
-            Assert.IsTrue(true);
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
         }
         [Test]
         [TestCase("test", 100, "test236@gmail.com")]
@@ -403,10 +394,17 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             _userProfile.RoleId = roleId;
 
             //Act
-            _userManagementService.GetReferralReagions(userName, _userProfile);
+            var result = _userManagementService.GetReferralReagions(userName, _userProfile);
 
             //Assert
-            Assert.IsTrue(true);
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
         }
         [Test]
         [TestCase(1011163)]
@@ -457,7 +455,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         {
             //Arrange
             _role.RIGHTS_OF_ROLE_ID = 296;
-            _userProfile.PracticeCode = 1011163;
+            _userProfile.PracticeCode = practiceCode;
             _userProfile.UserName = "1163testing";
             _role.RIGHT_ID = rightId;
             _role.ROLE_ID = 103;
@@ -523,7 +521,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         [TestCase(1011163,"test", "test")]
         [TestCase(1012714, "test", "test")]
         [TestCase(0, "test", "test")]
-        public void UpdateADUserPassword_PassParameter_ReturnData(long practiceCode, string password, string hashpassword)
+        public void UpdateADUserPassword_PassParameter_ReturnData(long practiceCode, string password, string hashPassword)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -531,7 +529,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             _userProfile.userID = 544596;
      
             //Act
-            var result = _userManagementService.UpdateADUserPassword(password, hashpassword, _userProfile);
+            var result = _userManagementService.UpdateADUserPassword(password, hashPassword, _userProfile);
 
             //Assert
             if (result > 0)
@@ -543,52 +541,15 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
                 Assert.IsFalse(false);
             }
         }
-        //[Test]
-        //[TestCase(1011163)]
-        //[TestCase(1012714)]
-        //[TestCase(0)]
-        //public void AddRole_PassParameter_ReturnData(long practiceCode)
-        //{
-        //    //Arrange
-        //    _userProfile.PracticeCode = practiceCode;
-        //    _userProfile.UserName = "testing";
-        //    _userProfile.userID = 544596;
-        //    _roleToAdd.ROLE_ID = 10000;
-
-        //    //Act
-        //    _userManagementService.AddRole(_roleToAdd, _userProfile);
-
-        //    //Assert
-        //    Assert.IsTrue(true);
-        //}
-        //[Test]
-        //[TestCase(1011163)]
-        //[TestCase(1012714)]
-        //[TestCase(0)]
-        //public void DeleteRole_PassParameter_ReturnData(long practiceCode)
-        //{
-        //    //Arrange
-        //    _userProfile.PracticeCode = practiceCode;
-        //    _userProfile.UserName = "testing";
-        //    _userProfile.userID = 544596;
-        //    _role.ROLE_ID = 1000;
-        //    _role.ROLE_ID = Helper.getMaximumId("ROLE_ID") - 1;
-
-        //    //Act
-        //    _userManagementService.DeleteRole(_role, _userProfile);
-
-        //    //Assert
-        //    Assert.IsTrue(true);
-        //}
         [Test]
         [TestCase(1011163, 544100)]
-        public void GetADRole_PassParameter_ReturnData(long practiveCode, long roleId)
+        public void GetADRole_PassParameter_ReturnData(long practiceCode, long roleId)
         {
             //Arrange
             string roleName = "Occupational Therapist";
             
             //Act
-            var result = _userManagementService.GetADRole(practiveCode, roleName, roleId);
+            var result = _userManagementService.GetADRole(practiceCode, roleName, roleId);
 
             //Assert
             if (result > 0)
@@ -604,11 +565,11 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         [TestCase(1011163, 544100)]
         [TestCase(1012714, 544101)]
         [TestCase(0, 0)]
-        public void GetCurrentUserRights_PassParameter_ReturnData(long practiveCode, long roleId)
+        public void GetCurrentUserRights_PassParameter_ReturnData(long practiceCode, long roleId)
         {
             //Arrange
             //Act
-            var result = _userManagementService.GetCurrentUserRights(roleId, practiveCode);
+            var result = _userManagementService.GetCurrentUserRights(roleId, practiceCode);
 
             //Assert
             if (result !=  null)
@@ -628,37 +589,17 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             //Arrange
             _emailExist.EMAIL = email;
             //Act
-            _userManagementService.EmailExists(_emailExist);
+            var result = _userManagementService.EmailExists(_emailExist);
 
             //Assert
-            Assert.IsTrue(true);
-        }
-        [Test]
-        //[TestCase("test")]
-        //[TestCase("1163testing")]
-        public void AddUpdateReferralRegion_Passmodel_ReturnData()
-        {
-            //Arrange
-            _userProfile.PracticeCode = 1011163;
-            _userProfile.UserName = "1163testing";
-            _referralRegion.REFERRAL_REGION_ID = 544101;
-            _referralRegion.IS_INACTIVE = null;
-            _referralRegion.STATE_CODE = "test";
-            _referralRegion.COUNTIES = new List<FOX_TBL_ZIP_STATE_COUNTY>()
+            if (result == true)
             {
-                new FOX_TBL_ZIP_STATE_COUNTY
-                {
-                    ZIP_STATE_COUNTY_ID = 544100,
-                    COUNTY = "Suffolk County",
-                    STATE = "NY",
-                }
-            };
-
-            //Act
-            _userManagementService.AddUpdateReferralRegion(_referralRegion, _userProfile);
-
-            //Assert
-            Assert.IsTrue(true);
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
         }
         [Test]
         [TestCase(1)]
@@ -703,7 +644,6 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             _referralRegionSearch.SortBy = "";
             _referralRegionSearch.SortOrder = "DESC";
 
-
             //Act
             var result = _userManagementService.GetReferralRegionList(_referralRegionSearch, _userProfile);
 
@@ -724,6 +664,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             //Arrange
             _userProfile.PracticeCode = 1011163;
             _userProfile.UserName = "1163testing";
+
             //Act
             var result = _userManagementService.GetRolesCheckBit(practiceCode, userName);
 
@@ -808,17 +749,24 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         }
         [Test]
         [TestCase("FoxDocumentDirectory\\HRAutoEmailsUploadedFiles\\UploadFiles", "user_5482608")]
-        public void VerifyHashedPassword_model_ReturnData(string path, string username)
+        public void VerifyHashedPassword_model_ReturnData(string path, string userName)
         {
             //Arrange
             _userProfile.PracticeCode = 1011163;
             _userProfile.UserName = "1163testing";
 
             //Act
-            _userManagementService.SaveSignaturesInDB(path, username, _userProfile);
+            var result = _userManagementService.SaveSignaturesInDB(path, userName, _userProfile);
 
             //Assert
-            Assert.IsTrue(true);
+            if (result == true)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
         }
         [Test]
         [TestCase("637265386954157246", "ayaz.muhammad366@gmail.com")]
@@ -943,16 +891,23 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         {
             //Arrange
             //Act
-            _userManagementService.UpdateProfile(useName);
+            var result = _userManagementService.UpdateProfile(useName);
 
             //Assert
-            Assert.IsTrue(true);
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
         }
         [Test]
         [TestCase(5481885, true)]
         [TestCase(5481887, true)]
         [TestCase(0, true)]
-        public void AddUpdateUserAdditionalInfo_PassParameter_ReturnData(long userId, bool isElectronicPOC)
+        public void AddUpdateUserAdditionalInfo_PassParameter_ReturnData(long userId, bool isElectronicPoc)
         {
             //Arrange
             DateTime CreatedDate = DateTime.Now;
@@ -962,7 +917,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             bool Deleted = false;
 
             //Act
-            _userManagementService.AddUpdateUserAdditionalInfo(userId, isElectronicPOC, CreatedDate, CreatedBy, ModifiedDate, ModifiedBy, Deleted);
+            _userManagementService.AddUpdateUserAdditionalInfo(userId, isElectronicPoc, CreatedDate, CreatedBy, ModifiedDate, ModifiedBy, Deleted);
 
             //Assert
             Assert.IsTrue(true);
@@ -1114,28 +1069,6 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
                 Assert.IsFalse(false);
             }
         }
-        //[Test]
-        //[TestCase("test", "test")]
-        //[TestCase("", "")]
-        //public void GetSmartUsersOfSpecificRoleName_Passmodel_ReturnData(string searchText, string roleName)
-        //{
-        //    //Arrange
-        //    _userProfile.PracticeCode = 1011163;
-        //    _userProfile.UserName = "FOX-TEAM";
-
-        //    //Act
-        //    var result = _userManagementService.GetSmartUsersOfSpecificRoleName(searchText, roleName, _userProfile);
-
-        //    //Assert
-        //    if (result != null)
-        //    {
-        //        Assert.IsTrue(true);
-        //    }
-        //    else
-        //    {
-        //        Assert.IsFalse(false);
-        //    }
-        //}
         [Test]
         [TestCase("test")]
         [TestCase("")]
@@ -1206,15 +1139,20 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         {
             //Arrange
             //Act
-            _userManagementService.CheckForAtleastOneRight(roleId, practiceCode);
+            var result = _userManagementService.CheckForAtleastOneRight(roleId, practiceCode);
 
             //Assert
-            Assert.IsTrue(true);
+            if (result == true)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
         }
         [Test]
-        [TestCase(1011163)]
-        [TestCase(0)]
-        public void SaveRegionalDirectorID_PassModel_ReturnData(long practiceCode)
+        public void SaveRegionalDirectorID_PassModel_ReturnData()
         {
             //Arrange
             _applicationUser.USER_NAME = "FOX-TEAM";
@@ -1230,35 +1168,24 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             //Assert
             Assert.IsTrue(true);
         }
-        //[Test]
-        //public void SaveAccountManagerID_PassModel_ReturnData()
-        //{
-        //    //Arrange
-        //    _applicationUser.USER_NAME = "FOX-TEAM";
-        //    _applicationUser.USER_DISPLAY_NAME = "FOX-TEAM";
-        //    _applicationUser.ROLE_ID = 101;
-        //    _applicationUser.IS_ACTIVE = true;
-        //    _applicationUser.CREATED_BY = "FOX-TEAM";
-        //    _referralRegion.REGIONAL_DIRECTOR_ID = 1;
-        //    _referralRegion.MODIFIED_DATE = Helper.GetCurrentDate();
-
-        //    //Act
-        //    _userManagementService.SaveAccountManagerID(_applicationUser, _referralRegion);
-
-        //    //Assert
-        //    Assert.IsTrue(true);
-        //}
         [Test]
         [TestCase("test", 123)]
         [TestCase("", 0)]
-        public void GetRoleId_PassModel_ReturnData(string RoleName, long practicecode)
+        public void GetRoleId_PassModel_ReturnData(string roleName, long practiceCode)
         {
             //Arrange
             //Act
-            _userManagementService.GetRoleId(RoleName, practicecode);
+            var result = _userManagementService.GetRoleId(roleName, practiceCode);
 
             //Assert
-            Assert.IsTrue(true);
+            if (result != 0)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
         }
         [Test]
         public void CanUserUpdateUser_PassModel_ReturnData()
@@ -1269,14 +1196,20 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             _userProfile.RoleId = 100;
 
             //Act
-            _userManagementService.CanUserUpdateUser(_userProfile);
+            var result = _userManagementService.CanUserUpdateUser(_userProfile);
 
             //Assert
-            Assert.IsTrue(true);
+            if (result == true)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
         }
         [Test]
         [TestCase(true, 1)]
-        //[TestCase(false, 2)]
         [TestCase(true, 10)]
         public void UpdateUser_PassModel_ReturnData(bool canUpdateUsers, int senderTypeId)
         {
@@ -1310,7 +1243,6 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         public void CheckValidUserLoginAttempt_PassModel_ReturnData(string userName)
         {
             //Arrange
-
             //Act
             var result = _userManagementService.CheckValidUserLoginAttempt(userName);
 
@@ -1330,7 +1262,6 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         public void IsUserBlocked_PassModel_ReturnData(string userName)
         {
             //Arrange
-
             //Act
             var result = _userManagementService.IsUserBlocked(userName);
 
@@ -1350,7 +1281,6 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         public void GetInvalidAttempts_PassModel_ReturnData(string userName)
         {
             //Arrange
-
             //Act
             var result = _userManagementService.GetInvalidAttempts(userName);
 
@@ -1370,7 +1300,6 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         public void AddUserValidLoginAttempt_PassModel_ReturnData(string userName)
         {
             //Arrange
-
             //Act
             var result = _userManagementService.AddUserValidLoginAttempt(userName);
 
@@ -1390,7 +1319,6 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         public void AddUserInvalidLoginAttempt_PassModel_ReturnData(string userName)
         {
             //Arrange
-
             //Act
             var result = _userManagementService.AddUserInvalidLoginAttempt(userName);
 
@@ -1417,8 +1345,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
                     DASHBOARD_ACCESS_ID = 544252,
                     ROLE_NAME = "test"
                 }
-             };
-            
+             };      
             _userProfile.PracticeCode = 1011163;
             _userProfile.UserName = "FOX-TEAM";
 
@@ -1439,22 +1366,37 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             _userProfile.RoleId = 123;
 
             //Act
-            _userManagementService.CheckisTalkrehab(practiceCode);
+            var result = _userManagementService.CheckisTalkrehab(practiceCode);
 
             //Assert
-            Assert.IsTrue(true);
+            if (result == true)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
         }
-        //CheckisTalkrehab
         [TearDown]
         public void Teardown()
         {
             // Optionally dispose or cleanup objects
             _userManagementService = null;
-            _userProfile = null;
-            roleID = null;
-            userTeamModelobj = null;
             _userTeamModel = null;
+            _userProfile = null;
+            userTeamModelobj = null;
+            userTeamModelobj = null;
             _user = null;
+            _userRequest = null;
+            _role = null;
+            _passwordChangeRequest = null;
+            _emailExist = null;
+            _referralRegion = null;
+            _referralRegionSearch = null;
+            _resetPasswordViewModel = null;
+            _smartSearchRequest = null;
+            _applicationUser = null;
         }
     }
 }

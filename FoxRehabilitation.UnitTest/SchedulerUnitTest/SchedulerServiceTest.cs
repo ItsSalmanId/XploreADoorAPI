@@ -1,5 +1,4 @@
-﻿using FOX.BusinessOperations.CommonService;
-using FOX.BusinessOperations.Scheduler;
+﻿using FOX.BusinessOperations.Scheduler;
 using FOX.DataModels.Models.Security;
 using NUnit.Framework;
 using System;
@@ -42,7 +41,6 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
             {
                 _appointmentSearchRequest.PATIENT_ACCOUNT = "0";
             }
-            
             _appointmentSearchRequest.TIME_FRAME = timeFrame;
             _appointmentSearchRequest.SEARCH_TEXT = "";
             _appointmentSearchRequest.PROVIDER_ID = "0";
@@ -57,7 +55,7 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
             _appointmentSearchRequest.SORT_ORDER = "DESC";
             _appointmentSearchRequest.REGION = "0";
             _appointmentSearchRequest.DATE_TO_STR = "08/03/2020";
-            _appointmentSearchRequest.DATE_FROM_STR = "08/03/2020";
+            _appointmentSearchRequest.DATE_FROM_STR = dateFrom;
             _appointmentSearchRequest.PROVIDER_ID = "0";
             _appointmentSearchRequest.LOCATION = 0;
 
@@ -80,7 +78,6 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
         [TestCase(1011163, 3)]
         [TestCase(1011163, 4)]
         [TestCase(1011163, default)]
-
         public void GetAllAppointmentsWeekly_AppointmentsWeeklyModel_ReturnData(long practiceCode, int timeFrame)
         {
             //Arrange
@@ -261,11 +258,11 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
         [TestCase("", "FC")]
         [TestCase("Haider", "FC")]
         [TestCase(null, "" )]
-        public void getPatientInFormat_SetPatientInFormat_ReturnData(string name, string fc)
+        public void GetPatientInFormat_SetPatientInFormat_ReturnData(string name, string fc)
         {
             //Arrange
             //Act
-            var result = _scheduler.getPatientInFormat(name,fc);
+            var result = _scheduler.getPatientInFormat(name, fc);
 
             //Assert
             if (result != null)
@@ -379,8 +376,6 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
         }
         [Test]
         [TestCase(1011163, true, "04:43 PM", 544101, 54810699, "2019-09-14")]
-        //[TestCase(1011163, true, "", 544101, 54810699, "2019-09-14")]
-        //[TestCase(1011163, false, "", 544101, 54810699, "2019-09-14")]
         [TestCase(1011163, false, "04:43 PM", 544101, 54810699, "2019-09-14")]
         [TestCase(1011163, false, "04:44 PM", 544100, 54810699, "2019-09-14")]
         [TestCase(1011163, true, "04:42 PM", 544100, 54810699, "2019-09-14")]
@@ -502,8 +497,6 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
         }
         [Test]
         [TestCase(1011163, true, "04:43 PM", 544101, 54810699, "2019-09-14")]
-        //[TestCase(1011163, true, "", 544101, 54810699, "2019-09-14")]
-        //[TestCase(1011163, true, "", 544101, 54810699, "2019-09-14")]
         [TestCase(1011163, false, "04:43 PM", 544101, 54810699, "2019-09-14")]
         [TestCase(1011163, true, "04:44 PM", 544100, 54810699, "2019-09-14")]
         [TestCase(1011163, true, "04:42 PM", 544100, 54810699, "2019-09-14")]

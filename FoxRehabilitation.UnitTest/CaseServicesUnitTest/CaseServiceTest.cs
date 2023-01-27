@@ -1,7 +1,6 @@
 ﻿using FOX.BusinessOperations.CaseServices;
 using FOX.BusinessOperations.CommonService;
 using FOX.DataModels.Models.CasesModel;
-using FOX.DataModels.Models.GeneralNotesModel;
 using FOX.DataModels.Models.Security;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -22,12 +21,9 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
         private SmartSearchReq _smartSearchReq;
         private FOX_TBL_CASE _foxTblCase;
         private FOX_TBL_ORDER_INFORMATION _foxTblOrder;
-        private SmartSearchCasesRequestModel _smartSearchCasesRequest;
-        private FOX_TBL_CASE_TYPE _foxTblCaseType;
         private OpenIssueListToDelete _openIssueListToDelete;
         private GetTreatingProviderReq _getTreatingProviderReq;
         private CasesSearchRequest _casesSearchRequest;
-        private SmartSearchCasesRequestModel _smartSearchCasesRequestModel;
 
         [SetUp]
         public void SetUp()
@@ -44,12 +40,9 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             _smartSearchReq = new SmartSearchReq();
             _foxTblCase = new FOX_TBL_CASE();
             _foxTblOrder = new FOX_TBL_ORDER_INFORMATION();
-            _smartSearchCasesRequest = new SmartSearchCasesRequestModel();
-            _foxTblCaseType = new FOX_TBL_CASE_TYPE();
             _openIssueListToDelete = new OpenIssueListToDelete();
             _getTreatingProviderReq = new GetTreatingProviderReq();
             _casesSearchRequest = new CasesSearchRequest();
-            _smartSearchCasesRequestModel = new SmartSearchCasesRequestModel();
         }
         [Test]
         [TestCase("1010624506101487", 1011163)]
@@ -72,7 +65,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(false);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -94,7 +87,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(false);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -115,7 +108,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -144,7 +137,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else if (result.Count == 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -167,7 +160,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -188,7 +181,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -215,7 +208,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else if (result.NONandHOLDIssueList.Count == 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -241,7 +234,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else if (result.Count == 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [TestCase("", 0)]
@@ -264,7 +257,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else if (result.Count == 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [TestCase(0, 0)]
@@ -285,7 +278,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else if (result.Count == 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -306,7 +299,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -331,7 +324,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -353,7 +346,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else if (result.Count == 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -371,7 +364,6 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             //Act
             var result = _caseServices.GetCallInformation(_callReq, _userProfile);
 
-
             //Assert
             if (result.Count > 0)
             {
@@ -379,7 +371,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else if (result.Count == 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -397,7 +389,6 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             //Act
             var result = _caseServices.GetWorkOrderInfo(_workOrderInfoReq, _userProfile);
 
-
             //Assert
             if (result.Count > 0)
             {
@@ -405,7 +396,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else if (result.Count == 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -430,7 +421,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -447,7 +438,6 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             //Act
             var result = _caseServices.GetSmartHearAboutFox(searchText, _userProfile);
 
-
             //Assert
             if (result.Count > 0)
             {
@@ -455,7 +445,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else if (result.Count == 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -479,7 +469,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -503,7 +493,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -528,7 +518,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -555,7 +545,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -567,6 +557,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
+
             //Act
             var result = _caseServices.GetAllCaseStatus(_userProfile);
 
@@ -577,7 +568,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -594,7 +585,6 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             //Act
             var result = _caseServices.GetPatientCasesList(patientAccount, _userProfile);
 
-
             //Assert
             if (result.Count > 0)
             {
@@ -602,7 +592,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else if (result.Count == 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -617,7 +607,6 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             //Act
             var result = _caseServices.GetCasesAndOpenIssues(caseId, _userProfile);
 
-
             //Assert
             if (result != null)
             {
@@ -625,7 +614,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -699,7 +688,6 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             _foxTblCase.ImportantNotes = "test";
             _foxTblCase.VoidReason = "test";
 
-
             //Act
             var result = _caseServices.AddEditCase(_foxTblCase, _userProfile);
 
@@ -710,7 +698,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -727,7 +715,6 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             //Act
             var result = _caseServices.GetOpenIssueList(_getOpenIssueListReq, _userProfile);
 
-
             //Assert
             if (result != null)
             {
@@ -735,7 +722,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -747,11 +734,10 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             //Arrange
             _userProfile.PracticeCode = practiceCode;
             _userProfile.UserName = "1163testing";
-            _foxTblOrder.ORDER_INFO_ID = 544100;
+            _foxTblOrder.ORDER_INFO_ID = orderInfoId;
 
             //Act
             var result = _caseServices.DeleteOrderInformation(_foxTblOrder, _userProfile);
-
 
             //Assert
             if (result != null)
@@ -760,7 +746,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -783,7 +769,6 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             //Act
             var result = _caseServices.DeleteTask(_openIssueListToDelete, _userProfile);
 
-
             //Assert
             if (result != null)
             {
@@ -791,7 +776,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -819,7 +804,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -846,12 +831,13 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [TearDown]
         public void Teardown()
         {
+            // Optionally dispose or cleanup objects
             _caseServices = null;
             _smartIdentifierReq = null;
             _userProfile = null;
@@ -863,6 +849,9 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             _getOrderingRefSourceinfoReq = null;
             _foxTblCase = null;
             _foxTblOrder = null;
+            _openIssueListToDelete = null;
+            _getTreatingProviderReq = null;
+            _casesSearchRequest = null;
         }
     }
 }

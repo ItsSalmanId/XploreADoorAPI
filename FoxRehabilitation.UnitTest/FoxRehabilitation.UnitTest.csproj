@@ -84,6 +84,8 @@
     <Compile Include="SearchOrderServicesUnitTest\SearchOrderServicesTest.cs" />
     <Compile Include="SettingServicesUnitTest\AnnouncementUnitTest\AnnouncementTest.cs" />
     <Compile Include="SettingServicesUnitTest\PracticeOrganizationServiceUnitTest\PracticeOrganizationServiceTest.cs" />
+    <Compile Include="SupervisorWorkServiceUnitTest\SupervisorWorkServiceTest.cs" />
+    <Compile Include="TaskServicesUnitTest\TaskServicesTest.cs" />
     <Compile Include="UnAssignedQueueServiceUnitTest\UnAssignedQueueServiceTest.cs" />
     <Compile Include="UserManagementServiceUnitTest\UserManagementServiceTest.cs" />
     <Compile Include="SignatureRequiredServiceUnitTest\SignatureRequiredServiceTest.cs" />
