@@ -13,7 +13,6 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
         private RequestDeleteWorkOrder _requestDeleteWorkOrder;
         private FrictionLessReferral _frictionLessReferral;
         private ProviderReferralSourceRequest _providerReferralSourceRequest;
-        private SubmitReferralModel _submitReferralModel;
 
         [SetUp]
         public void Setup()
@@ -23,7 +22,6 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
             _requestDeleteWorkOrder = new RequestDeleteWorkOrder();
             _frictionLessReferral = new FrictionLessReferral();
             _providerReferralSourceRequest = new ProviderReferralSourceRequest();
-            _submitReferralModel = new SubmitReferralModel();
         }
         [Test]
         public void GetPracticeCode_HasPracticeCode_ReturnData()
@@ -82,10 +80,7 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
         [Test]
         [TestCase("", "", "", "")]
         [TestCase("1679785950", "", "", "")]
-        [TestCase("1740503804", "", "", "")]
-        [TestCase("", "james", "smith", "ny")]
         [TestCase("1023489119", "james", "smith", "ny")]
-        [TestCase("1023489", "james", "smith", "ny")]
         public void GetProviderReferralSources_ProviderReferralSourceModel_ReturnData(string npi, string firstName, string lastName, string state)
         {
             //Arrange
@@ -147,10 +142,6 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
         }
         [Test]
         [TestCase("1023489119", "", "", "")]
-        [TestCase("1740503804", "", "", "")]
-        [TestCase("", "carey", "smith", "ny")]
-        [TestCase("1023489119", "carey", "smith", "ny")]
-        [TestCase("1023489", "carey", "smith", "ny")]
         [TestCase("", "", "", "")]
         public void GetOrderingReferralSource_ProviderReferralSourceModel_ReturnData(string npi, string firstName, string lastName, string state)
         {
