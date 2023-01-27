@@ -7,6 +7,8 @@ using System.Data.Entity.Validation;
 using System.Data.SqlClient;
 using System.Configuration;
 using FOX.DataModels.Context;
+using System.Data.Common;
+using System.Reflection;
 
 namespace FOX.DataModels.GenericRepository
 {
@@ -43,7 +45,6 @@ namespace FOX.DataModels.GenericRepository
             {
                 using (DbContext Context = new DbContextSP())
                 {
-                    retrycatch = 0;
                     Context.Database.CommandTimeout = 300;
                     return Context.Database.SqlQuery<TEntity>(query, parameters).ToList<TEntity>();
 
@@ -57,7 +58,8 @@ namespace FOX.DataModels.GenericRepository
                     ))
                 {
                     retrycatch = retrycatch + 1;
-                    return GetListWithStoreProcedure(query, parameters);
+                    var clonedParameters = parameters.Select(x => x.Clone()).ToArray();
+                    return GetListWithStoreProcedure(query, clonedParameters);
                 }
                 else
                 {
@@ -70,36 +72,37 @@ namespace FOX.DataModels.GenericRepository
 
         public static TEntity GetSingleObjectWithStoreProcedure(string query, params object[] parameters)
         {
-            try
+            using (DbContext Context = new DbContextSP())
             {
-
-                using (DbContext Context = new DbContextSP())
+                try
                 {
-                    retrycatch = 0;
                     Context.Database.CommandTimeout = 300;
                     return Context.Database.SqlQuery<TEntity>(query, parameters).FirstOrDefault<TEntity>();
-                }
-            }
-            catch (Exception ex)
-            {
-                if ((retrycatch <= 2 && !string.IsNullOrEmpty(ex.Message) && (ex.Message.Contains("deadlocked on lock resources with another process") || ex.Message.Contains("Timeout")))
-                    || (ex.InnerException != null && !string.IsNullOrEmpty(ex.InnerException.Message)
-                    && (ex.InnerException.Message.Contains("deadlocked on lock resources with another process") || ex.InnerException.Message.Contains("Timeout"))
-                    ))
-                {
-                    retrycatch = retrycatch + 1;
-                    return GetSingleObjectWithStoreProcedure(query, parameters);
-                }
-                else
-                {
-                    retrycatch = 0;
-                    throw ex;
 
                 }
-            }
+                catch (Exception ex)
+                {
+                    if ((retrycatch <= 2 && !string.IsNullOrEmpty(ex.Message) && (ex.Message.Contains("deadlocked on lock resources with another process") || ex.Message.Contains("Timeout")))
+                        || (ex.InnerException != null && !string.IsNullOrEmpty(ex.InnerException.Message)
+                        && (ex.InnerException.Message.Contains("deadlocked on lock resources with another process") || ex.InnerException.Message.Contains("Timeout"))
+                        ))
+                    {
+                        retrycatch = retrycatch + 1;
+                        var clonedParameters = parameters.Select(x => x.Clone()).ToArray();
+                        Context.Dispose();
+                        return GetSingleObjectWithStoreProcedure(query, clonedParameters);
+                    }
+                    else
+                    {
+                        retrycatch = 0;
+                        throw ex;
 
+                    }
+                }
+
+
+            }
         }
-        //sql dataAdapter for dataset
         public static SqlDataAdapter getSpSqlDataAdapter(string query)
         {
             using (DbContext Context = new DbContextSP())
@@ -110,6 +113,20 @@ namespace FOX.DataModels.GenericRepository
             }
         }
         #endregion
+    }
+
+
+    public static class Extension
+    {
+        public static SqlParameter Clone(this object @this)
+        {
+            var destination = new SqlParameter();
+
+            var copyToMethod = typeof(SqlParameter).GetMethod("CopyTo", BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(DbParameter) }, null);
+            copyToMethod.Invoke(@this, new[] { destination });
+
+            return destination;
+        }
     }
 
 }

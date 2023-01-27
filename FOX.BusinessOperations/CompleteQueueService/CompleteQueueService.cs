@@ -15,7 +15,6 @@ namespace FOX.BusinessOperations.CompleteQueueService
 {
     public class CompleteQueueService : ICompleteQueueService
     {
-        private long retrycatch = 0;
         public List<CompleteQueue> GetCompleteQueue(SearchRequestCompletedQueue req, UserProfile user)
         {
             try {
@@ -75,21 +74,8 @@ namespace FOX.BusinessOperations.CompleteQueueService
                 }
             }
             catch (Exception ex)
-            {
-                if (retrycatch <= 2 && (!string.IsNullOrEmpty(ex.Message) &&
-                  ex.Message.Contains("deadlocked on lock resources with another process"))
-                  || ((ex.InnerException != null) &&
-                  !string.IsNullOrEmpty(ex.InnerException.Message)
-                  &&
-                  ex.InnerException.Message.Contains("deadlocked on lock resources with another process")))
-                {
-                    retrycatch = retrycatch + 1;
-                    return GetCompleteQueue(req, user);
-                }
-                else
-                {
+            {    
                     throw ex;
-                }
             }
         }
 
