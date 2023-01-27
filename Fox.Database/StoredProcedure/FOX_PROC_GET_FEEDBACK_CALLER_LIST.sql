@@ -21,7 +21,7 @@ BEGIN
    UNION                           
    SELECT  DISTINCT phd.CREATED_BY AS USER_NAME, (AU.FIRST_NAME + ' '+ AU.LAST_NAME) AS NAME , EMAIL            
    FROM FOX_TBL_PHD_CALL_DETAILS phd with (nolock)               
-   left JOIN FOX_TBL_APPLICATION_USER  as AU on  phd.CREATED_BY = AU.USER_NAME AND AU.PRACTICE_CODE = @PRACTICE_CODE               
+   left JOIN FOX_TBL_APPLICATION_USER  as AU with (nolock) on  phd.CREATED_BY = AU.USER_NAME AND AU.PRACTICE_CODE = @PRACTICE_CODE               
    WHERE              
       ISNULL(phd.DELETED, 0) = 0              
    AND phd.PRACTICE_CODE = @PRACTICE_CODE          

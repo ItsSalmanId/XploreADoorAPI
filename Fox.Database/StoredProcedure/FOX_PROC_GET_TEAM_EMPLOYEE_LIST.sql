@@ -9,13 +9,13 @@ CREATE PROCEDURE FOX_PROC_GET_TEAM_EMPLOYEE_LIST --1011163,'544110,544109,544114
 AS                      
 BEGIN                       
    ( SELECT  TBL_USER.USER_NAME, (TBL_USER.FIRST_NAME + ' '+ TBL_USER.LAST_NAME) AS NAME, TBL_USER.EMAIL  FROM  FOX_TBL_APPLICATION_USER TBL_USER   with (nolock)                        
-  JOIN FOX_TBL_USER_TEAMS TBL_USER_TEAM ON TBL_USER.USER_ID = TBL_USER_TEAM.USER_ID                          
+  JOIN FOX_TBL_USER_TEAMS TBL_USER_TEAM with (nolock) ON TBL_USER.USER_ID = TBL_USER_TEAM.USER_ID                          
   WHERE TBL_USER_TEAM.PHD_CALL_SCENARIO_ID IN  (select * from foxsplitstring(@CALL_SCANRIO_ID,','))                  
   AND ISNULL(TBL_USER.DELETED, 0) = 0 AND ISNULL(TBL_USER_TEAM.DELETED, 0) = 0   AND TBL_USER_TEAM.PRACTICE_CODE = @PRACTICE_CODE AND TBL_USER.IS_ACTIVE = 1                 
     UNION                        
    SELECT  DISTINCT PHD.CREATED_BY AS USER_NAME, (AU.FIRST_NAME + ' '+ AU.LAST_NAME) AS NAME , EMAIL                            
    FROM FOX_TBL_PHD_CALL_DETAILS PHD  with (nolock)                            
-   LEFT JOIN FOX_TBL_APPLICATION_USER  AS AU ON  PHD.CREATED_BY = AU.USER_NAME AND AU.PRACTICE_CODE = @PRACTICE_CODE AND ISNULL(AU.DELETED,0)= 0                               
+   LEFT JOIN FOX_TBL_APPLICATION_USER  AS AU with (nolock) ON  PHD.CREATED_BY = AU.USER_NAME AND AU.PRACTICE_CODE = @PRACTICE_CODE AND ISNULL(AU.DELETED,0)= 0                               
    WHERE                    
    phd.CALL_SCENARIO in (select * from foxsplitstring(@CALL_SCANRIO_ID,',')) and              
    ISNULL(PHD.DELETED, 0) = 0                              
