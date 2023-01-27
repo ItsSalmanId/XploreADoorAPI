@@ -255,7 +255,7 @@ IF OBJECT_ID('TEMPDB..#TASK_DATA') IS NOT NULL DROP TABLE #TASK_DATA
                    AND (@LOC_ID IS NULL OR T.LOC_ID = @LOC_ID)                                                
                    AND (@CERTIFYING_REF_SOURCE_ID IS NULL OR CS.CERTIFYING_REF_SOURCE_ID = @CERTIFYING_REF_SOURCE_ID)                                                
                  AND (@OPTIION = 'CLOSED'                
-    or (@OWNER_ID IS NULL OR T.SEND_TO_ID = @OWNER_ID or T.SEND_TO_ID IN (SELECT GROUP_ID FROM FOX_TBL_USER_GROUP WHERE USER_NAME = @OWNER_NAME AND PRACTICE_CODE = @PRACTICE_CODE AND ISNULL(DELETED,0)= 0))                   
+    or (@OWNER_ID IS NULL OR T.SEND_TO_ID = @OWNER_ID or T.SEND_TO_ID IN (SELECT GROUP_ID FROM FOX_TBL_USER_GROUP with (nolock) WHERE USER_NAME = @OWNER_NAME AND PRACTICE_CODE = @PRACTICE_CODE AND ISNULL(DELETED,0)= 0))                   
      or (@IS_USER_LEVEL = 1 AND (@OPTIION = 'OPEN SENT' or @OPTIION = 'ALL') and T.CREATED_BY = @USER_NAME)                
     OR (@IS_USER_LEVEL = 0 AND @OPTIION = 'ALL' and T.CREATED_BY = @USER_NAME  AND ISNULL(IS_FINALROUTE_MARK_COMPLETE, 0) = 1)                
     )        
@@ -273,7 +273,7 @@ IF OBJECT_ID('TEMPDB..#TASK_DATA') IS NOT NULL DROP TABLE #TASK_DATA
          @OPTIION = 'OPEN'                             
         AND (                            
              (T.IS_SEND_TO_USER = 1 AND T.SEND_TO_ID = @USERID AND ISNULL(IS_SENDTO_MARK_COMPLETE, 0) = 0)                                         
-                OR (T.IS_SEND_TO_USER = 0 AND T.SEND_TO_ID IN (SELECT GROUP_ID FROM FOX_TBL_USER_GROUP WHERE USER_NAME = @USER_NAME AND PRACTICE_CODE = @PRACTICE_CODE AND ISNULL(DELETED,0)= 0) AND ISNULL(IS_SENDTO_MARK_COMPLETE, 0) = 0)               
+                OR (T.IS_SEND_TO_USER = 0 AND T.SEND_TO_ID IN (SELECT GROUP_ID FROM FOX_TBL_USER_GROUP with (nolock) WHERE USER_NAME = @USER_NAME AND PRACTICE_CODE = @PRACTICE_CODE AND ISNULL(DELETED,0)= 0) AND ISNULL(IS_SENDTO_MARK_COMPLETE, 0) = 0)               
     OR (T.IS_SEND_TO_USER = 0 AND T.SEND_TO_ID IN (SELECT GROUP_ID FROM FOX_TBL_GROUP  with (nolock) where ISNULL(DELETED,0)= 0 AND PRACTICE_CODE = @PRACTICE_CODE) AND ISNULL(IS_SENDTO_MARK_COMPLETE, 0) = 0)                                                
   
                           
@@ -284,14 +284,14 @@ IF OBJECT_ID('TEMPDB..#TASK_DATA') IS NOT NULL DROP TABLE #TASK_DATA
   OR (@OPTIION = 'CLOSED' AND (                                      
                        
        (T.IS_SEND_TO_USER = 1 AND T.SEND_TO_ID = @USERID AND ISNULL(IS_SENDTO_MARK_COMPLETE, 0) = 1)                                                            
-                         OR (T.IS_SEND_TO_USER = 0 AND T.SEND_TO_ID IN (SELECT GROUP_ID FROM FOX_TBL_USER_GROUP WHERE USER_NAME = @USER_NAME  AND ISNULL(DELETED,0)= 0) AND ISNULL(IS_SENDTO_MARK_COMPLETE, 0) = 1)                                            
+                         OR (T.IS_SEND_TO_USER = 0 AND T.SEND_TO_ID IN (SELECT GROUP_ID FROM FOX_TBL_USER_GROUP  with (nolock) WHERE USER_NAME = @USER_NAME  AND ISNULL(DELETED,0)= 0) AND ISNULL(IS_SENDTO_MARK_COMPLETE, 0) = 1)                                            
   
     
       
         
           
             
-                         OR (T.IS_SEND_TO_USER = 0 AND T.SEND_TO_ID IN (SELECT GROUP_ID FROM FOX_TBL_GROUP where ISNULL(DELETED,0)= 0 AND PRACTICE_CODE = @PRACTICE_CODE) AND ISNULL(IS_SENDTO_MARK_COMPLETE, 0) = 1)                
+                         OR (T.IS_SEND_TO_USER = 0 AND T.SEND_TO_ID IN (SELECT GROUP_ID FROM FOX_TBL_GROUP with (nolock) where ISNULL(DELETED,0)= 0 AND PRACTICE_CODE = @PRACTICE_CODE) AND ISNULL(IS_SENDTO_MARK_COMPLETE, 0) = 1)                
        OR (T.CREATED_BY = @USER_NAME AND ISNULL(IS_SENDTO_MARK_COMPLETE, 0) = 1)                
        --OR (T.IS_FINAL_ROUTE_USER = 1 AND T.FINAL_ROUTE_ID = @USERID AND ISNULL(IS_FINALROUTE_MARK_COMPLETE, 0) = 1)                                                            
                          --OR (T.IS_FINAL_ROUTE_USER = 0 AND T.FINAL_ROUTE_ID IN (SELECT GROUP_ID FROM FOX_TBL_USER_GROUP WHERE USER_NAME = @USER_NAME  AND ISNULL(DELETED,0)= 0) AND ISNULL(IS_FINALROUTE_MARK_COMPLETE, 0) = 1)                              
