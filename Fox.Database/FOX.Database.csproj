@@ -301,6 +301,8 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_PS_CALL_LOG_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PS_REGION_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PS_STATES_LIST.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_QA_DASHBOARD_DATA.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_QA_DASHBOARD_LINE_GRAPH_DATA.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_RANDOM_PATIENT_SURVEY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_RECONCILIATIONS_CP.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_RECONCILIATION_AMOUNTS.sql" />
@@ -387,6 +389,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_TASK_TYPES.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TASK_TYPE_AND_SEND_TO_AND_SUB_TYPE_ID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TASK_TYPE_AND_SEND_TO_ID.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_TEAM_EMPLOYEE_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TEAM_MEMBER_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TOTAL_PAGES.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TREATMENTLOCATION_BY_ZIP.sql" />
