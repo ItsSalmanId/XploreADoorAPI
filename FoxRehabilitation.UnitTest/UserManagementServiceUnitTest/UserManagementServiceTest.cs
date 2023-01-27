@@ -112,7 +112,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             }
             else
             {
-                Assert.IsTrue(true);             
+                Assert.IsTrue(true);
             }
         }
         [Test]
@@ -512,13 +512,13 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             {
                 Assert.IsTrue(true);
             }
-            else 
+            else
             {
                 Assert.IsFalse(false);
             }
         }
         [Test]
-        [TestCase(1011163,"test", "test")]
+        [TestCase(1011163, "test", "test")]
         [TestCase(1012714, "test", "test")]
         [TestCase(0, "test", "test")]
         public void UpdateADUserPassword_PassParameter_ReturnData(long practiceCode, string password, string hashPassword)
@@ -527,7 +527,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             _userProfile.PracticeCode = practiceCode;
             _userProfile.UserName = "testing";
             _userProfile.userID = 544596;
-     
+
             //Act
             var result = _userManagementService.UpdateADUserPassword(password, hashPassword, _userProfile);
 
@@ -543,11 +543,11 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         }
         [Test]
         [TestCase(1011163, 544100)]
-        public void GetADRole_PassParameter_ReturnData(long practiceCode, long roleId)
+        public void GetAdRole_PassParameter_ReturnData(long practiceCode, long roleId)
         {
             //Arrange
             string roleName = "Occupational Therapist";
-            
+
             //Act
             var result = _userManagementService.GetADRole(practiceCode, roleName, roleId);
 
@@ -572,7 +572,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             var result = _userManagementService.GetCurrentUserRights(roleId, practiceCode);
 
             //Assert
-            if (result !=  null)
+            if (result != null)
             {
                 Assert.IsTrue(true);
             }
@@ -880,7 +880,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             _userProfile.UserName = "1163testing";
 
             //Act
-           _userManagementService.AddUpdateUserExtension(userId, extension, isActive);
+            _userManagementService.AddUpdateUserExtension(userId, extension, isActive);
 
             //Assert
             Assert.IsTrue(true);
@@ -1338,14 +1338,14 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         public void InsertReferralRegionDashBoardAccess_PassModel_ReturnData(long referralRegionId)
         {
             //Arrange
-             List<FOX_TBL_DASHBOARD_ACCESS> fOX_TBL_DASHBOARD_ACCESSes = new List<FOX_TBL_DASHBOARD_ACCESS>()
+            List<FOX_TBL_DASHBOARD_ACCESS> fOX_TBL_DASHBOARD_ACCESSes = new List<FOX_TBL_DASHBOARD_ACCESS>()
              {
                 new FOX_TBL_DASHBOARD_ACCESS
                 {
                     DASHBOARD_ACCESS_ID = 544252,
                     ROLE_NAME = "test"
                 }
-             };      
+             };
             _userProfile.PracticeCode = 1011163;
             _userProfile.UserName = "FOX-TEAM";
 

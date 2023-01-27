@@ -7,7 +7,7 @@ using static FOX.DataModels.Models.Scheduler.SchedulerModel;
 namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
 {
     [TestFixture]
-    class SchedulerServiceTest
+    public class SchedulerServiceTest
     {
         private SchedulerService _scheduler;
         private AppointmentSearchRequest _appointmentSearchRequest;
@@ -33,7 +33,7 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
-            if(timeFrame == 1)
+            if (timeFrame == 1)
             {
                 _appointmentSearchRequest.PATIENT_ACCOUNT = "";
             }
@@ -115,7 +115,7 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
             var result = _scheduler.GetAllAppointmentsWeekly(_appointmentSearchRequest, _userProfile);
 
             //Assert
-            if (result != null )
+            if (result != null)
             {
                 Assert.IsTrue(true);
             }
@@ -244,7 +244,7 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
             var result = _scheduler.getHomePhoneInFormat(phone);
 
             //Assert
-            if (result != null && result== "Home: ")
+            if (result != null && result == "Home: ")
             {
                 Assert.IsTrue(true);
             }
@@ -257,12 +257,12 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
         [TestCase("Haider", "")]
         [TestCase("", "FC")]
         [TestCase("Haider", "FC")]
-        [TestCase(null, "" )]
-        public void GetPatientInFormat_SetPatientInFormat_ReturnData(string name, string fc)
+        [TestCase(null, "")]
+        public void GetPatientInFormat_SetPatientInFormat_ReturnData(string name, string financialClass)
         {
             //Arrange
             //Act
-            var result = _scheduler.getPatientInFormat(name, fc);
+            var result = _scheduler.getPatientInFormat(name, financialClass);
 
             //Assert
             if (result != null)
@@ -517,7 +517,7 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
             _appointment.APPOINTMENT_DATE_STR = appointmentDateStr;
             _appointment.PATIENT_ACCOUNT = 0;
             _appointment.IS_NEW = isNew;
-           
+
             //Act
             var result = _scheduler.OnSaveAddBlock(_appointment, _userProfile);
 

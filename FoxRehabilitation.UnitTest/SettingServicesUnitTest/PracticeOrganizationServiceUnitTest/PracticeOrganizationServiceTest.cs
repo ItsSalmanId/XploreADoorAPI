@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace FoxRehabilitation.UnitTest.SettingsServiceUnitTest.PracticeOrganizationServiceUnitTest
 {
     [TestFixture]
-    class PracticeOrganizationServiceTest
+    public class PracticeOrganizationServiceTest
     {
         private PracticeOrganizationService _practiceOrganizationService;
         private UserProfile _userProfile;

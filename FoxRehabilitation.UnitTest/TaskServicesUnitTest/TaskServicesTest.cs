@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
 {
     [TestFixture]
-    class TaskServicesTest
+    public class TaskServicesTest
     {
         private TaskServices _taskServices;
         private UserProfile _userProfile;
@@ -33,8 +33,8 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
             _catFieldRes = new CatFieldRes();
         }
         [Test]
-        [TestCase("", 0)]  
-        [TestCase("101116354816561", 1011163)] 
+        [TestCase("", 0)]
+        [TestCase("101116354816561", 1011163)]
         public void GetAllCasesAndTaskType_CasesAndTaskTypeListModel_ReturnData(string patientAccount, long practiceCode)
         {
             //Arrange
@@ -42,7 +42,7 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
             var result = _taskServices.GetAllCasesAndTaskType(patientAccount, practiceCode);
 
             //Assert
-            if(result != null && result.TASK_TYPE.Count > 0  && result.CASE.Count >0 )
+            if (result != null && result.TASK_TYPE.Count > 0 && result.CASE.Count > 0)
             {
                 Assert.IsTrue(true);
             }
@@ -58,7 +58,7 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
         {
             //Arrange
             //Act
-            var TaskTypeList = _taskServices.GetAllTaskType( practiceCode);
+            var TaskTypeList = _taskServices.GetAllTaskType(practiceCode);
 
             //Assert
             Assert.That(TaskTypeList.Count, Is.GreaterThanOrEqualTo(0));
@@ -85,7 +85,7 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
             var result = _taskServices.GetTaskTypeList(practiceCode);
 
             //Assert
-            if (result != null && result.Task_Types.Count>0 && result.dropDownData.CATEGORY.Count>0 && result.getTaskTemplateResponse.TASK_ALL_SUB_TYPES_LIST==null && result.getTaskTemplateResponse.Task_Sub_Types.Count>0)
+            if (result != null && result.Task_Types.Count > 0 && result.dropDownData.CATEGORY.Count > 0 && result.getTaskTemplateResponse.TASK_ALL_SUB_TYPES_LIST == null && result.getTaskTemplateResponse.Task_Sub_Types.Count > 0)
             {
                 Assert.IsTrue(true);
             }
@@ -98,11 +98,11 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
         //[TestCase(10111636)]
         [TestCase(544100, 1011163)]
         [TestCase(0, 1011163)]
-        public void GetSubTaskTypeList_TaskSubTypeModel_ReturnOrNotData(int taskTypeIdd, long practiceCode)
+        public void GetSubTaskTypeList_TaskSubTypeModel_ReturnOrNotData(int taskTypeId, long practiceCode)
         {
             //Arrange
             //Act
-            var result = _taskServices.GetSubTaskTypeList(taskTypeIdd, practiceCode);
+            var result = _taskServices.GetSubTaskTypeList(taskTypeId, practiceCode);
 
             //Assert
             Assert.That(result.Count, Is.GreaterThanOrEqualTo(0));
@@ -110,14 +110,14 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
         [Test]
         [TestCase(1011163)]
         [TestCase(1011164)]
-        public void GetDropDownData_DropDownDataModel_ReturnData( long practiceCode)
+        public void GetDropDownData_DropDownDataModel_ReturnData(long practiceCode)
         {
             //Arrange
             //Act
             var result = _taskServices.GetDropDownData(practiceCode);
 
             //Assert
-            if (result != null && result.CATEGORY.Count >0 && result.DELIVERY_METHOD.Count >0 && result.ORDER_STATUS_RESULT.Count >0 && result.SEND_CONTEXT.Count >0)
+            if (result != null && result.CATEGORY.Count > 0 && result.DELIVERY_METHOD.Count > 0 && result.ORDER_STATUS_RESULT.Count > 0 && result.SEND_CONTEXT.Count > 0)
             {
                 Assert.IsTrue(true);
             }
@@ -130,14 +130,14 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
         [TestCase(5482530, 1011163)]
         [TestCase(0, 1011163)]
         [TestCase(544112, 1011163)]
-        public void GetTaskById_ReturnNullOrTaskWithHistoryModel_ReturnData(long taskId,long practiceCode)
+        public void GetTaskById_ReturnNullOrTaskWithHistoryModel_ReturnData(long taskId, long practiceCode)
         {
             //Arrange
             //Act
-            var result = _taskServices.GetTaskById(taskId ,practiceCode);
+            var result = _taskServices.GetTaskById(taskId, practiceCode);
 
             //Assert
-            if (result != null )
+            if (result != null)
             {
                 Assert.IsTrue(true);
             }
@@ -158,7 +158,7 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
             var result = _taskServices.GetTask(taskTypeId, practiceCode);
 
             //Assert
-            if (result != null && result.Task !=null && result.TASK_ALL_SUB_TYPES_LIST==null && result.Task_Sub_Types.Count >0)
+            if (result != null && result.Task != null && result.TASK_ALL_SUB_TYPES_LIST == null && result.Task_Sub_Types.Count > 0)
             {
                 Assert.IsTrue(true);
             }
@@ -178,7 +178,7 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
             var result = _taskServices.GetTTUserList(searchText, practiceCode);
 
             //Assert
-            Assert.That(result.Count, Is.GreaterThanOrEqualTo(0)); 
+            Assert.That(result.Count, Is.GreaterThanOrEqualTo(0));
         }
         [Test]
         [TestCase("", 1011163)]
@@ -218,7 +218,7 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
             var result = _taskServices.getcategoryandfield(_userProfile);
 
             //Assert
-            if (result != null && result.Fields.Count >0 && result.categories.Count >0)
+            if (result != null && result.Fields.Count > 0 && result.categories.Count > 0)
             {
                 Assert.IsTrue(true);
             }
@@ -227,7 +227,7 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
                 Assert.IsFalse(false);
             }
         }
-      
+
         [Test]
         [TestCase("", 1011163)]
         [TestCase("test", 1011163)]
@@ -298,7 +298,7 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
             var result = _taskServices.GetTaskByGeneralNoteId(generalNoteId, practiceCode);
 
             //Assert
-            if (result != null && result.Task !=null && result.taskHistory !=null )
+            if (result != null && result.Task != null && result.taskHistory != null)
             {
                 Assert.IsTrue(true);
             }
@@ -311,7 +311,7 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
         [TestCase(5482530, 1011163)]
         [TestCase(5482532, 1011163)]
         [TestCase(0, 101111212)]
-        public void GetTaskByTaskId_TaskWithHistoryModel_ReturnData(long taskId,long PracticeCode)
+        public void GetTaskByTaskId_TaskWithHistoryModel_ReturnData(long taskId, long PracticeCode)
         {
             //Arrange
             _userProfile.PracticeCode = PracticeCode;
@@ -320,7 +320,7 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
             var result = _taskServices.GetTaskByTaskId(taskId, _userProfile);
 
             //Assert
-            if (result != null && result.Task !=null && result.taskHistory !=null )
+            if (result != null && result.Task != null && result.taskHistory != null)
             {
                 Assert.IsTrue(true);
             }
@@ -331,8 +331,8 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
         }
         [Test]
         [TestCase(null, 5481096, 5482530)]
-        [TestCase(1,2,3)]
-        public void GetTask_TaskByIdModel_NotReturnData(long patientAccount, long caseId,long taskTypeId)
+        [TestCase(1, 2, 3)]
+        public void GetTask_TaskByIdModel_NotReturnData(long patientAccount, long caseId, long taskTypeId)
         {
             //Arrange
             _userProfile.PracticeCode = 1011163;
@@ -356,10 +356,10 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
         [TestCase(1011163, 1011163415, 3)]
         [TestCase(1011163, 1011163415, 4)]
         [TestCase(1011163, 1011163416, 4)]
-        public void GetTasksNotifications_TasksNotificationsModel_ReturnData(long PracticeCode, long userID, int TIME_FRAME)
+        public void GetTasksNotifications_TasksNotificationsModel_ReturnData(long practiceCode, long userID, int TIME_FRAME)
         {
             //Arrange
-            _userProfile.PracticeCode = PracticeCode;
+            _userProfile.PracticeCode = practiceCode;
             _userProfile.userID = userID;
             _notificationRequestModel.TIME_FRAME = TIME_FRAME;
             if (TIME_FRAME == 4 && userID == 1011163416)

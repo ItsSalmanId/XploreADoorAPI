@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace FoxRehabilitation.UnitTest.SupervisorWorkServiceUnitTest
 {
     [TestFixture]
-    class SupervisorWorkServiceTest
+    public class SupervisorWorkServiceTest
     {
         private SupervisorWorkService _supervisorWorkService;
         private UserProfile _userProfile;
@@ -52,7 +52,7 @@ namespace FoxRehabilitation.UnitTest.SupervisorWorkServiceUnitTest
             var result = _supervisorWorkService.GetSupervisorList(_supervisorWorkRequest, _userProfile);
 
             //Assert
-            if (result != null && result.Count >0)
+            if (result != null && result.Count > 0)
             {
                 Assert.IsTrue(true);
             }
@@ -63,13 +63,13 @@ namespace FoxRehabilitation.UnitTest.SupervisorWorkServiceUnitTest
         }
         [Test]
         [TestCase(1011163, "asd_5482973")]
-        [TestCase(1011163,"test")]
-        [TestCase(0,"")]
-        public void GetIndxersAndSupervisorsForDropdown_IndxersAndSupervisorsForDropdownModel_ReturnData( long practiceCode , string userName)
+        [TestCase(1011163, "test")]
+        [TestCase(0, "")]
+        public void GetIndxersAndSupervisorsForDropdown_IndxersAndSupervisorsForDropdownModel_ReturnData(long practiceCode, string userName)
         {
             //Arrange
             //Act
-            var result = _supervisorWorkService.GetIndxersAndSupervisorsForDropdown( practiceCode, userName);
+            var result = _supervisorWorkService.GetIndxersAndSupervisorsForDropdown(practiceCode, userName);
 
             //Assert
             if (result != null && result.Count > 0)
@@ -85,11 +85,11 @@ namespace FoxRehabilitation.UnitTest.SupervisorWorkServiceUnitTest
         [TestCase(544557)]
         [TestCase(5448057)]
         [TestCase(1011163)]
-        public void GetWorkTransferComments_WorkTransferCommentsModel_ReturnData(long Work_Id)
+        public void GetWorkTransferComments_WorkTransferCommentsModel_ReturnData(long workId)
         {
             //Arrange
             //Act
-            var result = _supervisorWorkService.GetWorkTransferComments(Work_Id);
+            var result = _supervisorWorkService.GetWorkTransferComments(workId);
 
             //Assert
             if (result != null && result.Count > 0)

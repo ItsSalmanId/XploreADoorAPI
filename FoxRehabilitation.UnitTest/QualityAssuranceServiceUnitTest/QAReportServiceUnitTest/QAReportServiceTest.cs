@@ -5,7 +5,8 @@ using NUnit.Framework;
 
 namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
 {
-    class QAReportServiceTest
+    [TestFixture]
+    public class QAReportServiceTest
     {
         private QAReportService _qAReportService;
         private QAReportSearchRequest _qAReportSearchRequest;
@@ -34,7 +35,7 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             {
                 Assert.IsTrue(true);
             }
-            else if(result.Count > 0)
+            else if (result.Count > 0)
             {
                 Assert.IsFalse(false);
             }
@@ -83,7 +84,7 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             _qAReportSearchRequest.CALL_TYPE = "PHD";
             _qAReportSearchRequest.PHD_CALL_SCENARIO_ID = 544106;
             _qAReportSearchRequest.AUDITOR_NAME = auditorName;
-            
+
             //Act
             var result = _qAReportService.AuditReport(_qAReportSearchRequest, _userProfile);
 

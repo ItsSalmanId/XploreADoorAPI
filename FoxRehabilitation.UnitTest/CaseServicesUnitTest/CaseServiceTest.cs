@@ -7,7 +7,8 @@ using System.Collections.Generic;
 
 namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
 {
-    class CaseServiceTest
+    [TestFixture]
+    public class CaseServiceTest
     {
         private CaseServices _caseServices;
         private SmartIdentifierReq _smartIdentifierReq;
@@ -145,7 +146,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
         [TestCase(null)]
         [TestCase(1011163)]
         [TestCase(38403)]
-        public void GetAllIdentifierANDSourceofReferralList_InactiveReferalList_ReturnData(long practiceCode)
+        public void GetAllIdentifierAndSourceofReferralList_InactiveReferalList_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -191,7 +192,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
         [TestCase("", 1011163)]
         [TestCase("HOLD", 1011163)]
         [TestCase("test", 1011163)]
-        public void GetNONandHOLDIssueList_NoNandHOLDAllList_ReturnData(string type, long practiceCode)
+        public void GetNonandHoldIssueList_NoNandHoldAllList_ReturnData(string type, long practiceCode)
         {
             //Arrange
             _getOpenIssueListReq.TYPE = type;
@@ -405,7 +406,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
         [TestCase(0, 1011163)]
         [TestCase(5481040, 1011163)]
         [TestCase(38403, 38403)]
-        public void GetOrdering_Ref_Source_info_PassParameters_ReturnData(long caseId, long practiceCode)
+        public void GetOrderingRefSourceInfo_PassParameters_ReturnData(long caseId, long practiceCode)
         {
             //Arrange
             _getOrderingRefSourceinfoReq.CASE_ID = caseId;
