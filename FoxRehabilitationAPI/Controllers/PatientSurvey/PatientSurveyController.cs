@@ -31,9 +31,14 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpPost]
         public HttpResponseMessage UpdatePatientSurvey(FOX.DataModels.Models.PatientSurvey.PatientSurvey patientSurvey)
         {
-            _patientSurveyService.UpdatePatientSurvey(patientSurvey, GetProfile());
-            var response = Request.CreateResponse(HttpStatusCode.OK, "Add/Update successfull");
-            return response;
+            if (patientSurvey != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.UpdatePatientSurvey(patientSurvey, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient survey model is empty");
+            }
         }
 
         [HttpGet]
