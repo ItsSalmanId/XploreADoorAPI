@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountServiceUnitTest\AccountServiceTest.cs" />
+    <Compile Include="CaseServicesUnitTest\CaseServiceTest.cs" />
     <Compile Include="CommonServiceUnitTest\CommonServiceTest.cs" />
     <Compile Include="DashboardServiceUnitTest\DashoboardServiceTest.cs" />
     <Compile Include="FoxPHDServiceUnitTest\FoxPHDServiceTest.cs" />
@@ -76,11 +77,16 @@
     <Compile Include="QualityAssuranceServiceUnitTest\EvaluationSetupServiceUnitTest\EvaluationSetupServiceTest.cs" />
     <Compile Include="QualityAssuranceServiceUnitTest\PerformAuditServiceUnitTest\PerformAuditServiceTest.cs" />
     <Compile Include="QualityAssuranceServiceUnitTest\QADashboardServiceUnitTest\QADashboardServiceTest.cs" />
+    <Compile Include="QualityAssuranceServiceUnitTest\QAReportServiceUnitTest\QAReportServiceTest.cs" />
     <Compile Include="RequestForOrderUnitTest\RequestForOrderServiceTest.cs" />
     <Compile Include="RequestForOrderUnitTest\IndexInformationServiceUnitTest\IndexInformationServiceTest.cs" />
+    <Compile Include="SchedulerUnitTest\SchedulerServiceTest.cs" />
     <Compile Include="SearchOrderServicesUnitTest\SearchOrderServicesTest.cs" />
     <Compile Include="SettingServicesUnitTest\AnnouncementUnitTest\AnnouncementTest.cs" />
     <Compile Include="SurveyAutomationUnitTest\SurveyAutomationServiceTest.cs" />
+    <Compile Include="SettingServicesUnitTest\PracticeOrganizationServiceUnitTest\PracticeOrganizationServiceTest.cs" />
+    <Compile Include="SupervisorWorkServiceUnitTest\SupervisorWorkServiceTest.cs" />
+    <Compile Include="TaskServicesUnitTest\TaskServicesTest.cs" />
     <Compile Include="UnAssignedQueueServiceUnitTest\UnAssignedQueueServiceTest.cs" />
     <Compile Include="UserManagementServiceUnitTest\UserManagementServiceTest.cs" />
     <Compile Include="SignatureRequiredServiceUnitTest\SignatureRequiredServiceTest.cs" />
@@ -97,6 +103,10 @@
     <ProjectReference Include="..\FOX.DataModels\FOX.DataModels.csproj">
       <Project>{9c6c8755-6d00-4077-aa6c-2df8f811ac8c}</Project>
       <Name>FOX.DataModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FoxRehabilitationAPI\FoxRehabilitationAPI.csproj">
+      <Project>{7B67705C-27C3-4BBD-B689-1F43F56C9665}</Project>
+      <Name>FoxRehabilitationAPI</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

@@ -1,7 +1,7 @@
--- Modified By : <AFTAB AHMED KHAN, 09/29/2022>      
--- DESCRIPTION: <OFFSET CLOUSE ISSUE FIXING>   
+-- Modified By : <Irfan Ullah, 01/16/2023>      
+-- DESCRIPTION: <THIS SP IS USED TO GET DATA OF PATIENT IN INDEXINFO>   
 --exec [FOX_PROC_GET_PATIENT_FOR_INDEX_INFO] '','','g','','','',1011163,1,100000,'','',1        
-CREATE PROCEDURE [dbo].[FOX_PROC_GET_PATIENT_FOR_INDEX_INFO] --'','','','','','',10111663,1,1,'','',1  
+CREATE PROCEDURE [dbo].[FOX_PROC_GET_PATIENT_FOR_INDEX_INFO] --'','','','','','',10111663,1,0,'','',1  
 (                      
 @First_Name VARCHAR(50)                      
 ,@Last_Name VARCHAR(50)                      
@@ -84,11 +84,10 @@ IF (@Gender='')
 BEGIN                      
 SET @Gender=NULL                      
 END                      
-ELSE                      
+                
 IF (@RECORD_PER_PAGE=0)                      
 BEGIN                      
-SELECT @RECORD_PER_PAGE=COUNT(*)                      
-FROM PATIENT with (nolock)                   
+SELECT @RECORD_PER_PAGE=10                  
 END                      
 ELSE                      
 BEGIN                      
@@ -338,10 +337,6 @@ FETCH NEXT @RECORD_PER_PAGE ROWS ONLY'
 --print @StringQuery                      
 EXECUTE SP_EXECUTESQL @StringQuery                      
 ,N'@First_Name VARCHAR(50),@Last_Name VARCHAR(50),@Middle_Name VARCHAR(50),@SSN VARCHAR(9),@Gender VARCHAR(15),@DOB VARCHAR(50),@CHART_ID VARCHAR(100),@Patient_Alias BIT,@IS_ACQUISITION BIT,@PRACTICE_CODE BIGINT,@PRACTICE_ORGANIZATION_ID BIGINT          
-  
-    
-      
-           
 ,@CURRENT_PAGE INT,@RECORD_PER_PAGE INT, @TOATL_PAGESUDM FLOAT, @TOTAL_RECORDS INT, @START_FROM INT'                      
 ,@First_Name                      
 ,@Last_Name                      
@@ -360,3 +355,4 @@ EXECUTE SP_EXECUTESQL @StringQuery
 ,@TOTAL_RECORDS                      
 ,@START_FROM                      
 END  
+  
