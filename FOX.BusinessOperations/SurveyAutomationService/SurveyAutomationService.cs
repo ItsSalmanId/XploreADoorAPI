@@ -42,10 +42,13 @@ namespace FOX.BusinessOperations.SurveyAutomationService
          {
             if (objSurveyAutomation != null && !string.IsNullOrEmpty(objSurveyAutomation.PATIENT_ACCOUNT))
             {
+                long tempSurveyId = long.Parse(objSurveyAutomation.PATIENT_ACCOUNT);
+                var existingPatientDetails = _patientSurveyRepository.GetFirst(r => r.SURVEY_ID == tempSurveyId && r.DELETED == false);
                 long getPracticeCode = AppConfiguration.GetPracticeCode;
                 SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = getPracticeCode };
-                SqlParameter patientAccountNumber = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = objSurveyAutomation.PATIENT_ACCOUNT };
-                var performSurveyHistory = SpRepository<SurveyAutomationLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PERFORM_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT, @PRACTICE_CODE", patientAccountNumber, pracCode);
+                SqlParameter patientAccountNumber = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = existingPatientDetails.PATIENT_ACCOUNT_NUMBER };
+                SqlParameter surveyId = new SqlParameter { ParameterName = "@SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = tempSurveyId };
+                var performSurveyHistory = SpRepository<SurveyAutomationLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PERFORM_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT, @PRACTICE_CODE, @SURVEY_ID", patientAccountNumber, pracCode, surveyId);
                 if (performSurveyHistory != null)
                 {
                     objSurveyAutomation = null;
@@ -53,8 +56,9 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                 else
                 {
                     SqlParameter practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = getPracticeCode };
-                    SqlParameter patientAccount = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = objSurveyAutomation.PATIENT_ACCOUNT };
-                    objSurveyAutomation = SpRepository<SurveyAutomation>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT, @PRACTICE_CODE", patientAccount, practiceCode);
+                    SqlParameter patientAccount = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = existingPatientDetails.PATIENT_ACCOUNT_NUMBER };
+                    SqlParameter surveyIdd = new SqlParameter { ParameterName = "@SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = tempSurveyId };
+                    objSurveyAutomation = SpRepository<SurveyAutomation>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT, @PRACTICE_CODE, @SURVEY_ID", patientAccount, practiceCode, surveyIdd);
                 }
             }
             else
@@ -122,39 +126,49 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             {
                 if (objPatientSurvey != null && objPatientSurvey.PATIENT_ACCOUNT_NUMBER != 0)
                 {
-                    long practiceCode = AppConfiguration.GetPracticeCode;
-                    var existingPatientDetails = _patientSurveyRepository.GetFirst(r => r.PATIENT_ACCOUNT_NUMBER == objPatientSurvey.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == objPatientSurvey.SURVEY_ID && r.DELETED == false);
-                    PatientSurvey patientSurvey = new PatientSurvey();
-                    if (existingPatientDetails != null)
+                    var existingSurveyDetails = _patientSurveyRepository.GetFirst(r => r.PATIENT_ACCOUNT_NUMBER == objPatientSurvey.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == objPatientSurvey.SURVEY_ID && r.IS_SURVEYED == true && r.DELETED == false);
+                    if (existingSurveyDetails == null)
                     {
-                        objPatientSurvey.SURVEY_ID = existingPatientDetails.SURVEY_ID;
-                        AddPatientSurvey(objPatientSurvey);
-                        existingPatientDetails.IS_CONTACT_HQ = objPatientSurvey.IS_CONTACT_HQ;
-                        existingPatientDetails.IS_REFERABLE = objPatientSurvey.IS_REFERABLE;
-                        existingPatientDetails.IS_IMPROVED_SETISFACTION = objPatientSurvey.IS_IMPROVED_SETISFACTION;
-                        existingPatientDetails.FEEDBACK = objPatientSurvey.FEEDBACK;
-                        existingPatientDetails.SURVEY_STATUS_BASE = "Completed";
-                        existingPatientDetails.SURVEY_STATUS_CHILD = "Completed Survey";
-                        existingPatientDetails.MODIFIED_BY = "1163testing";
-                        existingPatientDetails.IS_SURVEYED = true;
-                        existingPatientDetails.IN_PROGRESS = false;
-                        existingPatientDetails.SURVEY_FORMAT_TYPE = "New Format";
-                        existingPatientDetails.SURVEY_COMPLETED_DATE = Helper.GetCurrentDate();
-                        existingPatientDetails.MODIFIED_DATE = Helper.GetCurrentDate();
-                        existingPatientDetails.DELETED = false;
-                        if(objPatientSurvey.IS_REFERABLE == true && objPatientSurvey.IS_REFERABLE != null)
+                        long practiceCode = AppConfiguration.GetPracticeCode;
+                        var existingPatientDetails = _patientSurveyRepository.GetFirst(r => r.PATIENT_ACCOUNT_NUMBER == objPatientSurvey.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == objPatientSurvey.SURVEY_ID && r.DELETED == false);
+                        PatientSurvey patientSurvey = new PatientSurvey();
+                        if (existingPatientDetails != null)
                         {
-                            existingPatientDetails.SURVEY_FLAG = "Green";
+                            objPatientSurvey.SURVEY_ID = existingPatientDetails.SURVEY_ID;
+                            AddPatientSurvey(objPatientSurvey);
+                            existingPatientDetails.IS_CONTACT_HQ = objPatientSurvey.IS_CONTACT_HQ;
+                            existingPatientDetails.IS_REFERABLE = objPatientSurvey.IS_REFERABLE;
+                            existingPatientDetails.IS_IMPROVED_SETISFACTION = objPatientSurvey.IS_IMPROVED_SETISFACTION;
+                            existingPatientDetails.FEEDBACK = objPatientSurvey.FEEDBACK;
+                            existingPatientDetails.SURVEY_STATUS_BASE = "Completed";
+                            existingPatientDetails.SURVEY_STATUS_CHILD = "Completed Survey";
+                            existingPatientDetails.MODIFIED_BY = "1163testing";
+                            existingPatientDetails.IS_SURVEYED = true;
+                            existingPatientDetails.IN_PROGRESS = false;
+                            existingPatientDetails.SURVEY_FORMAT_TYPE = "New Format";
+                            existingPatientDetails.SURVEY_COMPLETED_DATE = Helper.GetCurrentDate();
+                            existingPatientDetails.MODIFIED_DATE = Helper.GetCurrentDate();
+                            existingPatientDetails.DELETED = false;
+                            if (objPatientSurvey.IS_REFERABLE == true && objPatientSurvey.IS_REFERABLE != null)
+                            {
+                                existingPatientDetails.SURVEY_FLAG = "Green";
+                            }
+                            else
+                            {
+                                existingPatientDetails.SURVEY_FLAG = "Red";
+                            }
+                            _patientSurveyRepository.Update(existingPatientDetails);
+                            _patientSurveyRepository.Save();
+                            response.ErrorMessage = "";
+                            response.Message = "Suvery completed successfully";
+                            response.Success = true;
                         }
                         else
                         {
-                            existingPatientDetails.SURVEY_FLAG = "Red";
-                        }  
-                        _patientSurveyRepository.Update(existingPatientDetails);
-                        _patientSurveyRepository.Save();
-                        response.ErrorMessage = "";
-                        response.Message = "Suvery completed successfully";
-                        response.Success = true;
+                            response.ErrorMessage = "";
+                            response.Message = "Suvery not completed successfully";
+                            response.Success = false;
+                        }
                     }
                     else
                     {

@@ -29,6 +29,6 @@ namespace FOX.BusinessOperations.PatientSurveyService
         string GetPSFormat(long practiceCode);
         bool UpdatePSFormat(string format, UserProfile profile);
         PatientSurvey GetSurveyDetailedFromEmail(string surveyId, long practiceCode);
-        List<SurveyServiceLog> SurveyPerformByUser(long patientAccount, long practiceCode);
+        List<SurveyServiceLog> SurveyPerformByUser(SelectiveSurveyList objSelectiveSurveyList, long practiceCode);
     }
 }

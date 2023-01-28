@@ -143,8 +143,16 @@ namespace FOX.DataModels.Models.PatientSurvey
         [Key]
         public long SURVEY_AUTOMATION_LOG_ID { get; set; }
         public long? PATIENT_ACCOUNT { get; set; }
+        public long? SURVEY_ID { get; set; }
         public long? PRACTICE_CODE { get; set; }
         public bool DELETED { get; set; }
+    }
+    public class SelectiveSurveyList
+    {
+        public long PATIENT_ACCOUNT_NUMBER { get; set; }
+        public string PT_OT_SLP { get; set; }
+        public long SURVEY_ID { get; set; }
+        public string SERVICE_OR_PAYMENT_DESCRIPTION { get; set; }
     }
 
     [Table("FOX_TBL_PATIENT_SURVEY_HISTORY")]

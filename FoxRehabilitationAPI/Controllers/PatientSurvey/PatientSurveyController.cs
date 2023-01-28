@@ -2,6 +2,7 @@
 using FOX.DataModels.Models.PatientSurvey;
 using FoxRehabilitationAPI.Filters;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -183,12 +184,12 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetSurveyDetailedFromEmail(surveyId, GetProfile().PracticeCode));
         }
-        [HttpGet]
-        public HttpResponseMessage SurveyPerformByUser(long patientAccount)
+        [HttpPost]
+        public HttpResponseMessage SurveyPerformByUser(SelectiveSurveyList objSelectiveSurveyList)
         {
-            if (patientAccount != 0)
+            if (objSelectiveSurveyList != null)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.SurveyPerformByUser(patientAccount, GetProfile().PracticeCode));
+                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.SurveyPerformByUser(objSelectiveSurveyList, GetProfile().PracticeCode));
             }
             else
             {
