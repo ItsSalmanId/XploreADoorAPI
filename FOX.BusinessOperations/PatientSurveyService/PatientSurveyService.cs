@@ -726,13 +726,15 @@ namespace FOX.BusinessOperations.PatientSurveyService
 
         }
         // Description: This function is trigger to get details of survey, performed by patient (Survey Automation)
-        public List<SurveyServiceLog> SurveyPerformByUser(SelectiveSurveyList objSelectiveSurveyListlong, long practiceCode)
+        public PatientSurvey SurveyPerformByUser(SelectiveSurveyList objSelectiveSurveyListlong, long practiceCode)
         {
-            List<SurveyServiceLog> performSurveyDetails = new List<SurveyServiceLog>();
+            List<SurveyServiceLog> performSurveyDetailss = new List<SurveyServiceLog>();
 
+              PatientSurvey performSurveyDetails = new PatientSurvey();
             if (objSelectiveSurveyListlong != null && practiceCode != 0)
             {
-                performSurveyDetails = _surveyServiceLogRepository.GetMany(r => r.PATIENT_ACCOUNT == objSelectiveSurveyListlong.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == objSelectiveSurveyListlong.SURVEY_ID && r.PRACTICE_CODE == practiceCode && r.DELETED == false);
+                performSurveyDetails = _patientSurveyRepository.GetFirst(r => r.PATIENT_ACCOUNT_NUMBER == objSelectiveSurveyListlong.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == objSelectiveSurveyListlong.SURVEY_ID && r.PRACTICE_CODE == practiceCode && r.IS_SURVEYED == true && r.DELETED == false);
+                performSurveyDetailss = _surveyServiceLogRepository.GetMany(r => r.PATIENT_ACCOUNT == objSelectiveSurveyListlong.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == objSelectiveSurveyListlong.SURVEY_ID && r.PRACTICE_CODE == practiceCode && r.DELETED == false);
             }
             return performSurveyDetails;
         }
