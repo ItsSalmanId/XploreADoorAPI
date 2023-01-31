@@ -82,6 +82,19 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 var existingSurveyDetails = _patientSurveyRepository.GetFirst(r => r.PATIENT_ACCOUNT_NUMBER == patientSurvey.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == patientSurvey.SURVEY_ID && r.IS_SURVEYED == true && r.DELETED == false);
                 if (existingSurveyDetails == null)
                 {
+                    SurveyServiceLog surveyServiceLog = new SurveyServiceLog();
+                     surveyServiceLog = _surveyServiceLogRepository.GetFirst(r => r.PATIENT_ACCOUNT == patientSurvey.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == patientSurvey.SURVEY_ID && r.PRACTICE_CODE == patientSurvey.PRACTICE_CODE && r.DELETED == false);
+                    if (surveyServiceLog != null)
+                    {
+                        surveyServiceLog = _surveyServiceLogRepository.GetByID(surveyServiceLog.SURVEY_AUTOMATION_LOG_ID);
+                        surveyServiceLog.DELETED = true;
+                        surveyServiceLog.IS_SMS = false;
+                        surveyServiceLog.IS_EMAIL = false;
+                        _surveyServiceLogRepository.Update(surveyServiceLog);
+                        _surveyServiceLogRepository.Save();
+                    }
+
+
                     //if (patientSurvey.IS_SURVEYED == true)
                     //{
                     //    AddPatientSurveyHistory(dbSurvey, profile);
@@ -726,17 +739,21 @@ namespace FOX.BusinessOperations.PatientSurveyService
 
         }
         // Description: This function is trigger to get details of survey, performed by patient (Survey Automation)
-        public PatientSurvey SurveyPerformByUser(SelectiveSurveyList objSelectiveSurveyListlong, long practiceCode)
+        public SurveyServiceLog SurveyPerformByUser(SelectiveSurveyList objSelectiveSurveyListlong, long practiceCode)
         {
             List<SurveyServiceLog> performSurveyDetailss = new List<SurveyServiceLog>();
-
-              PatientSurvey performSurveyDetails = new PatientSurvey();
+            PatientSurvey performSurveyDetails = new PatientSurvey();
+            SurveyServiceLog surveyServiceLog = new SurveyServiceLog();
             if (objSelectiveSurveyListlong != null && practiceCode != 0)
             {
-                performSurveyDetails = _patientSurveyRepository.GetFirst(r => r.PATIENT_ACCOUNT_NUMBER == objSelectiveSurveyListlong.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == objSelectiveSurveyListlong.SURVEY_ID && r.PRACTICE_CODE == practiceCode && r.IS_SURVEYED == true && r.DELETED == false);
-                performSurveyDetailss = _surveyServiceLogRepository.GetMany(r => r.PATIENT_ACCOUNT == objSelectiveSurveyListlong.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == objSelectiveSurveyListlong.SURVEY_ID && r.PRACTICE_CODE == practiceCode && r.DELETED == false);
+                SqlParameter surveyId = new SqlParameter { ParameterName = "@SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = objSelectiveSurveyListlong.SURVEY_ID };
+                SqlParameter praCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
+                surveyServiceLog = SpRepository<SurveyServiceLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_AUTOMATED_PERFORM_SURVEY_DETAILS  @SURVEY_ID, @PRACTICE_CODE", surveyId, praCode);
+
+               // performSurveyDetails = _patientSurveyRepository.GetFirst(r => r.PATIENT_ACCOUNT_NUMBER == objSelectiveSurveyListlong.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == objSelectiveSurveyListlong.SURVEY_ID && r.PRACTICE_CODE == practiceCode && r.IS_SURVEYED == true && r.IS_EMAIL == true && r.DELETED == false);
+                //performSurveyDetailss = _surveyServiceLogRepository.GetMany(r => r.PATIENT_ACCOUNT == objSelectiveSurveyListlong.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == objSelectiveSurveyListlong.SURVEY_ID && r.PRACTICE_CODE == practiceCode && r.DELETED == false);
             }
-            return performSurveyDetails;
+            return surveyServiceLog;
         }
         public List<string> GetPatientSurveytProviderList(long practiceCode)
         {

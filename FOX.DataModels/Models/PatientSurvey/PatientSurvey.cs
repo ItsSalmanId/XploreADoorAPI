@@ -144,8 +144,16 @@ namespace FOX.DataModels.Models.PatientSurvey
         public long SURVEY_AUTOMATION_LOG_ID { get; set; }
         public long? PATIENT_ACCOUNT { get; set; }
         public long? SURVEY_ID { get; set; }
+        public string FILE_NAME { get; set; }
         public long? PRACTICE_CODE { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime? CREATED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public DateTime? MODIFIED_DATE { get; set; }
         public bool DELETED { get; set; }
+        public bool? IS_SMS { get; set; }
+        public bool? IS_EMAIL { get; set; }
+
     }
     public class SelectiveSurveyList
     {

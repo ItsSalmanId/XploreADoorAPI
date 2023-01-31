@@ -142,7 +142,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                             existingPatientDetails.FEEDBACK = objPatientSurvey.FEEDBACK;
                             existingPatientDetails.SURVEY_STATUS_BASE = "Completed";
                             existingPatientDetails.SURVEY_STATUS_CHILD = "Completed Survey";
-                            existingPatientDetails.MODIFIED_BY = "1163testing";
+                            existingPatientDetails.MODIFIED_BY = "Automation_5483326";
                             existingPatientDetails.IS_SURVEYED = true;
                             existingPatientDetails.IN_PROGRESS = false;
                             existingPatientDetails.SURVEY_FORMAT_TYPE = "New Format";
