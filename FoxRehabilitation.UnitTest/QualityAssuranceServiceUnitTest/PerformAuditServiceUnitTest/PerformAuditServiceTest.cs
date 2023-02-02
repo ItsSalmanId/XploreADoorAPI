@@ -146,7 +146,7 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             //Assert
             if (result.Count > 0)
             {
-                Assert.Pass("Failed");
+                Assert.Pass("Passed");
             }
         }
         [Test]
@@ -170,7 +170,7 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             //Assert
             if (result.Count > 0)
             {
-                Assert.Pass("Failed");
+                Assert.Pass("Passed");
             }
         }
         [Test]
