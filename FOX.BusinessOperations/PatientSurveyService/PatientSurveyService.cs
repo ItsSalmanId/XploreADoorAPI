@@ -93,8 +93,6 @@ namespace FOX.BusinessOperations.PatientSurveyService
                         _surveyServiceLogRepository.Update(surveyServiceLog);
                         _surveyServiceLogRepository.Save();
                     }
-
-
                     //if (patientSurvey.IS_SURVEYED == true)
                     //{
                     //    AddPatientSurveyHistory(dbSurvey, profile);
@@ -741,17 +739,12 @@ namespace FOX.BusinessOperations.PatientSurveyService
         // Description: This function is trigger to get details of survey, performed by patient (Survey Automation)
         public SurveyServiceLog SurveyPerformByUser(SelectiveSurveyList objSelectiveSurveyListlong, long practiceCode)
         {
-            List<SurveyServiceLog> performSurveyDetailss = new List<SurveyServiceLog>();
-            PatientSurvey performSurveyDetails = new PatientSurvey();
             SurveyServiceLog surveyServiceLog = new SurveyServiceLog();
             if (objSelectiveSurveyListlong != null && practiceCode != 0)
             {
                 SqlParameter surveyId = new SqlParameter { ParameterName = "@SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = objSelectiveSurveyListlong.SURVEY_ID };
-                SqlParameter praCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
-                surveyServiceLog = SpRepository<SurveyServiceLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_AUTOMATED_PERFORM_SURVEY_DETAILS  @SURVEY_ID, @PRACTICE_CODE", surveyId, praCode);
-
-               // performSurveyDetails = _patientSurveyRepository.GetFirst(r => r.PATIENT_ACCOUNT_NUMBER == objSelectiveSurveyListlong.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == objSelectiveSurveyListlong.SURVEY_ID && r.PRACTICE_CODE == practiceCode && r.IS_SURVEYED == true && r.IS_EMAIL == true && r.DELETED == false);
-                //performSurveyDetailss = _surveyServiceLogRepository.GetMany(r => r.PATIENT_ACCOUNT == objSelectiveSurveyListlong.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == objSelectiveSurveyListlong.SURVEY_ID && r.PRACTICE_CODE == practiceCode && r.DELETED == false);
+                SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
+                surveyServiceLog = SpRepository<SurveyServiceLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_AUTOMATED_PERFORM_SURVEY_DETAILS  @SURVEY_ID, @PRACTICE_CODE", surveyId, pracCode);
             }
             return surveyServiceLog;
         }
@@ -759,6 +752,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
         {
             return _patientSurveyRepository.GetMany(x => x.PRACTICE_CODE == practiceCode).Select(x => x.PROVIDER).Distinct().ToList();
         }
+
         public PSDResults GetPSDResults(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile) // PSD => Patient Survey Dashboard.
         {
             patientSurveySearchRequest.DATE_TO = Helper.GetCurrentDate();

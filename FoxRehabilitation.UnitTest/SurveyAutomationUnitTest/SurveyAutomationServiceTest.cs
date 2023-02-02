@@ -6,7 +6,7 @@ using static FOX.DataModels.Models.SurveyAutomation.SurveyAutomations;
 namespace FoxRehabilitation.UnitTest.SurveyAutomationUnitTest
 {
     [TestFixture]
-    class SurveyAutomationServiceTest
+    public class SurveyAutomationServiceTest
     {
         private SurveyAutomationService _surveyAutomationService;
         private SurveyLink _surveyLink;

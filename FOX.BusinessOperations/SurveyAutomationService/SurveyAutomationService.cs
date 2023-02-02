@@ -203,7 +203,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                         SURVEY_STATUS_BASE = "Completed",
                         SURVEY_STATUS_CHILD = "Completed Survey",
                         DELETED = false,
-                        CREATED_BY = "FOX-TEAM",
+                        CREATED_BY = "Automation_5483326",
                         SURVEY_DATE = Helper.GetCurrentDate(),
                         CREATED_DATE = Helper.GetCurrentDate()
                     };
