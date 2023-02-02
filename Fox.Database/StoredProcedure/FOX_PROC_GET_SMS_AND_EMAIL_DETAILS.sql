@@ -1,4 +1,4 @@
-   -- =============================================      
+-- =============================================      
 -- Author:  Muhammad Salman     
 -- Create date: 12/22/2022      
 -- Description: This SP trigger to get send Sms And Email details for survey automation service      
