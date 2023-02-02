@@ -3133,6 +3133,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
 
         public bool CheckisTalkrehab(string practiceCode)
         {
+            practiceCode = String.IsNullOrEmpty(practiceCode) || practiceCode=="undefined" ? "0" : practiceCode;
             SqlParameter pracCode = new SqlParameter("@Practice_code", practiceCode);
             var response = SpRepository<string>.GetSingleObjectWithStoreProcedure(@"Exec Af_proc_is_talkrehab_practice @Practice_code", pracCode);
             if (response == null)
