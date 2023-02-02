@@ -78,7 +78,7 @@ namespace FoxRehabilitation.UnitTest.SettingsServiceUnitTest.FacilityLocationSer
         [TestCase("1011163", 6002595, "101116354412309")]
         [TestCase("5483663", 600126, "101116354815314")]
 
-        public void GetFacilityLocationById_ReturnFacilityLocationById_ReturnData(string practiceCode, long Location_id, string PATIENT_ACCOUNT)
+        public void GetFacilityLocationById_ReturnFacilityLocationById_ReturnData(string practiceCode, long LocationId, string patientAccount)
         {
             //Arrange
             _facilityLocation.CODE = "";
@@ -92,8 +92,8 @@ namespace FoxRehabilitation.UnitTest.SettingsServiceUnitTest.FacilityLocationSer
             _facilityLocation.PATIENT_ACCOUNT = 0;
             _facilityLocation.PATIENT_ACCOUNT = 0;
             _facilityLocation.PATIENT_ACCOUNT = 0;
-            _locationPatientAccount.Location_id = Location_id;
-            _locationPatientAccount.PATIENT_ACCOUNT = PATIENT_ACCOUNT;
+            _locationPatientAccount.Location_id = LocationId;
+            _locationPatientAccount.PATIENT_ACCOUNT = patientAccount;
 
             //Act
             var result = _facilityLocationService.GetFacilityLocationById(_locationPatientAccount, practiceCode);
