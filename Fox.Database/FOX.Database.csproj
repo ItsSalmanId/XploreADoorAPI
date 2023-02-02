@@ -139,6 +139,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_ASSOCIATED_REAGION_DATA.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_AUDITED_CALL_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_AUDITOR_NAME_LIST.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_AUTOMATED_PERFORM_SURVEY_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_AUTO_INDEXING_SERCVICE_CONFIG.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_AUTO_INDEXING_SERVICE_LAST_EXECUTION_DATE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_AUTO_PHR_PATIENT_INVITE_EMAILS_SERVICE.sql" />
