@@ -79,8 +79,11 @@ namespace FOX.BusinessOperations.PatientSurveyService
             var dbSurvey = _patientSurveyRepository.GetByID(patientSurvey.SURVEY_ID);
             if (dbSurvey != null) //update
             {
-                var existingSurveyDetails = _patientSurveyRepository.GetFirst(r => r.PATIENT_ACCOUNT_NUMBER == patientSurvey.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == patientSurvey.SURVEY_ID && r.IS_SURVEYED == true && r.DELETED == false);
-                if (existingSurveyDetails == null)
+                long getPracticeCode = AppConfiguration.GetPracticeCode;
+                SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = getPracticeCode };
+                SqlParameter patientSurveyId = new SqlParameter { ParameterName = "@SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = patientSurvey.SURVEY_ID };
+                var automatePerformSurvey = SpRepository<PatientSurvey>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_EXISTING_SURVEY_DETAIL @PRACTICE_CODE, @SURVEY_ID", pracCode, patientSurveyId);        
+                if (automatePerformSurvey == null)
                 {
                     SurveyServiceLog surveyServiceLog = new SurveyServiceLog();
                      surveyServiceLog = _surveyServiceLogRepository.GetFirst(r => r.PATIENT_ACCOUNT == patientSurvey.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == patientSurvey.SURVEY_ID && r.PRACTICE_CODE == patientSurvey.PRACTICE_CODE && r.DELETED == false);
