@@ -18,12 +18,13 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<PatientSurveyCallLog>().Property(t => t.SURVEY_CALL_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<PatientSurveyFormatType>().Property(t => t.SURVEY_FORMAT_TYPE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<RoleToAdd>().Property(t => t.ROLE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
-
+            modelBuilder.Entity<SurveyServiceLog>().Property(t => t.SURVEY_AUTOMATION_LOG_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
         }
         public virtual DbSet<PatientSurvey> PatientSurvey { get; set; }
         public virtual DbSet<PatientSurveyHistory> PatientSurveyHistory { get; set; }
         public virtual DbSet<PatientSurveyCallLog> PatientSurveyCallLog { get; set; }
         public virtual DbSet<PatientSurveyFormatType> PatientSurveyFormatType { get; set; }
         public virtual DbSet<RoleToAdd> Role { get; set; }
+        public virtual DbSet<SurveyServiceLog> SurveyServiceLog { get; set; }
     }
 }

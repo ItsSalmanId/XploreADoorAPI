@@ -356,6 +356,7 @@
     <Compile Include="Controllers\Settings\ReferralSource\ReferralSourceController.cs" />
     <Compile Include="Controllers\SignatureRequiredController.cs" />
     <Compile Include="Controllers\SupervisorController.cs" />
+    <Compile Include="Controllers\SurveyAutomationController.cs" />
     <Compile Include="Controllers\TasksController.cs" />
     <Compile Include="Controllers\UnAssignedQueueController.cs" />
     <Compile Include="Controllers\UploadFilesController.cs" />
