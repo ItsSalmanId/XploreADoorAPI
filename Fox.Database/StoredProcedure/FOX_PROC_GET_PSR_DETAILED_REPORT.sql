@@ -1,12 +1,9 @@
-      
 -- =============================================                    
 -- Modified By :  Muhammad Salman                    
 -- Modified date: 12/03/2022                    
 -- =============================================                                                                          
--- EXEC [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT_AFTAB1]   '1011163', '8/20/2021', '9/7/2021', '', '', '', 'Both', 'ALL', '', 'Completed Survey ,Deceased,Unable to Complete Survey,Not Interested', 1,30, '', 'SURVEYCOMPLETEDDATE', 'DESC'                    
- 
--- EXEC [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT]  '1011163', '10/01/2021', '10/19/2023', '', '', '', 'Both', 'ALL', '', 'Completed Survey,Deceased,Unable to complete survey,Callback,Not Answered,Not Interested,Not Enough Services Provided',1, 5000,'','SURVEYCOMPLETEDDATE', 'DESC'                                                         
-                                                                  
+-- EXEC [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT_AFTAB1]   '1011163', '8/20/2021', '9/7/2021', '', '', '', 'Both', 'ALL', '', 'Completed Survey ,Deceased,Unable to Complete Survey,Not Interested', 1,30, '', 'SURVEYCOMPLETEDDATE', 'DESC'                         
+-- EXEC [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT]  '1011163', '10/01/2021', '10/19/2023', '', '', '', 'Both', 'ALL', '', 'Completed Survey,Deceased,Unable to complete survey,Callback,Not Answered,Not Interested,Not Enough Services Provided',1, 5000,'','SURVEYCOMPLETEDDATE', 'DESC'                                                                                                                          
 ALTER PROCEDURE [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT]                                                                                                    
  (@PRACTICE_CODE   BIGINT,                                                               
   @DATE_FROM       DATETIME,                                                                                                     
@@ -28,10 +25,11 @@ ALTER PROCEDURE [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT]
  --declare                                                                        
  -- @PRACTICE_CODE   BIGINT = '1011163',                                                                                                     
  -- @DATE_FROM       DATETIME = '2/2/2021',                                                                                                     
- -- @DATE_TO         DATETIME = '2/9/2021',                                                                                                     
+ -- @DATE_TO         DATETIME = '2/9/2023',                                                                                                     
  -- @PROVIDER        VARCHAR(100) = '',                                                                                                     
  -- @REGION          VARCHAR(100) = '',                                                                                                     
- -- @STATE        VARCHAR(10) = '',             
+ -- @STATE        VARCHAR(10) = '',     
+ -- @FLAG          VARCHAR(10) = '',
  -- @FORMAT          VARCHAR(10) = 'ALL',                     
  -- @SURVEYED_BY     VARCHAR(100) = '',                                                   
  -- @SURVEYED_STATUS VARCHAR(500) = 'Completed Survey,Deceased,Callback,Not Answered,Not Interested,Not Enough Services Provided',                                                       
@@ -171,7 +169,7 @@ ALTER PROCEDURE [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT]
       PS.SURVEY_STATUS_BASE AS SURVEY_STATUS_BASE,        
    CASE                                                                         
        WHEN SL.IS_EMAIL = 1                                                                                               
-       THEN 'EMAIL'       
+       THEN 'Email'       
         WHEN SL.IS_SMS = 1                                                                                               
        THEN 'SMS'       
        Else      
@@ -535,8 +533,8 @@ END DESC,
     OFFSET @START_FROM ROWS FETCH NEXT @RECORD_PER_PAGE ROWS ONLY             
     END                                                                                                  
    END                       
-   END                      
-                       
+   --END                      
+ELSE                      
                       
  --ELSE STATE VALUE HAVE                     
  BEGIN                      
@@ -648,7 +646,7 @@ OR (@SURVEYED_STATUS = 'Pending' AND ISNULL(PS.IS_SURVEYED, 0) = 0)
       
      CASE                                                                         
        WHEN SL.IS_EMAIL = 1                                                                                               
-       THEN 'EMAIL'       
+       THEN 'Email'       
         WHEN SL.IS_SMS = 1                                                                                               
        THEN 'SMS'       
        Else      
@@ -1010,3 +1008,4 @@ THEN SURVEYED_BY_LNAME
     OFFSET @START_FROM ROWS FETCH NEXT @RECORD_PER_PAGE ROWS ONLY                                                    
     END                                                                                                  
    END 
+   END
