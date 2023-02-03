@@ -2,8 +2,8 @@
 -- Modified By :  Muhammad Salman                    
 -- Modified date: 12/03/2022                    
 -- =============================================                                                                          
--- EXEC [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT_AFTAB1]   '1011163', '8/20/2021', '9/7/2021', '', '', '', 'Both', 'ALL', '', 'Completed Survey ,Deceased,Unable to Complete Survey,Not Interested', 1,30, '', 'SURVEYCOMPLETEDDATE', 'DESC'                         
--- EXEC [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT]  '1011163', '10/01/2021', '10/19/2023', '', '', '', 'Both', 'ALL', '', 'Completed Survey,Deceased,Unable to complete survey,Callback,Not Answered,Not Interested,Not Enough Services Provided',1, 5000,'','SURVEYCOMPLETEDDATE', 'DESC'                                                                                                                          
+-- EXEC [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT_AFTAB1]   '1011163', '8/20/2021', '9/7/2021', '', '', '', 'Both', 'ALL', '', 'Completed Survey ,Deceased,Unable to Complete Survey,Not Interested', 1,30, '', 'SURVEYCOMPLETEDDATE', 'DESC'                    
+-- EXEC [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT]  '1011163', '10/01/2021', '10/19/2023', '', '', '', 'Both', 'ALL', '', 'Completed Survey,Deceased,Unable to complete survey,Callback,Not Answered,Not Interested,Not Enough Services Provided',1, 5000,'','SURVEYCOMPLETEDDATE', 'DESC'                                                                                                                           
 ALTER PROCEDURE [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT]                                                                                                    
  (@PRACTICE_CODE   BIGINT,                                                               
   @DATE_FROM       DATETIME,                                                                                                     
@@ -29,14 +29,14 @@ ALTER PROCEDURE [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT]
  -- @PROVIDER        VARCHAR(100) = '',                                                                                                     
  -- @REGION          VARCHAR(100) = '',                                                                                                     
  -- @STATE        VARCHAR(10) = '',     
- -- @FLAG          VARCHAR(10) = '',
+ -- @FLAG          VARCHAR(10) = '',        
  -- @FORMAT          VARCHAR(10) = 'ALL',                     
  -- @SURVEYED_BY     VARCHAR(100) = '',                                                   
- -- @SURVEYED_STATUS VARCHAR(500) = 'Completed Survey,Deceased,Callback,Not Answered,Not Interested,Not Enough Services Provided',                                                       
+ -- @SURVEYED_STATUS VARCHAR(500) = 'Completed Survey,Deceased,Unable to complete survey,Callback,Not Answered,Not Interested,Not Enough Services Provided',                                                       
  -- @CURRENT_PAGE    INT = 1,                                                                                    
  -- @RECORD_PER_PAGE INT = 0,                             
  -- @SEARCH_TEXT     VARCHAR(100) = '',                                                                
- -- @SORT_BY         VARCHAR(50) = 'r',                                                                                                    
+ -- @SORT_BY         VARCHAR(50) = 'SURVEYCOMPLETEDDATE',                                                                                                    
  -- @SORT_ORDER      VARCHAR(5)  = 'Desc'                                                                           
                                    
    BEGIN                                                 
@@ -533,8 +533,8 @@ END DESC,
     OFFSET @START_FROM ROWS FETCH NEXT @RECORD_PER_PAGE ROWS ONLY             
     END                                                                                                  
    END                       
-   --END                      
-ELSE                      
+   END                      
+                       
                       
  --ELSE STATE VALUE HAVE                     
  BEGIN                      
@@ -1008,4 +1008,3 @@ THEN SURVEYED_BY_LNAME
     OFFSET @START_FROM ROWS FETCH NEXT @RECORD_PER_PAGE ROWS ONLY                                                    
     END                                                                                                  
    END 
-   END
