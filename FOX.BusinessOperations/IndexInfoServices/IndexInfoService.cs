@@ -2073,9 +2073,9 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     //}
                     //else
                     //{
-                    senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == usr.PRACTICE_CODE) && !t.DELETED);
+                    senderType = _SenderTypeRepository.GetSingleOrDefault(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == usr.PRACTICE_CODE) && !t.DELETED) ?? null;
                     // }
-                    result.SENDER_TYPE = senderType != null ? !string.IsNullOrWhiteSpace(senderType.SENDER_TYPE_NAME) ? senderType.SENDER_TYPE_NAME : "" : "";
+                    result.SENDER_TYPE = senderType != null ? !string.IsNullOrWhiteSpace(senderType.SENDER_TYPE_NAME ?? "") ? senderType.SENDER_TYPE_NAME : "" : "";
                     return result;
 
                 }
@@ -3389,7 +3389,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     ORS = GetOrderingRefrralSource(sourceDetail.SENDER_ID ?? 0);
                 }
                 //var ORS = _InsertUpdateOrderingSourceRepository.GetFirst(t => t.SOURCE_ID == sourceDetail.SENDER_ID);
-                var Indexer = GetIndexer(sourceDetail.COMPLETED_BY, profile.PracticeCode);
+                var Indexer = new User();
+                if (sourceDetail != null)
+                {
+                    Indexer = GetIndexer(sourceDetail.COMPLETED_BY, profile.PracticeCode);
+                }
                 //var Indexer = _User.GetFirst(T => T.USER_NAME == sourceDetail.COMPLETED_BY);
                 var notes = GetNotes_History(obj, profile);
                 var app_user = new User();
@@ -3522,7 +3526,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     //taskLoglist.Add(new TaskLog() { ACTION = "indexer :", ACTION_DETAIL = "Indexer >" });
 
                     porta_logs.Add("Completed Date & Time :" + sourceDetail.COMPLETED_DATE);
-                    if (Indexer != null)
+                    if (Indexer != null && !String.IsNullOrEmpty(Indexer.FIRST_NAME))
                     {
                         porta_logs.Add("Username : " + Indexer.LAST_NAME + ", " + Indexer.FIRST_NAME);
                     }
