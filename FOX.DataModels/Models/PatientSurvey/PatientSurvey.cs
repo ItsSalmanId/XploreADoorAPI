@@ -132,6 +132,34 @@ namespace FOX.DataModels.Models.PatientSurvey
         public DateTime? SURVEY_COMPLETED_DATE { get; set; }
         [NotMapped]
         public int? HAS_CALL_PATH { get; set; }
+        [NotMapped]
+        public bool? IS_SMS { get; set; }
+        [NotMapped]
+        public bool? IS_EMAIL { get; set; }
+    }
+    [Table("FOX_TBL_SURVEY_AUTOMATION_SERVICE_LOG")]
+    public class SurveyServiceLog
+    {
+        [Key]
+        public long SURVEY_AUTOMATION_LOG_ID { get; set; }
+        public long? PATIENT_ACCOUNT { get; set; }
+        public long? SURVEY_ID { get; set; }
+        public string FILE_NAME { get; set; }
+        public long? PRACTICE_CODE { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime? CREATED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public DateTime? MODIFIED_DATE { get; set; }
+        public bool DELETED { get; set; }
+        public bool? IS_SMS { get; set; }
+        public bool? IS_EMAIL { get; set; }
+    }
+    public class SelectiveSurveyList
+    {
+        public long PATIENT_ACCOUNT_NUMBER { get; set; }
+        public string PT_OT_SLP { get; set; }
+        public long SURVEY_ID { get; set; }
+        public string SERVICE_OR_PAYMENT_DESCRIPTION { get; set; }
     }
 
     [Table("FOX_TBL_PATIENT_SURVEY_HISTORY")]
@@ -170,6 +198,10 @@ namespace FOX.DataModels.Models.PatientSurvey
         public bool DELETED { get; set; }
         public bool? IS_EXCEPTIONAL { get; set; }
         public bool? IS_PROTECTIVE_EQUIPMENT { get; set; }
+        [NotMapped]
+        public bool? IS_SMS { get; set; }
+        [NotMapped]
+        public bool? IS_EMAIL { get; set; }
     }
 
     [Table("FOX_TBL_PATIENT_SURVEY_CALL_LOG")]
