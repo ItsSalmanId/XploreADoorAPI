@@ -111,6 +111,7 @@
     <Content Include="StoredProcedure\FOX_PROC_DELETE_COUNTIES_REFERRAL_REGION.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DELETE_NOTIFICATIONS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DELETE_REC_FROM_MTBC_CREDENTIALS.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_EXISTING_SURVEY_DETAIL.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GENERATE_INSERT_TOKEN.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GETMAXCOLUMNID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_ACTIVE_CATEGORY_DESCRIPTION_CREDENTIAL.sql" />
