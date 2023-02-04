@@ -24,7 +24,6 @@ namespace FOX.BusinessOperations.PatientSurveyService
         private long retrycatch = 0;
         private readonly DbContextPatientSurvey _patientSurveyContext = new DbContextPatientSurvey();
         private readonly GenericRepository<PatientSurvey> _patientSurveyRepository;
-        private readonly GenericRepository<PatientSurveyHistory> _patientSurveyHistoryRepository;
         private readonly GenericRepository<PatientSurveyCallLog> _patientSurveyCallLogRepository;
         private readonly GenericRepository<PatientSurveyFormatType> _psFormatTypeRepository;
         private readonly GenericRepository<RoleToAdd> _roleRepository;
@@ -32,7 +31,6 @@ namespace FOX.BusinessOperations.PatientSurveyService
         public PatientSurveyService()
         {
             _patientSurveyRepository = new GenericRepository<PatientSurvey>(_patientSurveyContext);
-            _patientSurveyHistoryRepository = new GenericRepository<PatientSurveyHistory>(_patientSurveyContext);
             _patientSurveyCallLogRepository = new GenericRepository<PatientSurveyCallLog>(_patientSurveyContext);
             _psFormatTypeRepository = new GenericRepository<PatientSurveyFormatType>(_patientSurveyContext);
             _roleRepository = new GenericRepository<RoleToAdd>(_patientSurveyContext);
@@ -82,11 +80,11 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 long getPracticeCode = AppConfiguration.GetPracticeCode;
                 SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = getPracticeCode };
                 SqlParameter patientSurveyId = new SqlParameter { ParameterName = "@SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = patientSurvey.SURVEY_ID };
-                var automatePerformSurvey = SpRepository<PatientSurvey>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_EXISTING_SURVEY_DETAIL @PRACTICE_CODE, @SURVEY_ID", pracCode, patientSurveyId);        
+                var automatePerformSurvey = SpRepository<PatientSurvey>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_EXISTING_SURVEY_DETAIL @PRACTICE_CODE, @SURVEY_ID", pracCode, patientSurveyId);
                 if (automatePerformSurvey == null)
                 {
                     SurveyServiceLog surveyServiceLog = new SurveyServiceLog();
-                     surveyServiceLog = _surveyServiceLogRepository.GetFirst(r => r.PATIENT_ACCOUNT == patientSurvey.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == patientSurvey.SURVEY_ID && r.PRACTICE_CODE == patientSurvey.PRACTICE_CODE && r.DELETED == false);
+                    surveyServiceLog = _surveyServiceLogRepository.GetFirst(r => r.PATIENT_ACCOUNT == patientSurvey.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == patientSurvey.SURVEY_ID && r.PRACTICE_CODE == patientSurvey.PRACTICE_CODE && r.DELETED == false);
                     if (surveyServiceLog != null)
                     {
                         surveyServiceLog = _surveyServiceLogRepository.GetByID(surveyServiceLog.SURVEY_AUTOMATION_LOG_ID);
@@ -601,8 +599,6 @@ namespace FOX.BusinessOperations.PatientSurveyService
             surveyHistory.CREATED_DATE = Helper.GetCurrentDate();
             surveyHistory.DELETED = false;
             surveyHistory.IS_EXCEPTIONAL = patientSurvey.IS_EXCEPTIONAL;
-            //_patientSurveyHistoryRepository.Insert(surveyHistory);
-            //_patientSurveyHistoryRepository.Save();
 
             var surveyHistoryId = new SqlParameter { ParameterName = "@FOX_SURVEY_HISTORY_ID", SqlDbType = SqlDbType.BigInt, Value = surveyHistory.SURVEY_HISTORY_ID };
             var practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = surveyHistory.PRACTICE_CODE };

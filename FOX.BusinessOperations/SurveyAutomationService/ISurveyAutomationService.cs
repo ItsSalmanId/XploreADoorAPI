@@ -7,9 +7,11 @@ namespace FOX.BusinessOperations.SurveyAutomationService
 {
     public interface ISurveyAutomationService
     {
+        #region FUNCTIONS
         SurveyAutomation GetPatientDetails(SurveyAutomation objSurveyAutomation);
         List<SurveyQuestions> GetSurveyQuestionDetails(SurveyLink objSurveyLink);
         ResponseModel UpdatePatientSurvey(PatientSurvey objPatientSurvey);
         SurveyLink DecryptionUrl(SurveyLink objSurveyLink);
+        #endregion
     }
 }

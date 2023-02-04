@@ -16,9 +16,12 @@ namespace FOX.BusinessOperations.SurveyAutomationService
 {
     public class SurveyAutomationService : ISurveyAutomationService
     {
+
+        #region PROPERTIES
         private readonly DBContextSurveyAutomation _surveyAutomationContext = new DBContextSurveyAutomation();
         private readonly GenericRepository<PatientSurveyHistory> _patientSurveyHistoryRepository;
         private readonly GenericRepository<PatientSurvey> _patientSurveyRepository;
+        #endregion
 
         #region CONSTRUCTOR
         public SurveyAutomationService()
@@ -27,11 +30,12 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             _patientSurveyRepository = new GenericRepository<PatientSurvey>(_surveyAutomationContext);
         }
         #endregion
+
         #region FUNCTIONS
         // Description: This function is decrypt patient account number
         public SurveyLink DecryptionUrl(SurveyLink objSurveyLink)
         {
-            if(objSurveyLink != null && !string.IsNullOrEmpty(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT))
+            if (objSurveyLink != null && !string.IsNullOrEmpty(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT))
             {
                 objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT = Decryption(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT);
             }
@@ -39,7 +43,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         }
         // Description: This function is get patient details
         public SurveyAutomation GetPatientDetails(SurveyAutomation objSurveyAutomation)
-         {
+        {
             if (objSurveyAutomation != null && !string.IsNullOrEmpty(objSurveyAutomation.PATIENT_ACCOUNT))
             {
                 long tempSurveyId = long.Parse(objSurveyAutomation.PATIENT_ACCOUNT);
@@ -195,28 +199,28 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         private void AddPatientSurvey(PatientSurvey objPatientSurvey)
         {
             if (objPatientSurvey != null)
-                {
-                    long practiceCode = AppConfiguration.GetPracticeCode;
+            {
+                long practiceCode = AppConfiguration.GetPracticeCode;
                 PatientSurveyHistory patientSurveyHistory = new PatientSurveyHistory
-                    {
-                        SURVEY_HISTORY_ID = Helper.getMaximumId("SURVEY_HISTORY_ID"),
-                        SURVEY_ID = objPatientSurvey.SURVEY_ID,
-                        PATIENT_ACCOUNT = objPatientSurvey.PATIENT_ACCOUNT_NUMBER,
-                        PRACTICE_CODE = practiceCode,
-                        IS_CONTACT_HQ = objPatientSurvey.IS_CONTACT_HQ,
-                        IS_REFERABLE = objPatientSurvey.IS_REFERABLE,
-                        IS_IMPROVED_SETISFACTION = objPatientSurvey.IS_IMPROVED_SETISFACTION,
-                        FEEDBACK = objPatientSurvey.FEEDBACK,
-                        SURVEY_STATUS_BASE = "Completed",
-                        SURVEY_STATUS_CHILD = "Completed Survey",
-                        DELETED = false,
-                        CREATED_BY = "Automation_5483326",
-                        SURVEY_DATE = Helper.GetCurrentDate(),
-                        CREATED_DATE = Helper.GetCurrentDate()
-                    };
-                    _patientSurveyHistoryRepository.Insert(patientSurveyHistory);
-                    _patientSurveyHistoryRepository.Save();
-                }
+                {
+                    SURVEY_HISTORY_ID = Helper.getMaximumId("SURVEY_HISTORY_ID"),
+                    SURVEY_ID = objPatientSurvey.SURVEY_ID,
+                    PATIENT_ACCOUNT = objPatientSurvey.PATIENT_ACCOUNT_NUMBER,
+                    PRACTICE_CODE = practiceCode,
+                    IS_CONTACT_HQ = objPatientSurvey.IS_CONTACT_HQ,
+                    IS_REFERABLE = objPatientSurvey.IS_REFERABLE,
+                    IS_IMPROVED_SETISFACTION = objPatientSurvey.IS_IMPROVED_SETISFACTION,
+                    FEEDBACK = objPatientSurvey.FEEDBACK,
+                    SURVEY_STATUS_BASE = "Completed",
+                    SURVEY_STATUS_CHILD = "Completed Survey",
+                    DELETED = false,
+                    CREATED_BY = "Automation_5483326",
+                    SURVEY_DATE = Helper.GetCurrentDate(),
+                    CREATED_DATE = Helper.GetCurrentDate()
+                };
+                _patientSurveyHistoryRepository.Insert(patientSurveyHistory);
+                _patientSurveyHistoryRepository.Save();
+            }
         }
         #endregion
     }

@@ -153,7 +153,6 @@ namespace FOX.DataModels.Models.PatientSurvey
         public bool DELETED { get; set; }
         public bool? IS_SMS { get; set; }
         public bool? IS_EMAIL { get; set; }
-
     }
     public class SelectiveSurveyList
     {
