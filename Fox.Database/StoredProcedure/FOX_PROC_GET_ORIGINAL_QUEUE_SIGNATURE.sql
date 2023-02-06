@@ -1,11 +1,11 @@
  --------------------------------------------------------
------ Created By: NA
------ Created Date: NA
+----- Created By: Muhammad Taseer Iqbal
+----- Created Date: 01/07/2023
 ----- Modified By: Muhammad Taseer Iqbal
 ----- Modified Date: 10/29/2022  
       
 --  [DBO].[FOX_PROC_GET_ORIGINAL_QUEUE_SIGNATURE] 1,10,'','','','EXTERNAL_USER_ORD_REF_SOURCE','1163TESTING' , 0                                 
-Alter PROCEDURE [DBO].[FOX_PROC_GET_ORIGINAL_QUEUE_SIGNATURE]                                                               
+CREATE PROCEDURE [DBO].[FOX_PROC_GET_ORIGINAL_QUEUE_SIGNATURE]                                                               
 (                                          
   @CURRENT_PAGE INT                                                    
  ,@RECORD_PER_PAGE INT                                                    

@@ -280,7 +280,8 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
             Assert.That(result, Is.False);
         }
         [Test]
-        [TestCase("")]
+        [TestCase("1163testing")]
+        [TestCase("test")]
         public void SaveSplashDetails_EmptyUserProfile(string userName)
         {
             //Arrange
@@ -342,6 +343,7 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
             //Arrange
             _userProfile.PracticeCode = practiceCode;
             _userProfile.RoleId = role;
+            _userProfile.UserName = "1163testing";
 
             //Act
             var result = _commonServices.IsShowAlertWindow(_userProfile);

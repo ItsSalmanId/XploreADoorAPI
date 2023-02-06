@@ -155,7 +155,7 @@ namespace FOX.BusinessOperations.CommonServices
         {
             get
             {
-                return "https://npiregistry.cms.hhs.gov/api/";
+                return "https://npiregistry.cms.hhs.gov/api/?version=2.1";
             }
         }
         public static string ExportedFilesPath
@@ -314,6 +314,13 @@ namespace FOX.BusinessOperations.CommonServices
             get
             {
                 return @"abdulsattar@carecloud.com";
+            }
+        }
+        public static string NPPESNPIRegistry
+        {
+            get
+            {
+                return "https://npiregistry.cms.hhs.gov/api/?version=2.1";
             }
         }
     }

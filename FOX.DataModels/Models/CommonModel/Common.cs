@@ -202,6 +202,8 @@ namespace FOX.DataModels.Models.CommonModel
         public string REFERRAL_REGION_CODE { get; set; }
         [NotMapped]
         public string REFERRAL_REGION_NAME { get; set; }
+        [NotMapped]
+        public string Description { get; set; }
     }
 
     [Table("FOX_TBL_EMAIL_FAX_LOG")]
