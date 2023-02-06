@@ -1684,7 +1684,7 @@ namespace FOX.BusinessOperations.FoxPHDService
         public DefaultVauesForPhdUsers GetDefaultHandlingValue(UserProfile profile)
         {
             var user = _userRepository.GetFirst(x => x.USER_NAME == profile.UserName && !x.DELETED);
-            var phdSanarios = _DefaultVauesForPhdUsersRepository.GetFirst(x => x.USER_ID == user.USER_ID && x.PRACTICE_CODE == user.PRACTICE_CODE && !x.DELETED);
+            var phdSanarios = _DefaultVauesForPhdUsersRepository.GetSingleOrDefault(x => x.USER_ID == user.USER_ID && x.PRACTICE_CODE == user.PRACTICE_CODE && !x.DELETED);
             return phdSanarios;
 
         }
