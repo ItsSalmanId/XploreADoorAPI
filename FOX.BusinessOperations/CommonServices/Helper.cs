@@ -811,7 +811,8 @@ namespace FOX.BusinessOperations.CommonService
             else
                 return "";
         }
-    }
+
+
         //public static string GetSenderName(long? senderId)
         //{
         //    if (senderId.HasValue)
