@@ -216,8 +216,15 @@ namespace FOX.BusinessOperations.CommonServices
             }
             catch (Exception exception)
             {
-                //return new AttachmentData();
-                throw exception;
+                if (exception != null && exception.Message != null && exception.Message.Contains("no pages"))
+                {
+                    return new AttachmentData();
+                }
+                else
+                {
+                    //return new AttachmentData();
+                    throw exception;
+                }
             }
         }
 

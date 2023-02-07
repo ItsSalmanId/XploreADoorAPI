@@ -799,11 +799,19 @@ namespace FOX.BusinessOperations.CommonService
             if (patAccount.HasValue)
             {
                 var patient = _PatientRepository.GetFirst(e => e.Patient_Account == patAccount);
-                return patient.First_Name + " " + patient.Last_Name;
+                if (patient != null)
+                {
+                    return patient.First_Name + " " + patient.Last_Name;
+                }
+                else
+                {
+                    return "";
+                }
             }
             else
                 return "";
         }
+    }
         //public static string GetSenderName(long? senderId)
         //{
         //    if (senderId.HasValue)
