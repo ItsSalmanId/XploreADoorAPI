@@ -38,6 +38,7 @@ using System.Data;
 using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.GoogleRecaptcha;
 using Newtonsoft.Json;
+using RestSharp;
 
 namespace FoxRehabilitationAPI.Controllers
 {
@@ -47,15 +48,17 @@ namespace FoxRehabilitationAPI.Controllers
     public class AccountController : ApiController
     {
         private readonly IUserManagementService _userManagementService = new UserManagementService();
-        private readonly IRequestForOrderService _requestForOrderService = new RequestForOrderService(); 
-        private readonly IIndexInfoService _IndexInfoService = new IndexInfoService(); 
+        private readonly IRequestForOrderService _requestForOrderService = new RequestForOrderService();
+        private readonly IIndexInfoService _IndexInfoService = new IndexInfoService();
         private readonly IAccountServices _accountServices = new AccountServices();
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
         private ApplicationRoleManager _roleManager;
+        private readonly DbContextSecurity security = new DbContextSecurity();
 
         public AccountController()
         {
+            
         }
 
         private UserProfile GetProfile()
@@ -393,7 +396,7 @@ namespace FoxRehabilitationAPI.Controllers
                 return Request.CreateResponse(new ExternalUserSignupResponseModel() { status = 0, ErrorMessage = string.Join(",", errors), Success = false });
             }
             string password = HttpUtility.UrlDecode(user.PASSWORD);
-       
+
 
             if (!_accountServices.CheckIfEmailAlreadyInUse(new EmailExist() { EMAIL = user.EMAIL }))
             {
@@ -421,7 +424,7 @@ namespace FoxRehabilitationAPI.Controllers
                 _userManagementService.AddUpdateUserAdditionalInfo(user.USER_ID, user.Is_Electronic_POC == null ? false : true, user.CREATED_DATE, user.CREATED_BY, user.MODIFIED_DATE, user.MODIFIED_BY, user.DELETED); ;
                 //Browser Detection
                 string detectedBrowser = BrowserDetection();
-                _accountServices.InsertLogs(user, encryptedPassword, detectedBrowser , "Registration");
+                _accountServices.InsertLogs(user, encryptedPassword, detectedBrowser, "Registration");
                 //object rows = insertUpdateFOX_TBL_APP_USER_ADDITIONAL_INFO(user.USER_ID, user.Is_Electronic_POC == null ? false : user.Is_Electronic_POC.Value, user.CREATED_DATE, user.CREATED_BY, user.MODIFIED_DATE, user.MODIFIED_BY, user.DELETED);
                 return Request.CreateResponse(new ExternalUserSignupResponseModel() { status = 200, ErrorMessage = "Account registration request submitted successfully. You'll be notified by an SMS or email once your request is processed. ", Message = "Account registration request submitted successfully. You'll be notified by an SMS or email once your request is processed.", Success = true });
 
@@ -480,6 +483,99 @@ namespace FoxRehabilitationAPI.Controllers
             //}
         }
 
+        // POST api/Account/GetOtp
+        [AllowAnonymous]
+        [Route("GetOtp")]
+        public HttpResponseMessage GetOtp(string email)
+        {
+            email = String.IsNullOrEmpty(email) ? 0.ToString() : email;
+            if (String.IsNullOrEmpty(email))
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Request with invalid parameters.");
+            }
+            else
+            {
+                IRestResponse response = GetOtpCode(email);
+                if (response.Content != null)
+                { return Request.CreateResponse(HttpStatusCode.OK, response.Content); }
+                else
+                { return Request.CreateResponse(HttpStatusCode.BadRequest, "Error occured to get OTP code."); }
+            }
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("VerifyOTP")]
+        public HttpResponseMessage VerifyOTP(string otp, string otpIdentifier)
+        {
+            if (String.IsNullOrEmpty(otp) || String.IsNullOrEmpty(otpIdentifier))
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Request with invalid parameters.");
+            }
+            else
+            {
+                IRestResponse response = VerifyOtpCode(otp, otpIdentifier);
+                if (response.Content != null)
+                {
+                    OtpModel obj = new OtpModel();
+                    obj = JsonConvert.DeserializeObject<OtpModel>(response.Content);
+                    if (obj != null)
+                    {
+                        if (obj.Status == true)
+                        {
+                            UserProfile profile = ClaimsModel.GetUserProfile(User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
+                            ResponseModel resp = new ResponseModel();
+                            resp = _userManagementService.UpdateOtpEnableDate(profile.userID);
+                            if (resp != null)
+                            { return Request.CreateResponse(HttpStatusCode.OK, response.Content); }
+
+                        }
+                        else
+                        {
+                            if (obj.Message.Contains("failed"))
+                            {
+                                obj.Message = "OTP verification failed.";
+                            }
+                        }
+                    }
+                    return Request.CreateResponse(HttpStatusCode.OK, Newtonsoft.Json.JsonConvert.SerializeObject(obj));
+                }
+                else
+                { return Request.CreateResponse(HttpStatusCode.BadRequest, "Error occured to verify OTP code."); }
+            }
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("UpdateOtpEnableDate")]
+        public HttpResponseMessage UpdateOtpEnableDate(string userId)
+        {
+            userId = String.IsNullOrEmpty(userId) ? "0" : userId;
+            ResponseModel resp = new ResponseModel();
+            resp = _userManagementService.UpdateOtpEnableDate(Convert.ToInt64(userId));
+            if (resp != null)
+            { return Request.CreateResponse(HttpStatusCode.OK, resp); }
+            else
+            { return Request.CreateResponse(HttpStatusCode.BadRequest, "Error occured to update OTP enable date."); }
+
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("UpdateMfaStatus")]
+        public HttpResponseMessage UpdateMfaStatus(string userId)
+        {
+            userId = String.IsNullOrEmpty(userId) ? 0.ToString() : userId;
+            ResponseModel resp = new ResponseModel();
+            resp = _userManagementService.UpdateMfaStatus(userId);
+            if (resp != null)
+            { return Request.CreateResponse(HttpStatusCode.OK, resp); }
+            else
+            { return Request.CreateResponse(HttpStatusCode.BadRequest, "Error occured to update OTP enable date."); }
+
+        }
         //Browser Detection
         public static string BrowserDetection()
         {
@@ -490,9 +586,9 @@ namespace FoxRehabilitationAPI.Controllers
             bool IsMobileDevice = false;
             if (HttpContext.Current.Request != null)
             {
-                if(HttpContext.Current.Request.Browser != null)
+                if (HttpContext.Current.Request.Browser != null)
                 {
-                    if(HttpContext.Current.Request.UserAgent.ToLower().Contains("edge") && HttpContext.Current.Request.Browser.Browser.ToLower() != "edge")
+                    if (HttpContext.Current.Request.UserAgent.ToLower().Contains("edge") && HttpContext.Current.Request.Browser.Browser.ToLower() != "edge")
                     {
                         browserName = "Microsoft Edge";
                     }
@@ -507,7 +603,7 @@ namespace FoxRehabilitationAPI.Controllers
                     if (IsMobileDevice)
                     {
                         browserName = HttpContext.Current.Request.Browser.Browser;
-                       
+
                     }
 
                 }
@@ -581,8 +677,8 @@ namespace FoxRehabilitationAPI.Controllers
                 resp.ErrorMessage = "Please send a valid request.";
                 return resp;
             }
-            if (!string.IsNullOrEmpty(data.Email) )
-            {               
+            if (!string.IsNullOrEmpty(data.Email))
+            {
                 resp = _userManagementService.ValidateUserEmail(data.Email);
                 if (resp.Success)
                 {
@@ -595,7 +691,7 @@ namespace FoxRehabilitationAPI.Controllers
                         string ticks = string.Empty;
                         if (splitArry != null && splitArry.Length > 1)
                         {
-                             ticks = splitArry.Length > 1 ? splitArry[1] : "";
+                            ticks = splitArry.Length > 1 ? splitArry[1] : "";
                         }
 
                         FOX.BusinessOperations.CommonServices.EncryptionDecryption encrypt = new FOX.BusinessOperations.CommonServices.EncryptionDecryption();
@@ -607,7 +703,7 @@ namespace FoxRehabilitationAPI.Controllers
                     else
                     {
                         obj.IsValidate = false;
-                    }                   
+                    }
                 }
                 if (obj.IsValidate)
                 {
@@ -623,7 +719,7 @@ namespace FoxRehabilitationAPI.Controllers
                 resp.ID = string.Empty;
                 return resp;
             }
-            return null;          
+            return null;
         }
         [AllowAnonymous]
         [Route("UpdatePassword")]
@@ -906,7 +1002,7 @@ namespace FoxRehabilitationAPI.Controllers
         [AllowAnonymous]
         public HttpResponseMessage ClearOpenedByinPatientforUser(string UserName)
         {
-             _accountServices.ClearOpenedByinPatientforUser(UserName);
+            _accountServices.ClearOpenedByinPatientforUser(UserName);
             return Request.CreateResponse(HttpStatusCode.OK, "Cleared");
         }
 
@@ -922,7 +1018,7 @@ namespace FoxRehabilitationAPI.Controllers
             return response;
         }
 
-        private async Task <GoogleRecaptchaResponse> ValidateCaptcha(string encodedCode)
+        private async Task<GoogleRecaptchaResponse> ValidateCaptcha(string encodedCode)
         {
 
             string url = $"https://www.google.com/recaptcha/api/siteverify?secret={AppConfiguration.SecretKey}&response={encodedCode}";
@@ -946,6 +1042,44 @@ namespace FoxRehabilitationAPI.Controllers
                 }
             }
 
+        }
+
+
+
+        private IRestResponse GetOtpCode(string email)
+        {
+
+            var client = new RestClient("https://uat-webservices.mtbc.com/Notify/api/MultiFactorAuth/SendOTP");
+            client.Timeout = -1;
+            var request = new RestRequest(Method.POST);
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            request.AddHeader("Content-Type", "application/json");
+            var body = @"{" + "\n" +
+                        @"  ""applicationName"": ""Fox""," + "\n" +
+                        @"  ""userName"": """ + email + "\",\n" +
+                        @"  ""deviceInfo"": ""12345""," + "\n" +
+                        @"  ""appDisplayName"": ""FOX Portal""" + "\n" +
+                        @"}";
+            request.AddParameter("application/json", body, ParameterType.RequestBody);
+            IRestResponse response = client.Execute(request);
+            return response;
+        }
+
+        private IRestResponse VerifyOtpCode(string otp, string otpIdentifier)
+        {
+            var client = new RestClient("https://uat-webservices.mtbc.com/Notify/api/MultiFactorAuth/VerifyOTP");
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            client.Timeout = -1;
+            var request = new RestRequest(Method.POST);
+            request.AddHeader("Content-Type", "application/json");
+            var body = @"{" + "\n" +
+                        @"  ""deviceInfo"": ""12345""," + "\n" +
+                        @"  ""notifier"": """ + otpIdentifier + "\",\n" +
+                       @"  ""otp"": """ + otp + "\"\n" +
+                        @"}";
+            request.AddParameter("application/json", body, ParameterType.RequestBody);
+            IRestResponse response = client.Execute(request);
+            return response;
         }
     }
 }

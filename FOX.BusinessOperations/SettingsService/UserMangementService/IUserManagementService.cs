@@ -73,5 +73,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         List<GetTeamList> GetTeamList(string roleID, UserProfile profile);
         bool AddUserTeam(List<TeamAddUpdateModel> userTeamModel, UserProfile profile);
         bool UpdateUserTeam(List<TeamAddUpdateModel> userTeamModel, UserProfile profile);
+        ResponseModel UpdateOtpEnableDate(long userId);
+        ResponseModel UpdateMfaStatus(string userID);
     }
 }
