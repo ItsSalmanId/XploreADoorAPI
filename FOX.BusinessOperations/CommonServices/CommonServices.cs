@@ -25,6 +25,7 @@ using FOX.DataModels.Models.StatesModel;
 using FOX.DataModels.Models.ServiceConfiguration;
 using System.Web.Configuration;
 using FOX.DataModels.Models.Settings.Announcement;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace FOX.BusinessOperations.CommonServices
 {
@@ -216,7 +217,7 @@ namespace FOX.BusinessOperations.CommonServices
             }
             catch (Exception exception)
             {
-                if (exception != null && exception.Message != null && exception.Message.Contains("no pages"))
+               if (exception != null && !string.IsNullOrEmpty(exception.Message) && exception.Message.Contains("no pages"))
                 {
                     return new AttachmentData();
                 }
