@@ -7274,7 +7274,8 @@ namespace FOX.BusinessOperations.PatientServices
                     string deliveryReportId = "";
                     System.Drawing.Image img;
                     PdfFocus f = new PdfFocus();
-                    f.Serial = "10261435399";
+                    //f.Serial = "10261435399";
+                    f.Serial = "80033727929";
                     f.OpenPdf(PdfPath);
                     var ticks = DateTime.Now.Ticks;
                     if (f.PageCount > 0)
