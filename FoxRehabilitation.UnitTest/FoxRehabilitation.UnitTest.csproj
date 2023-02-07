@@ -83,6 +83,7 @@
     <Compile Include="SchedulerUnitTest\SchedulerServiceTest.cs" />
     <Compile Include="SearchOrderServicesUnitTest\SearchOrderServicesTest.cs" />
     <Compile Include="SettingServicesUnitTest\AnnouncementUnitTest\AnnouncementTest.cs" />
+    <Compile Include="SettingServicesUnitTest\FacilityLocationServiceUnitTest\FacilityLocationServiceTest.cs" />
     <Compile Include="SurveyAutomationUnitTest\SurveyAutomationServiceTest.cs" />
     <Compile Include="SettingServicesUnitTest\PracticeOrganizationServiceUnitTest\PracticeOrganizationServiceTest.cs" />
     <Compile Include="SupervisorWorkServiceUnitTest\SupervisorWorkServiceTest.cs" />
