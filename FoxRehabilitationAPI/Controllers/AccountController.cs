@@ -54,8 +54,6 @@ namespace FoxRehabilitationAPI.Controllers
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
         private ApplicationRoleManager _roleManager;
-        private readonly DbContextSecurity security = new DbContextSecurity();
-
         public AccountController()
         {
             
@@ -1045,7 +1043,7 @@ namespace FoxRehabilitationAPI.Controllers
         }
 
 
-
+        //--method used to get otp code for MFA  
         private IRestResponse GetOtpCode(string email)
         {
 
@@ -1064,7 +1062,7 @@ namespace FoxRehabilitationAPI.Controllers
             IRestResponse response = client.Execute(request);
             return response;
         }
-
+        //--method used to verify otp code for MFA  
         private IRestResponse VerifyOtpCode(string otp, string otpIdentifier)
         {
             var client = new RestClient("https://uat-webservices.mtbc.com/Notify/api/MultiFactorAuth/VerifyOTP");

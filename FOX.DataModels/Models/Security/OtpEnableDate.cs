@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace FOX.DataModels.Models.Security
 {
     [Table("FOX_TBL_OTPENABLEDATE")]
-    public class OtpEnableDate
+    public class OtpEnableDate 
     {
         [Key]
         public long OtpEnableId { get; set; }
