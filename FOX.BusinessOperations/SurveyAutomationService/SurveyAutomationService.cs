@@ -3,13 +3,20 @@ using FOX.BusinessOperations.CommonServices;
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.CommonModel;
+using FOX.DataModels.Models.Patient;
 using FOX.DataModels.Models.PatientSurvey;
+using FOX.ExternalServices;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
+using System.Linq;
+using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
+using FOX.DataModels.Models.SurveyAutomation;
 using static FOX.DataModels.Models.SurveyAutomation.SurveyAutomations;
 
 namespace FOX.BusinessOperations.SurveyAutomationService
@@ -21,6 +28,10 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         private readonly DBContextSurveyAutomation _surveyAutomationContext = new DBContextSurveyAutomation();
         private readonly GenericRepository<PatientSurveyHistory> _patientSurveyHistoryRepository;
         private readonly GenericRepository<PatientSurvey> _patientSurveyRepository;
+        private readonly GenericRepository<AutomatedSurveyUnSubscription> _automatedSurveyUnSubscription;
+        private readonly GenericRepository<Patient> _PatientRepository;
+        private readonly GenericRepository<SurveyServiceLog> _surveyServiceLogRepository;
+        public static string SurveyMethod = string.Empty;
         #endregion
 
         #region CONSTRUCTOR
@@ -28,16 +39,266 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         {
             _patientSurveyHistoryRepository = new GenericRepository<PatientSurveyHistory>(_surveyAutomationContext);
             _patientSurveyRepository = new GenericRepository<PatientSurvey>(_surveyAutomationContext);
+            _automatedSurveyUnSubscription = new GenericRepository<AutomatedSurveyUnSubscription>(_surveyAutomationContext);
+            _PatientRepository = new GenericRepository<Patient>(_surveyAutomationContext);
+            _surveyServiceLogRepository = new GenericRepository<SurveyServiceLog>(_surveyAutomationContext);
         }
         #endregion
 
         #region FUNCTIONS
+        /// <summary>
+        /// Generate body template for mail.
+        /// </summary>
+        /// <param name="patientFirstName"></param>
+        /// <param name="link"></param>
+        /// <returns></returns>
+        public static string EmailBody(string patientFirstName)
+        {
+            string mailBody = string.Empty;
+            string templatePathOfSenderEmail = AppDomain.CurrentDomain.BaseDirectory;
+            templatePathOfSenderEmail = templatePathOfSenderEmail.Replace(@"\bin\Debug", "") + "HtmlTemplates\\UnsubscribeAutomatedPatientSurveyEmailTemplate.html";
+            if (File.Exists(templatePathOfSenderEmail))
+            {
+                mailBody = File.ReadAllText(templatePathOfSenderEmail);
+                mailBody = mailBody.Replace("[[PATIENT_FIRST_NAME]]", patientFirstName);
+                //mailBody = mailBody.Replace("[[LINK]]", link);
+                ///mailBody = mailBody.Replace("[[SUBSCRIBE_LINK]]", subscribeencryptedURL);
+            }
+            return mailBody ?? "";
+        }
+        /// <summary>
+        /// Send Email on Success to Patient about Fox Survey.
+        /// </summary>
+        /// <param name="to"></param>
+        /// <param name="subject"></param>
+        /// <param name="body"></param>
+        /// <param name="CC"></param>
+        /// <param name="BCC"></param>
+        /// <param name="AttachmentFilePaths"></param>
+        /// <param name="from"></param>
+        /// <returns></returns>
+        public static bool SendEmail(string to, string subject, string body, List<string> CC = null, List<string> BCC = null, string AttachmentFilePaths = null, string from = "foxrehab@carecloud.com")
+        {
+            bool IsMailSent = false;
+            var bodyHTML = "";
+            bodyHTML += "<body>";
+            bodyHTML += body;
+            bodyHTML += "</body>";
+            try
+            {
+                using (SmtpClient smtp = new SmtpClient())
+                {
+                    using (MailMessage mail = new MailMessage())
+                    {
+                        mail.From = new MailAddress(from);
+                        mail.To.Add(new MailAddress(to));
+                        mail.Subject = subject;
+                        mail.Body = bodyHTML;
+                        mail.IsBodyHtml = true;
+                        mail.SubjectEncoding = Encoding.UTF8;
+                        if (CC != null && CC.Count > 0)
+                        {
+                            foreach (var item in CC) { mail.CC.Add(item); }
+                        }
+                        if (BCC != null && BCC.Count > 0)
+                        {
+                            foreach (var item in BCC) { mail.Bcc.Add(item); }
+                        }
+                        if (AttachmentFilePaths != null)
+                        {
+                            if (File.Exists(AttachmentFilePaths)) { mail.Attachments.Add(new Attachment(AttachmentFilePaths)); }
+                        }
+                        smtp.Credentials = new System.Net.NetworkCredential(ConfigurationManager.AppSettings["FoxRehabUserName"], ConfigurationManager.AppSettings["FoxRehabPassword"]);
+                        smtp.Send(mail);
+                        IsMailSent = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+                IsMailSent = false;
+            }
+            return IsMailSent;
+        }
+        public static string Encrypt(string input, string key)
+        {
+            byte[] inputArray = UTF8Encoding.UTF8.GetBytes(input);
+            TripleDESCryptoServiceProvider tripleDES = new TripleDESCryptoServiceProvider
+            {
+                Key = UTF8Encoding.UTF8.GetBytes(key),
+                Mode = CipherMode.ECB,
+                Padding = PaddingMode.PKCS7
+            };
+            ICryptoTransform cTransform = tripleDES.CreateEncryptor();
+            byte[] resultArray = cTransform.TransformFinalBlock(inputArray, 0, inputArray.Length);
+            tripleDES.Clear();
+            return Convert.ToBase64String(resultArray, 0, resultArray.Length);
+        }
+        public static string SubscribeEmailEncryptedURL(PatientSurvey patientDetail)
+        {
+            string encryptedUrl = string.Empty;
+            if (patientDetail != null)
+            {
+                string environmentURL = GetPatientSurveyURL();
+                string conactURL = patientDetail.PATIENT_ACCOUNT_NUMBER + "#";
+                encryptedUrl = Encrypt(patientDetail.PATIENT_ACCOUNT_NUMBER.ToString(), "sblw-3hn8-sqoy19").ToString();
+                encryptedUrl = environmentURL + "#UnsubscribeSMS#?patientAccount#" + encryptedUrl + "#";
+            }
+            return encryptedUrl;
+        }
+        public static string GetPatientSurveyURL()
+        {
+            string url = ConfigurationManager.AppSettings?["SurveyAutomationURL"].ToString();
+            return url ?? "";
+        }
+        /// <summary>
+        /// Get List of CC Users for mail.
+        /// </summary>
+        /// <returns></returns>
+        public static List<string> GetEmailCCList()
+        {
+            List<string> cc = new List<string>();
+            var ccUsers = ConfigurationManager.AppSettings?["CCList"].ToString();
+            if (!string.IsNullOrEmpty(ccUsers))
+            {
+                cc = ccUsers.Split(',').ToList();
+            }
+            return cc ?? null;
+        }
+        /// <summary>
+        /// Get List of BCC Users for mail.
+        /// </summary>
+        /// <returns></returns>
+        public static List<string> GetEmailBCCList()
+        {
+            List<string> bcc = new List<string>();
+            var ccUsers = ConfigurationManager.AppSettings?["BCCList"].ToString();
+            if (!string.IsNullOrEmpty(ccUsers))
+            {
+                bcc = ccUsers.Split(',').ToList();
+            }
+            return bcc ?? null;
+        }
+        public static string SmsBody(string patientFirstName)
+        {
+            string smsBody = " Hello " + patientFirstName + @"! \n \n Your request to unsubscribe from receiving patient surveys is received. You will not receive any messages with patient survey link in future.\n\nRegards\n\n Fox Rehab Team ";
+            return smsBody ?? "";
+        }
         // Description: This function is decrypt patient account number
         public SurveyLink DecryptionUrl(SurveyLink objSurveyLink)
         {
             if (objSurveyLink != null && !string.IsNullOrEmpty(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT))
             {
                 objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT = Decryption(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT);
+                if (!string.IsNullOrEmpty(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT))
+                {
+                    string surveyMethodRemoveChr = (objSurveyLink.SURVEY_METHOD.Replace("#", ""));
+                    string surveyMethodRemoveChar = (surveyMethodRemoveChr.Replace("?", ""));
+                    if (surveyMethodRemoveChar == "SMS" || surveyMethodRemoveChar == "EMAIL")
+                    {
+                        objSurveyLink.OPEN_SURVEY_METHOD = surveyMethodRemoveChar;
+                    }
+                    if (!string.IsNullOrEmpty(objSurveyLink.SURVEY_METHOD) && (surveyMethodRemoveChar == "UnsubscribeEmail" || surveyMethodRemoveChar == "UnsubscribeSMS"))
+                    {
+                        var surveyId = long.Parse(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT);
+                        var existingPatientDetails = _patientSurveyRepository.GetFirst(r => r.SURVEY_ID == surveyId && r.DELETED == false);
+                        if (existingPatientDetails != null && existingPatientDetails.PATIENT_ACCOUNT_NUMBER != 0)
+                        {
+                            var patientAccount = long.Parse(existingPatientDetails.PATIENT_ACCOUNT_NUMBER.ToString());
+                            //string charId = "00" + patientAccount;
+                            string charId = patientAccount.ToString();
+                            var patientDetails = _PatientRepository.GetFirst(r => r.Chart_Id == charId && r.DELETED == false);
+                            if (surveyMethodRemoveChar == "UnsubscribeEmail")
+                            {
+                                var unsubscribeEmailDetail = _automatedSurveyUnSubscription.GetFirst(r => r.PATIENT_ACCOUNT == patientAccount && r.EMAIL_UNSUBSCRIBE == true && r.DELETED == false);
+                                if (unsubscribeEmailDetail == null)
+                                {
+                                    AutomatedSurveyUnSubscription objautomatedSurveyUnSubscription = new AutomatedSurveyUnSubscription();
+                                    objautomatedSurveyUnSubscription = _automatedSurveyUnSubscription.GetFirst(r => r.PATIENT_ACCOUNT == patientAccount && r.DELETED == false);
+                                    if (objautomatedSurveyUnSubscription == null)
+                                    {
+                                        AutomatedSurveyUnSubscription objautomatedSurveyUnSubscriptions = new AutomatedSurveyUnSubscription();
+                                        objautomatedSurveyUnSubscriptions.AUTOMATED_SURVEY_UNSUBSCRIPTION_ID = Helper.getMaximumId("AUTOMATED_SURVEY_UNSUBSCRIPTION_ID");
+                                        objautomatedSurveyUnSubscriptions.PATIENT_ACCOUNT = patientAccount;
+                                        objautomatedSurveyUnSubscriptions.PRACTICE_CODE = AppConfiguration.GetPracticeCode;
+                                        objautomatedSurveyUnSubscriptions.SMS_UNSUBSCRIBE = false;
+                                        objautomatedSurveyUnSubscriptions.EMAIL_UNSUBSCRIBE = true;
+                                        objautomatedSurveyUnSubscriptions.SURVEY_ID = surveyId;
+                                        objautomatedSurveyUnSubscriptions.CREATED_DATE = Helper.GetCurrentDate();
+                                        objautomatedSurveyUnSubscriptions.CREATED_BY = "FOX_TEAM";
+                                        _automatedSurveyUnSubscription.Insert(objautomatedSurveyUnSubscriptions);
+                                        _automatedSurveyUnSubscription.Save();
+                                    }
+                                    else
+                                    {
+                                        objautomatedSurveyUnSubscription.EMAIL_UNSUBSCRIBE = true;
+                                        _automatedSurveyUnSubscription.Update(objautomatedSurveyUnSubscription);
+                                        _automatedSurveyUnSubscription.Save();
+                                    }
+                                    objSurveyLink.SURVEY_METHOD = "Email Unsubscribe";
+                                    //emailStatus = EmailBody(existingPatientDetails.PATIENT_FIRST_NAME);
+                                    // Get List of CC Users
+                                    var cc = GetEmailCCList();
+                                    // Get List of BCC Users
+                                    var bcc = GetEmailBCCList();
+                                    //var subscribeEmailencryptedURL = SubscribeEmailEncryptedURL(existingPatientDetails);
+                                    var emailBody = EmailBody(existingPatientDetails.PATIENT_FIRST_NAME);
+                                    SendEmail(patientDetails.Email_Address, "FOX Patient Survey", emailBody, cc, bcc);
+                                }
+                                else
+                                {
+                                    objSurveyLink.SURVEY_METHOD = "Link Expire";
+                                }
+                            }
+                            if (surveyMethodRemoveChar == "UnsubscribeSMS")
+                            {
+                                var unsubscribeSMSDetail = _automatedSurveyUnSubscription.GetFirst(r => r.PATIENT_ACCOUNT == patientAccount && r.SMS_UNSUBSCRIBE == true && r.DELETED == false);
+                                if (unsubscribeSMSDetail == null)
+                                {
+                                    AutomatedSurveyUnSubscription objautomatedSurveyUnSubscription = new AutomatedSurveyUnSubscription();
+                                    objautomatedSurveyUnSubscription = _automatedSurveyUnSubscription.GetFirst(r => r.PATIENT_ACCOUNT == patientAccount && r.DELETED == false);
+                                    if (objautomatedSurveyUnSubscription == null)
+                                    {
+                                        AutomatedSurveyUnSubscription objautomatedSurveyUnSubscriptions = new AutomatedSurveyUnSubscription();
+                                        objautomatedSurveyUnSubscriptions.AUTOMATED_SURVEY_UNSUBSCRIPTION_ID = Helper.getMaximumId("AUTOMATED_SURVEY_UNSUBSCRIPTION_ID");
+                                        objautomatedSurveyUnSubscriptions.PATIENT_ACCOUNT = patientAccount;
+                                        objautomatedSurveyUnSubscriptions.PRACTICE_CODE = AppConfiguration.GetPracticeCode;
+                                        objautomatedSurveyUnSubscriptions.SMS_UNSUBSCRIBE = true;
+                                        objautomatedSurveyUnSubscriptions.EMAIL_UNSUBSCRIBE = false;
+                                        objautomatedSurveyUnSubscriptions.SURVEY_ID = surveyId;
+                                        objautomatedSurveyUnSubscriptions.CREATED_DATE = Helper.GetCurrentDate();
+                                        objautomatedSurveyUnSubscriptions.CREATED_BY = "FOX_TEAM";
+                                        _automatedSurveyUnSubscription.Insert(objautomatedSurveyUnSubscriptions);
+                                        _automatedSurveyUnSubscription.Save();
+                                    }
+                                    else
+                                    {
+                                        objautomatedSurveyUnSubscription.SMS_UNSUBSCRIBE = true;
+                                        _automatedSurveyUnSubscription.Update(objautomatedSurveyUnSubscription);
+                                        _automatedSurveyUnSubscription.Save();
+                                    }
+
+                                    var smsBody = SmsBody(patientDetails.FirstName);
+                                    var status = SmsService.SMSTwilio(patientDetails.Home_Phone, smsBody);
+                                    objSurveyLink.SURVEY_METHOD = "SMS Unsubscribe";
+                                }
+                                else
+                                {
+                                    objSurveyLink.SURVEY_METHOD = "Link Expire";
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        objSurveyLink.SURVEY_METHOD = null;
+                    }
+                }
+                else
+                {
+                    objSurveyLink = null;
+                }
             }
             return objSurveyLink;
         }
@@ -54,7 +315,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                     SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = getPracticeCode };
                     SqlParameter patientAccountNumber = new SqlParameter { ParameterName = "@PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = existingPatientDetails.PATIENT_ACCOUNT_NUMBER };
                     SqlParameter surveyId = new SqlParameter { ParameterName = "@SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = tempSurveyId };
-                    var performSurveyHistory = SpRepository<SurveyAutomationLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PERFORM_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT, @PRACTICE_CODE, @SURVEY_ID", patientAccountNumber, pracCode, surveyId);
+                    var performSurveyHistory = SpRepository<SurveyServiceLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PERFORM_SURVEY_PATIENT_DETAILS @PATIENT_ACCOUNT, @PRACTICE_CODE, @SURVEY_ID", patientAccountNumber, pracCode, surveyId);
                     if (performSurveyHistory != null)
                     {
                         objSurveyAutomation = null;
@@ -140,7 +401,28 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                     var existingSurveyDetails = _patientSurveyRepository.GetFirst(r => r.PATIENT_ACCOUNT_NUMBER == objPatientSurvey.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == objPatientSurvey.SURVEY_ID && r.IS_SURVEYED == true && r.DELETED == false);
                     if (existingSurveyDetails == null)
                     {
+                        SurveyServiceLog objSurveyServiceLog = new SurveyServiceLog();
                         long practiceCode = AppConfiguration.GetPracticeCode;
+                        objSurveyServiceLog = _surveyServiceLogRepository.GetFirst(r => r.PATIENT_ACCOUNT == objPatientSurvey.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == objPatientSurvey.SURVEY_ID && r.PRACTICE_CODE == practiceCode && r.DELETED == false);
+                        if (objSurveyServiceLog != null)
+                        {
+                            if (objPatientSurvey.IS_SMS == true)
+                            {
+                                objSurveyServiceLog = _surveyServiceLogRepository.GetByID(objSurveyServiceLog.SURVEY_AUTOMATION_LOG_ID);
+                                objSurveyServiceLog.IS_SMS = true;
+                                objSurveyServiceLog.IS_EMAIL = false;
+                                _surveyServiceLogRepository.Update(objSurveyServiceLog);
+                                _surveyServiceLogRepository.Save();
+                            }
+                            else
+                            {
+                                objSurveyServiceLog = _surveyServiceLogRepository.GetByID(objSurveyServiceLog.SURVEY_AUTOMATION_LOG_ID);
+                                objSurveyServiceLog.IS_SMS = false;
+                                objSurveyServiceLog.IS_EMAIL = true;
+                                _surveyServiceLogRepository.Update(objSurveyServiceLog);
+                                _surveyServiceLogRepository.Save();
+                            }
+                        }
                         var existingPatientDetails = _patientSurveyRepository.GetFirst(r => r.PATIENT_ACCOUNT_NUMBER == objPatientSurvey.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == objPatientSurvey.SURVEY_ID && r.DELETED == false);
                         PatientSurvey patientSurvey = new PatientSurvey();
                         if (existingPatientDetails != null)
@@ -176,6 +458,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                         }
                         else
                         {
+
                             response.ErrorMessage = "";
                             response.Message = "Suvery not completed successfully";
                             response.Success = false;
@@ -183,9 +466,32 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                     }
                     else
                     {
-                        response.ErrorMessage = "";
-                        response.Message = "Suvery not completed successfully";
-                        response.Success = false;
+                        SurveyServiceLog objSurveyServiceLog = new SurveyServiceLog();
+                        long practiceCode = AppConfiguration.GetPracticeCode;
+                        objSurveyServiceLog = _surveyServiceLogRepository.GetFirst(r => r.PATIENT_ACCOUNT == objPatientSurvey.PATIENT_ACCOUNT_NUMBER && r.SURVEY_ID == objPatientSurvey.SURVEY_ID && r.PRACTICE_CODE == practiceCode && r.DELETED == false);
+                        if (objSurveyServiceLog != null)
+                        {
+                            if (objSurveyServiceLog.IS_SMS == true && objSurveyServiceLog != null)
+                            {
+                                response.ErrorMessage = "";
+                                response.Message = "Suvery completed via SMS";
+                                response.Success = false;
+                            }
+                            else if (objSurveyServiceLog.IS_EMAIL == true && objSurveyServiceLog != null)
+                            {
+                                response.ErrorMessage = "";
+                                response.Message = "Suvery completed via Email";
+                                response.Success = false;
+                            }
+                        }
+                        else
+                        {
+                            response.ErrorMessage = "";
+                            response.Message = "";
+                            response.Success = false;
+                        }
+
+                       
                     }
                 }
             }
