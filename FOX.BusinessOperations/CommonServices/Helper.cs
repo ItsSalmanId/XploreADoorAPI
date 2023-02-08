@@ -861,9 +861,21 @@ namespace FOX.BusinessOperations.CommonService
             string Dis_str = string.Empty;
             if (!string.IsNullOrEmpty(depId))
             {
-                if (depId.Contains("1"))
+                if (depId.EndsWith("1"))
+                {
+                    depId = depId + ",";
+                }
+                if (depId.Contains("1,"))
                 {
                     Dis_str = Dis_str + " Occupational Therapy (OT), ";
+                    if (depId.EndsWith(","))
+                    {
+                        depId = depId.Remove(depId.Length - 1, 1);
+                    }
+                }
+                if (depId.Contains("10"))
+                {
+                    Dis_str = Dis_str + " Skilled Nursing (SN), ";
                 }
                 if (depId.Contains("2"))
                 {
