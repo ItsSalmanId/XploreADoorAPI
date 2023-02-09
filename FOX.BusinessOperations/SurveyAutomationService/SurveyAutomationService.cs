@@ -46,145 +46,6 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         #endregion
 
         #region FUNCTIONS
-        /// <summary>
-        /// Generate body template for mail.
-        /// </summary>
-        /// <param name="patientFirstName"></param>
-        /// <param name="link"></param>
-        /// <returns></returns>
-        public static string EmailBody(string patientFirstName)
-        {
-            string mailBody = string.Empty;
-            string templatePathOfSenderEmail = AppDomain.CurrentDomain.BaseDirectory;
-            templatePathOfSenderEmail = templatePathOfSenderEmail.Replace(@"\bin\Debug", "") + "HtmlTemplates\\UnsubscribeAutomatedPatientSurveyEmailTemplate.html";
-            if (File.Exists(templatePathOfSenderEmail))
-            {
-                mailBody = File.ReadAllText(templatePathOfSenderEmail);
-                mailBody = mailBody.Replace("[[PATIENT_FIRST_NAME]]", patientFirstName);
-                //mailBody = mailBody.Replace("[[LINK]]", link);
-                ///mailBody = mailBody.Replace("[[SUBSCRIBE_LINK]]", subscribeencryptedURL);
-            }
-            return mailBody ?? "";
-        }
-        /// <summary>
-        /// Send Email on Success to Patient about Fox Survey.
-        /// </summary>
-        /// <param name="to"></param>
-        /// <param name="subject"></param>
-        /// <param name="body"></param>
-        /// <param name="CC"></param>
-        /// <param name="BCC"></param>
-        /// <param name="AttachmentFilePaths"></param>
-        /// <param name="from"></param>
-        /// <returns></returns>
-        public static bool SendEmail(string to, string subject, string body, List<string> CC = null, List<string> BCC = null, string AttachmentFilePaths = null, string from = "foxrehab@carecloud.com")
-        {
-            bool IsMailSent = false;
-            var bodyHTML = "";
-            bodyHTML += "<body>";
-            bodyHTML += body;
-            bodyHTML += "</body>";
-            try
-            {
-                using (SmtpClient smtp = new SmtpClient())
-                {
-                    using (MailMessage mail = new MailMessage())
-                    {
-                        mail.From = new MailAddress(from);
-                        mail.To.Add(new MailAddress(to));
-                        mail.Subject = subject;
-                        mail.Body = bodyHTML;
-                        mail.IsBodyHtml = true;
-                        mail.SubjectEncoding = Encoding.UTF8;
-                        if (CC != null && CC.Count > 0)
-                        {
-                            foreach (var item in CC) { mail.CC.Add(item); }
-                        }
-                        if (BCC != null && BCC.Count > 0)
-                        {
-                            foreach (var item in BCC) { mail.Bcc.Add(item); }
-                        }
-                        if (AttachmentFilePaths != null)
-                        {
-                            if (File.Exists(AttachmentFilePaths)) { mail.Attachments.Add(new Attachment(AttachmentFilePaths)); }
-                        }
-                        smtp.Credentials = new System.Net.NetworkCredential(ConfigurationManager.AppSettings["FoxRehabUserName"], ConfigurationManager.AppSettings["FoxRehabPassword"]);
-                        smtp.Send(mail);
-                        IsMailSent = true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-                IsMailSent = false;
-            }
-            return IsMailSent;
-        }
-        public static string Encrypt(string input, string key)
-        {
-            byte[] inputArray = UTF8Encoding.UTF8.GetBytes(input);
-            TripleDESCryptoServiceProvider tripleDES = new TripleDESCryptoServiceProvider
-            {
-                Key = UTF8Encoding.UTF8.GetBytes(key),
-                Mode = CipherMode.ECB,
-                Padding = PaddingMode.PKCS7
-            };
-            ICryptoTransform cTransform = tripleDES.CreateEncryptor();
-            byte[] resultArray = cTransform.TransformFinalBlock(inputArray, 0, inputArray.Length);
-            tripleDES.Clear();
-            return Convert.ToBase64String(resultArray, 0, resultArray.Length);
-        }
-        public static string SubscribeEmailEncryptedURL(PatientSurvey patientDetail)
-        {
-            string encryptedUrl = string.Empty;
-            if (patientDetail != null)
-            {
-                string environmentURL = GetPatientSurveyURL();
-                string conactURL = patientDetail.PATIENT_ACCOUNT_NUMBER + "#";
-                encryptedUrl = Encrypt(patientDetail.PATIENT_ACCOUNT_NUMBER.ToString(), "sblw-3hn8-sqoy19").ToString();
-                encryptedUrl = environmentURL + "#UnsubscribeSMS#?patientAccount#" + encryptedUrl + "#";
-            }
-            return encryptedUrl;
-        }
-        public static string GetPatientSurveyURL()
-        {
-            string url = ConfigurationManager.AppSettings?["SurveyAutomationURL"].ToString();
-            return url ?? "";
-        }
-        /// <summary>
-        /// Get List of CC Users for mail.
-        /// </summary>
-        /// <returns></returns>
-        public static List<string> GetEmailCCList()
-        {
-            List<string> cc = new List<string>();
-            var ccUsers = ConfigurationManager.AppSettings?["CCList"].ToString();
-            if (!string.IsNullOrEmpty(ccUsers))
-            {
-                cc = ccUsers.Split(',').ToList();
-            }
-            return cc ?? null;
-        }
-        /// <summary>
-        /// Get List of BCC Users for mail.
-        /// </summary>
-        /// <returns></returns>
-        public static List<string> GetEmailBCCList()
-        {
-            List<string> bcc = new List<string>();
-            var ccUsers = ConfigurationManager.AppSettings?["BCCList"].ToString();
-            if (!string.IsNullOrEmpty(ccUsers))
-            {
-                bcc = ccUsers.Split(',').ToList();
-            }
-            return bcc ?? null;
-        }
-        public static string SmsBody(string patientFirstName)
-        {
-            string smsBody = " Hello " + patientFirstName + @"! \n \n Your request to unsubscribe from receiving patient surveys is received. You will not receive any messages with patient survey link in future.\n\nRegards\n\n Fox Rehab Team ";
-            return smsBody ?? "";
-        }
         // Description: This function is decrypt patient account number
         public SurveyLink DecryptionUrl(SurveyLink objSurveyLink)
         {
@@ -218,15 +79,17 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                                     objautomatedSurveyUnSubscription = _automatedSurveyUnSubscription.GetFirst(r => r.PATIENT_ACCOUNT == patientAccount && r.DELETED == false);
                                     if (objautomatedSurveyUnSubscription == null)
                                     {
-                                        AutomatedSurveyUnSubscription objautomatedSurveyUnSubscriptions = new AutomatedSurveyUnSubscription();
-                                        objautomatedSurveyUnSubscriptions.AUTOMATED_SURVEY_UNSUBSCRIPTION_ID = Helper.getMaximumId("AUTOMATED_SURVEY_UNSUBSCRIPTION_ID");
-                                        objautomatedSurveyUnSubscriptions.PATIENT_ACCOUNT = patientAccount;
-                                        objautomatedSurveyUnSubscriptions.PRACTICE_CODE = AppConfiguration.GetPracticeCode;
-                                        objautomatedSurveyUnSubscriptions.SMS_UNSUBSCRIBE = false;
-                                        objautomatedSurveyUnSubscriptions.EMAIL_UNSUBSCRIBE = true;
-                                        objautomatedSurveyUnSubscriptions.SURVEY_ID = surveyId;
-                                        objautomatedSurveyUnSubscriptions.CREATED_DATE = Helper.GetCurrentDate();
-                                        objautomatedSurveyUnSubscriptions.CREATED_BY = "FOX_TEAM";
+                                        AutomatedSurveyUnSubscription objautomatedSurveyUnSubscriptions = new AutomatedSurveyUnSubscription
+                                        {
+                                            AUTOMATED_SURVEY_UNSUBSCRIPTION_ID = Helper.getMaximumId("AUTOMATED_SURVEY_UNSUBSCRIPTION_ID"),
+                                            PATIENT_ACCOUNT = patientAccount,
+                                            PRACTICE_CODE = AppConfiguration.GetPracticeCode,
+                                            SMS_UNSUBSCRIBE = false,
+                                            EMAIL_UNSUBSCRIBE = true,
+                                            SURVEY_ID = surveyId,
+                                            CREATED_DATE = Helper.GetCurrentDate(),
+                                            CREATED_BY = "FOX_TEAM"
+                                        };
                                         _automatedSurveyUnSubscription.Insert(objautomatedSurveyUnSubscriptions);
                                         _automatedSurveyUnSubscription.Save();
                                     }
@@ -237,12 +100,10 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                                         _automatedSurveyUnSubscription.Save();
                                     }
                                     objSurveyLink.SURVEY_METHOD = "Email Unsubscribe";
-                                    //emailStatus = EmailBody(existingPatientDetails.PATIENT_FIRST_NAME);
                                     // Get List of CC Users
                                     var cc = GetEmailCCList();
                                     // Get List of BCC Users
                                     var bcc = GetEmailBCCList();
-                                    //var subscribeEmailencryptedURL = SubscribeEmailEncryptedURL(existingPatientDetails);
                                     var emailBody = EmailBody(existingPatientDetails.PATIENT_FIRST_NAME);
                                     SendEmail(patientDetails.Email_Address, "FOX Patient Survey", emailBody, cc, bcc);
                                 }
@@ -260,15 +121,17 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                                     objautomatedSurveyUnSubscription = _automatedSurveyUnSubscription.GetFirst(r => r.PATIENT_ACCOUNT == patientAccount && r.DELETED == false);
                                     if (objautomatedSurveyUnSubscription == null)
                                     {
-                                        AutomatedSurveyUnSubscription objautomatedSurveyUnSubscriptions = new AutomatedSurveyUnSubscription();
-                                        objautomatedSurveyUnSubscriptions.AUTOMATED_SURVEY_UNSUBSCRIPTION_ID = Helper.getMaximumId("AUTOMATED_SURVEY_UNSUBSCRIPTION_ID");
-                                        objautomatedSurveyUnSubscriptions.PATIENT_ACCOUNT = patientAccount;
-                                        objautomatedSurveyUnSubscriptions.PRACTICE_CODE = AppConfiguration.GetPracticeCode;
-                                        objautomatedSurveyUnSubscriptions.SMS_UNSUBSCRIBE = true;
-                                        objautomatedSurveyUnSubscriptions.EMAIL_UNSUBSCRIBE = false;
-                                        objautomatedSurveyUnSubscriptions.SURVEY_ID = surveyId;
-                                        objautomatedSurveyUnSubscriptions.CREATED_DATE = Helper.GetCurrentDate();
-                                        objautomatedSurveyUnSubscriptions.CREATED_BY = "FOX_TEAM";
+                                        AutomatedSurveyUnSubscription objautomatedSurveyUnSubscriptions = new AutomatedSurveyUnSubscription
+                                        {
+                                            AUTOMATED_SURVEY_UNSUBSCRIPTION_ID = Helper.getMaximumId("AUTOMATED_SURVEY_UNSUBSCRIPTION_ID"),
+                                            PATIENT_ACCOUNT = patientAccount,
+                                            PRACTICE_CODE = AppConfiguration.GetPracticeCode,
+                                            SMS_UNSUBSCRIBE = true,
+                                            EMAIL_UNSUBSCRIBE = false,
+                                            SURVEY_ID = surveyId,
+                                            CREATED_DATE = Helper.GetCurrentDate(),
+                                            CREATED_BY = "FOX_TEAM"
+                                        };
                                         _automatedSurveyUnSubscription.Insert(objautomatedSurveyUnSubscriptions);
                                         _automatedSurveyUnSubscription.Save();
                                     }
@@ -490,8 +353,6 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                             response.Message = "";
                             response.Success = false;
                         }
-
-                       
                     }
                 }
             }
@@ -527,6 +388,93 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                 _patientSurveyHistoryRepository.Insert(patientSurveyHistory);
                 _patientSurveyHistoryRepository.Save();
             }
+        }
+        #endregion
+        #region Email & SMS body 
+        // Description: This function is used for Email body
+        public static string EmailBody(string patientFirstName)
+        {
+            string mailBody = string.Empty;
+            string templatePathOfSenderEmail = AppDomain.CurrentDomain.BaseDirectory;
+            templatePathOfSenderEmail = templatePathOfSenderEmail.Replace(@"\bin\Debug", "") + "HtmlTemplates\\UnsubscribeAutomatedPatientSurveyEmailTemplate.html";
+            if (File.Exists(templatePathOfSenderEmail))
+            {
+                mailBody = File.ReadAllText(templatePathOfSenderEmail);
+                mailBody = mailBody.Replace("[[PATIENT_FIRST_NAME]]", patientFirstName);
+            }
+            return mailBody ?? "";
+        }
+        // Description: This function is used for send email
+        public static bool SendEmail(string to, string subject, string body, List<string> CC = null, List<string> BCC = null, string AttachmentFilePaths = null, string from = "foxrehab@carecloud.com")
+        {
+            bool IsMailSent = false;
+            var bodyHTML = "";
+            bodyHTML += "<body>";
+            bodyHTML += body;
+            bodyHTML += "</body>";
+            try
+            {
+                using (SmtpClient smtp = new SmtpClient())
+                {
+                    using (MailMessage mail = new MailMessage())
+                    {
+                        mail.From = new MailAddress(from);
+                        mail.To.Add(new MailAddress(to));
+                        mail.Subject = subject;
+                        mail.Body = bodyHTML;
+                        mail.IsBodyHtml = true;
+                        mail.SubjectEncoding = Encoding.UTF8;
+                        if (CC != null && CC.Count > 0)
+                        {
+                            foreach (var item in CC) { mail.CC.Add(item); }
+                        }
+                        if (BCC != null && BCC.Count > 0)
+                        {
+                            foreach (var item in BCC) { mail.Bcc.Add(item); }
+                        }
+                        if (AttachmentFilePaths != null)
+                        {
+                            if (File.Exists(AttachmentFilePaths)) { mail.Attachments.Add(new Attachment(AttachmentFilePaths)); }
+                        }
+                        smtp.Credentials = new System.Net.NetworkCredential(ConfigurationManager.AppSettings["FoxRehabUserName"], ConfigurationManager.AppSettings["FoxRehabPassword"]);
+                        smtp.Send(mail);
+                        IsMailSent = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return IsMailSent;
+        }
+        // Description: This function is used for get list of Email CC
+        public static List<string> GetEmailCCList()
+        {
+            List<string> cc = new List<string>();
+            var ccUsers = ConfigurationManager.AppSettings?["CCList"].ToString();
+            if (!string.IsNullOrEmpty(ccUsers))
+            {
+                cc = ccUsers.Split(',').ToList();
+            }
+            return cc ?? null;
+        }
+        // Description: This function is used for get list of Email BCC
+        public static List<string> GetEmailBCCList()
+        {
+            List<string> bcc = new List<string>();
+            var ccUsers = ConfigurationManager.AppSettings?["BCCList"].ToString();
+            if (!string.IsNullOrEmpty(ccUsers))
+            {
+                bcc = ccUsers.Split(',').ToList();
+            }
+            return bcc ?? null;
+        }
+        // Description: This function is used forcreate SMS body
+        public static string SmsBody(string patientFirstName)
+        {
+            string smsBody = " Hello " + patientFirstName + @"! \n \n Your request to unsubscribe from receiving patient surveys is received. You will not receive any messages with patient survey link in future.\n\nRegards\n\n Fox Rehab Team ";
+            return smsBody ?? "";
         }
         #endregion
     }
