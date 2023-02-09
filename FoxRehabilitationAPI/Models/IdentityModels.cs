@@ -186,8 +186,8 @@ namespace FoxRehabilitationAPI.Models
 
     public class OtpModel
     {
-        public bool Status { get;set; }
-        public string Message { get; set; }
-        public string Data { get; set; }
+        public bool status { get;set; }
+        public string message { get; set; }
+        public string data { get; set; }
     }
 }

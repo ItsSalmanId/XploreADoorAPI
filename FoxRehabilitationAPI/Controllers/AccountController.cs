@@ -519,7 +519,7 @@ namespace FoxRehabilitationAPI.Controllers
                     obj = JsonConvert.DeserializeObject<OtpModel>(response.Content);
                     if (obj != null)
                     {
-                        if (obj.Status == true)
+                        if (obj.status == true)
                         {
                             UserProfile profile = ClaimsModel.GetUserProfile(User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
                             ResponseModel resp = new ResponseModel();
@@ -530,9 +530,9 @@ namespace FoxRehabilitationAPI.Controllers
                         }
                         else
                         {
-                            if (obj.Message.Contains("failed"))
+                            if (obj.message.Contains("failed"))
                             {
-                                obj.Message = "OTP verification failed.";
+                                obj.message = "OTP verification failed.";
                             }
                         }
                     }
