@@ -245,7 +245,8 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     Image img;
                     PdfFocus f = new PdfFocus();
-                    f.Serial = "10261435399";
+                    //f.Serial = "10261435399";
+                    f.Serial = "80033727929";
                     f.OpenPdf(orgPdfPath);
 
                     if (f.PageCount > 0)
