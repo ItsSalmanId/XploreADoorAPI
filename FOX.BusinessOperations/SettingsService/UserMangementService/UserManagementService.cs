@@ -72,7 +72,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         private readonly GenericRepository<ActiveIndexerHistory> _ActiveIndexerHistoryRepository;
         public UserManagementService()
         {
-           
+
             _UserRepository = new GenericRepository<User>(security);
             _RoleRightRepository = new GenericRepository<FOX_TBL_PRACTICE_ROLE_RIGHTS>(security);
             _RoleRepository = new GenericRepository<RoleToAdd>(security);
@@ -3410,78 +3410,62 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         public ResponseModel UpdateOtpEnableDate(long userId)
         {
             ResponseModel resp = new ResponseModel();
-            try
+            OtpEnableDate obj = _enableOtpRepository.GetSingleOrDefault(r => r.UserId == userId && r.DELETED == false);
+            if (obj == null)
             {
-                OtpEnableDate  obj = _enableOtpRepository.GetFirst(r => r.UserId == userId && r.DELETED == false);
-                if (obj == null)
+                obj = new OtpEnableDate
                 {
-                    obj = new OtpEnableDate
-                    {
-                        EnableOtpDate = Helper.GetCurrentDate(),
-                        CREATED_DATE = Helper.GetCurrentDate(),
-                        CREATED_BY = userId.ToString(),
-                        MODIFIED_DATE = Helper.GetCurrentDate(),
-                        MODIFIED_BY = userId.ToString(),
-                        UserId = userId,
-                        OtpEnableId=Helper.getMaximumId("OtpEnableId")
-                    };
-                    _enableOtpRepository.Insert(obj);
-                    _enableOtpRepository.Save();
-                    resp.Success = true;
-                    resp.Message = "User status inserted successfully.";
-                    resp.ErrorMessage = string.Empty;
-                    resp.AU = false;
-                }
-                else
-                {
-                    obj.EnableOtpDate = Helper.GetCurrentDate();
-                    obj.MODIFIED_DATE = Helper.GetCurrentDate();
-                    obj.MODIFIED_BY = userId.ToString();
-                    _enableOtpRepository.Update(obj);
-                    _enableOtpRepository.Save();
-                    resp.Success = true;
-                    resp.Message = "Status updated successfully.";
-                    resp.ErrorMessage = string.Empty;
-                    resp.AU = false;
-                }
-                return resp;
-            }
-            catch (Exception exception)
-            {
-                string st = exception.Message;
-                resp.Success = false;
-                resp.Message = "Errror occured to update the status.";
-                resp.ErrorMessage = "Errror occured to update the status.";
+                    EnableOtpDate = Helper.GetCurrentDate(),
+                    CREATED_DATE = Helper.GetCurrentDate(),
+                    CREATED_BY = userId.ToString(),
+                    MODIFIED_DATE = Helper.GetCurrentDate(),
+                    MODIFIED_BY = userId.ToString(),
+                    UserId = userId,
+                    OtpEnableId = Helper.getMaximumId("OtpEnableId")
+                };
+                _enableOtpRepository.Insert(obj);
+                _enableOtpRepository.Save();
+                resp.Success = true;
+                resp.Message = "User status inserted successfully.";
+                resp.ErrorMessage = string.Empty;
                 resp.AU = false;
-                return resp;
             }
+            else
+            {
+                obj.EnableOtpDate = Helper.GetCurrentDate();
+                obj.MODIFIED_DATE = Helper.GetCurrentDate();
+                obj.MODIFIED_BY = userId.ToString();
+                _enableOtpRepository.Update(obj);
+                _enableOtpRepository.Save();
+                resp.Success = true;
+                resp.Message = "Status updated successfully.";
+                resp.ErrorMessage = string.Empty;
+                resp.AU = false;
+            }
+            return resp;
         }
-        
+
         //  this function Update User,s MFA status (true/false)
         public ResponseModel UpdateMfaStatus(string userId)
         {
-            userId = String.IsNullOrEmpty(userId) ? 0.ToString() : userId.ToString();
+            if (String.IsNullOrEmpty(userId))
+            {
+                return null;
+            }
             ResponseModel resp = new ResponseModel();
-            try
+            var userToUpdate = IsUserAlreadyExist(Convert.ToInt64(userId));
+            if (userToUpdate != null)
             {
-                var userToUpdate = IsUserAlreadyExist(Convert.ToInt64(userId));
-                if (userToUpdate != null)
-                {
-                    userToUpdate.MFA = true;
-                    _UserRepository.Update(userToUpdate);
-                    _UserRepository.Save();
-                    resp.Success = true;
-                    resp.Message = "MFA status update successfully.";
-                    resp.ErrorMessage = string.Empty;
-                    resp.AU = false;
-                    resp = UpdateOtpEnableDate(Convert.ToInt64(userId));
-                }
-                return resp;
+                userToUpdate.MFA = true;
+                _UserRepository.Update(userToUpdate);
+                _UserRepository.Save();
+                resp.Success = true;
+                resp.Message = "MFA status update successfully.";
+                resp.ErrorMessage = string.Empty;
+                resp.AU = false;
+                resp = UpdateOtpEnableDate(Convert.ToInt64(userId));
             }
-            catch (Exception exception)
-            {
-                throw exception.InnerException;
-            }
+            return resp;
         }
     }
 }

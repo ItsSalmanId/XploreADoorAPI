@@ -39,6 +39,7 @@ using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.GoogleRecaptcha;
 using Newtonsoft.Json;
 using RestSharp;
+using System.Web.Configuration;
 
 namespace FoxRehabilitationAPI.Controllers
 {
@@ -56,7 +57,7 @@ namespace FoxRehabilitationAPI.Controllers
         private ApplicationRoleManager _roleManager;
         public AccountController()
         {
-            
+
         }
 
         private UserProfile GetProfile()
@@ -486,7 +487,6 @@ namespace FoxRehabilitationAPI.Controllers
         [Route("GetOtp")]
         public HttpResponseMessage GetOtp(string email)
         {
-            email = String.IsNullOrEmpty(email) ? 0.ToString() : email;
             if (String.IsNullOrEmpty(email))
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Request with invalid parameters.");
@@ -494,10 +494,14 @@ namespace FoxRehabilitationAPI.Controllers
             else
             {
                 IRestResponse response = GetOtpCode(email);
-                if (response.Content != null)
-                { return Request.CreateResponse(HttpStatusCode.OK, response.Content); }
+                if (String.IsNullOrEmpty(response.Content))
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, response.Content);
+                }
                 else
-                { return Request.CreateResponse(HttpStatusCode.BadRequest, "Error occured to get OTP code."); }
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Error occured to get OTP code.");
+                }
             }
         }
 
@@ -508,25 +512,35 @@ namespace FoxRehabilitationAPI.Controllers
         {
             if (String.IsNullOrEmpty(otp) || String.IsNullOrEmpty(otpIdentifier))
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Request with invalid parameters.");
+                if (String.IsNullOrEmpty(otp) && String.IsNullOrEmpty(otpIdentifier))
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Request with invalid parameters otp and otpIdentifier .");
+                }
+                else if (String.IsNullOrEmpty(otp))
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Request with invalid otp .");
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Request with invalid otpIdentifier .");
+                }
             }
             else
             {
                 IRestResponse response = VerifyOtpCode(otp, otpIdentifier);
                 if (response.Content != null)
                 {
-                    OtpModel obj = new OtpModel();
-                    obj = JsonConvert.DeserializeObject<OtpModel>(response.Content);
+                    OtpModel obj=JsonConvert.DeserializeObject<OtpModel>(response.Content);
                     if (obj != null)
                     {
                         if (obj.status == true)
                         {
                             UserProfile profile = ClaimsModel.GetUserProfile(User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
-                            ResponseModel resp = new ResponseModel();
-                            resp = _userManagementService.UpdateOtpEnableDate(profile.userID);
+                            ResponseModel resp =_userManagementService.UpdateOtpEnableDate(profile.userID);
                             if (resp != null)
-                            { return Request.CreateResponse(HttpStatusCode.OK, response.Content); }
-
+                            {
+                                return Request.CreateResponse(HttpStatusCode.OK, response.Content);
+                            }
                         }
                         else
                         {
@@ -536,10 +550,13 @@ namespace FoxRehabilitationAPI.Controllers
                             }
                         }
                     }
-                    return Request.CreateResponse(HttpStatusCode.OK, Newtonsoft.Json.JsonConvert.SerializeObject(obj));
+                    var result = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+                    return Request.CreateResponse(HttpStatusCode.OK, result);
                 }
                 else
-                { return Request.CreateResponse(HttpStatusCode.BadRequest, "Error occured to verify OTP code."); }
+                { 
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Error occured to verify OTP code.");
+                }
             }
         }
 
@@ -549,13 +566,19 @@ namespace FoxRehabilitationAPI.Controllers
         [Route("UpdateOtpEnableDate")]
         public HttpResponseMessage UpdateOtpEnableDate(string userId)
         {
-            userId = String.IsNullOrEmpty(userId) ? "0" : userId;
-            ResponseModel resp = new ResponseModel();
-            resp = _userManagementService.UpdateOtpEnableDate(Convert.ToInt64(userId));
+            if (String.IsNullOrEmpty(userId))
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Request with invalid parameter.");
+            }
+            ResponseModel resp =_userManagementService.UpdateOtpEnableDate(Convert.ToInt64(userId));
             if (resp != null)
-            { return Request.CreateResponse(HttpStatusCode.OK, resp); }
+            { 
+                return Request.CreateResponse(HttpStatusCode.OK, resp);
+            }
             else
-            { return Request.CreateResponse(HttpStatusCode.BadRequest, "Error occured to update OTP enable date."); }
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Error occured to update OTP enable date.");
+            }
 
         }
 
@@ -565,13 +588,19 @@ namespace FoxRehabilitationAPI.Controllers
         [Route("UpdateMfaStatus")]
         public HttpResponseMessage UpdateMfaStatus(string userId)
         {
-            userId = String.IsNullOrEmpty(userId) ? 0.ToString() : userId;
-            ResponseModel resp = new ResponseModel();
-            resp = _userManagementService.UpdateMfaStatus(userId);
+            if (String.IsNullOrEmpty(userId))
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Request with invalid parameter.");
+            }
+            ResponseModel resp =_userManagementService.UpdateMfaStatus(userId);
             if (resp != null)
-            { return Request.CreateResponse(HttpStatusCode.OK, resp); }
+            { 
+                return Request.CreateResponse(HttpStatusCode.OK, resp);
+            }
             else
-            { return Request.CreateResponse(HttpStatusCode.BadRequest, "Error occured to update OTP enable date."); }
+            { 
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Error occured to update OTP enable date."); 
+            }
 
         }
         //Browser Detection
@@ -1047,7 +1076,7 @@ namespace FoxRehabilitationAPI.Controllers
         private IRestResponse GetOtpCode(string email)
         {
 
-            var client = new RestClient("https://uat-webservices.mtbc.com/Notify/api/MultiFactorAuth/SendOTP");
+            var client = new RestClient(WebConfigurationManager.AppSettings["GetOtpURL"]);
             client.Timeout = -1;
             var request = new RestRequest(Method.POST);
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -1065,7 +1094,7 @@ namespace FoxRehabilitationAPI.Controllers
         //--method used to verify otp code for MFA  
         private IRestResponse VerifyOtpCode(string otp, string otpIdentifier)
         {
-            var client = new RestClient("https://uat-webservices.mtbc.com/Notify/api/MultiFactorAuth/VerifyOTP");
+            var client = new RestClient(WebConfigurationManager.AppSettings["VerifyOtpURL"]);
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             client.Timeout = -1;
             var request = new RestRequest(Method.POST);
