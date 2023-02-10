@@ -70,6 +70,7 @@ namespace FoxRehabilitationAPI.App_Start
             container.RegisterType<FOX.BusinessOperations.HrAutoEmail.IHrAutoEmailService, FOX.BusinessOperations.HrAutoEmail.HrAutoEmailService>();
             container.RegisterType<FOX.BusinessOperations.SignatureRequiredServices.ISignatureRequiredService, FOX.BusinessOperations.SignatureRequiredServices.SignatureRequiredService>();
             container.RegisterType<ISupportStaffService, SupportStaffService>();
+            container.RegisterType<FOX.BusinessOperations.SurveyAutomationService.ISurveyAutomationService, FOX.BusinessOperations.SurveyAutomationService.SurveyAutomationService>();
             return container;
         }
     }

@@ -305,6 +305,8 @@
     <Compile Include="SignatureRequiredServices\SignatureRequiredService.cs" />
     <Compile Include="SupervisorWorkService\ISupervisorWorkService.cs" />
     <Compile Include="SupervisorWorkService\SupervisorWorkService.cs" />
+    <Compile Include="SurveyAutomationService\ISurveyAutomationService.cs" />
+    <Compile Include="SurveyAutomationService\SurveyAutomationService.cs" />
     <Compile Include="TaskServices\ITaskServices.cs" />
     <Compile Include="TaskServices\TaskServices.cs" />
     <Compile Include="UnAssignedQueueService\IUnAssignedQueueService.cs" />
