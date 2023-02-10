@@ -64,11 +64,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountServiceUnitTest\AccountServiceTest.cs" />
+    <Compile Include="AssignedQueueServiceUnitTest\AssignedQueueServiceTest.cs" />
     <Compile Include="CaseServicesUnitTest\CaseServiceTest.cs" />
     <Compile Include="CommonServiceUnitTest\CommonServiceTest.cs" />
     <Compile Include="DashboardServiceUnitTest\DashoboardServiceTest.cs" />
     <Compile Include="FoxPHDServiceUnitTest\FoxPHDServiceTest.cs" />
     <Compile Include="FrictionlessReferralUnitTest\SupportStaffUnitTest\SupportStaffServiceTest.cs" />
+    <Compile Include="GenerelNotesServiceUnitTest\GenerelNotesServiceTest.cs" />
     <Compile Include="OriginalQueueServiceUnitTest\OriginalQueueServiceTest.cs" />
     <Compile Include="PatientServicesUnitTest\PatientServicesTest.cs" />
     <Compile Include="PatientSurveyServiceUnitTest\SearchSurveyServiceUnitTest\SearchSurveyServiceTest.cs" />

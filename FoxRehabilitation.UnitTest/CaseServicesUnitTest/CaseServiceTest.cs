@@ -712,6 +712,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             _userProfile.userID = 1011163415;
             _getOpenIssueListReq.CASE_ID = 1011163415;
             _getOpenIssueListReq.CASE_STATUS_ID = 544104;
+            //_getOpenIssueListReq.PATIENT_ACCOUNT = ;
 
             //Act
             var result = _caseServices.GetOpenIssueList(_getOpenIssueListReq, _userProfile);
