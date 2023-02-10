@@ -494,7 +494,7 @@ namespace FoxRehabilitationAPI.Controllers
             else
             {
                 IRestResponse response = GetOtpCode(email);
-                if (String.IsNullOrEmpty(response.Content))
+                if (!String.IsNullOrEmpty(response.Content))
                 {
                     return Request.CreateResponse(HttpStatusCode.OK, response.Content);
                 }
