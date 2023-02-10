@@ -6157,6 +6157,7 @@ namespace FOX.BusinessOperations.PatientServices
 
         public string GetElgibilityDetails(long patientAccount, PatientInsuranceInformation patientInsuranceInformation, UserProfile profile, bool isMVP = false)
         {
+            #region Old Implementation to check Eligiblity with WCF Service
             //Eligibility....
             //ExternalServices.PatientEligibilityService.MTBCData mtbcData = new ExternalServices.PatientEligibilityService.MTBCData();
             //mtbcData.ViewType = isMVP ? "MVP" : "";
@@ -6237,6 +6238,8 @@ namespace FOX.BusinessOperations.PatientServices
             //requestData.SubscriberMemberID = patientInsuranceInformation.POLICY_NUMBER;
             //ExternalServices.PatientEligibilityService.Service objService = new ExternalServices.PatientEligibilityService.Service();
             //string htmlStr = objService.MTBCResponse(requestData, mtbcData);
+            #endregion Old Implementation to check Eligiblity with WCF Service
+            //*********************************** New Implementation Starts ***************************************
             #region New Implementation to check Eligiblity with RestFull API
             ExternalServices.PatientEligibilityService.MTBCData mtbcData = new ExternalServices.PatientEligibilityService.MTBCData();
             String htmlStr;
@@ -6317,7 +6320,7 @@ namespace FOX.BusinessOperations.PatientServices
             //********************************** Service Level Type **************************************
             objEligibilityNew.ServiceType = "30";
             var result = "";
-            string URl = "http://10.10.30.47:9945/api/eligibility/transactions";
+            string URl = WebConfigurationManager.AppSettings["EligibilityURL"].ToString();
             HtmlDocument doc = new HtmlDocument();
             using (HttpClient client = new HttpClient())
             {
@@ -6330,15 +6333,10 @@ namespace FOX.BusinessOperations.PatientServices
                 {
                     var jsonString = responseMessage.Content.ReadAsStringAsync();
                     result = jsonString.Result;
-                    htmlStr = result;
-                    doc.LoadHtml(result);
-                }
-                else
-                {
                 }
                 htmlStr = result;
             }
-            #endregion
+            #endregion End New Implementation to check Eligiblity with RestFull API 
             htmlStr = htmlStr.Replace(@"id=""main-container""", @"id =""main-container-eligibility""");
             htmlStr = htmlStr.Replace("\r", "").Replace("\n", "").Replace("\t", "").Replace("\b", "").Replace("&nbsp;", " ");
             SaveEligibilityHtml(patientAccount, patientInsuranceInformation.PATIENT_INSURANCE_ID, htmlStr, profile);
