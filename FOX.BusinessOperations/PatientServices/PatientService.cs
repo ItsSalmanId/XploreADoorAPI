@@ -1848,7 +1848,7 @@ namespace FOX.BusinessOperations.PatientServices
             {
                 patientInsuranceInformation = _result.Where(x => x.INS_TYPE == 1).FirstOrDefault();
             }
-
+            #region Old Implementation to check Eligiblity with WCF Service
             //Eligibility....
             //ExternalServices.PatientEligibilityService.MTBCData mtbcData = new ExternalServices.PatientEligibilityService.MTBCData();
             //mtbcData.ViewType = patientEligibilitySearchModel.IS_MVP_VIEW ? "MVP" : "";
@@ -1925,6 +1925,7 @@ namespace FOX.BusinessOperations.PatientServices
             //requestData.SubscriberMemberID = patientInsuranceInformation.POLICY_NUMBER;
             //ExternalServices.PatientEligibilityService.Service objService = new ExternalServices.PatientEligibilityService.Service();
             //string htmlStr = objService.MTBCResponse(requestData, mtbcData);
+            #endregion
             #region New Implementation to check Eligiblity with RestFull API
             //To See Detailed Documentation Please have the documents path  : FoxRehabilitationAPI\About Project\Eligibity-documents\
             EligibilityModelNew objEligibilityNew = new EligibilityModelNew();
@@ -2007,7 +2008,7 @@ namespace FOX.BusinessOperations.PatientServices
             objEligibilityNew.ServiceType = "30";
 
             var result = "";
-            string URl = "http://10.10.30.47:9945/api/eligibility/transactions";
+            string URl = WebConfigurationManager.AppSettings["EligibilityURL"].ToString();
             HtmlDocument doc = new HtmlDocument();
             using (HttpClient client = new HttpClient())
             {
@@ -2020,16 +2021,10 @@ namespace FOX.BusinessOperations.PatientServices
                 {
                     var jsonString = responseMessage.Content.ReadAsStringAsync();
                     result = jsonString.Result;
-                    htmlStr = result;
-                    doc.LoadHtml(result);
-                }
-                else
-                {
                 }
                 htmlStr = result; //added by aftab
             }
             #endregion
-
 
             if (patientEligibilitySearchModel.IS_MVP_VIEW)
             {
