@@ -1991,7 +1991,7 @@ namespace FOX.BusinessOperations.PatientServices
             Patient patient_Details = new Patient();
             var restOfPatientData = new FOX_TBL_PATIENT();
             patient_Details = _PatientRepository.GetSingleOrDefault(e => e.Patient_Account == patient_Account);
-            var restOfDetails = _FoxTblPatientRepository.GetFirst(e => e.Patient_Account == patient_Details.Patient_Account);
+            var restOfDetails = _FoxTblPatientRepository.GetSingleOrDefault(e => e.Patient_Account == patient_Details.Patient_Account);
             var activecases = _vwPatientCaseRepository.GetMany(c => c.PATIENT_ACCOUNT == patient_Account && (c.CASE_STATUS_NAME.ToUpper() == "ACT" || c.CASE_STATUS_NAME.ToUpper() == "HOLD") && c.DELETED == false);
             if (patient_Details != null)// if patient is not null, get rest of the info
             {
@@ -8287,8 +8287,10 @@ namespace FOX.BusinessOperations.PatientServices
                             {
                                 var caseObj = _vwPatientCaseRepository.GetByID(auth.CASE_ID);
                                 if (caseObj != null)
-                                    auth.CASE_NO = caseObj.CASE_NO;
-                                auth.RT_CASE_NO = caseObj.RT_CASE_NO;
+                                {
+                                    auth.CASE_NO = caseObj.CASE_NO ?? "";
+                                    auth.RT_CASE_NO = caseObj.RT_CASE_NO ?? "";
+                                }
                             }
 
                             //Billing Provider Name
