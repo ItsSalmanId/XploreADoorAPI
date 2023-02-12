@@ -16,15 +16,11 @@ namespace FoxRehabilitationAPI.Filters
         public override void OnException(HttpActionExecutedContext context)
         {
             UserProfile profile = ClaimsModel.GetUserProfile(HttpContext.Current.User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
-            string expEnv = profile.isTalkRehab == true ? "Care Cloud Remote" : "Fox Portal";//Environment variable in email by irfan ullah
+            string exceptionEnvironment = profile.isTalkRehab == true ? "Care Cloud Remote" : "Fox Portal";//Environment variable in email by irfan ullah
             try
             {
                 var excpParam = JsonConvert.SerializeObject(context.ActionContext.ActionArguments.Values);
                 var uri = context.ActionContext.Request.RequestUri.OriginalString;
-                if (!uri.Contains("localhost"))
-                {
-                    return;
-                }
                 var excpMsg = context.Exception.Message;
                 if (excpMsg.Contains("it is being used by another process"))
                 {
@@ -78,10 +74,7 @@ namespace FoxRehabilitationAPI.Filters
                     }
                     catch (Exception ex)
                     {
-                        if (!uri.Contains("localhost"))
-                        {
-                            Helper.SendExceptionsEmail(ex.Message, ex.ToString(), "Exception occurred in Exception Filter", expEnv);
-                        }
+                            Helper.SendExceptionsEmail(ex.Message, ex.ToString(), "Exception occurred in Exception Filter", exceptionEnvironment);
                     }
                 }
                 //FOX DEV LOGIC CLOSE
@@ -125,7 +118,7 @@ namespace FoxRehabilitationAPI.Filters
                     }
                     catch (Exception ex)
                     {
-                        Helper.SendEmailOnException(ex.Message, ex.ToString(), "Exception occurred in Exception Filter", expEnv);
+                        Helper.SendEmailOnException(ex.Message, ex.ToString(), "Exception occurred in Exception Filter", exceptionEnvironment);
                     }
 
                 }
@@ -136,13 +129,13 @@ namespace FoxRehabilitationAPI.Filters
                              + Environment.NewLine + Environment.NewLine + "-------------------------------------------------------||||||||||||---End Current Exception---||||||||||||||||------------------------------" +
                              "-------------------------" + Environment.NewLine;
 
-                Helper.SendExceptionsEmail(excpMsg, expmsg.ToString(), "Exception occurred in Exception Filter",expEnv);
+                Helper.SendExceptionsEmail(excpMsg, expmsg.ToString(), "Exception occurred in Exception Filter",exceptionEnvironment);
                 }
             }
             catch (Exception ex)
             {
 
-                Helper.SendEmailOnException(ex.Message, ex.ToString(), "Exception occurred in Exception Filter", expEnv);
+                Helper.SendEmailOnException(ex.Message, ex.ToString(), "Exception occurred in Exception Filter", exceptionEnvironment);
             }
         }
     }
