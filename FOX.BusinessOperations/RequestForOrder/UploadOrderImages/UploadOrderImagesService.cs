@@ -103,8 +103,6 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             //try
             //{
             var workId = Helper.getMaximumId("WORK_ID");
-            string expEnv = Profile.isTalkRehab == true ? "Care Cloud Remote" : "Fox Portal";
-            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages Work_ID (" + workId + ") || Start Time of Function SubmitUploadOrderImages" + Helper.GetCurrentDate().ToLocalTime(), expEnv);
             OriginalQueue originalQueue = new OriginalQueue();
 
             originalQueue.WORK_ID = workId;
@@ -141,11 +139,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
 
             _QueueRepository.Insert(originalQueue);
             _QueueRepository.Save();
-
-            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > GenerateAndSaveImagesOfUploadedFiles || Start Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime(), expEnv);
             GenerateAndSaveImagesOfUploadedFiles(workId, reqSubmitUploadOrderImagesModel.FileNameList, Profile);
-            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > GenerateAndSaveImagesOfUploadedFiles || End Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime(), expEnv);
-
             if (reqSubmitUploadOrderImagesModel.Is_Manual_ORS)
             {
                 string body = string.Empty;
@@ -162,9 +156,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                 var ext = Path.GetExtension(coverfilePath).ToLower();
                 int numberOfPages = getNumberOfPagesOfPDF(coverfilePath);
 
-                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > SavePdfToImages || Start Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime(), expEnv);
-                SavePdfToImages(coverfilePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter, expEnv);
-                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > SavePdfToImages || End Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime(), expEnv);
+                SavePdfToImages(coverfilePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
 
                 FOX_TBL_NOTES_HISTORY notes = new FOX_TBL_NOTES_HISTORY();
                 notes.NOTE_ID = Helper.getMaximumId("NOTE_ID");
@@ -198,7 +190,6 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             {
                 var procedureDetail = InsertUpdateSpecialty(reqSubmitUploadOrderImagesModel, Profile, originalQueue, reqSubmitUploadOrderImagesModel.PATIENT_ACCOUNT);
             }
-            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages || End Time of Function SubmitUploadOrderImages" + Helper.GetCurrentDate().ToLocalTime(), expEnv);
             return new ResSubmitUploadOrderImagesModel() { Message = "Work Order Created Successfully. workId = " + workId, ErrorMessage = "", Success = true };
             //}
             //catch (Exception exception)
@@ -231,7 +222,6 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             //try
             //{ 
 
-            string expEnv = profile.isTalkRehab == true ? "Care Cloud Remote" : "Fox Portal"; //Environment variable in email by irfn ullah
             var config = Helper.GetServiceConfiguration(profile.PracticeCode);
             if (config.PRACTICE_CODE != null
                 && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
@@ -259,7 +249,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                     else
                     {
                         int numberOfPages = getNumberOfPagesOfPDF(filePath);
-                        SavePdfToImages(filePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter, expEnv);
+                        SavePdfToImages(filePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
                         totalPages += numberOfPages;
                     }
                 }
@@ -282,18 +272,15 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             return pdfReader.NumberOfPages;
         }
 
-        private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, int pageCounter, out long pageCounterOut, string expEnv = "")
+        private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, int pageCounter, out long pageCounterOut)
         {
             List<int> threadCounter = new List<int>();
-            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SavePdfToImages > Checking Time of Directory Create || Start Time of Function SavePdfToImages > Checking Time of Directory Create" + Helper.GetCurrentDate().ToLocalTime(), expEnv);
             if (!Directory.Exists(config.IMAGES_PATH_SERVER))
             {
                 Directory.CreateDirectory(config.IMAGES_PATH_SERVER);
             }
-            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SavePdfToImages > Checking Time of Directory Create || End Time of Function SavePdfToImages > Checking Time of Directory Create" + Helper.GetCurrentDate().ToLocalTime(), expEnv);
             if (System.IO.File.Exists(PdfPath))
             {
-                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SavePdfToImages > Checking Time of Threading || Start Time of Function SavePdfToImages > Checking Time of Threading" + Helper.GetCurrentDate().ToLocalTime(), expEnv);
                 for (int i = 0; i < noOfPages; i++, pageCounter++)
                 {
                     Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter, PdfPath, i, config, workId, pageCounter));
@@ -312,7 +299,6 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                 {
                     thread.Abort();
                 }
-                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SavePdfToImages > Checking Time of Threading || End Time of Function SavePdfToImages > Checking Time of Threading" + Helper.GetCurrentDate().ToLocalTime(), expEnv);
                 //AddToDatabase(PdfPath, noOfPages, workId);
             }
             pageCounterOut = pageCounter;

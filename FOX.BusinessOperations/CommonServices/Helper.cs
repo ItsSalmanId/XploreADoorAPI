@@ -1150,7 +1150,7 @@ namespace FOX.BusinessOperations.CommonService
             }
         }
 
-        public static void SendEmailOnException(string exceptionMsg = "", string exceptionDetails = "", string subject = "",string expEnv="")
+        public static void SendEmailOnException(string exceptionMsg = "", string exceptionDetails = "", string subject = "",string exceptionEnvironment="")
         {
             //bool IsMailSent = false;
             string from = "noreply@carecloud.com";
@@ -1185,7 +1185,7 @@ namespace FOX.BusinessOperations.CommonService
             body += "<h3 style='color: #1960a7;margin: 0px;'> Exception Details: " + "</h3><br />";
             body += "<p style='color: #34495e;margin: 0px;'>" + exceptionDetails + "</p><br />";
             body += "<h3 style='color: #1960a7;margin: 0px;'> Exception Environment:" + "</h3>";
-            body += "<p style='color: #34495e;margin: 0px;'>" + expEnv + "</p><br />";///environment variable added by irfan ullah
+            body += "<p style='color: #34495e;margin: 0px;'>" + exceptionEnvironment + "</p><br />";///environment variable added by irfan ullah
             ////add original mail info
             //body += "<h3 style='color: #1960a7;margin: 0px;'> To: </h3><p style='color: #34495e;margin: 0px;'>" + OrgMailSentTo + "</p><br />";
             //body += "<h3 style='color: #1960a7;margin: 0px;'> Subject: </h3><p style='color: #34495e;margin: 0px;'>" + OrgMailSubject + "</p><br />";
@@ -1219,7 +1219,7 @@ namespace FOX.BusinessOperations.CommonService
             }
         }
 
-        public static void SendExceptionsEmail(string exceptionMsg = "", string exceptionDetails = "", string subject = "",string expEnv="")
+        public static void SendExceptionsEmail(string exceptionMsg = "", string exceptionDetails = "", string subject = "",string exceptionEnvironment="")
         {
             //bool IsMailSent = false;
             string from = "noreply@carecloud.com";
@@ -1242,7 +1242,7 @@ namespace FOX.BusinessOperations.CommonService
             body += "<h3 style='color: #1960a7;margin: 0px;'> Exception Details: " + "</h3><br />";
             body += "<p style='color: #34495e;margin: 0px;'>" + exceptionDetails + "</p><br />";
             body += "<h3 style='color: #1960a7;margin: 0px;'> Exception Environment :" + "</h3>";
-            body += "<p style='color: #34495e;margin: 0px;'>" + expEnv + "</p><br />";///environment variable added by irfan ullah
+            body += "<p style='color: #34495e;margin: 0px;'>" + exceptionEnvironment + "</p><br />";///environment variable added by irfan ullah
             ////add original mail info
             //body += "<h3 style='color: #1960a7;margin: 0px;'> To: </h3><p style='color: #34495e;margin: 0px;'>" + OrgMailSentTo + "</p><br />";
             //body += "<h3 style='color: #1960a7;margin: 0px;'> Subject: </h3><p style='color: #34495e;margin: 0px;'>" + OrgMailSubject + "</p><br />";
@@ -1275,7 +1275,7 @@ namespace FOX.BusinessOperations.CommonService
                 throw ex;
             }
         }
-        public static void TokenTaskCancellationExceptionLog(string msg,string expEnv="")
+        public static void TokenTaskCancellationExceptionLog(string msg,string exceptionEnvironment="")
         {
            
             try
@@ -1298,7 +1298,7 @@ namespace FOX.BusinessOperations.CommonService
             }
             catch (Exception ex)
             {
-                Helper.SendEmailOnException(ex.Message, ex.ToString(), "Exception occurred in Token Exception Filter", expEnv);
+                Helper.SendEmailOnException(ex.Message, ex.ToString(), "Exception occurred in Token Exception Filter", exceptionEnvironment);
             }
         }
 
