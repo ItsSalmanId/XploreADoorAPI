@@ -119,7 +119,7 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetSingleUser(string username)
         {
             UserProfile obj = GetProfile();
-            if (username != obj.UserName && obj.IsAdmin != true && !obj.ROLE_NAME.Trim().ToUpper().Contains("ADMINISTRATOR"))
+            if (username != obj.UserName && obj.IsAdmin != true &&  obj.RoleId != 103)
             {
                 var errorResponse = Request.CreateResponse(HttpStatusCode.BadRequest, "Error");
                 return errorResponse;
@@ -132,7 +132,7 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetDataForRefferalReagions(string username)
         {
             UserProfile obj = GetProfile();
-            if (username != obj.UserName && obj.IsAdmin != true && !obj.ROLE_NAME.Trim().ToUpper().Contains("ADMINISTRATOR"))
+            if (username != obj.UserName && obj.IsAdmin != true && obj.RoleId != 103)
             {
                 var errorResponse = Request.CreateResponse(HttpStatusCode.BadRequest, "Error");
                 return errorResponse;
@@ -154,7 +154,7 @@ namespace FoxRehabilitationAPI.Controllers
             var fileAttachments = HttpContext.Current.Request.Files;
             string username = HttpContext.Current.Request.Params["username"];
             UserProfile obj = GetProfile();
-            if (username != obj.UserName && obj.IsAdmin != true && !obj.ROLE_NAME.Trim().ToUpper().Contains("ADMINISTRATOR"))
+            if (username != obj.UserName && obj.IsAdmin != true && obj.RoleId != 103)
             {
                 var errorResponse = Request.CreateResponse(HttpStatusCode.BadRequest, "Error");
                 return errorResponse;
@@ -194,7 +194,7 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage UpdatePassword(PasswordChangeRequest request)
         {
             UserProfile obj = GetProfile();
-            if (obj.IsAdmin != true && !obj.ROLE_NAME.Trim().ToUpper().Contains("ADMINISTRATOR"))
+            if (obj.IsAdmin != true && obj.RoleId != 103)
             {
                 var errorResponse = Request.CreateResponse(HttpStatusCode.BadRequest, "Error");
                 return errorResponse;
