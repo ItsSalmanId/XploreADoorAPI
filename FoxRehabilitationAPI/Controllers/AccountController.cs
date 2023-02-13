@@ -928,7 +928,8 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage IpConfig(GetUserIP data)
         {
             var result = _accountServices.IpConfig(data);
-            var response = Request.CreateResponse(HttpStatusCode.OK, result);
+            var EncrptedResult = Encrypt.EncryptionForClient(result.ToString());//vulnerability fixation by irfan ullah
+            var response = Request.CreateResponse(HttpStatusCode.OK, EncrptedResult);
             return response;
         }
 
