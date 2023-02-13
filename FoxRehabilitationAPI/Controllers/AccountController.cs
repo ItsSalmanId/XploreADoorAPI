@@ -634,7 +634,7 @@ namespace FoxRehabilitationAPI.Controllers
         {
             UserProfile obj = GetProfile();
             var _user = _UserRepository.Get(t => t.EMAIL.Equals(data.Email));
-            if (_user.USER_NAME != obj.UserName && obj.IsAdmin != true && !obj.RoleId != 103)
+            if (_user.USER_NAME != obj.UserName && obj.IsAdmin != true && obj.RoleId != 103)
             {
                 var errorResponse = Request.CreateResponse(HttpStatusCode.BadRequest, "Error");
                 return errorResponse;
