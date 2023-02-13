@@ -50,12 +50,15 @@ namespace FoxRehabilitationAPI.Controllers
         private readonly IRequestForOrderService _requestForOrderService = new RequestForOrderService(); 
         private readonly IIndexInfoService _IndexInfoService = new IndexInfoService(); 
         private readonly IAccountServices _accountServices = new AccountServices();
+        private readonly DbContextSecurity security = new DbContextSecurity();
+        private readonly GenericRepository<User> _UserRepository;
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
         private ApplicationRoleManager _roleManager;
 
         public AccountController()
         {
+            _UserRepository = new GenericRepository<User>(security);
         }
 
         private UserProfile GetProfile()
@@ -629,6 +632,13 @@ namespace FoxRehabilitationAPI.Controllers
         [Route("UpdatePassword")]
         public HttpResponseMessage UpdatePassword(ResetPasswordViewModel data)
         {
+            UserProfile obj = GetProfile();
+            var _user = _UserRepository.Get(t => t.EMAIL.Equals(data.Email));
+            if (_user.USER_NAME != obj.UserName && obj.IsAdmin != true && obj.ROLE_NAME.Trim().ToUpper().Contains("ADMINISTRATOR"))
+            {
+                var errorResponse = Request.CreateResponse(HttpStatusCode.BadRequest, "Error");
+                return errorResponse;
+            }
             this.ValidatePasswordResetKey(new ValidatePasswordResetKeyModel() { key = data.Key }, ref data);
             string _body = string.Empty;
             string _subject = "Reset Password Confirmation for your FOX Portal";
@@ -918,7 +928,8 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage IpConfig(GetUserIP data)
         {
             var result = _accountServices.IpConfig(data);
-            var response = Request.CreateResponse(HttpStatusCode.OK, result);
+            var EncrptedResult = Encrypt.EncryptionForClient(result.ToString());//vulnerability fixation by irfan ullah
+            var response = Request.CreateResponse(HttpStatusCode.OK, EncrptedResult);
             return response;
         }
 
