@@ -8,6 +8,7 @@ using FOX.BusinessOperations.CommonService;
 using System.Web;
 using FoxRehabilitationAPI.Models;
 using FOX.DataModels.Models.Security;
+using FOX.DataModels;
 
 namespace FoxRehabilitationAPI.Filters
 {
@@ -16,7 +17,7 @@ namespace FoxRehabilitationAPI.Filters
         public override void OnException(HttpActionExecutedContext context)
         {
             UserProfile profile = ClaimsModel.GetUserProfile(HttpContext.Current.User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
-            string exceptionEnvironment = profile.isTalkRehab == true ? "Care Cloud Remote" : "Fox Portal";//Environment variable in email by irfan ullah
+            string exceptionEnvironment = EntityHelper.isTalkRehab ? "Care Cloud Remote" : "Fox Portal";//Environment variable in email by irfan ullah
             try
             {
                 var excpParam = JsonConvert.SerializeObject(context.ActionContext.ActionArguments.Values);
