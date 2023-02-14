@@ -14,7 +14,7 @@ BEGIN
    WHERE                      
       ISNULL(SAS.DELETED, 0) = 0                      
    AND SAS.PRACTICE_CODE = @PRACTICE_CODE     
-   AND SAS.MODIFIED_DATE BETWEEN DATEADD(DAY,-98, GETDATE()) AND GETDATE()  
+   AND SAS.MODIFIED_DATE BETWEEN DATEADD(DAY,-98, GETDATE()) AND GETDATE()  -- I have implemented this check for those agents who's audit is performed in last 98 days
     AND ISNULL(AU.DELETED,0)= 0       
    AND AU.ROLE_ID = @ROLE_ID  
   AND AU.IS_ACTIVE = 1                        

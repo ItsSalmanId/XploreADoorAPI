@@ -17,6 +17,6 @@ BEGIN
    AND SAS.PRACTICE_CODE = @PRACTICE_CODE    
    AND ISNULL(AU.FIRST_NAME, '') <> ''  AND ISNULL(AU.LAST_NAME, '') <> ''                             
    AND ISNULL(AU.DELETED,0)= 0  AND AU.IS_ACTIVE = 1       
-   AND SAS.MODIFIED_DATE BETWEEN DATEADD(DAY,-98, GETDATE()) AND GETDATE()    
+   AND SAS.MODIFIED_DATE BETWEEN DATEADD(DAY,-98, GETDATE()) AND GETDATE()  -- I have implemented this check for those agents who's audit is performed in last 98 days
   ORDER BY NAME ASC                                               
 END 
