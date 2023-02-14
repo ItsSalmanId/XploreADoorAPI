@@ -24,7 +24,7 @@ namespace FoxRehabilitationAPI.Filters
                 if (accessedTokenFromRequst != null && accessedTokenFromRequst != "undefined" && accessedTokenFromRequst!="null")
                 {
                     var accessToken = new SqlParameter("TOKEN", SqlDbType.VarChar) { Value = accessedTokenFromRequst ?? "0" };
-                    var ExpiredToken = SpRepository<TokensUserInfo>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_CHECK_EXPIRED_TOKEN_bkp24012023  @TOKEN", accessToken);
+                    var ExpiredToken = SpRepository<TokensUserInfo>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_CHECK_EXPIRED_TOKEN  @TOKEN", accessToken);
                     if (HttpContext.Current.User != null && HttpContext.Current.User.Identity != null)
                     {
                         UserProfile profile = ClaimsModel.GetUserProfile(HttpContext.Current.User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
