@@ -13,6 +13,56 @@ namespace FOX.BusinessOperations.Security
 {
     public class Encrypt
     {
+        #region Encrypt Password for decryption in angular
+        public static string EncryptionForClient(string plainText)
+        {
+            byte[] encrypted;
+            using (AesManaged aes = new AesManaged())
+            {
+                var secret_key = Encoding.UTF8.GetBytes("8056483646328763");
+                var initialization_vector = Encoding.UTF8.GetBytes("8056483646328763");
+                ICryptoTransform encryptor = aes.CreateEncryptor(secret_key, initialization_vector);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter sw = new StreamWriter(cs))
+                            sw.Write(plainText);
+                        encrypted = ms.ToArray();
+                    }
+                }
+            }
+            return Convert.ToBase64String(encrypted);
+        }
+        #endregion
+        #region delete file url decryption,encrypted in angular
+        private static Aes GetEncryptionAlgorithm()
+        {
+            Aes aes = Aes.Create();
+            var secret_key = Encoding.UTF8.GetBytes("8056483646328763");
+            var initialization_vector = Encoding.UTF8.GetBytes("8056483646328763");
+            aes.Key = secret_key;
+            aes.IV = initialization_vector;
+            return aes;
+        }
+        private static byte[] EncodeBase64(string data)
+        {
+            string s = data.Trim().Replace(" ", "+");
+            if (s.Length % 4 > 0)
+                s = s.PadRight(s.Length + 4 - s.Length % 4, '=');
+            return Convert.FromBase64String(s);
+        }
+        public static string DecrypStringEncryptedInClient(string encryptedValue)
+        {
+            Aes aes = GetEncryptionAlgorithm();
+            byte[] buffer = EncodeBase64(encryptedValue);
+            MemoryStream memoryStream = new MemoryStream(buffer);
+            ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+            CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
+            StreamReader streamReader = new StreamReader(cryptoStream);
+            return streamReader.ReadToEnd();
+        }
+        #endregion
         public static string getEncryptedCode(string inputString)
         {
             inputString.Replace("'", "’");
