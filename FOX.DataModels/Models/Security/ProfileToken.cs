@@ -50,4 +50,14 @@ namespace FOX.DataModels.Models.Security
             public bool DELETED { get; set; }
         }
     }
+
+    public class TokensUserInfo //: Alachisoft.NCache.Runtime.Serialization.ICompactSerializable
+    {
+        public string TokenSecurityID { get; set; }
+        public string AuthToken { get; set; }
+        public long UserId { get; set; }
+        public Boolean IS_ADMIN { get; set; }
+    }
+
+
 }
