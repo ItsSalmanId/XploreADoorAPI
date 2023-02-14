@@ -10,7 +10,7 @@ AS
 BEGIN                               
    SELECT  DISTINCT SAS.AGENT_NAME AS USER_NAME, DBO.MTBC_TITLECASE(AU.FIRST_NAME + ' '+ AU.LAST_NAME) AS NAME , EMAIL                                    
    FROM FOX_TBL_SURVEY_AUDIT_SCORES  SAS  WITH (NOLOCK)                                    
-   INNER JOIN FOX_TBL_APPLICATION_USER  AS AU ON  SAS.AGENT_NAME = AU.USER_NAME AND AU.PRACTICE_CODE = @PRACTICE_CODE AND ISNULL(AU.DELETED,0)= 0                                       
+   INNER JOIN FOX_TBL_APPLICATION_USER  AS AU WITH (NOLOCK) ON  SAS.AGENT_NAME = AU.USER_NAME AND AU.PRACTICE_CODE = @PRACTICE_CODE AND ISNULL(AU.DELETED,0)= 0                                       
    WHERE                            
    SAS.PHD_CALL_SCENARIO_ID IN (SELECT * FROM FOXSPLITSTRING(@CALL_SCANRIO_ID,',')) AND                      
    ISNULL(SAS.DELETED, 0) = 0                                      
