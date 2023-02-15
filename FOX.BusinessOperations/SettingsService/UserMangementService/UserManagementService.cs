@@ -464,8 +464,8 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     if (!string.IsNullOrWhiteSpace(encryptedPassword) && !string.IsNullOrWhiteSpace(encryptedAdminPassword))
                     {
                         user.DB_PASSWORD = Encrypt.DecryptPassword(encryptedPassword);
+                        user.DB_PASSWORD = Encrypt.EncryptionForClient(user.DB_PASSWORD);//encrypt by irfan ullah 27/01/2023
                         user.ADMIN_PASSWORD = Encrypt.DecryptPassword(encryptedAdminPassword);
-
                         user.HIDE_EYE_ICON = false;
                     }
                     else
@@ -492,6 +492,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     if (!string.IsNullOrWhiteSpace(encryptedPassword))
                     {
                         user.DB_PASSWORD = Encrypt.DecryptPassword(encryptedPassword);
+                        user.DB_PASSWORD = Encrypt.EncryptionForClient(user.DB_PASSWORD);//encrypt by irfan ullah 27/01/2023
                         user.PROFILE = true;
                     }
                     else
@@ -598,6 +599,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                             var decrypted = Encrypt.DecryptPassword(admin_encryptedPassword);
                             admin_decryptedPassword = decrypted;
                         }
+                        admin_decryptedPassword = Encrypt.EncryptionForClient(admin_decryptedPassword);
                     }
                     foreach (var item in login_log)
                     {
@@ -615,6 +617,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                             decryptedPassword = decrypted;
                         }
                         respnse2.Decrypted_Passwords = decryptedPassword;
+                        respnse2.Decrypted_Passwords = Encrypt.EncryptionForClient(decryptedPassword);
                         respnse2.Created_By = item.CreatedBy;
                         respnse2.Created_date = item.CreatedDate;
                         respnse2.Device_Info = item.DeviceInfo;
@@ -3350,9 +3353,9 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 }
                 return false;
             }
-                catch (Exception ex)
+            catch (Exception ex)
             {
-               throw ex;
+                throw ex;
             }
         }
         //  this function get team list 

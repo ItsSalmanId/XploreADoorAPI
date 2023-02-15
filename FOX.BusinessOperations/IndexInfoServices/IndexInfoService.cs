@@ -2672,7 +2672,8 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 System.Drawing.Image img;
                 PdfFocus f = new PdfFocus();
-                f.Serial = "10261435399";
+               // f.Serial = "10261435399";
+                f.Serial = "80033727929";
                 f.OpenPdf(PdfPath);
 
                 if (f.PageCount > 0)
@@ -4266,9 +4267,21 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 if (!string.IsNullOrEmpty(sourceDetail?.DEPARTMENT_ID))
                 {
-                    if (sourceDetail.DEPARTMENT_ID.Contains("1"))
+                    if (sourceDetail.DEPARTMENT_ID.EndsWith("1"))
+                    {
+                        sourceDetail.DEPARTMENT_ID = sourceDetail.DEPARTMENT_ID + ",";
+                    }
+                    if (sourceDetail.DEPARTMENT_ID.Contains("1,"))
                     {
                         discipline = discipline + " Occupational Therapy (OT), ";
+                        if (sourceDetail.DEPARTMENT_ID.EndsWith(","))
+                        {
+                            sourceDetail.DEPARTMENT_ID = sourceDetail.DEPARTMENT_ID.Remove(sourceDetail.DEPARTMENT_ID.Length - 1, 1);
+                        }
+                    }
+                    if (sourceDetail.DEPARTMENT_ID.Contains("10"))
+                    {
+                        discipline = discipline + " Skilled Nursing (SN), ";
                     }
                     if (sourceDetail.DEPARTMENT_ID.Contains("2"))
                     {

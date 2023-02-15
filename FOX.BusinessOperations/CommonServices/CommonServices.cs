@@ -25,6 +25,9 @@ using FOX.DataModels.Models.StatesModel;
 using FOX.DataModels.Models.ServiceConfiguration;
 using System.Web.Configuration;
 using FOX.DataModels.Models.Settings.Announcement;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace FOX.BusinessOperations.CommonServices
 {
@@ -216,8 +219,15 @@ namespace FOX.BusinessOperations.CommonServices
             }
             catch (Exception exception)
             {
-                //return new AttachmentData();
-                throw exception;
+               if (exception != null && !string.IsNullOrEmpty(exception.Message) && exception.Message.Contains("no pages"))
+                {
+                    return new AttachmentData();
+                }
+                else
+                {
+                    //return new AttachmentData();
+                    throw exception;
+                }
             }
         }
 
@@ -679,11 +689,13 @@ namespace FOX.BusinessOperations.CommonServices
             return true;
         }
         // Delete Files From Server.
+        
         public ResponseModel DeleteDownloadedFile(string fileLocation)
         {
             ResponseModel response = new ResponseModel();
             if (!string.IsNullOrEmpty(fileLocation))
             {
+                fileLocation = Encrypt.DecrypStringEncryptedInClient(fileLocation);
                 var completeFilePath = HttpContext.Current?.Server?.MapPath("~/" + fileLocation);
                 if (!string.IsNullOrEmpty(completeFilePath) && File.Exists(Path.Combine(completeFilePath)))
                 {

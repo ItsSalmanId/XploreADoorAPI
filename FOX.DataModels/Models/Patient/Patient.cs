@@ -2167,4 +2167,49 @@ namespace FOX.DataModels.Models.Patient
         [NotMapped]
         public bool isIndividualProvider { get; set; }
     }
+    public class EligibilityModelNew
+    {
+        public string ClientID { get; set; }
+        public string PayerName { get; set; }
+        public string PayerID { get; set; }
+        public string InsuranceID { get; set; }
+        public string ProviderLastName { get; set; }
+        public string ProviderFirstName { get; set; }
+        public string ProviderNPI { get; set; }
+        public string TaxID { get; set; }
+        public string ProviderSSN { get; set; }
+        public string OrganizationNPI { get; set; }
+        public string OrganizationName { get; set; }
+        public string OrganizationType { get; set; }
+        public string SubscriberMemberID { get; set; }
+        public string SubscriberLastName { get; set; }
+        public string SubscriberFirstName { get; set; }
+        public string SubscriberDateOfBirth { get; set; }
+        public string SubscriberDateOfDeath { get; set; }
+        public string SubscriberGender { get; set; }
+        public string SubscriberSSN { get; set; }
+        public string SubscriberGroupNumber { get; set; }
+        public string Relationship { get; set; }
+        public string DependentLastName { get; set; }
+        public string DependentFirstName { get; set; }
+        public string DependentDOB { get; set; }
+        public string DependentGender { get; set; }
+        public string DateOfService { get; set; }
+        public string ServiceType { get; set; }
+        public string ViewType { get; set; }
+        public string ClientType { get; set; }
+        public string PatientAccount { get; set; }
+        public string ClaimNo { get; set; }
+        public string ServerName { get; set; }
+        public string PayerType { get; set; }
+        public string AppointmentID { get; set; }
+        public string UserID { get; set; }
+        public string Address { get; set; }
+        public string City { get; set; }
+        public string State { get; set; }
+        public string Zip { get; set; }
+        public string Specialization { get; set; }
+        public string InsPayerDescriptionName { get; set; }
+        public string insPayerID { get; set; }
+    }
 }

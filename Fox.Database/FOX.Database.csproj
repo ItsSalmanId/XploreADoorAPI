@@ -301,6 +301,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_PS_CALL_LOG_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PS_REGION_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PS_STATES_LIST.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_QADASHBOARD_SURVEY_TEAM_EMPLOYEE_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_QA_DASHBOARD_DATA.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_QA_DASHBOARD_LINE_GRAPH_DATA.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_RANDOM_PATIENT_SURVEY.sql" />
