@@ -760,7 +760,7 @@ namespace FOX.BusinessOperations.AccountService
             {
                 if (serverName != "localhost" && !showUrl.Contains("172.16.0.207"))
                 {
-                    if (string.IsNullOrEmpty(data.userIP))
+                    if (string.IsNullOrEmpty(data.userIP) || data.userIP == "undefined")
                     {
                         _isValidUser = true;
                         return _isValidUser;
