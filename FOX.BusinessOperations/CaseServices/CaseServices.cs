@@ -114,7 +114,7 @@ namespace FOX.BusinessOperations.CaseServices
 
         }
 
-        public ResponseAddEditCase AddEditCase(FOX_TBL_CASE model, UserProfile profile) //Get Case data
+        public ResponseAddEditCase AddEditCase(string locationName, string certifyState, FOX_TBL_CASE model, UserProfile profile) //Get Case data
         {
             InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
             ResponseAddEditCase responseAddEditCase = new ResponseAddEditCase();
@@ -293,7 +293,9 @@ namespace FOX.BusinessOperations.CaseServices
                         _CaseRepository.Insert(caseObj);
                     }
                     _CaseContext.SaveChanges();
-
+                   if (profile.isTalkRehab) {
+                        InsertDataAdditionalinfo(locationName, certifyState, caseObj);
+                    }
                     //Create tasks
                     if (model.openIssueList != null)
                     {
@@ -324,7 +326,30 @@ namespace FOX.BusinessOperations.CaseServices
             }
             return responseAddEditCase;
         }
+        public void InsertDataAdditionalinfo(string locationName, string certifyState, FOX_TBL_CASE model)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(locationName) && !string.IsNullOrEmpty(certifyState) && model != null)
+                {
+                    var caseId = new SqlParameter { ParameterName = "case_id", SqlDbType = SqlDbType.BigInt, Value = model.CASE_ID };
+                    var reason = new SqlParameter { ParameterName = "reason", SqlDbType = SqlDbType.NVarChar, Value = model.VoidReason ?? "" };
+                    var providerId = new SqlParameter { ParameterName = "providerid", SqlDbType = SqlDbType.BigInt, Value = model.TREATING_PROVIDER_ID };
+                    var refProviderId = new SqlParameter { ParameterName = "ref_provider_id", SqlDbType = SqlDbType.BigInt, Value = model.TREATING_PROVIDER_ID };
+                    var pos = new SqlParameter { ParameterName = "pos", SqlDbType = SqlDbType.NVarChar, Value = locationName };
+                    var region = new SqlParameter { ParameterName = "region", SqlDbType = SqlDbType.NVarChar, Value = certifyState };
+                    var patientAccount = new SqlParameter { ParameterName = "patient_account", SqlDbType = SqlDbType.BigInt, Value = model.PATIENT_ACCOUNT };
+                    var caseStatusId = new SqlParameter { ParameterName = "case_status_id", SqlDbType = SqlDbType.BigInt, Value = model.CASE_STATUS_ID };
+                    var result = SpRepository<CaseAdditionalInfoRresponce>.GetListWithStoreProcedure(@"exec AF_PROC_CASE_ADDITIONAL_INFO @case_id, @reason, @providerid,@ref_provider_id,@pos,@region,@patient_account,@case_status_id",
+                              caseId, reason, providerId, refProviderId, pos, region, patientAccount, caseStatusId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
+        }
         private List<OpenIssueList> CreateIntelligentTasks(long patientAccount, long caseId, List<OpenIssueList> openIssueList, UserProfile profile)
         {
             try
