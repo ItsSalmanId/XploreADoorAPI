@@ -688,9 +688,11 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             _foxTblCase.Comments = "test";
             _foxTblCase.ImportantNotes = "test";
             _foxTblCase.VoidReason = "test";
+            string locationName = "test";
+            string certifyState = "test";
 
             //Act
-            var result = _caseServices.AddEditCase(_foxTblCase, _userProfile);
+            var result = _caseServices.AddEditCase( locationName, certifyState,_foxTblCase, _userProfile);
 
             //Assert
             if (result != null)
