@@ -6,6 +6,7 @@ using FOX.DataModels.Models.HrAutoEmail;
 using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Context;
 using FOX.BusinessOperations.CommonService;
+using FOX.BusinessOperations.Security;
 
 namespace FOX.BusinessOperations.CommonServices.UploadFiles
 {
@@ -64,10 +65,10 @@ namespace FOX.BusinessOperations.CommonServices.UploadFiles
                             string filePath = uploadFilesPath + @"\" + fileName;
 
                             responseUploadFilesModel.FilePath = fileName;
-                            responseUploadFilesModel.FileName = filePath;
+                            responseUploadFilesModel.FileName = Encrypt.EncryptionForClient(filePath);
                             responseUploadFilesModel.Message = "File Uploaded Successfully.";
                             responseUploadFilesModel.Success = true;
-                            responseUploadFilesModel.ErrorMessage = "";
+                            responseUploadFilesModel.ErrorMessage = "" ;
                             postedFile.SaveAs(filePath);
                         }
                     }
@@ -85,6 +86,7 @@ namespace FOX.BusinessOperations.CommonServices.UploadFiles
                 responseUploadFilesModel.Success = false;
                 responseUploadFilesModel.ErrorMessage = exception.ToString();
                 responseUploadFilesModel.FilePath = "";
+                responseUploadFilesModel.FileName = "";
                 return responseUploadFilesModel;
             }
         }
