@@ -1387,7 +1387,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         {
          
             //Act
-            var result = userManagementService.UpdateOtpEnableDate(userId);
+            var result = _userManagementService.UpdateOtpEnableDate(userId);
             //Assert
             if (result != null)
             {
@@ -1406,7 +1406,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         {
 
             //Act
-            var result = userManagementService.UpdateMfaStatus(userId);
+            var result = _userManagementService.UpdateMfaStatus(userId);
             //Assert
             if (result != null)
             {
