@@ -18,7 +18,7 @@
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
+    <IISExpressSSLPort>44362</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
@@ -106,6 +106,9 @@
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="RestSharp, Version=104.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.104.5.0\lib\net4\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -387,6 +390,8 @@
   <ItemGroup>
     <Content Include="About Project\External Links used in Fox Portal.txt" />
     <Content Include="Areas\HelpPage\HelpPage.css" />
+    <Content Include="bin\RestSharp.Portable.Core.dll" />
+    <Content Include="bin\RestSharp.Portable.HttpClient.dll" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\images\fox-image.png" />
     <Content Include="favicon.ico" />
@@ -458,6 +463,13 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+
+    <Folder Include="bin\roslyn\" />
+    <Folder Include="Views\EvaluationSetup\" />
+    <Folder Include="Views\Group\" />
+    <Folder Include="Views\PerformAudit\" />
+    <Folder Include="Views\QAReport\" />
+    <Folder Include="Views\SignatureRequired\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
