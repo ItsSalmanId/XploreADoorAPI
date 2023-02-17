@@ -40,7 +40,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         private readonly DbContextSettings _settings = new DbContextSettings();
         private readonly DbContextSettings _dbContextSettings = new DbContextSettings();
         private readonly GenericRepository<User> _UserRepository;
-        private readonly GenericRepository<OtpEnableDate> _enableOtpRepository;
+        private readonly GenericRepository<FOX_TBL_OTP_ENABLE_DATE> _enableOtpRepository;
         private readonly GenericRepository<FOX_TBL_PRACTICE_ROLE_RIGHTS> _RoleRightRepository;
         private readonly GenericRepository<FOX_TBL_RIGHTS_OF_ROLE> _RightsOfRoleRepository;
         private readonly GenericRepository<RoleToAdd> _RoleRepository;
@@ -101,7 +101,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             _ActiveIndexerRepository = new GenericRepository<ActiveIndexer>(security);
             _ActiveIndexerLogsRepository = new GenericRepository<ActiveIndexerLogs>(security);
             _ActiveIndexerHistoryRepository = new GenericRepository<ActiveIndexerHistory>(security);
-            _enableOtpRepository = new GenericRepository<OtpEnableDate>(_dbContextSettings);
+            _enableOtpRepository = new GenericRepository<FOX_TBL_OTP_ENABLE_DATE>(_dbContextSettings);
         }
         public bool CreateUser(User user, UserProfile profile)
         {
@@ -3414,18 +3414,18 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         public ResponseModel UpdateOtpEnableDate(long userId)
         {
             ResponseModel resp = new ResponseModel();
-            OtpEnableDate obj = _enableOtpRepository.GetSingleOrDefault(r => r.UserId == userId && r.DELETED == false);
+            FOX_TBL_OTP_ENABLE_DATE obj = _enableOtpRepository.GetSingleOrDefault(r => r.USER_ID == userId && r.DELETED == false);
             if (obj == null)
             {
-                obj = new OtpEnableDate
+                obj = new FOX_TBL_OTP_ENABLE_DATE
                 {
-                    EnableOtpDate = Helper.GetCurrentDate(),
+                    OTP_ENABLE_DATE = Helper.GetCurrentDate(),
                     CREATED_DATE = Helper.GetCurrentDate(),
                     CREATED_BY = userId.ToString(),
                     MODIFIED_DATE = Helper.GetCurrentDate(),
                     MODIFIED_BY = userId.ToString(),
-                    UserId = userId,
-                    OtpEnableId = Helper.getMaximumId("OtpEnableId")
+                    USER_ID = userId,
+                    FOX_TBL_OTP_ENABLE_ID = Helper.getMaximumId("FOX_TBL_OTP_ENABLE_ID")
                 };
                 _enableOtpRepository.Insert(obj);
                 _enableOtpRepository.Save();
@@ -3436,7 +3436,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             }
             else
             {
-                obj.EnableOtpDate = Helper.GetCurrentDate();
+                obj.OTP_ENABLE_DATE = Helper.GetCurrentDate();
                 obj.MODIFIED_DATE = Helper.GetCurrentDate();
                 obj.MODIFIED_BY = userId.ToString();
                 _enableOtpRepository.Update(obj);
