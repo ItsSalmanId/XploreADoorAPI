@@ -51,7 +51,8 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         {
             if (objSurveyLink != null && !string.IsNullOrEmpty(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT))
             {
-                objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT = Decryption(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT);
+                objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT = objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT.Replace("E", ""); 
+                objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT = AppConfiguration.GetPracticeCode + objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT;
                 if (!string.IsNullOrEmpty(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT))
                 {
                     string surveyMethodRemoveChr = (objSurveyLink.SURVEY_METHOD.Replace("#", ""));
@@ -473,7 +474,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         // Description: This function is used forcreate SMS body
         public static string SmsBody(string patientFirstName)
         {
-            string smsBody = " Hello " + patientFirstName + @"! \n \n Your request to unsubscribe from receiving patient surveys is received. You will not receive any messages with patient survey link in future.\n\nRegards\n\n Fox Rehab Team ";
+            string smsBody = " Hello " + patientFirstName + "!\n \n Your request to unsubscribe from receiving patient surveys is received. You will not receive any messages with patient survey link in future.\n\nRegards\n\n Fox Rehab Team ";
             return smsBody ?? "";
         }
         #endregion
