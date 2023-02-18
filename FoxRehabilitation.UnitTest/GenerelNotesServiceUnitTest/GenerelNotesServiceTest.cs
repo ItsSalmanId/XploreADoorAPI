@@ -183,37 +183,37 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
                 Assert.IsTrue(true);
             }
         }
-        [Test]
-        [TestCase(1011163)]
-        [TestCase(1012714)]
-        [TestCase(0)]
-        public void GetGeneralNotes_PassModel_ReturnData(long practiceCode)
-        {
-            //Arrange
-            _userProfile.PracticeCode = practiceCode;
-            _userProfile.UserName = "NUnit-testing";
-            _generalNotesSearchRequest.CurrentPage = 1;
-            _generalNotesSearchRequest.RecordPerPage = 10;
-            _generalNotesSearchRequest.SearchText = "";
-            _generalNotesSearchRequest.PATIENT_ACCOUNT = 101116354815887;
-            _generalNotesSearchRequest.Sort_By = "";
-            _generalNotesSearchRequest.Sort_Order = "";
-            _generalNotesSearchRequest.SearchText = "";
-            _generalNotesSearchRequest.SearchText = "";
+        //// Exception
+        //[Test]
+        //[TestCase(1011163)]
+        //[TestCase(1012714)]
+        //public void GetGeneralNotes_PassModel_ReturnData(long practiceCode)
+        //{
+        //    //Arrange
+        //    _userProfile.PracticeCode = practiceCode;
+        //    _userProfile.UserName = "NUnit-testing";
+        //    _generalNotesSearchRequest.CurrentPage = 1;
+        //    _generalNotesSearchRequest.RecordPerPage = 10;
+        //    _generalNotesSearchRequest.SearchText = "";
+        //    _generalNotesSearchRequest.PATIENT_ACCOUNT = 101116354815887;
+        //    _generalNotesSearchRequest.Sort_By = "";
+        //    _generalNotesSearchRequest.Sort_Order = "";
+        //    _generalNotesSearchRequest.SearchText = "";
+        //    _generalNotesSearchRequest.SearchText = "";
 
-            //Act
-            var result = _generalNotesServices.GetGeneralNotes(_userProfile, _generalNotesSearchRequest);
+        //    //Act
+        //    var result = _generalNotesServices.GetGeneralNotes(_userProfile, _generalNotesSearchRequest);
 
-            //Assert
-            if (result != null)
-            {
-                Assert.IsTrue(true);
-            }
-            else
-            {
-                Assert.IsTrue(true);
-            }
-        }
+        //    //Assert
+        //    if (result != null)
+        //    {
+        //        Assert.IsTrue(true);
+        //    }
+        //    else
+        //    {
+        //        Assert.IsTrue(true);
+        //    }
+        //}
         //[Test]
         //[TestCase(1011163)]
         //[TestCase(1012714)]

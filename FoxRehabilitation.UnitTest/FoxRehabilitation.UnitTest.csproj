@@ -71,8 +71,10 @@
     <Compile Include="FoxPHDServiceUnitTest\FoxPHDServiceTest.cs" />
     <Compile Include="FrictionlessReferralUnitTest\SupportStaffUnitTest\SupportStaffServiceTest.cs" />
     <Compile Include="GenerelNotesServiceUnitTest\GenerelNotesServiceTest.cs" />
+    <Compile Include="GroupServiceUnitTest\GroupServiceTest.cs" />
     <Compile Include="OriginalQueueServiceUnitTest\OriginalQueueServiceTest.cs" />
     <Compile Include="PatientServicesUnitTest\PatientServicesTest.cs" />
+    <Compile Include="PatientSurveyServiceUnitTest\PatientSurveyServiceTest.cs" />
     <Compile Include="PatientSurveyServiceUnitTest\SearchSurveyServiceUnitTest\SearchSurveyServiceTest.cs" />
     <Compile Include="PatientSurveyServiceUnitTest\SurveyReportsServiceUnitTest\SurveyReportsServiceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
