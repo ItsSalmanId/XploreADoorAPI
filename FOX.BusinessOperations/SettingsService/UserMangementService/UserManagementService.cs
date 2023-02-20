@@ -3425,7 +3425,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     MODIFIED_DATE = Helper.GetCurrentDate(),
                     MODIFIED_BY = userId.ToString(),
                     USER_ID = userId,
-                    FOX_TBL_OTP_ENABLE_ID = Helper.getMaximumId("FOX_TBL_OTP_ENABLE_ID")
+                    FOX_OTP_ENABLE_ID = Helper.getMaximumId("FOX_OTP_ENABLE_ID")
                 };
                 _enableOtpRepository.Insert(obj);
                 _enableOtpRepository.Save();

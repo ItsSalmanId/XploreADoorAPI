@@ -11,7 +11,7 @@ namespace FOX.DataModels.Models.Security
     public class FOX_TBL_OTP_ENABLE_DATE
     {
         [Key]
-        public long FOX_TBL_OTP_ENABLE_ID { get; set; }
+        public long FOX_OTP_ENABLE_ID { get; set; }
         public long USER_ID { get; set; }
         public DateTime OTP_ENABLE_DATE { get; set; }
         public string CREATED_BY { get; set; }
