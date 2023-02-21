@@ -38,7 +38,7 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<FoxRoles>().Property(t => t.ROLE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<Announcements>().Property(t => t.ANNOUNCEMENT_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<AnnouncementRoles>().Property(t => t.ANNOUNCEMENT_ROLE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
-            modelBuilder.Entity<OtpEnableDate>().Property(t => t.OtpEnableId).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<FOX_TBL_OTP_ENABLE_DATE>().Property(t => t.FOX_OTP_ENABLE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
 
         }
         public virtual DbSet<ReferralRegion> ReferralRegion { get; set; }
@@ -56,6 +56,6 @@ namespace FOX.DataModels.Context
         public virtual DbSet<FoxRoles> FoxRoles { get; set; }
         public virtual DbSet<Announcements> Announcements { get; set; }
         public virtual DbSet<AnnouncementRoles> AnnouncementRoles { get; set; }
-        public virtual DbSet<OtpEnableDate> OtpEnableDate { get; set; }
+        public virtual DbSet<FOX_TBL_OTP_ENABLE_DATE> OtpEnableDate { get; set; }
     }
 }
