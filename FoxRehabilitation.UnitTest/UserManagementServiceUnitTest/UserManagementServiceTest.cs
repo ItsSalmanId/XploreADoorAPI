@@ -1378,6 +1378,45 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
                 Assert.IsFalse(false);
             }
         }
+
+        [Test]
+        [TestCase(null)]
+        [TestCase(1111111111)]
+        [TestCase(-1)]
+        public void UpdateOtpEnableDate_NullAndInvalidData(long userId)
+        {
+         
+            //Act
+            var result = _userManagementService.UpdateOtpEnableDate(userId);
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsTrue(false);
+            }
+        }
+        [Test]
+        [TestCase("11111111")]
+        [TestCase("")]
+        [TestCase(null)]
+        public void UpdateMfaStatus_NullAndInvalidData(string userId)
+        {
+
+            //Act
+            var result = _userManagementService.UpdateMfaStatus(userId);
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsTrue(false);
+            }
+        }
         [TearDown]
         public void Teardown()
         {
