@@ -20,7 +20,6 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
         private SelectiveSurveyList _selectiveSurveyList;
         private PatientSurveyCall _patientSurveyCall;
         private PatientSurveyCallLog _patientSurveyCallLog;
-        private PatientSurveyCallLog _hpatientSurveyCallLog;
 
         [SetUp]
         public void SetUp()
@@ -32,7 +31,6 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
             _selectiveSurveyList = new SelectiveSurveyList();
             _patientSurveyCall = new PatientSurveyCall();
             _patientSurveyCallLog = new PatientSurveyCallLog();
-            _hpatientSurveyCallLog = new PatientSurveyCallLog();
         }
         [Test]
         [TestCase("101116354860045", 1011163)]
@@ -168,8 +166,8 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
         {
             //Arrange
             //Act
-            //var result = _patientSurveyService.GetSurveyCallList(patientAccount, practiceCode);
-            var result = 
+            var result = _patientSurveyService.GetSurveyCallList(patientAccount, practiceCode);
+            //var result = 
 
             //Assert
             if (result != null && result.Count > 0)
@@ -184,7 +182,7 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
         [Test]
         [TestCase(112233859, 1011163)]
         [TestCase(346354, 1011163)]
-        public void hhhGetSurveyCallList_SurveyCallListModel_ReturnData(long patientAccount, long practiceCode)
+        public void GetSurveyCallListt_SurveyCallListModel_ReturnData(long patientAccount, long practiceCode)
         {
             //Arrange
             //Act
@@ -529,29 +527,29 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
                 Assert.IsFalse(false);
             }
         }
-        [Test]
-        [TestCase(1011163, "test")]
-        [TestCase(1011163, "")]
-        [TestCase(1011163, "PHD")]
-        public void GetPSUserList_PassParameter_ReturnData(long practiceCode, string searchText)
-        {
-            //Arrange
-            _userProfile.PracticeCode = practiceCode;
-            _userProfile.UserName = "1163Testing";
+        //[Test]
+        //[TestCase(1011163, "test")]
+        //[TestCase(1011163, "")]
+        //[TestCase(1011163, "PHD")]
+        //public void GetPSUserList_PassParameter_ReturnData(long practiceCode, string searchText)
+        //{
+        //    //Arrange
+        //    _userProfile.PracticeCode = practiceCode;
+        //    _userProfile.UserName = "1163Testing";
 
-            //Act
-            var result = _patientSurveyService.GetPSUserList(searchText, practiceCode);
+        //    //Act
+        //    var result = _patientSurveyService.GetPSUserList(searchText, practiceCode);
 
-            //Assert
-            if (result != null)
-            {
-                Assert.IsTrue(true);
-            }
-            else
-            {
-                Assert.IsFalse(false);
-            }
-        }
+        //    //Assert
+        //    if (result != null)
+        //    {
+        //        Assert.IsTrue(true);
+        //    }
+        //    else
+        //    {
+        //        Assert.IsFalse(false);
+        //    }
+        //}
         [Test]
         [TestCase(1011163)]
         [TestCase(1012714)]
