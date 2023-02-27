@@ -410,7 +410,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         public static List<string> GetEmailCCList()
         {
             List<string> cc = new List<string>();
-            var ccUsers = ConfigurationManager.AppSettings?["CCList"].ToString();
+            var ccUsers = ConfigurationManager.AppSettings?["SurveyAutomationCCList"].ToString();
             if (!string.IsNullOrEmpty(ccUsers))
             {
                 cc = ccUsers.Split(',').ToList();
@@ -421,7 +421,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         public static List<string> GetEmailBCCList()
         {
             List<string> bcc = new List<string>();
-            var ccUsers = ConfigurationManager.AppSettings?["BCCList"].ToString();
+            var ccUsers = ConfigurationManager.AppSettings?["SurveyAutomationBCCList"].ToString();
             if (!string.IsNullOrEmpty(ccUsers))
             {
                 bcc = ccUsers.Split(',').ToList();
