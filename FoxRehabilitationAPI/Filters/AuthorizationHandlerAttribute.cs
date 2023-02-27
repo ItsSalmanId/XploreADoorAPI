@@ -21,25 +21,29 @@ namespace FoxRehabilitationAPI.Filters
             if (actionContext.Request.Headers.Authorization != null)
             {
                 var accessedTokenFromRequst = actionContext?.Request?.Headers?.Authorization?.Parameter;
-                if (accessedTokenFromRequst != null && accessedTokenFromRequst != "undefined" && accessedTokenFromRequst!="null")
+                if (accessedTokenFromRequst != null && accessedTokenFromRequst != "undefined" && accessedTokenFromRequst != "null")
                 {
                     var accessToken = new SqlParameter("TOKEN", SqlDbType.VarChar) { Value = accessedTokenFromRequst ?? "0" };
-                    var ExpiredToken = SpRepository<TokensUserInfo>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_CHECK_EXPIRED_TOKEN  @TOKEN", accessToken);
-                    if (HttpContext.Current.User != null && HttpContext.Current.User.Identity != null)
+                    var ExpiredToken = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_CHECK_EXPIRED_TOKEN  @TOKEN", accessToken);
+                    if (ExpiredToken == null)
+                    {
+                        base.HandleUnauthorizedRequest(actionContext);
+                    }
+                    else if (ExpiredToken.isLogOut == true)
+                    {
+                        base.HandleUnauthorizedRequest(actionContext);
+                    }
+                    else if (HttpContext.Current.User != null && HttpContext.Current.User.Identity != null)
                     {
                         UserProfile profile = ClaimsModel.GetUserProfile(HttpContext.Current.User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
                         if (Convert.ToInt64(ExpiredToken.UserId) != profile.userID)
                         {
                             base.HandleUnauthorizedRequest(actionContext);
                         }
-                    }
-                    if (ExpiredToken.TokenSecurityID != null && ExpiredToken.TokenSecurityID != "0")
-                    {
-                        base.HandleUnauthorizedRequest(actionContext);
-                    }
-                    else
-                    {
-                        base.OnAuthorization(actionContext);
+                        else
+                        {
+                            base.OnAuthorization(actionContext);
+                        }
                     }
                 }
             }
