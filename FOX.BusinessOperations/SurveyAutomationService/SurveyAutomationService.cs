@@ -14,7 +14,6 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
-using System.Security.Cryptography;
 using System.Text;
 using static FOX.DataModels.Models.SurveyAutomation.SurveyAutomations;
 
@@ -213,44 +212,6 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             }
             return surveyQuestionsList;
         }
-        #region Decryption
-        // Description: This function is decrypt patient account number (Sub function of DecryptionUrl)
-        public static string Decryption(string patientAccount)
-        {
-            string decryptedPatientAccount = string.Empty;
-            if (!string.IsNullOrEmpty(patientAccount))
-            {
-                var enencryptedPatientAccount = patientAccount;
-                string removeFirst = enencryptedPatientAccount.Remove(0, 1);
-                string replaceString = (removeFirst.Replace("#", ""));
-                decryptedPatientAccount = Decrypt(replaceString, "sblw-3hn8-sqoy19");
-            }
-            return decryptedPatientAccount;
-        }
-        // Description: This function is decrypt patient account number (Sub function of DecryptionUrl)
-        public static string Decrypt(string input, string key)
-        {
-            try
-            {
-                byte[] inputArray = Convert.FromBase64String(input);
-                TripleDESCryptoServiceProvider tripleDES = new TripleDESCryptoServiceProvider
-                {
-                    Key = UTF8Encoding.UTF8.GetBytes(key),
-                    Mode = CipherMode.ECB,
-                    Padding = PaddingMode.PKCS7
-                };
-                ICryptoTransform cTransform = tripleDES.CreateDecryptor();
-                byte[] resultArray = cTransform.TransformFinalBlock(inputArray, 0, inputArray.Length);
-                tripleDES.Clear();
-
-                return UTF8Encoding.UTF8.GetString(resultArray);
-            }
-            catch
-            {
-                return string.Empty;
-            }
-        }
-        #endregion
         // Description: This function is trigger to update patient survey model
         public ResponseModel UpdatePatientSurvey(PatientSurvey objPatientSurvey)
         {
