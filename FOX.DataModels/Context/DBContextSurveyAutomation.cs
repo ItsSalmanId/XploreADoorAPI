@@ -23,7 +23,6 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<SurveyQuestions>().Property(t => t.SURVEY_QUESTIONS_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<PatientSurveyHistory>().Property(t => t.SURVEY_HISTORY_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<PatientSurvey>().Property(t => t.SURVEY_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
-           // modelBuilder.Entity<SurveyAutomationLog>().Property(t => t.SURVEY_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<AutomatedSurveyUnSubscription>().Property(t => t.AUTOMATED_SURVEY_UNSUBSCRIPTION_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<SurveyServiceLog>().Property(t => t.SURVEY_AUTOMATION_LOG_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
         }
@@ -32,7 +31,6 @@ namespace FOX.DataModels.Context
         public virtual DbSet<SurveyQuestions> SurveyQuestions { get; set; }
         public virtual DbSet<PatientSurveyHistory> PatientSurveyHistory { get; set; }
         public virtual DbSet<PatientSurvey> PatientSurvey { get; set; }
-       // public virtual DbSet<SurveyAutomationLog> SurveyAutomationLog { get; set; }
         public virtual DbSet<AutomatedSurveyUnSubscription> AutomatedSurveyUnSubscription { get; set; }
         public virtual DbSet<SurveyServiceLog> SurveyServiceLog { get; set; }
     }
