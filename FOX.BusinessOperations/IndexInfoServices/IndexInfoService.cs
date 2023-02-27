@@ -116,6 +116,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private readonly GenericRepository<FOX_TBL_ZIP_STATE_COUNTY> _zipStateCountyRepository;
         private readonly GenericRepository<RegionCoverLetter> _RegionCoverLetterRepository;
         private readonly GenericRepository<TaskWorkInterfaceMapping> _TaskWorkInterfaceMapping;
+        private readonly GenericRepository<AdmissionImportantNotes> _admissionImportantNotes;
         private static List<Thread> threadsList = new List<Thread>();
         private readonly GroupService _groupService;
         private long talkRehabWorkID = 0;
@@ -178,6 +179,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             _RegionCoverLetterRepository = new GenericRepository<RegionCoverLetter>(security);
             _groupService = new GroupService();
             _TaskWorkInterfaceMapping = new GenericRepository<TaskWorkInterfaceMapping>(_TaskContext);
+            _admissionImportantNotes = new GenericRepository<AdmissionImportantNotes>(_QueueContext);
         }
         public void InsertUpdateDocuments(FOX_TBL_PATIENT_DOCUMENTS obj, UserProfile profile)
         {
@@ -5674,6 +5676,45 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 throw ex;
             }
+        }
+
+        public ResponseModel AddAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes, UserProfile userProfile)
+        {
+            ResponseModel response = new ResponseModel();
+            if (objAdmissionImportantNotes != null )
+            {
+                objAdmissionImportantNotes.ADMISSION_IMPORTAN_NOTES_ID = Helper.getMaximumId("ADMISSION_IMPORTAN_NOTES_ID");
+                objAdmissionImportantNotes.PRACTICE_CODE = userProfile.PracticeCode;
+                objAdmissionImportantNotes.CREATED_BY = userProfile.UserName;
+                objAdmissionImportantNotes.CREATED_DATE = Helper.GetCurrentDate();
+                objAdmissionImportantNotes.DELETED = false;
+                _admissionImportantNotes.Insert(objAdmissionImportantNotes);
+                _admissionImportantNotes.Save();
+                response.ErrorMessage = "";
+                response.Message = "Admission important notes inserted successfully";
+                response.Success = true;
+            }
+            else
+            {
+                response.ErrorMessage = "";
+                response.Message = "Admission important notes not inserted successfully";
+                response.Success = false;
+            }
+            return response;
+        }
+
+        public AdmissionImportantNotes GetAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes, UserProfile userProfile)
+        {
+            AdmissionImportantNotes getAdmissionImportantNotes = new AdmissionImportantNotes();
+            if (objAdmissionImportantNotes != null)
+            {
+                getAdmissionImportantNotes = _admissionImportantNotes.GetFirst(r => r.WORK_ID == objAdmissionImportantNotes.WORK_ID && r.PRACTICE_CODE == userProfile.PracticeCode && r.DELETED == false);
+            }
+            else
+            {
+                getAdmissionImportantNotes = null;
+            }
+            return getAdmissionImportantNotes;
         }
     }
 }

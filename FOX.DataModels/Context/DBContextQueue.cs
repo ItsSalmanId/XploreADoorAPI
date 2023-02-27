@@ -29,7 +29,7 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<TherapyTreatmentRequestForm>().Property(t => t.THERAPY_TREATMENT_REFERRAL_REQUEST_FORM_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<FOX_TBL_REFERRAL_SOURCE>().Property(t => t.FOX_SOURCE_CATEGORY_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<GROUP>().Property(t => t.GROUP_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
-
+            modelBuilder.Entity<AdmissionImportantNotes>().Property(t => t.ADMISSION_IMPORTAN_NOTES_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
         }
 
         public virtual DbSet<Models.OriginalQueueModel.OriginalQueue> WorkQueue { get; set; }
@@ -44,7 +44,7 @@ namespace FOX.DataModels.Context
         public virtual DbSet<TherapyTreatmentRequestForm> TherapyTreatmentRequestForm { get; set; }
         public virtual DbSet<FOX_TBL_REFERRAL_SOURCE> FOX_TBL_REFERRAL_SOURCE { get; set; }
         public virtual DbSet<GROUP> UserGroups { get; set; }
-
+        public virtual DbSet<AdmissionImportantNotes> AdmissionImportantNotes { get; set; }
 
     }
 }

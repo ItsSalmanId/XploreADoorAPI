@@ -381,5 +381,29 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.MarkTaskAsComplete(taskId, GetProfile()));
         }
+        [HttpPost]
+        public HttpResponseMessage AddAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes)
+        {
+            if (objAdmissionImportantNotes != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.AddAdmissionImportantNotes(objAdmissionImportantNotes, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Admission Important Notes model is empty");
+            }
+        }
+        [HttpPost]
+        public HttpResponseMessage GetAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes)
+        {
+            if (objAdmissionImportantNotes != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetAdmissionImportantNotes(objAdmissionImportantNotes, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Admission Important Notes model is empty");
+            }
+        }
     }
 }
