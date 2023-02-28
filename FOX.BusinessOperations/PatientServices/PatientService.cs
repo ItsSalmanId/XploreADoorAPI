@@ -1932,8 +1932,8 @@ namespace FOX.BusinessOperations.PatientServices
             String htmlStr;
             //*********************************** MTBCData ***************************************
             objEligibilityNew.ViewType = patientEligibilitySearchModel.IS_MVP_VIEW ? "MVP" : "FOX";
-            //objEligibilityNew.ClientID = "FOXREHAB";
-            objEligibilityNew.ClientID = "8781";
+            objEligibilityNew.ClientID = "FOXREHAB";
+            //objEligibilityNew.ClientID = "8781";
             objEligibilityNew.ClientType = "PATIENT";
             objEligibilityNew.ServerName = "10.10.30.76";
             objEligibilityNew.UserID = userId.ToString();
@@ -6241,8 +6241,8 @@ namespace FOX.BusinessOperations.PatientServices
             EligibilityModelNew objEligibilityNew = new EligibilityModelNew();
             //*********************************** MTBCData ***************************************
             objEligibilityNew.ViewType = mtbcData.ViewType = isMVP ? "MVP" : "FOX";
-            //objEligibilityNew.ClientID = "FOXREHAB";
-            objEligibilityNew.ClientID = "8781";
+            objEligibilityNew.ClientID = "FOXREHAB";
+            //objEligibilityNew.ClientID = "8781";
             objEligibilityNew.ClientType = "PATIENT";
             objEligibilityNew.ServerName = "10.10.30.76";
             objEligibilityNew.UserID = profile.userID.ToString();
