@@ -22,4 +22,4 @@ AND PS.SURVEY_ID = @SURVEY_ID
 AND ISNULL(PS.DELETED, 0) = 0      
 AND PS.FILE_NAME = @SURVEY_FILE_NAME      
                       
-END   
+END 

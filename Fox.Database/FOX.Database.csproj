@@ -528,6 +528,7 @@
     <Content Include="Tables\FOX_TBL_AUTH_DOC.sql" />
     <Content Include="Tables\FOX_TBL_AUTH_STATUS.sql" />
     <Content Include="Tables\FOX_TBL_AUTH_VALUE_TYPE.sql" />
+    <Content Include="Tables\FOX_TBL_AUTOMATED_SURVEY_UNSUBSCRIPTION.sql" />
     <Content Include="Tables\FOX_TBL_AUTO_INDEXING_CONFIG.sql" />
     <Content Include="Tables\FOX_TBL_AVAYA_CALL_RECORDINGS_LOGS.sql" />
     <Content Include="Tables\FOX_TBL_BEST_TIME_TO_CALL.sql" />
