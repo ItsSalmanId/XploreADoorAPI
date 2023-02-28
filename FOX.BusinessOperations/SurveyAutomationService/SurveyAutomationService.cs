@@ -54,11 +54,12 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                 {
                     string surveyMethodRemoveChr = (objSurveyLink.SURVEY_METHOD.Replace("#", ""));
                     string surveyMethodRemoveChar = (surveyMethodRemoveChr.Replace("?", ""));
-                    if (surveyMethodRemoveChar == "SMS" || surveyMethodRemoveChar == "EMAIL")
+                    string surveyMethod = GetSurveyMethod(surveyMethodRemoveChar);
+                    if (surveyMethod == "SMS" || surveyMethod == "EMAIL")
                     {
-                        objSurveyLink.OPEN_SURVEY_METHOD = surveyMethodRemoveChar;
+                        objSurveyLink.OPEN_SURVEY_METHOD = surveyMethod;
                     }
-                    if (!string.IsNullOrEmpty(objSurveyLink.SURVEY_METHOD) && (surveyMethodRemoveChar == "UnsubscribeEmail" || surveyMethodRemoveChar == "UnsubscribeSMS"))
+                    if (!string.IsNullOrEmpty(objSurveyLink.SURVEY_METHOD) && (surveyMethod == "UnsubscribeEmail" || surveyMethod == "UnsubscribeSMS"))
                     {
                         var surveyId = long.Parse(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT);
                         var existingPatientDetails = _patientSurveyRepository.GetFirst(r => r.SURVEY_ID == surveyId && r.DELETED == false);
@@ -67,7 +68,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                             var patientAccount = long.Parse(existingPatientDetails.PATIENT_ACCOUNT_NUMBER.ToString());
                             string charId = patientAccount.ToString();
                             var patientDetails = _patientRepository.GetFirst(r => r.Chart_Id == charId && r.DELETED == false);
-                            if (surveyMethodRemoveChar == "UnsubscribeEmail")
+                            if (surveyMethod == "UnsubscribeEmail")
                             {
                                 var unsubscribeEmailDetail = _automatedSurveyUnSubscription.GetFirst(r => r.PATIENT_ACCOUNT == patientAccount && r.EMAIL_UNSUBSCRIBE == true && r.DELETED == false);
                                 if (unsubscribeEmailDetail == null)
@@ -109,7 +110,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                                     objSurveyLink.SURVEY_METHOD = "Link Expire";
                                 }
                             }
-                            if (surveyMethodRemoveChar == "UnsubscribeSMS")
+                            if (surveyMethod == "UnsubscribeSMS")
                             {
                                 var unsubscribeSMSDetail = _automatedSurveyUnSubscription.GetFirst(r => r.PATIENT_ACCOUNT == patientAccount && r.SMS_UNSUBSCRIBE == true && r.DELETED == false);
                                 if (unsubscribeSMSDetail == null)
@@ -162,6 +163,27 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             }
             return objSurveyLink;
         }
+
+        public static string GetSurveyMethod(string surveyMethodRemoveChar)
+        {
+            switch (surveyMethodRemoveChar)
+            {
+                case "1":
+                     surveyMethodRemoveChar = "SMS";
+                    break;
+                case "2":
+              surveyMethodRemoveChar = "EMAIL";
+                    break;
+                case "3":
+                     surveyMethodRemoveChar = "UnsubscribeSMS";
+                    break;
+                case "4":
+                     surveyMethodRemoveChar = "UnsubscribeEmail";
+                    break;
+            }
+            return surveyMethodRemoveChar;
+        }
+
         // Description: This function is get patient details
         public SurveyAutomation GetPatientDetails(SurveyAutomation objSurveyAutomation)
         {
