@@ -163,7 +163,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
             }
             return objSurveyLink;
         }
-
+        // Description: This function is get survey method details
         public static string GetSurveyMethod(string surveyMethodRemoveChar)
         {
             switch (surveyMethodRemoveChar)
