@@ -19,10 +19,6 @@ using System.Web;
 using System.Web.Http;
 using FOX.BusinessOperations.AccountService;
 using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
-using Microsoft.ApplicationInsights.Extensibility.Implementation;
-using Newtonsoft.Json;
 
 namespace FoxRehabilitationAPI.Controllers
 {
@@ -122,13 +118,25 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpGet]
         public HttpResponseMessage GetSingleUser(string username)
         {
-            var user = _userServices.GetSingleUser(username, GetProfile());
+            UserProfile obj = GetProfile();
+            if (username != obj.UserName && obj.IsAdmin != true &&  obj.RoleId != 103)
+            {
+                var errorResponse = Request.CreateResponse(HttpStatusCode.BadRequest, "Error");
+                return errorResponse;
+            }
+            var user = _userServices.GetSingleUser(username, obj);
             var response = Request.CreateResponse(HttpStatusCode.OK, user);
             return response;
         }
         [HttpGet]
         public HttpResponseMessage GetDataForRefferalReagions(string username)
         {
+            UserProfile obj = GetProfile();
+            if (username != obj.UserName && obj.IsAdmin != true && obj.RoleId != 103)
+            {
+                var errorResponse = Request.CreateResponse(HttpStatusCode.BadRequest, "Error");
+                return errorResponse;
+            }
             var user = _userServices.GetReferralReagions(username, GetProfile());
             var response = Request.CreateResponse(HttpStatusCode.OK, user);
             return response;
@@ -145,7 +153,13 @@ namespace FoxRehabilitationAPI.Controllers
         {
             var fileAttachments = HttpContext.Current.Request.Files;
             string username = HttpContext.Current.Request.Params["username"];
-            var result = _userServices.UploadSignatures(fileAttachments, username, GetProfile());
+            UserProfile obj = GetProfile();
+            if (username != obj.UserName && obj.IsAdmin != true && obj.RoleId != 103)
+            {
+                var errorResponse = Request.CreateResponse(HttpStatusCode.BadRequest, "Error");
+                return errorResponse;
+            }
+            var result = _userServices.UploadSignatures(fileAttachments, username, obj);
             var response = Request.CreateResponse(HttpStatusCode.OK, result);
             return response;
         }
@@ -179,6 +193,12 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpPost]
         public HttpResponseMessage UpdatePassword(PasswordChangeRequest request)
         {
+            UserProfile obj = GetProfile();
+            if (obj.IsAdmin != true && obj.RoleId != 103)
+            {
+                var errorResponse = Request.CreateResponse(HttpStatusCode.BadRequest, "Error");
+                return errorResponse;
+            }
             request.PasswordHash = UserManager.PasswordHasher.HashPassword(HttpUtility.UrlDecode(request.Password));
             _userServices.UpdatePassword(request, GetProfile());
             var response = Request.CreateResponse(HttpStatusCode.OK, "Updated");

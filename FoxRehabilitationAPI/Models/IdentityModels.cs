@@ -131,7 +131,7 @@ namespace FoxRehabilitationAPI.Models
         public List<RoleAndRights> ApplicationUserRoles { get; set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager, string authenticationType, UserProfile userProfile = null)
         {
-            if(userProfile?.isTalkRehab == false)
+            if (userProfile?.isTalkRehab == false)
             {
                 // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
                 var userIdentity = await manager.CreateIdentityAsync(this, authenticationType);
@@ -181,7 +181,10 @@ namespace FoxRehabilitationAPI.Models
         public static UserProfile GetUserProfile(ClaimsIdentity identity)
         {
             var profileString = identity.Claims.Where(c => c.Type == "UserProfile").Select(s => s.Value).FirstOrDefault();
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<UserProfile>(profileString);
+            if (profileString != null)
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<UserProfile>(profileString);
+            else
+                return null;
         }
 
     }
