@@ -1,4 +1,5 @@
-﻿using FOX.BusinessOperations.GeneralNotesService;
+﻿using FOX.BusinessOperations.CommonService;
+using FOX.BusinessOperations.GeneralNotesService;
 using FOX.DataModels.Models.CasesModel;
 using FOX.DataModels.Models.GeneralNotesModel;
 using FOX.DataModels.Models.Security;
@@ -25,6 +26,8 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
         private AlertSearchRequest _alertSearchRequest;
         private NoteAlert _noteAlert;
         private InterfaceLogSearchRequest _interfaceLogSearchRequest;
+        private InterfaceLogSearchRequest InterfaceLogSearchRequest;
+
         [SetUp]
         public void SetUp()
         {
@@ -183,7 +186,7 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
                 Assert.IsTrue(true);
             }
         }
-        //// Exception
+        // Exception
         //[Test]
         //[TestCase(1011163)]
         //[TestCase(1012714)]
@@ -214,29 +217,39 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
         //        Assert.IsTrue(true);
         //    }
         //}
-        //[Test]
-        //[TestCase(1011163)]
-        //[TestCase(1012714)]
-        //public void GetSingleNoteForUpdate_PassModel_ReturnData(long practiceCode)
-        //{
-        //    //Arrange
-        //    _userProfile.PracticeCode = practiceCode;
-        //    _userProfile.UserName = "NUnit-testing";
-        //    _generalNoteRequestModel.GENERAL_NOTE_ID = 544509;
+        [Test]
+        [TestCase(1011163, true)]
+        [TestCase(1011163, false)]
+        [TestCase(1012714, true)]
+        [TestCase(1012714, false)]
+        public void GetSingleNoteForUpdate_PassModel_ReturnData(long practiceCode, bool condition)
+        {
+            //Arrange
+            _userProfile.PracticeCode = practiceCode;
+            _userProfile.UserName = "1163testing";
+            if(condition)
+            {
+                _generalNoteRequestModel.GENERAL_NOTE_ID = Helper.getMaximumId("GENERAL_NOTE_ID") - 101;
+            }
+            else
+            {
+                _generalNoteRequestModel.GENERAL_NOTE_ID = Helper.getMaximumId("GENERAL_NOTE_ID") - 10;
 
-        //    //Act
-        //    var result = _generalNotesServices.GetSingleNoteForUpdate(_userProfile, _generalNoteRequestModel);
+            }
 
-        //    //Assert
-        //    if (result != null)
-        //    {
-        //        Assert.IsTrue(true);
-        //    }
-        //    else
-        //    {
-        //        Assert.IsTrue(true);
-        //    }
-        //}
+            //Act
+            var result = _generalNotesServices.GetSingleNoteForUpdate(_userProfile, _generalNoteRequestModel);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsTrue(true);
+            }
+        }
         [Test]
         [TestCase(1011163)]
         [TestCase(1012714)]

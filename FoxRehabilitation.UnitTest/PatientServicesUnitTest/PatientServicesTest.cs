@@ -1983,7 +1983,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
 
             Assert.IsTrue(true);
         }
-        //ExtractEligibilityData
+        //AddClaimNotes
         [TearDown]
         public void Teardown()
         {

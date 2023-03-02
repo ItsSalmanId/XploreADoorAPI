@@ -17,6 +17,8 @@ using FOX.DataModels.Models.GeneralNotesModel;
 using FOX.DataModels.Models.Settings.ReferralSource;
 using FOX.DataModels.Models.Settings.FacilityLocation;
 using FOX.DataModels.Models.Settings.ClinicianSetup;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FOX.BusinessOperations.CaseServices
 {
@@ -1833,29 +1835,35 @@ namespace FOX.BusinessOperations.CaseServices
             try
             {
                 var _patient_Account = Convert.ToInt64(request.Patient_Account);
-                var Result = (from c in _CaseContext.vwCase
-                              join t in _CaseContext.CaseType on c.CASE_TYPE_ID equals t.CASE_TYPE_ID into ct
-                              from t in ct.DefaultIfEmpty()
-                              join s in _CaseContext.Status on c.CASE_STATUS_ID equals s.CASE_STATUS_ID into st
-                              from s in st.DefaultIfEmpty()
-                              where c.PRACTICE_CODE == Profile.PracticeCode &&
-                              c.PATIENT_ACCOUNT == _patient_Account &&
-                              c.DELETED == false &&
-                              c.CASE_NO.Contains(request.Keyword) ||
-                              c.RT_CASE_NO.Contains(request.Keyword) ||
-                              s.DESCRIPTION.Contains(request.Keyword) ||
-                              t.DESCRIPTION.Contains(request.Keyword) ||
-                              t.NAME.Contains(request.Keyword) ||
-                              s.NAME.Contains(request.Keyword)
-                              select c).ToList();
-                if (Result.Any())
+                var cancellationTokenSource = new CancellationTokenSource();
+                var cancellationToken = cancellationTokenSource.Token;
+                Task.Delay(2000).ContinueWith((t) =>
                 {
-                    return Result;
-                }
-                else
-                {
-                    return new List<FOX_VW_CASE>();
-                }
+                    var Result = (from c in _CaseContext.vwCase
+                                  join tt in _CaseContext.CaseType on c.CASE_TYPE_ID equals tt.CASE_TYPE_ID into ct
+                                  from tt in ct.DefaultIfEmpty()
+                                  join s in _CaseContext.Status on c.CASE_STATUS_ID equals s.CASE_STATUS_ID into st
+                                  from s in st.DefaultIfEmpty()
+                                  where c.PRACTICE_CODE == Profile.PracticeCode &&
+                                  c.PATIENT_ACCOUNT == _patient_Account &&
+                                  c.DELETED == false &&
+                                  c.CASE_NO.Contains(request.Keyword) ||
+                                  c.RT_CASE_NO.Contains(request.Keyword) ||
+                                  s.DESCRIPTION.Contains(request.Keyword) ||
+                                  tt.DESCRIPTION.Contains(request.Keyword) ||
+                                  tt.NAME.Contains(request.Keyword) ||
+                                  s.NAME.Contains(request.Keyword)
+                                  select c).ToList();
+                    if (Result.Any())
+                    {
+                        return Result;
+                    }
+                    else
+                    {
+                        return new List<FOX_VW_CASE>();
+                    }
+                }, cancellationToken);
+                return new List<FOX_VW_CASE>();
             }
             catch (Exception ex)
             {

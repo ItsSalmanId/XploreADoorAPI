@@ -67,6 +67,7 @@
     <Compile Include="AssignedQueueServiceUnitTest\AssignedQueueServiceTest.cs" />
     <Compile Include="CaseServicesUnitTest\CaseServiceTest.cs" />
     <Compile Include="CommonServiceUnitTest\CommonServiceTest.cs" />
+    <Compile Include="CompleteQueueServiceUnitTest\CompleteQueueServiceTest.cs" />
     <Compile Include="DashboardServiceUnitTest\DashoboardServiceTest.cs" />
     <Compile Include="FoxPHDServiceUnitTest\FoxPHDServiceTest.cs" />
     <Compile Include="FrictionlessReferralUnitTest\SupportStaffUnitTest\SupportStaffServiceTest.cs" />
