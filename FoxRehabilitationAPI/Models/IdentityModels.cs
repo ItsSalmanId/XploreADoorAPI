@@ -1,10 +1,7 @@
-﻿using System.Data.Entity;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity.Owin;
-using System.ComponentModel.DataAnnotations;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -174,6 +171,7 @@ namespace FoxRehabilitationAPI.Models
         public string SENDER_TYPE_NAME { get; set; }
         [NotMapped]
         public bool? Is_Blocked { get; set; }
+        public bool? MFA { get; set; }
     }
 
     public class ClaimsModel
@@ -187,5 +185,12 @@ namespace FoxRehabilitationAPI.Models
                 return null;
         }
 
+    }
+
+    public class OtpModel
+    {
+        public bool status { get;set; }
+        public string message { get; set; }
+        public string data { get; set; }
     }
 }

@@ -151,6 +151,7 @@
     <Compile Include="Models\Scheduler\SchedulerModel.cs" />
     <Compile Include="Models\SearchOrderModel\SearchOrder.cs" />
     <Compile Include="Models\Security\BasicAuthenticationIdentity.cs" />
+    <Compile Include="Models\Security\FOX_TBL_OTP_ENABLE_DATE.cs" />
     <Compile Include="Models\Security\PasswordHistory.cs" />
     <Compile Include="Models\Security\ProfileToken.cs" />
     <Compile Include="Models\Security\ReferralRegion.cs" />
