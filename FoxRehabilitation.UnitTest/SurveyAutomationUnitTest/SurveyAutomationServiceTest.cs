@@ -29,6 +29,7 @@ namespace FoxRehabilitation.UnitTest.SurveyAutomationUnitTest
         {
             //Arrange
             _surveyLink.ENCRYPTED_PATIENT_ACCOUNT = patientAccount;
+            _surveyLink.SURVEY_METHOD = "SMS";
 
             //Act
             var result = _surveyAutomationService.DecryptionUrl(_surveyLink);
