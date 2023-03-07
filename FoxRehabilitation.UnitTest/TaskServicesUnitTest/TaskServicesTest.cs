@@ -21,6 +21,8 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
         private GetCategoryFieldResp _getCategoryFieldResp;
         private CatFieldRes _catFieldRes;
         private FOX_TBL_TASK _foxTblTask;
+        private InterfaceSynchModel _interfaceSynchModel;
+        private TaskDashboardSearchRequest _taskDashboardSearchRequest;
 
         [SetUp]
         public void SetUp()
@@ -34,6 +36,8 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
             _getCategoryFieldResp = new GetCategoryFieldResp();
             _catFieldRes = new CatFieldRes();
             _foxTblTask = new FOX_TBL_TASK();
+            _interfaceSynchModel = new InterfaceSynchModel();
+            _taskDashboardSearchRequest = new TaskDashboardSearchRequest();
         }
         [Test]
         [TestCase("", 0)]
@@ -696,7 +700,36 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
                 Assert.IsFalse(false);
             }
         }
-        //AddUpdateTask
+        [Test]
+        public void InsertInterfaceTeamData_PassModel_ReturnData()
+        {
+            //Arrange
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "N_UnitTesting";
+            _interfaceSynchModel.PATIENT_ACCOUNT = 101116354817932;
+
+            //Act
+            _taskServices.InsertInterfaceTeamData(_interfaceSynchModel, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        public void GetTaskDashBoardData_PassModel_ReturnDat()
+        {
+            //Arrange
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "N_UnitTesting";
+            _taskDashboardSearchRequest.DATE_FROM_STR = Helper.GetCurrentDate().ToString();
+            _taskDashboardSearchRequest.DATE_TO_STR = Helper.GetCurrentDate().ToString();
+
+            //Act
+            var result =  _taskServices.GetTaskDashBoardData(_taskDashboardSearchRequest, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        //GetTaskDashBoardData
         [TearDown]
         public void Teardown()
         {
