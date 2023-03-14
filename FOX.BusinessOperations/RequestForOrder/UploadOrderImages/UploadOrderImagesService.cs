@@ -310,7 +310,8 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             {
                 System.Drawing.Image img;
                 PdfFocus f = new PdfFocus();
-                f.Serial = "10261435399";
+                //f.Serial = "10261435399";
+                f.Serial = "80033727929";
                 f.OpenPdf(PdfPath);
                 if (f.PageCount > 0)
                 {

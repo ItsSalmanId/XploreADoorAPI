@@ -2,6 +2,7 @@
 using FOX.DataModels.Models.PatientSurvey;
 using FoxRehabilitationAPI.Filters;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -30,9 +31,14 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpPost]
         public HttpResponseMessage UpdatePatientSurvey(FOX.DataModels.Models.PatientSurvey.PatientSurvey patientSurvey)
         {
-            _patientSurveyService.UpdatePatientSurvey(patientSurvey, GetProfile());
-            var response = Request.CreateResponse(HttpStatusCode.OK, "Add/Update successfull");
-            return response;
+            if (patientSurvey != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.UpdatePatientSurvey(patientSurvey, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient survey model is empty");
+            }
         }
 
         [HttpGet]
@@ -182,6 +188,18 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetPSDetailsFromEmail(string surveyId)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetSurveyDetailedFromEmail(surveyId, GetProfile().PracticeCode));
+        }
+        [HttpPost]
+        public HttpResponseMessage SurveyPerformByUser(SelectiveSurveyList objSelectiveSurveyList)
+        {
+            if (objSelectiveSurveyList != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.SurveyPerformByUser(objSelectiveSurveyList, GetProfile().PracticeCode));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Perform survey model is empty");
+            }
         }
     }
 }

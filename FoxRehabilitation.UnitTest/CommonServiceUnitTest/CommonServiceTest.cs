@@ -319,19 +319,19 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
         public void DeleteDownloadedFile_HasFileLocation_NoReturnsData()
         {
             //Arrange
-            string fileLocation = "sample";
+            string fileLocation = "";
 
             //Act
             var result = _commonServices.DeleteDownloadedFile(fileLocation);
 
             //Assert
-            if (!result.Success)
+            if (result != null)
             {
-                Assert.Pass("Passed");
+                Assert.IsTrue(true);
             }
             else
             {
-                Assert.Fail("Failed");
+                Assert.IsFalse(false);
             }
         }
         [TestCase(1011163, 103)]

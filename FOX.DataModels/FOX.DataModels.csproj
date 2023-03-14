@@ -93,6 +93,7 @@
     <Compile Include="Context\DbContextSecurity.cs" />
     <Compile Include="Context\DBContextQueue.cs" />
     <Compile Include="Context\DbContextSettings.cs" />
+    <Compile Include="Context\DBContextSurveyAutomation.cs" />
     <Compile Include="Context\DbContextTasks.cs" />
     <Compile Include="Context\SpContext.cs" />
     <Compile Include="EntityHelper.cs" />
@@ -150,6 +151,7 @@
     <Compile Include="Models\Scheduler\SchedulerModel.cs" />
     <Compile Include="Models\SearchOrderModel\SearchOrder.cs" />
     <Compile Include="Models\Security\BasicAuthenticationIdentity.cs" />
+    <Compile Include="Models\Security\FOX_TBL_OTP_ENABLE_DATE.cs" />
     <Compile Include="Models\Security\PasswordHistory.cs" />
     <Compile Include="Models\Security\ProfileToken.cs" />
     <Compile Include="Models\Security\ReferralRegion.cs" />
@@ -169,6 +171,7 @@
     <Compile Include="Models\SignatureRequired\SignatureRequired.cs" />
     <Compile Include="Models\StatesModel\States.cs" />
     <Compile Include="Models\SupervisorWorkModel\SupervisorWork.cs" />
+    <Compile Include="Models\SurveyAutomation\SurveyAutomation.cs" />
     <Compile Include="Models\TasksModel\TasksModel.cs" />
     <Compile Include="Models\UnAssignedQueueModel\UnAssignedQueue.cs" />
     <Compile Include="Models\UploadWorkOrderFiles\UploadWorkOrderFilesModel.cs" />
