@@ -358,6 +358,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_SMART_USERS_OF_REGION_VISIBLE_TO.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SMART_USERS_OF_SPECIFIC_ROLE_BY_ROLE_NAME.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SMS_AND_EMAIL_DETAILS.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_SMS_AND_EMAIL_UNSUBSCRIPTION_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SOURCE_DETAIL.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SOURCE_OF_REFERRAL_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SPECIALITY.sql" />
