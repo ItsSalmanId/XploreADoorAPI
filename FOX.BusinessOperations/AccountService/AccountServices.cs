@@ -917,6 +917,7 @@ namespace FOX.BusinessOperations.AccountService
                             paramSecurityID, paramtokenAuthToken, paramtokenIssuedOn, paramtokenUserName);
 
                         token.ExpiresOn = DateTime.Now;
+                        token.isLogOut = true;
                         profileToken.Update(token);
                         profileToken.Save();
                         resp.Success = true;

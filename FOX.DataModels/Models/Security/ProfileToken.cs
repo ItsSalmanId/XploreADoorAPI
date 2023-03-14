@@ -19,7 +19,7 @@ namespace FOX.DataModels.Models.Security
         public System.DateTime IssuedOn { get; set; }
         public System.DateTime ExpiresOn { get; set; }
         public string Profile { get; set; }
-
+        public bool? isLogOut { get; set; }
         [NotMapped]
         public UserProfile userProfile
         {
