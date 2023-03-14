@@ -575,7 +575,7 @@ namespace FoxRehabilitationAPI
                         if (userProfile != null)
                         {
                             //getting user by username and password hash
-                            user = await base.FindAsync(userProfile.UserName, password);
+                            user = await applicationUserManagerTalkRehab.FindAsync(userProfile.UserName, password);
                             if (user == null)
                             {
                                 string encryptedPass = Encrypt.getEncryptedCode(password);

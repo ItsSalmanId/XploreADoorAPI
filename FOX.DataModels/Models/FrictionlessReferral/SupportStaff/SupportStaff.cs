@@ -25,10 +25,12 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public string PROVIDER_ADDRESS { get; set; }
         public string PROVIDER_CITY { get; set; }
         public string PROVIDER_STATE { get; set; }
+        public string PROVIDER_TAXONOMY_DESC { get; set; }
         public string PROVIDER_ZIP_CODE { get; set; }
         public string PROVIDER_REGION { get; set; }
         public string PROVIDER_REGION_CODE { get; set; }
         public string PROVIDER_FAX { get; set; }
+        public string PROVIDER_PHONE_NO { get; set; }
         public string PATIENT_FIRST_NAME { get; set; }
         public string PATIENT_LAST_NAME { get; set; }
         public DateTime? PATIENT_DOB { get; set; }
@@ -98,11 +100,13 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public string ProviderAddress { get; set; }
         public string ProviderCity { get; set; }
         public string ProviderState { get; set; }
+        public string ProviderTaxonomyDesc { get; set; }
         public string ProviderZipCode { get; set; }
         public string ProviderRegion { get; set; }
         public string ProviderRegionCode { get; set; }
         public string ProviderFax { get; set; }
-        public bool isNPPES { get; set; }
+        public string ProviderPhoneNo { get; set; }
+        public bool IsNPPES { get; set; }
     }
     public class FrictionLessReferralResponse 
     {
@@ -110,24 +114,6 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public bool Success { get; set; }
         public string Message { get; set; }
     }
-    public class RequestDownloadPdfFrictionlessModel : BaseModel
-    {
-        public string AttachmentHTML { get; set; }
-        public string FileName { get; set; }
-    }
-    public class FrictionLessRequestSendFAXModel : BaseModel
-    {
-        public string SenderName { get; set; }
-        public string SenderFax { get; set; }
-        public string Subject { get; set; }
-        public string ReceipientFaxNumber { get; set; }
-        public string Notes { get; set; }
-        public string AttachmentHTML { get; set; }
-        public string FileName { get; set; }
-        public long WorkId { get; set; }
-        public bool _isFromIndexInfo { get; set; }
-    }
-
     [Table("FOX_TBL_FRICTIONLESS_WORK_QUEUE_FILE_ALL")]
     public class FrictionlessReferralForm
     {
@@ -142,6 +128,15 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public DateTime MODIFIED_DATE { get; set; }
         public string MODIFIED_BY { get; set; }
         public bool DELETED { get; set; }
+        public long PRACTICE_CODE { get; set; }
+    }
+    public class SubmitReferralModel : BaseModel
+    {
+        public string AttachmentHTML { get; set; }
+        public string FileName { get; set; }
+        public long WorkId { get; set; }
+        public bool IsFromIndexInfo { get; set; }
+        public string PatientLastName { get; set; }
     }
     #endregion
 }

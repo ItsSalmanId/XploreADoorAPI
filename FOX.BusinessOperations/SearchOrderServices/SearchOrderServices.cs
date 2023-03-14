@@ -14,6 +14,7 @@ namespace FOX.BusinessOperations.SearchOrderServices
 {
     public class SearchOrderServices : ISearchOrderServices
     {
+        private long retrycatch = 0;
         private readonly DbContextDashboard _SearchOrderContext = new DbContextDashboard();
         private readonly GenericRepository<SearchOrder> _SearchOrderRepository;
 
@@ -96,11 +97,24 @@ namespace FOX.BusinessOperations.SearchOrderServices
 
             }
             catch (Exception ex) {
+                if (retrycatch <= 2 && (!string.IsNullOrEmpty(ex.Message) &&
+                               ex.Message.Contains("deadlocked on lock resources with another process"))
+                               || ((ex.InnerException != null) &&
+                               !string.IsNullOrEmpty(ex.InnerException.Message)
+                               &&
+                               ex.InnerException.Message.Contains("deadlocked on lock resources with another process")))
+            {
+                retrycatch = retrycatch + 1;
+                return GetSearchOrder(searchOrderRequest, profile);
+            }
+                else
+            {
                 throw ex;
             }
         }
+    }
 
-        public string ExportToExcelSearchOrder(SearchOrderRequest req, UserProfile profile)
+    public string ExportToExcelSearchOrder(SearchOrderRequest req, UserProfile profile)
         {
             try
             {

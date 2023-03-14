@@ -743,6 +743,10 @@ namespace FOX.BusinessOperations.AccountService
             bool _isValidUser = false;
             string serverName = System.Web.HttpContext.Current?.Request?.Url?.Host;
             string showUrl = HttpContext.Current?.Request?.Url?.AbsoluteUri;
+            if (data.userIP != null)
+            {
+                data.userIP = Encrypt.DecrypStringEncryptedInClient(data.userIP);
+            }
            if (data.userName.ToLower().Contains("@foxrehab.org"))
             {
                 _isValidUser = true;
@@ -909,6 +913,7 @@ namespace FOX.BusinessOperations.AccountService
                             paramSecurityID, paramtokenAuthToken, paramtokenIssuedOn,  paramtokenUserName);
 
                         token.ExpiresOn = DateTime.Now;
+                        token.isLogOut = true;
                         profileToken.Update(token);
                         profileToken.Save();
                         resp.Success = true;

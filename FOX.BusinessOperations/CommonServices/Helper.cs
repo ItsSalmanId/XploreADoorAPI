@@ -39,7 +39,7 @@ namespace FOX.BusinessOperations.CommonService
         //private static readonly GenericRepository<EmailFaxLog> _emailfaxlogRepository = new GenericRepository<EmailFaxLog>(_DbContextSP);
         private static GenericRepository<OriginalQueue> _InsertSourceAddRepository;
         private static GenericRepository<FoxDocumentType> _foxdocumenttypeRepository;
-        
+
         static Helper()
         {
             _DbContextSP = new DbContextCommon();
@@ -147,7 +147,7 @@ namespace FOX.BusinessOperations.CommonService
                 return false;
             }
         }
-        public static bool SendEmail(string messageTo, string subject, string body,long? WORK_ID = null, UserProfile profile = null, List<string> CC = null, List<string> BCC = null, string senderEmail = "foxrehab@carecloud.com")
+        public static bool SendEmail(string messageTo, string subject, string body, long? WORK_ID = null, UserProfile profile = null, List<string> CC = null, List<string> BCC = null, string senderEmail = "foxrehab@carecloud.com")
         {
             var bodyHTML = "";
             bodyHTML += "<body>";
@@ -155,7 +155,7 @@ namespace FOX.BusinessOperations.CommonService
             bodyHTML += "</body>";
             SmtpClient client = new SmtpClient();
 
-            if(profile!=null && profile.isTalkRehab)
+            if (profile != null && profile.isTalkRehab)
             {
                 senderEmail = WebConfigurationManager.AppSettings["NoReplyUserName"].ToString();
             }
@@ -165,7 +165,7 @@ namespace FOX.BusinessOperations.CommonService
             {
                 foreach (var item in CC)
                 {
-                    if(!String.IsNullOrWhiteSpace(item))
+                    if (!String.IsNullOrWhiteSpace(item))
                         msg.CC.Add(item);
                 }
             }
@@ -195,7 +195,7 @@ namespace FOX.BusinessOperations.CommonService
                     client.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["FoxRehabUserName"], WebConfigurationManager.AppSettings["FoxRehabPassword"]);
                 }
                 client.Send(msg);
-                LogEmailData(messageTo,"Success",profile,CC,BCC, senderEmail, null, WORK_ID, null);
+                LogEmailData(messageTo, "Success", profile, CC, BCC, senderEmail, null, WORK_ID, null);
                 return true;
             }
             catch (Exception ex)
@@ -206,7 +206,7 @@ namespace FOX.BusinessOperations.CommonService
         }
 
         //public static bool Email(string from, string to, string subject, string body, List<string> CC = null, List<string> BCC = null, List<string> AttachmentFilePaths = null)
-        public static bool Email(string to, string subject, string body,UserProfile profile =null, long? WORK_ID=null, List<string> CC = null, List<string> BCC = null, List<string> AttachmentFilePaths = null, string from = "foxrehab@carecloud.com")
+        public static bool Email(string to, string subject, string body, UserProfile profile = null, long? WORK_ID = null, List<string> CC = null, List<string> BCC = null, List<string> AttachmentFilePaths = null, string from = "foxrehab@carecloud.com")
         {
             bool IsMailSent = false;
             try
@@ -236,7 +236,7 @@ namespace FOX.BusinessOperations.CommonService
                             {
                                 if (File.Exists(filePth)) { mail.Attachments.Add(new Attachment(filePth)); }
                             }
-                        }                     
+                        }
                         if (profile != null && profile.isTalkRehab)
                         {
                             smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["NoReplyUserName"], WebConfigurationManager.AppSettings["NoReplyPassword"]);
@@ -246,7 +246,7 @@ namespace FOX.BusinessOperations.CommonService
                             smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["FoxRehabUserName"], WebConfigurationManager.AppSettings["FoxRehabPassword"]);
                         }
                         smtp.Send(mail);
-                        LogEmailData(to,"Success",profile,CC,BCC, from,null,WORK_ID, AttachmentFilePaths);
+                        LogEmailData(to, "Success", profile, CC, BCC, from, null, WORK_ID, AttachmentFilePaths);
                         IsMailSent = true;
                     }
                 }
@@ -393,19 +393,19 @@ namespace FOX.BusinessOperations.CommonService
             bool fileExists = true;
             //try
             //{
-                if (!File.Exists(filePath))
+            if (!File.Exists(filePath))
+            {
+                fileExists = false;
+            }
+            using (StreamWriter writer = new StreamWriter(filePath, true))
+            {
+                if (!fileExists)
                 {
-                    fileExists = false;
+                    await writer.WriteLineAsync("User Name, Status, Failed Reason, Date/Time");
+                    fileExists = true;
                 }
-                using (StreamWriter writer = new StreamWriter(filePath, true))
-                {
-                    if (!fileExists)
-                    {
-                        await writer.WriteLineAsync("User Name, Status, Failed Reason, Date/Time");
-                        fileExists = true;
-                    }
-                    await writer.WriteLineAsync(UserName + "," + Status + "," +  FailedReason + "," + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss tt"));
-                }
+                await writer.WriteLineAsync(UserName + "," + Status + "," + FailedReason + "," + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss tt"));
+            }
             //}
             //catch (Exception ex)
             //{
@@ -706,7 +706,7 @@ namespace FOX.BusinessOperations.CommonService
         {
             DataTable dt = new DataTable();
             dt.Columns.Add("MSG", typeof(string));
-            foreach(string msg in lst)
+            foreach (string msg in lst)
             {
                 if (!string.IsNullOrEmpty(msg))
                 {
@@ -799,11 +799,20 @@ namespace FOX.BusinessOperations.CommonService
             if (patAccount.HasValue)
             {
                 var patient = _PatientRepository.GetFirst(e => e.Patient_Account == patAccount);
-                return patient.First_Name + " " + patient.Last_Name;
+                if (patient != null)
+                {
+                    return patient.First_Name + " " + patient.Last_Name;
+                }
+                else
+                {
+                    return "";
+                }
             }
             else
                 return "";
         }
+
+
         //public static string GetSenderName(long? senderId)
         //{
         //    if (senderId.HasValue)
@@ -852,9 +861,21 @@ namespace FOX.BusinessOperations.CommonService
             string Dis_str = string.Empty;
             if (!string.IsNullOrEmpty(depId))
             {
-                if (depId.Contains("1"))
+                if (depId.EndsWith("1"))
+                {
+                    depId = depId + ",";
+                }
+                if (depId.Contains("1,"))
                 {
                     Dis_str = Dis_str + " Occupational Therapy (OT), ";
+                    if (depId.EndsWith(","))
+                    {
+                        depId = depId.Remove(depId.Length - 1, 1);
+                    }
+                }
+                if (depId.Contains("10"))
+                {
+                    Dis_str = Dis_str + " Skilled Nursing (SN), ";
                 }
                 if (depId.Contains("2"))
                 {
@@ -980,14 +1001,14 @@ namespace FOX.BusinessOperations.CommonService
             return rnd.Next(10000, 99999);
         }
 
-        public static void LogEmailData(string to, string status, UserProfile profile ,List<string> CC = null, List<string> BCC = null, string senderEmail = "foxrehab@carecloud.com", Exception ex = null, long? work_id = null, List<string> attachments = null)
+        public static void LogEmailData(string to, string status, UserProfile profile, List<string> CC = null, List<string> BCC = null, string senderEmail = "foxrehab@carecloud.com", Exception ex = null, long? work_id = null, List<string> attachments = null)
         {
             DbContextCommon _DbContextSP_New = new DbContextCommon();
             GenericRepository<EmailFaxLog> _emailfaxlogRepository = new GenericRepository<EmailFaxLog>(_DbContextSP_New);
 
             EmailFaxLog logToInsert = new EmailFaxLog();
             logToInsert.FOX_EMAIL_FAX_LOG_ID = getMaximumId("FOX_EMAIL_FAX_LOG_ID");
-            if(attachments!=null && attachments.Count>0)
+            if (attachments != null && attachments.Count > 0)
             {
                 logToInsert.ATTACHMENT_PATH = String.Join(" ", attachments.ToArray());
             }
@@ -1000,10 +1021,10 @@ namespace FOX.BusinessOperations.CommonService
                 logToInsert.BCC = String.Join(" ", BCC.ToArray());
             }
             logToInsert.STATUS = status;
-            if(ex!=null)
+            if (ex != null)
             {
-            logToInsert.EXCEPTION_SHORT_MSG = ex.Message;
-             logToInsert.EXCEPTION_TRACE = ex.StackTrace;
+                logToInsert.EXCEPTION_SHORT_MSG = ex.Message;
+                logToInsert.EXCEPTION_TRACE = ex.StackTrace;
             }
 
             logToInsert.WORK_ID = work_id;
@@ -1029,13 +1050,13 @@ namespace FOX.BusinessOperations.CommonService
             logToInsert.MODIFIED_DATE = GetCurrentDate();
             logToInsert.DELETED = false;
             logToInsert.TYPE = "Email";
-            if(profile !=null)
+            if (profile != null)
             {
                 _emailfaxlogRepository.Insert(logToInsert);
                 _emailfaxlogRepository.Save();
             }
-              
-            
+
+
         }
 
         public static bool IsTestUser(string firstName, string lastName)
@@ -1048,12 +1069,12 @@ namespace FOX.BusinessOperations.CommonService
             if ((firstName.Contains("demo") && lastName.Contains("test")) || (firstName.Contains("test") && lastName.Contains("demo")) || (firstName.Contains("test") && lastName.Contains("test")) || (firstName.Equals("demo") && lastName.Equals("demo")))
             {
                 return true;
-            }          
+            }
 
             return false;
         }
 
-        public static void LogFaxData(string to, string status, UserProfile profile,  string ex = null, long? work_id = null, List<string> attachments = null, string senderFax = "1234567890")
+        public static void LogFaxData(string to, string status, UserProfile profile, string ex = null, long? work_id = null, List<string> attachments = null, string senderFax = "1234567890")
         {
             DbContextCommon _DbContextSP_New = new DbContextCommon();
             GenericRepository<EmailFaxLog> _emailfaxlogRepository = new GenericRepository<EmailFaxLog>(_DbContextSP_New);
@@ -1066,10 +1087,10 @@ namespace FOX.BusinessOperations.CommonService
             }
 
             logToInsert.CC = string.Empty;
-            
-            
+
+
             logToInsert.BCC = string.Empty;
-            
+
             logToInsert.STATUS = status;
             if (!string.IsNullOrEmpty(ex))
             {
@@ -1123,12 +1144,12 @@ namespace FOX.BusinessOperations.CommonService
             try
             {
                 string directoryOther = System.Web.HttpContext.Current.Server.MapPath("\\FoxCriticalErrorsCustom");
-            if (!Directory.Exists(directoryOther))
-            {
-                Directory.CreateDirectory(directoryOther);
-            }
-            string filePathOther = directoryOther + "\\errors_" + DateTime.Now.Date.ToString("MM-dd-yyyy") + ".txt";
-            
+                if (!Directory.Exists(directoryOther))
+                {
+                    Directory.CreateDirectory(directoryOther);
+                }
+                string filePathOther = directoryOther + "\\errors_" + DateTime.Now.Date.ToString("MM-dd-yyyy") + ".txt";
+
                 using (StreamWriter writer = new StreamWriter(filePathOther, true))
                 {
                     writer.WriteLine("Message: " + context.Message + Environment.NewLine + Environment.NewLine + "URI:  " + context.ToString() + Environment.NewLine + Environment.NewLine + "Request parameters: " + Environment.NewLine + Environment.NewLine + "StackTrace: " + context.StackTrace + Environment.NewLine + Environment.NewLine +
@@ -1159,6 +1180,7 @@ namespace FOX.BusinessOperations.CommonService
             cc.Add("ismailahmad@carecloud.com");
             cc.Add("ayazkhan2@carecloud.com");
             cc.Add("asadinayat@carecloud.com");
+            cc.Add("irfanullah3@carecloud.com");
 
             //string ccvalues = ConfigurationManager.AppSettings["CCListException"];
             //if (!string.IsNullOrWhiteSpace(ccvalues))
@@ -1205,10 +1227,10 @@ namespace FOX.BusinessOperations.CommonService
             }
             catch (Exception ex)
             {
-                 throw ex;
+                throw ex;
             }
         }
-       
+
         public static void SendExceptionsEmail(string exceptionMsg = "", string exceptionDetails = "", string subject = "")
         {
             //bool IsMailSent = false;
@@ -1222,6 +1244,7 @@ namespace FOX.BusinessOperations.CommonService
             cc.Add("aftabkhan@carecloud.com");
             cc.Add("muhammadsalman7@mtbc.com");
             cc.Add("muhammadiqbal11@carecloud.com");
+            cc.Add("irfanullah3@carecloud.com");
             var body = "";
             body += "<body>";
             //add exception Message
@@ -1264,24 +1287,42 @@ namespace FOX.BusinessOperations.CommonService
         }
         public static void TokenTaskCancellationExceptionLog(string msg)
         {
-           try
+            try
             {
+                if (msg.Contains("it is being used by another process"))
+                {
+                    return;
+                }
                 string directoryOther = System.Web.HttpContext.Current.Server.MapPath("\\FoxCriticalTokenExceptionLog");
-            if (!Directory.Exists(directoryOther))
-            {
-                Directory.CreateDirectory(directoryOther);
-            }
-            string filePathOther = directoryOther + "\\errors_" + DateTime.Now.Date.ToString("MM-dd-yyyy") + ".txt";
-            
+                if (!Directory.Exists(directoryOther))
+                {
+                    Directory.CreateDirectory(directoryOther);
+                }
+                string filePathOther = directoryOther + "\\errors_" + DateTime.Now.Date.ToString("MM-dd-yyyy") + ".txt";
+
                 using (StreamWriter writer = new StreamWriter(filePathOther, true))
                 {
-                    writer.WriteLine(DateTime.Now.ToString() + "   Message: " + msg  + Environment.NewLine);
+                    writer.WriteLine(DateTime.Now.ToString() + "   Message: " + msg + Environment.NewLine);
                 }
             }
             catch (Exception ex)
             {
                 Helper.SendEmailOnException(ex.Message, ex.ToString(), "Exception occurred in Token Exception Filter");
             }
+        }
+
+
+        public static string RemoveSpecialCharacters(this string str)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in str)
+            {
+                if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+                {
+                    sb.Append(c);
+                }
+            }
+            return sb.ToString();
         }
     }
 }

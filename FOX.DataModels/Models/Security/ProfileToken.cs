@@ -19,7 +19,7 @@ namespace FOX.DataModels.Models.Security
         public System.DateTime IssuedOn { get; set; }
         public System.DateTime ExpiresOn { get; set; }
         public string Profile { get; set; }
-
+        public bool? isLogOut { get; set; }
         [NotMapped]
         public UserProfile userProfile
         {
@@ -50,4 +50,14 @@ namespace FOX.DataModels.Models.Security
             public bool DELETED { get; set; }
         }
     }
+
+    public class TokensUserInfo //: Alachisoft.NCache.Runtime.Serialization.ICompactSerializable
+    {
+        public string TokenSecurityID { get; set; }
+        public string AuthToken { get; set; }
+        public long UserId { get; set; }
+        public Boolean IS_ADMIN { get; set; }
+    }
+
+
 }

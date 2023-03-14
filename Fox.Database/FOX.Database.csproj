@@ -88,6 +88,7 @@
     <Content Include="StoredProcedure\FOX_GET_WORK_ORDER_INFO.sql" />
     <Content Include="StoredProcedure\FOX_GET_WORK_ORDER_INFO_FOR_PAT_MAINTENANCE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_ADD_FILES_TO_DB_FROM_INDEXINFO.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_ADD_FRICTIONLESS_FILES_TO_DB_FROM_RFO.sql" />
     <Content Include="StoredProcedure\FOX_PROC_ADD_TODB_FROM_INDEXINFO.sql" />
     <Content Include="StoredProcedure\FOX_PROC_ADD_TO_DB_FROM_RFO.sql" />
     <Content Include="StoredProcedure\FOX_PROC_ADD_TO_DB_FROM_UPLOAD_ORDER_IMAGES.sql" />
@@ -109,6 +110,7 @@
     <Content Include="StoredProcedure\FOX_PROC_DASHBOARD_GET_NO_OF_RECORD_BY_TIME.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DASHBOARD_GET_TOTAL.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DELETE_COUNTIES_REFERRAL_REGION.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_DELETE_FRICTIONLESS_WORK_FILE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DELETE_NOTIFICATIONS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DELETE_REC_FROM_MTBC_CREDENTIALS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_EXISTING_SURVEY_DETAIL.sql" />
@@ -286,6 +288,8 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_PROFILE_TOKEN.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PROFILE_USER_BY_ID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PROVIDERS_NAME_LIST.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_PROVIDER_DETAILS_BY_NAME.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_PROVIDER_DETAILS_BY_NPI.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PR_STATES_AND_REGIONS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PSD_REGION_AND_RECOMMENDATION_WISE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PSD_RESULTS.sql" />
@@ -302,6 +306,9 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_PS_CALL_LOG_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PS_REGION_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PS_STATES_LIST.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_QADASHBOARD_SURVEY_TEAM_EMPLOYEE_LIST.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_QA_DASHBOARD_DATA.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_QA_DASHBOARD_LINE_GRAPH_DATA.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_RANDOM_PATIENT_SURVEY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_RECONCILIATIONS_CP.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_RECONCILIATION_AMOUNTS.sql" />
@@ -390,6 +397,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_TASK_TYPES.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TASK_TYPE_AND_SEND_TO_AND_SUB_TYPE_ID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TASK_TYPE_AND_SEND_TO_ID.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_TEAM_EMPLOYEE_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TEAM_MEMBER_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TOTAL_PAGES.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TREATMENTLOCATION_BY_ZIP.sql" />
@@ -581,6 +589,8 @@
     <Content Include="Tables\FOX_TBL_FREEZ_AGING_GROUP_DOE.sql" />
     <Content Include="Tables\FOX_TBL_FREEZ_AGING_GROUP_DOS.sql" />
     <Content Include="Tables\FOX_TBL_FREEZ_AGING_GROUP_FC_DRILL.sql" />
+    <Content Include="Tables\FOX_TBL_FRICTIONLESS_REFERRAL.sql" />
+    <Content Include="Tables\FOX_TBL_FRICTIONLESS_WORK_QUEUE_FILE_ALL.sql" />
     <Content Include="Tables\FOX_TBL_GENERAL_NOTE.sql" />
     <Content Include="Tables\FOX_TBL_GRADING_SETUP.sql" />
     <Content Include="Tables\FOX_TBL_GROUP.sql" />

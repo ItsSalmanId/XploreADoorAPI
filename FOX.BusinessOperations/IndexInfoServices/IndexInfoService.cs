@@ -559,7 +559,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             //    _InsertSourceAddRepository.Save();
             //}
 
-            sourceAddDetail.FOX_SOURCE_CATEGORY_ID = obj.FOX_SOURCE_CATEGORY_ID;
+            sourceAddDetail.FOX_SOURCE_CATEGORY_ID = obj.FOX_SOURCE_CATEGORY_ID ?? 0;
             if (string.IsNullOrEmpty(sourceAddDetail.DEPARTMENT_ID) || sourceAddDetail.DEPARTMENT_ID == "0")
             {
                 sourceAddDetail.DEPARTMENT_ID = null;
@@ -673,12 +673,14 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 }
                 sourceAddDetail.SENDER_ID = obj.SENDER_ID;
                 sourceAddDetail.UNIT_CASE_NO = obj.UNIT_CASE_NO;
-                if (!String.IsNullOrWhiteSpace(sourceAddDetail.DEPARTMENT_ID) && obj.DEPARTMENT_ID != "0" && sourceAddDetail.DEPARTMENT_ID != obj.DEPARTMENT_ID)
+               // if (!String.IsNullOrWhiteSpace(sourceAddDetail.DEPARTMENT_ID) && obj.DEPARTMENT_ID != "0" && sourceAddDetail.DEPARTMENT_ID != obj.DEPARTMENT_ID)
+                if (obj.DEPARTMENT_ID != "0" && sourceAddDetail.DEPARTMENT_ID != obj.DEPARTMENT_ID)
                 {
                     string logMsg = string.Format("ID: {0} Discipline changed from '{1}' to '{2}'.", sourceAddDetail.UNIQUE_ID, Helper.GetDepartmentNames(sourceAddDetail.DEPARTMENT_ID), Helper.GetDepartmentNames(obj.DEPARTMENT_ID));
                     listLogMsgs.Add(logMsg);
                 }
-                if (!String.IsNullOrWhiteSpace(obj.DEPARTMENT_ID) && obj.DEPARTMENT_ID != "0")
+               // if (!String.IsNullOrWhiteSpace(obj.DEPARTMENT_ID) && obj.DEPARTMENT_ID != "0")
+                if (obj.DEPARTMENT_ID != "0")
                 {
                     sourceAddDetail.DEPARTMENT_ID = obj.DEPARTMENT_ID;
                 }
@@ -1480,7 +1482,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 _body += "<br />📞Mobile: ";
                 if (!string.IsNullOrEmpty(emailData.PATIENT_PHONE_NO))
                 {
-                    emailData.PATIENT_PHONE_NO = String.Format("{0:(###) ###-####}", Int64.Parse(emailData.PATIENT_PHONE_NO));
+                    emailData.PATIENT_PHONE_NO = String.Format("{0:(###) ###-####}", Int64.Parse(emailData.PATIENT_PHONE_NO.Trim()));
                     _body += emailData.PATIENT_PHONE_NO;
                 }
                 _body += "<br />Pri. Ins: ";
@@ -2073,8 +2075,8 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     //}
                     //else
                     //{
-                        senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == usr.PRACTICE_CODE) && !t.DELETED);
-                   // }
+                    senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == usr.PRACTICE_CODE) && !t.DELETED);
+                    // }
                     result.SENDER_TYPE = senderType != null ? !string.IsNullOrWhiteSpace(senderType.SENDER_TYPE_NAME) ? senderType.SENDER_TYPE_NAME : "" : "";
                     return result;
 
@@ -2643,9 +2645,12 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     if (workId != null && workId.Contains("_"))
                     {
                         var uWorkId = _OriginalQueueFiles.GetFirst(t => t.UNIQUE_ID == workId);
-                        workId = Convert.ToString(uWorkId.WORK_ID);
+                        if (uWorkId != null)
+                        {
+                            workId = Convert.ToString(uWorkId.WORK_ID);
+                        }
                     }
-                        threadsList.Add(myThread);
+                    threadsList.Add(myThread);
                     AddFilesToDatabase(imgPath, workId, lworkid, logoImgPath);
                 }
                 while (noOfPages > threadCounter.Count)
@@ -2669,7 +2674,8 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 System.Drawing.Image img;
                 PdfFocus f = new PdfFocus();
-                f.Serial = "10261435399";
+               // f.Serial = "10261435399";
+                f.Serial = "80033727929";
                 f.OpenPdf(PdfPath);
 
                 if (f.PageCount > 0)
@@ -3171,12 +3177,12 @@ namespace FOX.BusinessOperations.IndexInfoServices
                         }
                         catch (Exception)
                         {
-                            sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID);
+                            sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID ?? (object)DBNull.Value);
                         }
                     }
                     else
                     {
-                        sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID);
+                        sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID ?? (object)DBNull.Value);
                     }
                     long primaryKey = Helper.getMaximumId("FOX_TASK_ID");
                     SqlParameter id = new SqlParameter("ID", primaryKey);
@@ -3380,7 +3386,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 //var sourceDetail = _InsertSourceAddRepository.GetFirst(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode && t.WORK_ID == WORK_QUEUE.WORK_ID && WORK_QUEUE.WORK_ID != 0);
                 var documentType = GetDocumentType(WORK_QUEUE);
                 //var documentType = _foxdocumenttypeRepository.GetFirst(t => t.DOCUMENT_TYPE_ID == sourceDetail.DOCUMENT_TYPE);
-                var ORS = GetOrderingRefrralSource(sourceDetail.SENDER_ID);
+                var ORS = new ReferralSource();
+                if (sourceDetail != null)
+                {
+                    ORS = GetOrderingRefrralSource(sourceDetail.SENDER_ID ?? 0);
+                }
                 //var ORS = _InsertUpdateOrderingSourceRepository.GetFirst(t => t.SOURCE_ID == sourceDetail.SENDER_ID);
                 var Indexer = GetIndexer(sourceDetail.COMPLETED_BY, profile.PracticeCode);
                 //var Indexer = _User.GetFirst(T => T.USER_NAME == sourceDetail.COMPLETED_BY);
@@ -4259,9 +4269,21 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 if (!string.IsNullOrEmpty(sourceDetail?.DEPARTMENT_ID))
                 {
-                    if (sourceDetail.DEPARTMENT_ID.Contains("1"))
+                    if (sourceDetail.DEPARTMENT_ID.EndsWith("1"))
+                    {
+                        sourceDetail.DEPARTMENT_ID = sourceDetail.DEPARTMENT_ID + ",";
+                    }
+                    if (sourceDetail.DEPARTMENT_ID.Contains("1,"))
                     {
                         discipline = discipline + " Occupational Therapy (OT), ";
+                        if (sourceDetail.DEPARTMENT_ID.EndsWith(","))
+                        {
+                            sourceDetail.DEPARTMENT_ID = sourceDetail.DEPARTMENT_ID.Remove(sourceDetail.DEPARTMENT_ID.Length - 1, 1);
+                        }
+                    }
+                    if (sourceDetail.DEPARTMENT_ID.Contains("10"))
+                    {
+                        discipline = discipline + " Skilled Nursing (SN), ";
                     }
                     if (sourceDetail.DEPARTMENT_ID.Contains("2"))
                     {
@@ -4951,10 +4973,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
         private void InsertTaskLog(long? taskId, List<TaskLog> tasklog, UserProfile profile)
         {
-            
             try
             {
-  
+
+
                 if (taskId != null && taskId.Value > 0)
                 {
                     foreach (var item in tasklog)
@@ -4981,13 +5003,13 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 }
             }
             catch (Exception ex)
-            { 
+            {
                 if (retrycatch <= 2 && !string.IsNullOrEmpty(ex.Message) && ex.Message.Contains("Violation of PRIMARY KEY constraint"))
                 {
                     retrycatch = retrycatch + 1;
                     InsertTaskLog(taskId, tasklog, profile);
-                 }
-            else
+                }
+                else
                 {
                     throw ex;
                 }
@@ -5207,7 +5229,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     SqlParameter userName = new SqlParameter("USER_NAME", profile.UserName);
                     SqlParameter isTemplate = new SqlParameter("IS_TEMPLATE", task.IS_TEMPLATE);
                     SqlParameter taskTypeId = new SqlParameter("TASK_TYPE_ID", task.TASK_TYPE_ID);
-                    SqlParameter sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID);
+                    SqlParameter sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID ?? (object)DBNull.Value);
                     SqlParameter finalRouteId = new SqlParameter("FINAL_ROUTE_ID", task.FINAL_ROUTE_ID ?? (object)DBNull.Value);
                     SqlParameter priority = new SqlParameter("PRIORITY", string.IsNullOrEmpty(task.PRIORITY) ? string.Empty : task.PRIORITY);
                     SqlParameter dueDateTime = new SqlParameter("DUE_DATE_TIME", string.IsNullOrEmpty(task.DUE_DATE_TIME_str) ? (object)DBNull.Value : Helper.ConvertStingToDateTime(task.DUE_DATE_TIME_str) ?? Helper.GetCurrentDate());
@@ -5260,7 +5282,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             if (task.TASK_TYPE_ID != null)
             {
                 var sourceDetail = GetSourceDetail(profile.PracticeCode, WORK_QUEUE.WORK_ID);
-                var ORS = GetOrderingRefrralSource(sourceDetail.SENDER_ID);
+                var ORS = GetOrderingRefrralSource(sourceDetail.SENDER_ID ?? 0);
                 var discipline = "";
                 if (sourceDetail != null)
                 {
@@ -5377,8 +5399,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 req.Date_Of_Birth = null;
             }
-            var first_Name = new SqlParameter("@First_Name", SqlDbType.VarChar) { Value = !string.IsNullOrWhiteSpace(req.First_Name) ? req.First_Name.Trim() : req.First_Name };
-            var last_Name = new SqlParameter("@Last_Name", SqlDbType.VarChar) { Value = !string.IsNullOrWhiteSpace(req.Last_Name) ? req.Last_Name.Trim() : req.Last_Name };
+            req.First_Name = string.IsNullOrEmpty(req.First_Name) ? " " : Helper.RemoveSpecialCharacters(req.First_Name.Trim());
+            req.Last_Name = string.IsNullOrEmpty(req.First_Name) ? " " : Helper.RemoveSpecialCharacters(req.Last_Name.Trim());
+            req.Middle_Name = string.IsNullOrEmpty(req.First_Name) ? " " : Helper.RemoveSpecialCharacters(req.Middle_Name.Trim());
+            var first_Name = new SqlParameter("@First_Name", SqlDbType.VarChar) { Value = req.First_Name };
+            var last_Name = new SqlParameter("@Last_Name", SqlDbType.VarChar) { Value = req.Last_Name };
             var middle_Name = new SqlParameter("@Middle_Name", SqlDbType.VarChar) { Value = req.Middle_Name };
             var chart_Id = new SqlParameter("@Chart_Id", SqlDbType.VarChar) { Value = req.Chart_Id };
             var SSN = new SqlParameter("@SSN", SqlDbType.VarChar) { Value = req.SSN };
@@ -5446,9 +5471,9 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 if (checkDuplicateReferral != null)
                 {
                     var wORK_ID = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = checkDuplicateReferral.workID };
-                   var getWorkID = SpRepository<GETtAll_IndexifoRes>.GetSingleObjectWithStoreProcedure(@"exec [FOX_GET_INDEX_ALL_INFO] @WORK_ID", wORK_ID);
+                    var getWorkID = SpRepository<GETtAll_IndexifoRes>.GetSingleObjectWithStoreProcedure(@"exec [FOX_GET_INDEX_ALL_INFO] @WORK_ID", wORK_ID);
 
-                   if (getWorkID != null && getWorkID.PATIENT_ACCOUNT != null)
+                    if (getWorkID != null && getWorkID.PATIENT_ACCOUNT != null)
                     {
                         var Patient_Account = new SqlParameter("PATIENT_ACCOUNT", SqlDbType.BigInt) { Value = getWorkID.PATIENT_ACCOUNT };
                         var Practice_Code = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = userProfile.PracticeCode };
@@ -5471,13 +5496,13 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                                 //var DepartIDs = ite.DEPARTMENT_ID.Split(',');
                                                 if (!string.IsNullOrEmpty(ite.DEPARTMENT_ID) && ite.DEPARTMENT_ID.Contains(item.ToString()))
                                                 {
-                                                                             if (MainList != null)
+                                                    if (MainList != null)
                                                     {
                                                         if (MainList.Find(e => e.WORK_ID == ite.WORK_ID) == null)
                                                         {
                                                             MainList.Add(ite);
                                                         }
-                                                    } 
+                                                    }
                                                 }
                                             }
                                         }

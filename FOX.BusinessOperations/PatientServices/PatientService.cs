@@ -21,7 +21,6 @@ using FOX.DataModels.Models.Settings.ReferralSource;
 using FOX.DataModels.Models.TasksModel;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 using SautinSoft;
 using SelectPdf;
 using System;
@@ -226,11 +225,11 @@ namespace FOX.BusinessOperations.PatientServices
                 patient.Created_By = patient.Modified_By = profile.UserName;
                 patient.Created_Date = patient.Modified_Date = Helper.GetCurrentDate();
                 patient.DELETED = false;
-
+                patient.cell_phone = String.IsNullOrEmpty(patient.cell_phone) ? "" : patient.cell_phone.Trim();
                 _PatientRepository.Insert(patient);
-                if (patient.PCP!=null && profile.isTalkRehab)
+                if (patient.PCP != null && profile.isTalkRehab)
                 {
-                    if (patient.PCP_Name!=null)
+                    if (patient.PCP_Name != null)
                     {
                         CreateUpdateCareTeam(patient, profile, "", "");
                     }
@@ -906,12 +905,15 @@ namespace FOX.BusinessOperations.PatientServices
             }
             else
             {
-                patient.Financial_Guarantor = null;
-                patient.Address_To_Guarantor = false;
-                patient.ModifiedBy = profile.UserName;
-                patient.Modified_Date = Helper.GetCurrentDate();
-                _PatientRepository.Update(patient);
-                _PatientRepository.Save();
+                if (patient != null)
+                {
+                    patient.Financial_Guarantor = null;
+                    patient.Address_To_Guarantor = false;
+                    patient.ModifiedBy = profile.UserName;
+                    patient.Modified_Date = Helper.GetCurrentDate();
+                    _PatientRepository.Update(patient);
+                    _PatientRepository.Save();
+                }
             }
         }
 
@@ -1106,7 +1108,7 @@ namespace FOX.BusinessOperations.PatientServices
             //var _patientAddressRepository = new GenericRepository<PatientAddress>(_patientContext);
             for (int i = 0; i < patientAddress.Count; i++)
             {
-                 var dbPatientAddress = _PatientAddressRepository.GetByID(patientAddress[i].PATIENT_ADDRESS_HISTORY_ID);
+                var dbPatientAddress = _PatientAddressRepository.GetByID(patientAddress[i].PATIENT_ADDRESS_HISTORY_ID);
                 if (dbPatientAddress == null) //add
                 {
                     patientAddress[i].PATIENT_ADDRESS_HISTORY_ID = Helper.getMaximumId("PATIENT_ADDRESS_HISTORY_ID");
@@ -1505,7 +1507,7 @@ namespace FOX.BusinessOperations.PatientServices
 
             spName = profile.isTalkRehab ? "FOX_PROC_GET_PATIENT_LIST_TALKREHAB" : "FOX_PROC_GET_PATIENT_LIST";
 
-            var PatientList = SpRepository<Patient>.GetListWithStoreProcedure(@"exec "+ spName + " @Patient_Account, @First_Name, @Last_Name, @Middle_Name, @CHART_ID, @SSN, @Gender, @Created_Date, @CreatedBy, @ModifiedBy, @PRACTICE_CODE, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORT_BY, @SORT_ORDER,@DOB, @Patient_Alias",
+            var PatientList = SpRepository<Patient>.GetListWithStoreProcedure(@"exec " + spName + " @Patient_Account, @First_Name, @Last_Name, @Middle_Name, @CHART_ID, @SSN, @Gender, @Created_Date, @CreatedBy, @ModifiedBy, @PRACTICE_CODE, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORT_BY, @SORT_ORDER,@DOB, @Patient_Alias",
                 accountNo, FirstName, LastName, MiddleName, MRN, SSN, Gender, CreatedDate, CreatedBy, ModifiedBy, PracticeCode, CurrentPage, RecordPerPage, SearchText, SortBy, SortOrder, dob, Patient_Alias);
 
             return PatientList;
@@ -1846,84 +1848,183 @@ namespace FOX.BusinessOperations.PatientServices
             {
                 patientInsuranceInformation = _result.Where(x => x.INS_TYPE == 1).FirstOrDefault();
             }
-
+            #region Old Implementation to check Eligiblity with WCF Service
             //Eligibility....
-            ExternalServices.PatientEligibilityService.MTBCData mtbcData = new ExternalServices.PatientEligibilityService.MTBCData();
-            mtbcData.ViewType = patientEligibilitySearchModel.IS_MVP_VIEW ? "MVP" : "";
-            mtbcData.ClientID = "FOXREHAB"; //  Client TalkEHR, WebSoft, EDI, WebEHR,foxrehab etc. For fox it will be FOXREHAB.
-            mtbcData.ClientType = "PATIENT";    //  ClientType can be CLAIM, PATIENT, APPOINTMENT or any other like FOX_CLIENT, from patient form it will be PATIENT.
-            mtbcData.ServerName = "10.10.30.76";    // Database Server IP
-            mtbcData.UserID = userId.ToString();    //  User that is using WebSoft. User like IA32, MS147 etc.
-            mtbcData.InsuranceID = patientInsuranceInformation.INSURANCE_ID.ToString(); //  Id of Insurance table in MTBC system
-            mtbcData.insPayerID = patientInsuranceInformation.INSPAYER_ID.ToString();   //  Optional
-            mtbcData.PayerType = patientInsuranceInformation.INS_TYPE.ToString();   //  Payer type in MTBC's system. Primary, Secondary or OTHER etc.
-            mtbcData.PatientAccount = patientInsuranceInformation.PATIENT_ACCOUNT.ToString();  //  Required value
-            mtbcData.ClaimNo = string.Empty;    //  Optional
-            mtbcData.AppointmentID = string.Empty;  //  Optional
+            //ExternalServices.PatientEligibilityService.MTBCData mtbcData = new ExternalServices.PatientEligibilityService.MTBCData();
+            //mtbcData.ViewType = patientEligibilitySearchModel.IS_MVP_VIEW ? "MVP" : "";
+            //mtbcData.ClientID = "FOXREHAB"; //  Client TalkEHR, WebSoft, EDI, WebEHR,foxrehab etc. For fox it will be FOXREHAB.
+            //mtbcData.ClientType = "PATIENT";    //  ClientType can be CLAIM, PATIENT, APPOINTMENT or any other like FOX_CLIENT, from patient form it will be PATIENT.
+            //mtbcData.ServerName = "10.10.30.76";    // Database Server IP
+            //mtbcData.UserID = userId.ToString();    //  User that is using WebSoft. User like IA32, MS147 etc.
+            //mtbcData.InsuranceID = patientInsuranceInformation?.INSURANCE_ID.ToString() ?? ""; //  Id of Insurance table in MTBC system
+            //mtbcData.insPayerID = patientInsuranceInformation?.INSPAYER_ID.ToString() ?? "";   //  Optional
+            //mtbcData.PayerType = patientInsuranceInformation?.INS_TYPE.ToString() ?? "";   //  Payer type in MTBC's system. Primary, Secondary or OTHER etc.
+            //mtbcData.PatientAccount = patientInsuranceInformation.PATIENT_ACCOUNT.ToString();  //  Required value
+            //mtbcData.ClaimNo = string.Empty;    //  Optional
+            //mtbcData.AppointmentID = string.Empty;  //  Optional
 
-            ExternalServices.PatientEligibilityService.MTBC270RequestData requestData = new ExternalServices.PatientEligibilityService.MTBC270RequestData();
+            //ExternalServices.PatientEligibilityService.MTBC270RequestData requestData = new ExternalServices.PatientEligibilityService.MTBC270RequestData();
 
-            // requestData.FIRST_NAME = result.FIRST_NAME;
-            //  requestData.LAST_NAME = result.LAST_NAME;
-            requestData.Address = patientInsuranceInformation.ADDRESS;
-            requestData.City = patientInsuranceInformation.CITY;
+            //// requestData.FIRST_NAME = result.FIRST_NAME;
+            ////  requestData.LAST_NAME = result.LAST_NAME;
+            //requestData.Address = patientInsuranceInformation.ADDRESS;
+            //requestData.City = patientInsuranceInformation.CITY;
 
-            requestData.DateOfService = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(DateTime.Now));
-            requestData.PayerName = patientInsuranceInformation.PAYER_NAME;
-            requestData.ProviderFirstName = patientInsuranceInformation.PROVIDER_FNAME; // Table name providers -- code -- patient-- provider 
-            requestData.ProviderLastName = patientInsuranceInformation.PROVIDER_LNAME; // Table name providers
-            requestData.ProviderNPI = "1326092503";  // Table name providers
-            requestData.ProviderSSN = patientInsuranceInformation.PROVIDER_SSN; // Table name providers
-            requestData.Relationship = patientInsuranceInformation.RELATIONSHIP;    // S
-            requestData.Zip = patientInsuranceInformation.ZIP;
-            requestData.State = patientInsuranceInformation.STATE;
+            //requestData.DateOfService = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(DateTime.Now));
+            //requestData.PayerName = patientInsuranceInformation.PAYER_NAME;
+            //requestData.ProviderFirstName = patientInsuranceInformation.PROVIDER_FNAME; // Table name providers -- code -- patient-- provider 
+            //requestData.ProviderLastName = patientInsuranceInformation.PROVIDER_LNAME; // Table name providers
+            //requestData.ProviderNPI = "1326092503";  // Table name providers
+            //requestData.ProviderSSN = patientInsuranceInformation.PROVIDER_SSN; // Table name providers
+            //requestData.Relationship = patientInsuranceInformation.RELATIONSHIP;    // S
+            //requestData.Zip = patientInsuranceInformation.ZIP;
+            //requestData.State = patientInsuranceInformation.STATE;
 
-            if (patientInsuranceInformation.RELATIONSHIP == "S")
+            //if (patientInsuranceInformation.RELATIONSHIP == "S")
+            //{
+            //    requestData.SubscriberDateOfBirth = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.DATE_OF_BIRTH.ToString()));
+            //    requestData.SubscriberFirstName = patientInsuranceInformation.FIRST_NAME;
+            //    requestData.SubscriberGender = patientInsuranceInformation.GENDER;
+            //    requestData.SubscriberGroupNumber = patientInsuranceInformation.GROUP_NUMBER;
+            //    requestData.SubscriberLastName = patientInsuranceInformation.LAST_NAME;
+            //    requestData.SubscriberSSN = patientInsuranceInformation.SSN;    //from patient table
+            //    requestData.DependentDOB = "";
+            //    requestData.DependentFirstName = "";
+            //    requestData.DependentGender = "";
+            //    requestData.DependentLastName = "";
+            //}
+            //else
+            //{
+            //    requestData.SubscriberDateOfBirth = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.GUARANTOR_DOB.ToString()));
+            //    requestData.SubscriberFirstName = patientInsuranceInformation.GURANTOR_FNAME;
+            //    requestData.SubscriberGender = patientInsuranceInformation.GUARANTOR_GENDER;
+            //    requestData.SubscriberGroupNumber = patientInsuranceInformation.GROUP_NUMBER;
+            //    requestData.SubscriberLastName = patientInsuranceInformation.GURANTOR_LNAME;
+            //    requestData.SubscriberSSN = patientInsuranceInformation.GUARANTOR_SSN;
+            //    requestData.DependentDOB = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.DATE_OF_BIRTH.ToString()));
+            //    requestData.DependentFirstName = patientInsuranceInformation.FIRST_NAME;
+            //    requestData.DependentGender = patientInsuranceInformation.GENDER;
+            //    requestData.DependentLastName = patientInsuranceInformation.GROUP_NUMBER;
+            //}
+            //if (patientInsuranceInformation.PRAC_TYPE == "G")   //from practices by practice_code
+            //{
+            //    requestData.OrganizationType = "2";
+            //    // requestData.ProviderNPI = // Group_NPI from table provider_payer
+            //    requestData.OrganizationNPI = "1326092503";
+            //}
+            //else
+            //{
+            //    requestData.OrganizationType = "1";
+            //    // requestData.ProviderNPI =  //indiv_NPI from table provider_payer
+            //    requestData.OrganizationNPI = "1326092503";
+            //}
+            //requestData.ProviderSSN = patientInsuranceInformation.PROVIDER_SSN;
+            //requestData.TaxID = patientInsuranceInformation.PRACTICE_TAX_ID;
+            //requestData.PayerID = patientInsuranceInformation.INSPAYER_ELIGIBILITY_ID;
+            //requestData.OrganizationName = patientInsuranceInformation.PRACTICE_NAME;
+            //requestData.SubscriberMemberID = patientInsuranceInformation.POLICY_NUMBER;
+            //ExternalServices.PatientEligibilityService.Service objService = new ExternalServices.PatientEligibilityService.Service();
+            //string htmlStr = objService.MTBCResponse(requestData, mtbcData);
+            #endregion
+            #region New Implementation to check Eligiblity with RestFull API
+            //To See Detailed Documentation Please have the documents path  : FoxRehabilitationAPI\About Project\Eligibity-documents\
+            EligibilityModelNew objEligibilityNew = new EligibilityModelNew();
+            String htmlStr;
+            //*********************************** MTBCData ***************************************
+            objEligibilityNew.ViewType = patientEligibilitySearchModel.IS_MVP_VIEW ? "MVP" : "FOX";
+            objEligibilityNew.ClientID = "FOXREHAB";
+            //objEligibilityNew.ClientID = "8781";
+            objEligibilityNew.ClientType = "PATIENT";
+            objEligibilityNew.ServerName = "10.10.30.76";
+            objEligibilityNew.UserID = userId.ToString();
+            objEligibilityNew.InsuranceID = patientInsuranceInformation.INSURANCE_ID.ToString() ?? "";
+            objEligibilityNew.insPayerID = patientInsuranceInformation.INSPAYER_ID.ToString() ?? "";
+            //objEligibilityNew.PayerType = patientInsuranceInformation.INS_TYPE.ToString();
+            objEligibilityNew.PayerType = "P";
+            objEligibilityNew.PatientAccount = patientInsuranceInformation.PATIENT_ACCOUNT.ToString();
+            objEligibilityNew.ClaimNo = string.Empty;
+            objEligibilityNew.AppointmentID = string.Empty;
+            //objEligibilityNew.InsPayerDescriptionName = eligibilityModel.Inspayer_Description;
+            //*********************************** Payer Information ***************************************
+            objEligibilityNew.PayerName = patientInsuranceInformation.PAYER_NAME;
+            objEligibilityNew.PayerID = patientInsuranceInformation.INSPAYER_ELIGIBILITY_ID;
+            //************************************ Practice Information ************************************
+            objEligibilityNew.Address = patientInsuranceInformation.ADDRESS;
+            objEligibilityNew.City = patientInsuranceInformation.CITY;
+            objEligibilityNew.DateOfService = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(DateTime.Now));
+            //objElig.InquiryDate;    //  Required value
+            objEligibilityNew.ProviderFirstName = patientInsuranceInformation.PROVIDER_FNAME;
+            objEligibilityNew.ProviderLastName = patientInsuranceInformation.PROVIDER_LNAME;
+            objEligibilityNew.ProviderNPI = "1326092503";  // Table name providers
+            objEligibilityNew.ProviderSSN = patientInsuranceInformation.PROVIDER_SSN;
+            objEligibilityNew.Relationship = patientInsuranceInformation.RELATIONSHIP;
+            objEligibilityNew.Zip = patientInsuranceInformation.ZIP;
+            objEligibilityNew.State = patientInsuranceInformation.STATE;
+            if (!string.IsNullOrEmpty(patientInsuranceInformation.RELATIONSHIP) && patientInsuranceInformation.RELATIONSHIP.Contains("S"))
             {
-                requestData.SubscriberDateOfBirth = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.DATE_OF_BIRTH.ToString()));
-                requestData.SubscriberFirstName = patientInsuranceInformation.FIRST_NAME;
-                requestData.SubscriberGender = patientInsuranceInformation.GENDER;
-                requestData.SubscriberGroupNumber = patientInsuranceInformation.GROUP_NUMBER;
-                requestData.SubscriberLastName = patientInsuranceInformation.LAST_NAME;
-                requestData.SubscriberSSN = patientInsuranceInformation.SSN;    //from patient table
-                requestData.DependentDOB = "";
-                requestData.DependentFirstName = "";
-                requestData.DependentGender = "";
-                requestData.DependentLastName = "";
+                objEligibilityNew.SubscriberDateOfBirth = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.DATE_OF_BIRTH.ToString()));
+                objEligibilityNew.SubscriberFirstName = patientInsuranceInformation.FIRST_NAME;
+                objEligibilityNew.SubscriberGender = patientInsuranceInformation.GENDER;
+                objEligibilityNew.SubscriberGroupNumber = patientInsuranceInformation.GROUP_NUMBER;
+                objEligibilityNew.SubscriberLastName = patientInsuranceInformation.LAST_NAME;
+                objEligibilityNew.SubscriberSSN = patientInsuranceInformation.SSN;    //from patient table                                              
+                //*********************************** Dependent Level *****************************************
+                objEligibilityNew.DependentDOB = string.Empty;
+                objEligibilityNew.DependentFirstName = string.Empty;
+                objEligibilityNew.DependentGender = string.Empty;
+                objEligibilityNew.DependentLastName = string.Empty;
             }
             else
             {
-                requestData.SubscriberDateOfBirth = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.GUARANTOR_DOB.ToString()));
-                requestData.SubscriberFirstName = patientInsuranceInformation.GURANTOR_FNAME;
-                requestData.SubscriberGender = patientInsuranceInformation.GUARANTOR_GENDER;
-                requestData.SubscriberGroupNumber = patientInsuranceInformation.GROUP_NUMBER;
-                requestData.SubscriberLastName = patientInsuranceInformation.GURANTOR_LNAME;
-                requestData.SubscriberSSN = patientInsuranceInformation.GUARANTOR_SSN;
-                requestData.DependentDOB = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.DATE_OF_BIRTH.ToString()));
-                requestData.DependentFirstName = patientInsuranceInformation.FIRST_NAME;
-                requestData.DependentGender = patientInsuranceInformation.GENDER;
-                requestData.DependentLastName = patientInsuranceInformation.GROUP_NUMBER;
+                objEligibilityNew.SubscriberDateOfBirth = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.GUARANTOR_DOB.ToString()));
+                objEligibilityNew.SubscriberFirstName = patientInsuranceInformation.GURANTOR_FNAME;
+                objEligibilityNew.SubscriberGender = patientInsuranceInformation.GUARANTOR_GENDER;
+                objEligibilityNew.SubscriberGroupNumber = patientInsuranceInformation.GROUP_NUMBER;
+                objEligibilityNew.SubscriberLastName = patientInsuranceInformation.GURANTOR_LNAME;
+                objEligibilityNew.SubscriberDateOfDeath = string.Empty;
+                objEligibilityNew.SubscriberSSN = patientInsuranceInformation.GUARANTOR_SSN;
+                //*********************************** Dependent Level *****************************************
+                objEligibilityNew.DependentDOB = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.DATE_OF_BIRTH.ToString()));
+                objEligibilityNew.DependentFirstName = patientInsuranceInformation.FIRST_NAME;
+                objEligibilityNew.DependentGender = patientInsuranceInformation.GENDER;
+                objEligibilityNew.DependentLastName = patientInsuranceInformation.GROUP_NUMBER;
             }
-            if (patientInsuranceInformation.PRAC_TYPE == "G")   //from practices by practice_code
+            if (patientInsuranceInformation.PRAC_TYPE == "G")
             {
-                requestData.OrganizationType = "2";
-                // requestData.ProviderNPI = // Group_NPI from table provider_payer
-                requestData.OrganizationNPI = "1326092503";
+                objEligibilityNew.OrganizationType = "2";  //Required value(if "I" then send 1 and if "G" then send 2 )
+                objEligibilityNew.ProviderNPI = string.Empty; //if OrganizationType is "I" then you assign individual_npi
+                objEligibilityNew.OrganizationNPI = "1326092503";  //if OrganizationType is "G" then you assign group_npi            
             }
             else
             {
-                requestData.OrganizationType = "1";
-                // requestData.ProviderNPI =  //indiv_NPI from table provider_payer
-                requestData.OrganizationNPI = "1326092503";
+                objEligibilityNew.OrganizationType = "1";     // Required value(if "I" then send 1 and if "G" then send 2 )
+                objEligibilityNew.OrganizationNPI = string.Empty; //if OrganizationType is "G" then you assign group_npi            
+                objEligibilityNew.ProviderNPI = "1326092503"; //if OrganizationType is "I" then you assign individual_npi
             }
-            requestData.ProviderSSN = patientInsuranceInformation.PROVIDER_SSN;
-            requestData.TaxID = patientInsuranceInformation.PRACTICE_TAX_ID;
-            requestData.PayerID = patientInsuranceInformation.INSPAYER_ELIGIBILITY_ID;
-            requestData.OrganizationName = patientInsuranceInformation.PRACTICE_NAME;
-            requestData.SubscriberMemberID = patientInsuranceInformation.POLICY_NUMBER;
-            ExternalServices.PatientEligibilityService.Service objService = new ExternalServices.PatientEligibilityService.Service();
-            string htmlStr = objService.MTBCResponse(requestData, mtbcData);
+            objEligibilityNew.TaxID = patientInsuranceInformation.PRACTICE_TAX_ID;     //  Required value
+            objEligibilityNew.OrganizationName = patientInsuranceInformation.PRACTICE_NAME;
+            objEligibilityNew.SubscriberMemberID = patientInsuranceInformation.POLICY_NUMBER; //  Required value
+            //********************************** Service Level Type **************************************
+            objEligibilityNew.ServiceType = "30";
 
+            var result = "";
+            string URl = WebConfigurationManager.AppSettings["EligibilityURL"].ToString();
+            HtmlDocument doc = new HtmlDocument();
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(URl);
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var json = JsonConvert.SerializeObject(objEligibilityNew);
+                var stringContent = new StringContent(json, System.Text.UnicodeEncoding.UTF8, "application/json");
+                HttpResponseMessage responseMessage = client.PostAsync("", stringContent).Result;
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    var jsonString = responseMessage.Content.ReadAsStringAsync();
+                    result = jsonString.Result;
+                }
+                htmlStr = result; //added by aftab
+            }
+            #endregion
 
             if (patientEligibilitySearchModel.IS_MVP_VIEW)
             {
@@ -1988,7 +2089,7 @@ namespace FOX.BusinessOperations.PatientServices
         {
             Patient patient_Details = new Patient();
             var restOfPatientData = new FOX_TBL_PATIENT();
-            patient_Details = _PatientRepository.GetSingle(e => e.Patient_Account == patient_Account);
+            patient_Details = _PatientRepository.GetSingleOrDefault(e => e.Patient_Account == patient_Account);
             var restOfDetails = _FoxTblPatientRepository.GetFirst(e => e.Patient_Account == patient_Details.Patient_Account);
             var activecases = _vwPatientCaseRepository.GetMany(c => c.PATIENT_ACCOUNT == patient_Account && (c.CASE_STATUS_NAME.ToUpper() == "ACT" || c.CASE_STATUS_NAME.ToUpper() == "HOLD") && c.DELETED == false);
             if (patient_Details != null)// if patient is not null, get rest of the info
@@ -2104,9 +2205,9 @@ namespace FOX.BusinessOperations.PatientServices
                                         loc.Country = patientPrivateHomeAddress.POS_County;
                                     }
                                 }
-                                if (facilityType!=null)
+                                if (facilityType != null)
                                 {
-                                loc.FACILITY_TYPE_NAME = !string.IsNullOrWhiteSpace(facilityType.DISPLAY_NAME) ? facilityType.DISPLAY_NAME : "";
+                                    loc.FACILITY_TYPE_NAME = !string.IsNullOrWhiteSpace(facilityType.DISPLAY_NAME) ? facilityType.DISPLAY_NAME : "";
                                 }
                                 else
                                 {
@@ -2382,18 +2483,16 @@ namespace FOX.BusinessOperations.PatientServices
             string zipCode = string.Empty;
             if (!string.IsNullOrEmpty(loc.Zip))
             {
-               if (loc.Zip.Length > 5)
-                { 
+                if (loc.Zip.Length > 5)
+                {
                     zipCode = loc.Zip.Insert(5, "-");
-                }               
+                }
                 else
                 {
                     zipCode = loc.Zip;
                 }
             }
-            
-            
-                      //string zipCode = string.IsNullOrEmpty(loc.Zip) ? "" : loc.Zip;
+            //string zipCode = string.IsNullOrEmpty(loc.Zip) ? "" : loc.Zip;
 
             string address = add + " " + city + " " + state + " " + zipCode;
 
@@ -3092,8 +3191,8 @@ namespace FOX.BusinessOperations.PatientServices
             //}
             //else
             //{
-                conTypes = _ContactTypeRepository.GetMany(x => !(x.Deleted ?? false) && x.Practice_Code == profile.PracticeCode).ToList();
-           // }
+            conTypes = _ContactTypeRepository.GetMany(x => !(x.Deleted ?? false) && x.Practice_Code == profile.PracticeCode).ToList();
+            // }
 
             if (conTypes.Any())
             {
@@ -3258,7 +3357,7 @@ namespace FOX.BusinessOperations.PatientServices
         {
             WebehrTblPatientCareTeams dbContact = _WebehrTblPatientCareTeamsRepository.GetFirst(patientContact => patientContact.Patient_Account == patientContactObj.Patient_Account && patientContact.FirstName == oldFname && patientContact.LastName == oldLname);
 
-            if (dbContact==null)
+            if (dbContact == null)
             {
                 WebehrTblPatientCareTeams patientCareObj = new WebehrTblPatientCareTeams();
                 patientCareObj.PatientCareTeamID = Helper.getMaximumId("PatientCareTeamID");
@@ -3266,7 +3365,7 @@ namespace FOX.BusinessOperations.PatientServices
                 patientCareObj.FirstName = patientContactObj.First_Name;
                 patientCareObj.LastName = patientContactObj.Last_Name;
                 patientCareObj.Patient_Account = patientContactObj.Patient_Account;
-               
+
                 if (patientContactObj.Home_Phone != null)
                 {
                     patientCareObj.Phone = patientContactObj.Home_Phone;
@@ -3287,7 +3386,7 @@ namespace FOX.BusinessOperations.PatientServices
                 patientCareObj.Zip = patientContactObj.Zip;
                 patientCareObj.City = patientContactObj.City;
                 patientCareObj.State = patientContactObj.State;
-               
+
 
                 if (patientContactObj.Contact_Type_Id == 600115)
                 {
@@ -3340,11 +3439,11 @@ namespace FOX.BusinessOperations.PatientServices
             }
             _WebehrTblPatientCareTeamsRepository.Save();
         }
-        private void CreateUpdateCareTeam(Patient patientContactObj, UserProfile profile, string oldFname="", string oldLname="")
+        private void CreateUpdateCareTeam(Patient patientContactObj, UserProfile profile, string oldFname = "", string oldLname = "")
         {
             WebehrTblPatientCareTeams dbContact = _WebehrTblPatientCareTeamsRepository.GetFirst(patientContact => patientContact.Patient_Account == patientContactObj.Patient_Account && patientContact.FirstName == oldFname && patientContact.LastName == oldLname);
 
-            if (dbContact == null && patientContactObj.SmartOrderSource!=null)
+            if (dbContact == null && patientContactObj.SmartOrderSource != null)
             {
                 WebehrTblPatientCareTeams patientCareObj = new WebehrTblPatientCareTeams();
                 patientCareObj.PatientCareTeamID = Helper.getMaximumId("PatientCareTeamID");
@@ -3402,7 +3501,7 @@ namespace FOX.BusinessOperations.PatientServices
                 dbContact.State = patientContactObj.State;
                 dbContact.Fax = patientContactObj.Fax_Number;
                 dbContact.EMAIL = patientContactObj.Email_Address;
-                
+
 
 
                 if (patientContactObj.PCP != null)
@@ -3519,12 +3618,12 @@ namespace FOX.BusinessOperations.PatientServices
             _AF_TBL_PATIENT_NEXT_OF_KINRepository.Save();
             return true;
         }
-        private bool CreateUpdateTalkRehabContactsGuarantor(PatientContact patientContactObj, UserProfile profile,string oldFname, string oldLname)
+        private bool CreateUpdateTalkRehabContactsGuarantor(PatientContact patientContactObj, UserProfile profile, string oldFname, string oldLname)
         {
             var currentDate = Helper.GetCurrentDate();
             Subscriber guarantorObj = new Subscriber();
             var dbContact = _SubscriberRepository.GetFirst(patientContact => patientContact.GUARANT_FNAME == oldFname && patientContact.GUARANT_LNAME == oldLname);
-            if (dbContact == null || oldFname=="")
+            if (dbContact == null || oldFname == "")
             {
                 guarantorObj.GUARANTOR_CODE = Helper.getMaximumId("GUARANTOR_CODE");
 
@@ -3537,14 +3636,14 @@ namespace FOX.BusinessOperations.PatientServices
                 guarantorObj.GUARANT_ZIP = patientContactObj.Zip;
                 guarantorObj.GUARANT_CITY = patientContactObj.City;
                 guarantorObj.GUARANT_STATE = patientContactObj.State;
-                if (patientContactObj.Home_Phone!=null)
+                if (patientContactObj.Home_Phone != null)
                 {
                     guarantorObj.GUARANT_HOME_PHONE = patientContactObj.Home_Phone;
                     guarantorObj.GUARANT_PHONE_TYPE = "Home Phone";
                 }
                 else
                 {
-                    if (patientContactObj.Work_Phone!=null)
+                    if (patientContactObj.Work_Phone != null)
                     {
                         guarantorObj.GUARANT_HOME_PHONE = patientContactObj.Work_Phone;
                         guarantorObj.GUARANT_PHONE_TYPE = "Office Phone";
@@ -3554,7 +3653,7 @@ namespace FOX.BusinessOperations.PatientServices
                         guarantorObj.GUARANT_HOME_PHONE = patientContactObj.Cell_Phone;
                         guarantorObj.GUARANT_PHONE_TYPE = "Cell Phone";
                     }
-                    
+
                 }
 
                 guarantorObj.created_date = currentDate;
@@ -3605,7 +3704,7 @@ namespace FOX.BusinessOperations.PatientServices
                 _SubscriberRepository.Update(dbContact);
 
             }
-            _SubscriberRepository.Save();            
+            _SubscriberRepository.Save();
             return true;
         }
         private void SaveGuarantorCodeInPatient(long patientAccount, long guarantorCode)
@@ -3622,8 +3721,8 @@ namespace FOX.BusinessOperations.PatientServices
         private string FieldWiseComparison(long? contactType)
         {
             string typeId = string.Empty;
-           
-            if (contactType== 600104)
+
+            if (contactType == 600104)
             {
                 typeId = "OTH";
             }
@@ -5976,10 +6075,13 @@ namespace FOX.BusinessOperations.PatientServices
             {
                 //var oldData = _MedicareLimitRepository.GetByID(hos_Id.Value);
                 var oldData = _MedicareLimitRepository.GetFirst(l => l.MEDICARE_LIMIT_ID == hos_Id.Value);
-                if (oldData != null && oldData.EFFECTIVE_DATE != newData.EFFECTIVE_DATE) { hosInfoChanged = true; return true; }
-                if (oldData.EFFECTIVE_DATE != newData.EFFECTIVE_DATE) { hosInfoChanged = true; return true; }
-                if (oldData.END_DATE != newData.END_DATE) { hosInfoChanged = true; return true; }
-                if (!String.Equals(oldData.NPI ?? "", newData.NPI ?? "", StringComparison.Ordinal)) { hosInfoChanged = true; return true; }
+                if (oldData != null)
+                {
+                    if (oldData.EFFECTIVE_DATE != newData.EFFECTIVE_DATE) { hosInfoChanged = true; return true; }
+                    if (oldData.EFFECTIVE_DATE != newData.EFFECTIVE_DATE) { hosInfoChanged = true; return true; }
+                    if (oldData.END_DATE != newData.END_DATE) { hosInfoChanged = true; return true; }
+                    if (!String.Equals(oldData.NPI ?? "", newData.NPI ?? "", StringComparison.Ordinal)) { hosInfoChanged = true; return true; }
+                }
             }
             else
             {
@@ -6001,11 +6103,14 @@ namespace FOX.BusinessOperations.PatientServices
             var newData = currentMedicareLimitList.Where(e => e.MEDICARE_LIMIT_TYPE_NAME == "Home Health Episode").FirstOrDefault();
             if (hh_Id != null)
             {
-                var oldData = _MedicareLimitRepository.GetByID(hh_Id ?? 0);
-
-                if (oldData.EFFECTIVE_DATE != newData.EFFECTIVE_DATE) { hhInfoChanged = true; return true; }
-                if (oldData.END_DATE != newData.END_DATE) { hhInfoChanged = true; return true; }
-                if (!String.Equals(oldData.NPI ?? "", newData.NPI ?? "", StringComparison.Ordinal)) { hhInfoChanged = true; return true; }
+                // var oldData = _MedicareLimitRepository.GetByID(hh_Id ?? 0);
+                var oldData = _MedicareLimitRepository.GetFirst(l => l.MEDICARE_LIMIT_ID == hh_Id);
+                if (oldData != null)
+                {
+                    if (oldData.EFFECTIVE_DATE != newData.EFFECTIVE_DATE) { hhInfoChanged = true; return true; }
+                    if (oldData.END_DATE != newData.END_DATE) { hhInfoChanged = true; return true; }
+                    if (!String.Equals(oldData.NPI ?? "", newData.NPI ?? "", StringComparison.Ordinal)) { hhInfoChanged = true; return true; }
+                }
             }
             else
             {
@@ -6047,86 +6152,186 @@ namespace FOX.BusinessOperations.PatientServices
 
         public string GetElgibilityDetails(long patientAccount, PatientInsuranceInformation patientInsuranceInformation, UserProfile profile, bool isMVP = false)
         {
+            #region Old Implementation to check Eligiblity with WCF Service
             //Eligibility....
+            //ExternalServices.PatientEligibilityService.MTBCData mtbcData = new ExternalServices.PatientEligibilityService.MTBCData();
+            //mtbcData.ViewType = isMVP ? "MVP" : "";
+            //mtbcData.ClientID = "FOXREHAB"; //  Client TalkEHR, WebSoft, EDI, WebEHR,foxrehab etc. For fox it will be FOXREHAB.
+            //mtbcData.ClientType = "PATIENT";    //  ClientType can be CLAIM, PATIENT, APPOINTMENT or any other like FOX_CLIENT, from patient form it will be PATIENT.
+            //mtbcData.ServerName = "10.10.30.76";    // Database Server IP
+            //mtbcData.UserID = profile.userID.ToString();    //  User that is using WebSoft. User like IA32, MS147 etc.
+            //mtbcData.InsuranceID = patientInsuranceInformation.INSURANCE_ID.ToString(); //  Id of Insurance table in MTBC system
+            //mtbcData.insPayerID = patientInsuranceInformation.INSPAYER_ID.ToString();   //  Optional
+            //mtbcData.PayerType = patientInsuranceInformation.INS_TYPE.ToString();   //  Payer type in MTBC's system. Primary, Secondary or OTHER etc.
+            //mtbcData.PatientAccount = patientInsuranceInformation.PATIENT_ACCOUNT.ToString();  //  Required value
+            //mtbcData.ClaimNo = string.Empty;    //  Optional
+            //mtbcData.AppointmentID = string.Empty;  //  Optional
+
+            //ExternalServices.PatientEligibilityService.MTBC270RequestData requestData = new ExternalServices.PatientEligibilityService.MTBC270RequestData();
+
+            //// requestData.FIRST_NAME = result.FIRST_NAME;
+            ////  requestData.LAST_NAME = result.LAST_NAME;
+            //requestData.Address = patientInsuranceInformation.ADDRESS;
+            //requestData.City = patientInsuranceInformation.CITY;
+
+            ////DOS Range: start date-end date
+            ////requestData.DateOfService = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(DateTime.Now))+"-"+ Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(DateTime.Now));
+            //requestData.DateOfService = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(DateTime.Now));
+            //requestData.PayerName = patientInsuranceInformation.PAYER_NAME;
+            //requestData.ProviderFirstName = patientInsuranceInformation.PROVIDER_FNAME; // Table name providers -- code -- patient-- provider 
+            //requestData.ProviderLastName = patientInsuranceInformation.PROVIDER_LNAME;  // Table name providers
+            //requestData.ProviderNPI = "1326092503"; // Table name providers
+            //requestData.ProviderSSN = patientInsuranceInformation.PROVIDER_SSN; // Table name providers
+            //requestData.Relationship = patientInsuranceInformation.RELATIONSHIP;    // S
+            //requestData.Zip = patientInsuranceInformation.ZIP;
+            //requestData.State = patientInsuranceInformation.STATE;
+
+            //if (patientInsuranceInformation.RELATIONSHIP == "S")
+            //{
+            //    if (patientInsuranceInformation.DATE_OF_BIRTH != null)
+            //        requestData.SubscriberDateOfBirth = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.DATE_OF_BIRTH.ToString()));
+            //    requestData.SubscriberFirstName = patientInsuranceInformation.FIRST_NAME;
+            //    requestData.SubscriberGender = patientInsuranceInformation.GENDER;
+            //    requestData.SubscriberGroupNumber = patientInsuranceInformation.GROUP_NUMBER;
+            //    requestData.SubscriberLastName = patientInsuranceInformation.LAST_NAME;
+            //    requestData.SubscriberSSN = patientInsuranceInformation.SSN;    //from patient table
+            //    requestData.DependentDOB = "";
+            //    requestData.DependentFirstName = "";
+            //    requestData.DependentGender = "";
+            //    requestData.DependentLastName = "";
+            //}
+            //else
+            //{
+            //    requestData.SubscriberDateOfBirth = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.GUARANTOR_DOB.ToString()));
+            //    requestData.SubscriberFirstName = patientInsuranceInformation.GURANTOR_FNAME;
+            //    requestData.SubscriberGender = patientInsuranceInformation.GUARANTOR_GENDER;
+            //    requestData.SubscriberGroupNumber = patientInsuranceInformation.GROUP_NUMBER;
+            //    requestData.SubscriberLastName = patientInsuranceInformation.GURANTOR_LNAME;
+            //    requestData.SubscriberSSN = patientInsuranceInformation.GUARANTOR_SSN;
+            //    requestData.DependentDOB = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.DATE_OF_BIRTH.ToString()));
+            //    requestData.DependentFirstName = patientInsuranceInformation.FIRST_NAME;
+            //    requestData.DependentGender = patientInsuranceInformation.GENDER;
+            //    requestData.DependentLastName = patientInsuranceInformation.GROUP_NUMBER;
+            //}
+            //if (patientInsuranceInformation.PRAC_TYPE == "G")   //from practices by practice_code
+            //{
+            //    requestData.OrganizationType = "2";
+            //    // requestData.ProviderNPI = // Group_NPI from table provider_payer
+            //    requestData.OrganizationNPI = "1326092503";
+            //}
+            //else
+            //{
+            //    requestData.OrganizationType = "1";
+            //    // requestData.ProviderNPI =  //indiv_NPI from table provider_payer
+            //    requestData.OrganizationNPI = "1326092503";
+            //}
+            //HtmlDocument htmlDoc = new HtmlDocument();
+            //requestData.ProviderSSN = patientInsuranceInformation.PROVIDER_SSN;
+            //requestData.TaxID = patientInsuranceInformation.PRACTICE_TAX_ID;
+            //requestData.PayerID = patientInsuranceInformation.INSPAYER_ELIGIBILITY_ID;
+            //requestData.OrganizationName = patientInsuranceInformation.PRACTICE_NAME;
+            //requestData.SubscriberMemberID = patientInsuranceInformation.POLICY_NUMBER;
+            //ExternalServices.PatientEligibilityService.Service objService = new ExternalServices.PatientEligibilityService.Service();
+            //string htmlStr = objService.MTBCResponse(requestData, mtbcData);
+            #endregion Old Implementation to check Eligiblity with WCF Service
+            //*********************************** New Implementation Starts ***************************************
+            #region New Implementation to check Eligiblity with RestFull API
             ExternalServices.PatientEligibilityService.MTBCData mtbcData = new ExternalServices.PatientEligibilityService.MTBCData();
-            mtbcData.ViewType = isMVP ? "MVP" : "";
-            mtbcData.ClientID = "FOXREHAB"; //  Client TalkEHR, WebSoft, EDI, WebEHR,foxrehab etc. For fox it will be FOXREHAB.
-            mtbcData.ClientType = "PATIENT";    //  ClientType can be CLAIM, PATIENT, APPOINTMENT or any other like FOX_CLIENT, from patient form it will be PATIENT.
-            mtbcData.ServerName = "10.10.30.76";    // Database Server IP
-            mtbcData.UserID = profile.userID.ToString();    //  User that is using WebSoft. User like IA32, MS147 etc.
-            mtbcData.InsuranceID = patientInsuranceInformation.INSURANCE_ID.ToString(); //  Id of Insurance table in MTBC system
-            mtbcData.insPayerID = patientInsuranceInformation.INSPAYER_ID.ToString();   //  Optional
-            mtbcData.PayerType = patientInsuranceInformation.INS_TYPE.ToString();   //  Payer type in MTBC's system. Primary, Secondary or OTHER etc.
-            mtbcData.PatientAccount = patientInsuranceInformation.PATIENT_ACCOUNT.ToString();  //  Required value
-            mtbcData.ClaimNo = string.Empty;    //  Optional
-            mtbcData.AppointmentID = string.Empty;  //  Optional
-
-            ExternalServices.PatientEligibilityService.MTBC270RequestData requestData = new ExternalServices.PatientEligibilityService.MTBC270RequestData();
-
-            // requestData.FIRST_NAME = result.FIRST_NAME;
-            //  requestData.LAST_NAME = result.LAST_NAME;
-            requestData.Address = patientInsuranceInformation.ADDRESS;
-            requestData.City = patientInsuranceInformation.CITY;
-
-            //DOS Range: start date-end date
-            //requestData.DateOfService = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(DateTime.Now))+"-"+ Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(DateTime.Now));
-            requestData.DateOfService = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(DateTime.Now));
-            requestData.PayerName = patientInsuranceInformation.PAYER_NAME;
-            requestData.ProviderFirstName = patientInsuranceInformation.PROVIDER_FNAME; // Table name providers -- code -- patient-- provider 
-            requestData.ProviderLastName = patientInsuranceInformation.PROVIDER_LNAME;  // Table name providers
-            requestData.ProviderNPI = "1326092503"; // Table name providers
-            requestData.ProviderSSN = patientInsuranceInformation.PROVIDER_SSN; // Table name providers
-            requestData.Relationship = patientInsuranceInformation.RELATIONSHIP;    // S
-            requestData.Zip = patientInsuranceInformation.ZIP;
-            requestData.State = patientInsuranceInformation.STATE;
-
-            if (patientInsuranceInformation.RELATIONSHIP == "S")
+            String htmlStr;
+            EligibilityModelNew objEligibilityNew = new EligibilityModelNew();
+            //*********************************** MTBCData ***************************************
+            objEligibilityNew.ViewType = mtbcData.ViewType = isMVP ? "MVP" : "FOX";
+            objEligibilityNew.ClientID = "FOXREHAB";
+            //objEligibilityNew.ClientID = "8781";
+            objEligibilityNew.ClientType = "PATIENT";
+            objEligibilityNew.ServerName = "10.10.30.76";
+            objEligibilityNew.UserID = profile.userID.ToString();
+            objEligibilityNew.InsuranceID = patientInsuranceInformation.INSURANCE_ID.ToString() ?? "";
+            objEligibilityNew.insPayerID = patientInsuranceInformation.INSPAYER_ID.ToString() ?? "";
+            //objEligibilityNew.PayerType = patientInsuranceInformation.INS_TYPE.ToString();
+            objEligibilityNew.PayerType = "P";
+            objEligibilityNew.PatientAccount = patientInsuranceInformation.PATIENT_ACCOUNT.ToString();
+            objEligibilityNew.ClaimNo = string.Empty;
+            objEligibilityNew.AppointmentID = string.Empty;
+            //objEligibilityNew.InsPayerDescriptionName = eligibilityModel.Inspayer_Description;
+            //*********************************** Payer Information ***************************************
+            objEligibilityNew.PayerName = patientInsuranceInformation.PAYER_NAME;
+            objEligibilityNew.PayerID = patientInsuranceInformation.INSPAYER_ELIGIBILITY_ID;
+            //************************************ Practice Information ************************************
+            objEligibilityNew.Address = patientInsuranceInformation.ADDRESS;
+            objEligibilityNew.City = patientInsuranceInformation.CITY;
+            objEligibilityNew.DateOfService = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(DateTime.Now));
+            objEligibilityNew.ProviderFirstName = patientInsuranceInformation.PROVIDER_FNAME;
+            objEligibilityNew.ProviderLastName = patientInsuranceInformation.PROVIDER_LNAME;
+            objEligibilityNew.ProviderNPI = "1326092503";  // Table name providers
+            objEligibilityNew.ProviderSSN = patientInsuranceInformation.PROVIDER_SSN;
+            objEligibilityNew.Relationship = patientInsuranceInformation.RELATIONSHIP;
+            objEligibilityNew.Zip = patientInsuranceInformation.ZIP;
+            objEligibilityNew.State = patientInsuranceInformation.STATE;
+            if (!string.IsNullOrEmpty(patientInsuranceInformation.RELATIONSHIP) && patientInsuranceInformation.RELATIONSHIP.Contains("S"))
             {
-                if (patientInsuranceInformation.DATE_OF_BIRTH != null)
-                    requestData.SubscriberDateOfBirth = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.DATE_OF_BIRTH.ToString()));
-                requestData.SubscriberFirstName = patientInsuranceInformation.FIRST_NAME;
-                requestData.SubscriberGender = patientInsuranceInformation.GENDER;
-                requestData.SubscriberGroupNumber = patientInsuranceInformation.GROUP_NUMBER;
-                requestData.SubscriberLastName = patientInsuranceInformation.LAST_NAME;
-                requestData.SubscriberSSN = patientInsuranceInformation.SSN;    //from patient table
-                requestData.DependentDOB = "";
-                requestData.DependentFirstName = "";
-                requestData.DependentGender = "";
-                requestData.DependentLastName = "";
+                objEligibilityNew.SubscriberDateOfBirth = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.DATE_OF_BIRTH.ToString()));
+                objEligibilityNew.SubscriberFirstName = patientInsuranceInformation.FIRST_NAME;
+                objEligibilityNew.SubscriberGender = patientInsuranceInformation.GENDER;
+                objEligibilityNew.SubscriberGroupNumber = patientInsuranceInformation.GROUP_NUMBER;
+                objEligibilityNew.SubscriberLastName = patientInsuranceInformation.LAST_NAME;
+                objEligibilityNew.SubscriberSSN = patientInsuranceInformation.SSN;
+                //*********************************** Dependent Level *****************************************
+                objEligibilityNew.DependentDOB = string.Empty;
+                objEligibilityNew.DependentFirstName = string.Empty;
+                objEligibilityNew.DependentGender = string.Empty;
+                objEligibilityNew.DependentLastName = string.Empty;
             }
             else
             {
-                requestData.SubscriberDateOfBirth = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.GUARANTOR_DOB.ToString()));
-                requestData.SubscriberFirstName = patientInsuranceInformation.GURANTOR_FNAME;
-                requestData.SubscriberGender = patientInsuranceInformation.GUARANTOR_GENDER;
-                requestData.SubscriberGroupNumber = patientInsuranceInformation.GROUP_NUMBER;
-                requestData.SubscriberLastName = patientInsuranceInformation.GURANTOR_LNAME;
-                requestData.SubscriberSSN = patientInsuranceInformation.GUARANTOR_SSN;
-                requestData.DependentDOB = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.DATE_OF_BIRTH.ToString()));
-                requestData.DependentFirstName = patientInsuranceInformation.FIRST_NAME;
-                requestData.DependentGender = patientInsuranceInformation.GENDER;
-                requestData.DependentLastName = patientInsuranceInformation.GROUP_NUMBER;
+                objEligibilityNew.SubscriberDateOfBirth = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.GUARANTOR_DOB.ToString()));
+                objEligibilityNew.SubscriberFirstName = patientInsuranceInformation.GURANTOR_FNAME;
+                objEligibilityNew.SubscriberGender = patientInsuranceInformation.GUARANTOR_GENDER;
+                objEligibilityNew.SubscriberGroupNumber = patientInsuranceInformation.GROUP_NUMBER;
+                objEligibilityNew.SubscriberLastName = patientInsuranceInformation.GURANTOR_LNAME;
+                objEligibilityNew.SubscriberDateOfDeath = string.Empty;
+                objEligibilityNew.SubscriberSSN = patientInsuranceInformation.GUARANTOR_SSN;
+                //*********************************** Dependent Level *****************************************
+                objEligibilityNew.DependentDOB = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(patientInsuranceInformation.DATE_OF_BIRTH.ToString()));
+                objEligibilityNew.DependentFirstName = patientInsuranceInformation.FIRST_NAME;
+                objEligibilityNew.DependentGender = patientInsuranceInformation.GENDER;
+                objEligibilityNew.DependentLastName = patientInsuranceInformation.GROUP_NUMBER;
             }
-            if (patientInsuranceInformation.PRAC_TYPE == "G")   //from practices by practice_code
+            if (patientInsuranceInformation.PRAC_TYPE == "G")
             {
-                requestData.OrganizationType = "2";
-                // requestData.ProviderNPI = // Group_NPI from table provider_payer
-                requestData.OrganizationNPI = "1326092503";
+                objEligibilityNew.OrganizationType = "2"; //Required value(if "I" then send 1 and if "G" then send 2 )
+                objEligibilityNew.ProviderNPI = string.Empty; //if OrganizationType is "I" then you assign individual_npi
+                objEligibilityNew.OrganizationNPI = "1326092503"; //if OrganizationType is "G" then you assign group_npi            
             }
             else
             {
-                requestData.OrganizationType = "1";
-                // requestData.ProviderNPI =  //indiv_NPI from table provider_payer
-                requestData.OrganizationNPI = "1326092503";
+                objEligibilityNew.OrganizationType = "1";     //  Required value(if "I" then send 1 and if "G" then send 2 )
+                objEligibilityNew.OrganizationNPI = string.Empty; //if OrganizationType is "G" then you assign group_npi            
+                objEligibilityNew.ProviderNPI = "1326092503"; //if OrganizationType is "I" then you assign individual_npi
             }
-            HtmlDocument htmlDoc = new HtmlDocument();
-            requestData.ProviderSSN = patientInsuranceInformation.PROVIDER_SSN;
-            requestData.TaxID = patientInsuranceInformation.PRACTICE_TAX_ID;
-            requestData.PayerID = patientInsuranceInformation.INSPAYER_ELIGIBILITY_ID;
-            requestData.OrganizationName = patientInsuranceInformation.PRACTICE_NAME;
-            requestData.SubscriberMemberID = patientInsuranceInformation.POLICY_NUMBER;
-            ExternalServices.PatientEligibilityService.Service objService = new ExternalServices.PatientEligibilityService.Service();
-            string htmlStr = objService.MTBCResponse(requestData, mtbcData);
+            objEligibilityNew.TaxID = patientInsuranceInformation.PRACTICE_TAX_ID;
+            objEligibilityNew.OrganizationName = patientInsuranceInformation.PRACTICE_NAME;
+            objEligibilityNew.SubscriberMemberID = patientInsuranceInformation.POLICY_NUMBER;
+            //********************************** Service Level Type **************************************
+            objEligibilityNew.ServiceType = "30";
+            var result = "";
+            string URl = WebConfigurationManager.AppSettings["EligibilityURL"].ToString();
+            HtmlDocument doc = new HtmlDocument();
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(URl);
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var json = JsonConvert.SerializeObject(objEligibilityNew);
+                var stringContent = new StringContent(json, System.Text.UnicodeEncoding.UTF8, "application/json");
+                HttpResponseMessage responseMessage = client.PostAsync("", stringContent).Result;
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    var jsonString = responseMessage.Content.ReadAsStringAsync();
+                    result = jsonString.Result;
+                }
+                htmlStr = result;
+            }
+            #endregion End New Implementation to check Eligiblity with RestFull API 
             htmlStr = htmlStr.Replace(@"id=""main-container""", @"id =""main-container-eligibility""");
             htmlStr = htmlStr.Replace("\r", "").Replace("\n", "").Replace("\t", "").Replace("\b", "").Replace("&nbsp;", " ");
             SaveEligibilityHtml(patientAccount, patientInsuranceInformation.PATIENT_INSURANCE_ID, htmlStr, profile);
@@ -6187,7 +6392,7 @@ namespace FOX.BusinessOperations.PatientServices
             //long insType = eligibilitySearchReq.INS_TYPE;
             var _patientAccount = new SqlParameter { ParameterName = "PATIENTACCOUNT", Value = patientAccount };
             var _result = SpRepository<PatientInsuranceInformation>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_INSURANCES_INFO @PATIENTACCOUNT", _patientAccount);
-            if(_result.Count() > 0 && _result != null)
+            if (_result.Count() > 0 && _result != null)
             {
                 //var patientInsuranceInformation = _result.Where(x => x.INS_TYPE == insType).FirstOrDefault();
                 var patientInsuranceInformation = _result.Where(x => x.INS_TYPE == 1).FirstOrDefault();
@@ -6252,9 +6457,9 @@ namespace FOX.BusinessOperations.PatientServices
             reconcileObj.ADDRESS = obj.PayorAdress;
             reconcileObj.CITY = obj.PayorCity;
             reconcileObj.ZIP = obj.PayorZip;
-            if (reconcileObj.ZIP !=  null && reconcileObj.ZIP.Contains("-"))
+            if (reconcileObj.ZIP != null && reconcileObj.ZIP.Contains("-"))
             {
-                reconcileObj.ZIP = reconcileObj.ZIP.Replace("-","");
+                reconcileObj.ZIP = reconcileObj.ZIP.Replace("-", "");
             }
             if (obj.PayorDOB == string.Empty)
             {
@@ -6328,8 +6533,11 @@ namespace FOX.BusinessOperations.PatientServices
             htmlDoc.DocumentNode.OuterHtml.Replace("\r", "").Replace("\n", "").Replace("\t", "").Replace("\b", "").Replace("&nbsp;", " ");
             List<string> benefitNameList = new List<string>() { "HBPC_Plan_MB", "HBPC", "PT", "ST", "OT", "HBPC_Plan" };
             List<string> applicableBenefitNameList = new List<string>();
-
-            var patInsurance = _PatientInsuranceRepository.GetByID(patientInsuranceId);
+            var patInsurance = new PatientInsurance();
+            if (patientInsuranceId != 0)
+            {
+                patInsurance= _PatientInsuranceRepository.GetByID(patientInsuranceId);
+            }
             string caseNo = "";
             if (patInsurance.CASE_ID != null)
             {
@@ -6481,7 +6689,7 @@ namespace FOX.BusinessOperations.PatientServices
             bool allowSave = true;
             bool isValidDate = true;
 
-            string[] plans = {"HN", "IN", "PR", "PS", "HM"};
+            string[] plans = { "HN", "IN", "PR", "PS", "HM" };
             string[] codes = { "30", "CQ" };
 
             foreach (var plan in plans)
@@ -7251,7 +7459,7 @@ namespace FOX.BusinessOperations.PatientServices
                 ObjPatientPATDocument.PATIENT_ACCOUNT_str = patient_account_str;
                 ObjPatientPATDocument.PATIENT_ACCOUNT = Convert.ToInt64(patient_account_str);
                 ObjPatientPATDocument.PRACTICE_CODE = Profile.PracticeCode;
-                if(work_id != 0)
+                if (work_id != 0)
                 {
                     ObjPatientPATDocument.WORK_ID = work_id;
                 }
@@ -7265,7 +7473,8 @@ namespace FOX.BusinessOperations.PatientServices
                     string deliveryReportId = "";
                     System.Drawing.Image img;
                     PdfFocus f = new PdfFocus();
-                    f.Serial = "10261435399";
+                    //f.Serial = "10261435399";
+                    f.Serial = "80033727929";
                     f.OpenPdf(PdfPath);
                     var ticks = DateTime.Now.Ticks;
                     if (f.PageCount > 0)
@@ -7336,7 +7545,7 @@ namespace FOX.BusinessOperations.PatientServices
             InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
             PatientPATDocument ExistingDocumentInfo = new PatientPATDocument();
             string AddorUpdate = "";
-            if(ObjPatientPATDocument.WORK_ID == 0)
+            if (ObjPatientPATDocument.WORK_ID == 0)
             {
                 ObjPatientPATDocument.WORK_ID = null;
             }
@@ -9232,7 +9441,7 @@ namespace FOX.BusinessOperations.PatientServices
 
         public List<FinancialClass> GetFinancialClassDDValues(string practiceCode)
         {
-            if (practiceCode=="0")
+            if (practiceCode == "0")
             {
                 return _financialClassRepository.GetMany(e => !e.DELETED);
             }
@@ -9932,7 +10141,7 @@ namespace FOX.BusinessOperations.PatientServices
                 if (!string.IsNullOrWhiteSpace(obj.EMAIL_ADDRESS))
                 {
                     invitedPatientData = _PatientPHR.Get(e => e.EMAIL_ADDRESS == obj.EMAIL_ADDRESS && e.PRACTICE_CODE == profile.PracticeCode && !(e.DELETED.HasValue ? e.DELETED.Value : false));
-                    if(invitedPatientData != null)
+                    if (invitedPatientData != null)
                     {
                         var _parmPracticeCode = new SqlParameter("Practice_Code", SqlDbType.BigInt) { Value = profile.PracticeCode };
                         var _patientAccount = new SqlParameter("Patient_Account", SqlDbType.BigInt) { Value = invitedPatientData.PATIENT_ACCOUNT };
@@ -11036,18 +11245,19 @@ namespace FOX.BusinessOperations.PatientServices
             return insurance;
         }
 
-        public POSCoordinates ResetCoordinates(FacilityLocation loc, UserProfile profile)   
+        public POSCoordinates ResetCoordinates(FacilityLocation loc, UserProfile profile)
         {
             POSCoordinates response = new POSCoordinates();
             if (loc != null)
             {
                 //try
                 //{
-                    if (loc.UpdatePatientAddress == true && loc.FACILITY_TYPE_NAME.ToLower() == "private home")
-                    {
-                        FacilityLocation patientAddress = new FacilityLocation();
-                       
-                        var patientPos = _PatientPOSLocationRepository.GetMany(e =>e.Patient_Account == loc.PATIENT_ACCOUNT && e.Is_Default == true && e.Loc_ID !=0 && e.Deleted == false).OrderByDescending(t => t.Modified_Date).FirstOrDefault();
+                loc.FACILITY_TYPE_NAME = String.IsNullOrEmpty(loc.FACILITY_TYPE_NAME) ? "" : loc.FACILITY_TYPE_NAME;
+                if (loc.UpdatePatientAddress == true && loc.FACILITY_TYPE_NAME?.ToLower() == "private home")
+                {
+                    FacilityLocation patientAddress = new FacilityLocation();
+
+                    var patientPos = _PatientPOSLocationRepository.GetMany(e => e.Patient_Account == loc.PATIENT_ACCOUNT && e.Is_Default == true && e.Loc_ID != 0 && e.Deleted == false).OrderByDescending(t => t.Modified_Date).FirstOrDefault();
                     if (patientPos != null)
                     {
                         PatientAddress address = _PatientAddressRepository.GetFirst(e => e.PATIENT_ACCOUNT == patientPos.Patient_Account && e.PATIENT_POS_ID == patientPos.Patient_POS_ID && e.DELETED == false);
@@ -11091,42 +11301,42 @@ namespace FOX.BusinessOperations.PatientServices
 
                         }
                     }
-                    }
-                    else
+                }
+                else
+                {
+                    FacilityLocation pos = _FacilityLocationRepository.GetFirst(e => e.LOC_ID == loc.LOC_ID && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
+                    if (pos != null)
                     {
-                        FacilityLocation pos = _FacilityLocationRepository.GetFirst(e => e.LOC_ID == loc.LOC_ID && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
-                        if (pos != null)
-                        {
                         if (loc.SetCoordinatesManually == false)
+                        {
+                            POSCoordinates coordinates = GetCoordinates(pos);
+                            if (coordinates != null)
                             {
-                                POSCoordinates coordinates = GetCoordinates(pos);
-                                if (coordinates != null)
-                                {
                                 pos.Longitude = Convert.ToDouble(coordinates.Longitude);
-                                    pos.Latitude = Convert.ToDouble(coordinates.Latitude);
-                                    pos.Address = coordinates.Address;
-                                }
+                                pos.Latitude = Convert.ToDouble(coordinates.Latitude);
+                                pos.Address = coordinates.Address;
                             }
-                            else
-                            {
-                                pos.Longitude = Convert.ToDouble(loc.Longitude);
-                                pos.Latitude = Convert.ToDouble(loc.Latitude);
-                                //pos.Address = loc.Address;
-                                //pos.City = loc.City;
-                                //pos.State = loc.State;
-                                //pos.Zip = loc.Zip;
-                                //pos.Country = loc.Country;
-
-
-                            }
-                            pos.MODIFIED_BY = profile.UserName;
-                            pos.MODIFIED_DATE = Helper.GetCurrentDate();
-                            _FacilityLocationRepository.Update(pos);
-                            _FacilityLocationRepository.Save();
-                            response.Latitude = pos.Latitude.ToString();
-                            response.Longitude = pos.Longitude.ToString();
                         }
+                        else
+                        {
+                            pos.Longitude = Convert.ToDouble(loc.Longitude);
+                            pos.Latitude = Convert.ToDouble(loc.Latitude);
+                            //pos.Address = loc.Address;
+                            //pos.City = loc.City;
+                            //pos.State = loc.State;
+                            //pos.Zip = loc.Zip;
+                            //pos.Country = loc.Country;
+
+
+                        }
+                        pos.MODIFIED_BY = profile.UserName;
+                        pos.MODIFIED_DATE = Helper.GetCurrentDate();
+                        _FacilityLocationRepository.Update(pos);
+                        _FacilityLocationRepository.Save();
+                        response.Latitude = pos.Latitude.ToString();
+                        response.Longitude = pos.Longitude.ToString();
                     }
+                }
                 //}
                 //catch (Exception ex)
                 //{

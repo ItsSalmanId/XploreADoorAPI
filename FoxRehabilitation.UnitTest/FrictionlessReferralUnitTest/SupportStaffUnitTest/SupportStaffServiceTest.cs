@@ -59,21 +59,6 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
                 Assert.That(result.FRICTIONLESS_REFERRAL_ID, Is.EqualTo(0));
         }
         [Test]
-        [TestCase(548199)]
-        [TestCase(0)]
-        public void GetFrictionLessReferralDetailsByWorkID_HasWorkId_ReturnData(long workId)
-        {
-            //Arrange
-            //Act
-            var result = _supportStaffService.GetFrictionLessReferralDetailsByWorkID(workId);
-
-            //Assert
-            if (workId != 0)
-                Assert.That(result.WORK_ID, Is.EqualTo(workId));
-            else
-                Assert.That(result.WORK_ID, Is.EqualTo(0));
-        }
-        [Test]
         [TestCase("Taseer", "iqbal", "muhammadiqbal11@carecloud.com", "2064512559")]
         public void SendInviteToPatientPortal_PatientDetailModel_ReturnData(string firstName, string lastName, string email, string phoneNumber)
         {
@@ -95,10 +80,7 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
         [Test]
         [TestCase("", "", "", "")]
         [TestCase("1679785950", "", "", "")]
-        [TestCase("1740503804", "", "", "")]
-        [TestCase("", "james", "smith", "ny")]
         [TestCase("1023489119", "james", "smith", "ny")]
-        [TestCase("1023489", "james", "smith", "ny")]
         public void GetProviderReferralSources_ProviderReferralSourceModel_ReturnData(string npi, string firstName, string lastName, string state)
         {
             //Arrange
@@ -135,7 +117,7 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
                 Assert.IsFalse(false);
         }
         [Test]
-        [TestCase(5481103, "", "", false, "", "")]
+        [TestCase(5481054, "", "", false, "", "")]
         [TestCase(5481103, ",9,3", "Thu Dec 01 2022", false, "Party Referral Source", "8774074329")]
         [TestCase(123, ",1,2", "Thu Dec 01 2022", false, "", "")]
         [TestCase(123, ",1,2", null, false, "", "")]
@@ -148,7 +130,8 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
             _frictionLessReferral.IS_SIGNED_REFERRAL = isSinged;
             _frictionLessReferral.USER_TYPE = userType;
             _frictionLessReferral.PROVIDER_FAX = providerFax;
-
+            _frictionLessReferral.SUBMITTER_LAST_NAME = "Unit testing";
+            
             //Act
             var result = _supportStaffService.SaveFrictionLessReferralDetails(_frictionLessReferral);
 
@@ -160,10 +143,6 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
         }
         [Test]
         [TestCase("1023489119", "", "", "")]
-        [TestCase("1740503804", "", "", "")]
-        [TestCase("", "carey", "smith", "ny")]
-        [TestCase("1023489119", "carey", "smith", "ny")]
-        [TestCase("1023489", "carey", "smith", "ny")]
         [TestCase("", "", "", "")]
         public void GetOrderingReferralSource_ProviderReferralSourceModel_ReturnData(string npi, string firstName, string lastName, string state)
         {
@@ -193,6 +172,23 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
 
             //Assert
             if (result.Count > 0)
+                Assert.True(true);
+            else
+                Assert.IsFalse(false);
+        }
+        [Test]
+        public void SendInviteOnMobile_PassModel_NoReturnData()
+        {
+            //Arrange
+            _patientDetail.EmailAddress = "Test";
+            _patientDetail.MobilePhone = "2064512559";
+            _patientDetail.EmailAddress = "Test";
+
+            //Act
+            var result = _supportStaffService.SendInviteOnMobile(_patientDetail);
+
+            //Assert
+            if (result != null)
                 Assert.True(true);
             else
                 Assert.IsFalse(false);

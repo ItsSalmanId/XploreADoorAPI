@@ -1,10 +1,7 @@
-﻿using System.Data.Entity;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity.Owin;
-using System.ComponentModel.DataAnnotations;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -131,7 +128,7 @@ namespace FoxRehabilitationAPI.Models
         public List<RoleAndRights> ApplicationUserRoles { get; set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager, string authenticationType, UserProfile userProfile = null)
         {
-            if(userProfile?.isTalkRehab == false)
+            if (userProfile?.isTalkRehab == false)
             {
                 // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
                 var userIdentity = await manager.CreateIdentityAsync(this, authenticationType);
@@ -174,6 +171,7 @@ namespace FoxRehabilitationAPI.Models
         public string SENDER_TYPE_NAME { get; set; }
         [NotMapped]
         public bool? Is_Blocked { get; set; }
+        public bool? MFA { get; set; }
     }
 
     public class ClaimsModel
@@ -181,8 +179,18 @@ namespace FoxRehabilitationAPI.Models
         public static UserProfile GetUserProfile(ClaimsIdentity identity)
         {
             var profileString = identity.Claims.Where(c => c.Type == "UserProfile").Select(s => s.Value).FirstOrDefault();
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<UserProfile>(profileString);
+            if (profileString != null)
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<UserProfile>(profileString);
+            else
+                return null;
         }
 
+    }
+
+    public class OtpModel
+    {
+        public bool status { get;set; }
+        public string message { get; set; }
+        public string data { get; set; }
     }
 }

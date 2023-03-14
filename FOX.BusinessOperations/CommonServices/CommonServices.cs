@@ -25,6 +25,9 @@ using FOX.DataModels.Models.StatesModel;
 using FOX.DataModels.Models.ServiceConfiguration;
 using System.Web.Configuration;
 using FOX.DataModels.Models.Settings.Announcement;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace FOX.BusinessOperations.CommonServices
 {
@@ -216,8 +219,15 @@ namespace FOX.BusinessOperations.CommonServices
             }
             catch (Exception exception)
             {
-                //return new AttachmentData();
-                throw exception;
+                if (exception != null && !string.IsNullOrEmpty(exception.Message) && exception.Message.Contains("no pages"))
+                {
+                    return new AttachmentData();
+                }
+                else
+                {
+                    //return new AttachmentData();
+                    throw exception;
+                }
             }
         }
 
@@ -314,44 +324,36 @@ namespace FOX.BusinessOperations.CommonServices
 
         public ResponseGetSenderNamesModel GetSenderNames(ReqGetSenderNamesModel model, UserProfile profile = null)
         {
-            try
-            {
-                long practiceCode = profile?.PracticeCode ?? (model?.PracticeCode ?? 0);
-                string userName = profile?.UserName ?? (model?.UserName ?? "");
+            long practiceCode = profile?.PracticeCode ?? (model?.PracticeCode ?? 0);
+            string userName = profile?.UserName ?? (model?.UserName ?? "");
 
-                if (string.IsNullOrWhiteSpace(model?.SearchValue ?? ""))
-                {
-                    model.SearchValue = "";
-                }
-                var senderNameList = _FOX_TBL_SENDER_NAME.GetMany(
-                                        t => t.PRACTICE_CODE == practiceCode
-                                            && !t.DELETED
-                                            && t.FOX_TBL_SENDER_TYPE_ID == model.SenderTypeId
-                                            && (
-                                                t.SENDER_NAME_CODE.Contains(model.SearchValue)
-                                                || t.SENDER_NAME_DESCRIPTION.Contains(model.SearchValue)
-                                            )
+            if (string.IsNullOrWhiteSpace(model?.SearchValue ?? ""))
+            {
+                model.SearchValue = "";
+            }
+            var senderNameList = _FOX_TBL_SENDER_NAME.GetMany(
+                                    t => t.PRACTICE_CODE == practiceCode
+                                        && !t.DELETED
+                                        && t.FOX_TBL_SENDER_TYPE_ID == model.SenderTypeId
+                                        && (
+                                            t.SENDER_NAME_CODE.Contains(model.SearchValue)
+                                            || t.SENDER_NAME_DESCRIPTION.Contains(model.SearchValue)
                                         )
-                                        .Take(30)
-                                        .ToList();
+                                    )
+                                    .Take(30)
+                                    .ToList();
 
-                var senderName = _FOX_TBL_SENDER_NAME.GetFirst(
-                                        t => t.PRACTICE_CODE == practiceCode
-                                            && !t.DELETED
-                                            && t.SENDER_NAME_CODE.Equals(userName)
-                                        );
-                if (senderName != null)
-                {
-                    senderNameList.Insert(0, senderName);
-                }
-
-                return new ResponseGetSenderNamesModel() { SenderNameList = senderNameList, ErrorMessage = "", Message = "Get Sender Name List Successfully.", Success = true };
-            }
-            catch (Exception exception)
+            var senderName = _FOX_TBL_SENDER_NAME.GetFirst(
+                                    t => t.PRACTICE_CODE == practiceCode
+                                        && !t.DELETED
+                                        && t.SENDER_NAME_CODE.Equals(userName)
+                                    );
+            if (senderName != null)
             {
-                //throw exception;
-                return new ResponseGetSenderNamesModel() { SenderNameList = null, ErrorMessage = exception.ToString(), Message = "We encountered an error while processing your request.", Success = false };
+                senderNameList.Insert(0, senderName);
             }
+
+            return new ResponseGetSenderNamesModel() { SenderNameList = senderNameList, ErrorMessage = "", Message = "Get Sender Name List Successfully.", Success = true };
         }
 
         public string AddCoverPageForFax(string filePath, string fileName, string coverLetterTemplate)
@@ -639,7 +641,7 @@ namespace FOX.BusinessOperations.CommonServices
                     SqlParameter Deleted = new SqlParameter("DELETED", false);
                     SqlParameter CreatedBy = new SqlParameter("CREATED_BY", userProfile.PracticeCode);
                     SqlParameter Operation = new SqlParameter("OPERATION", "ADD");
-                    SpRepository<AnnouncementsHistory>.GetListWithStoreProcedure(@"exec FOX_PROC_CRUD_ANNOUNCEMENT_HISTORY @ANNOUNCEMENT_HISTORY_ID, @ANNOUNCEMENT_ID, @USER_ID, @USER_NAME, @SHOW_COUNT ,@MODIFIED_DATE, @CREATED_DATE, @PRACTICE_CODE, @DELETED, @CREATED_BY, @Operation", AnnouncmentHistoryId, AnnouncmentId, UserId, UserName, ShowCount, ModifiedDate, CreatedDate,PracticeCode, Deleted, CreatedBy, Operation);
+                    SpRepository<AnnouncementsHistory>.GetListWithStoreProcedure(@"exec FOX_PROC_CRUD_ANNOUNCEMENT_HISTORY @ANNOUNCEMENT_HISTORY_ID, @ANNOUNCEMENT_ID, @USER_ID, @USER_NAME, @SHOW_COUNT ,@MODIFIED_DATE, @CREATED_DATE, @PRACTICE_CODE, @DELETED, @CREATED_BY, @Operation", AnnouncmentHistoryId, AnnouncmentId, UserId, UserName, ShowCount, ModifiedDate, CreatedDate, PracticeCode, Deleted, CreatedBy, Operation);
                 }
                 else
                 {
@@ -679,11 +681,13 @@ namespace FOX.BusinessOperations.CommonServices
             return true;
         }
         // Delete Files From Server.
+
         public ResponseModel DeleteDownloadedFile(string fileLocation)
         {
             ResponseModel response = new ResponseModel();
             if (!string.IsNullOrEmpty(fileLocation))
             {
+                fileLocation = Encrypt.DecrypStringEncryptedInClient(fileLocation);
                 var completeFilePath = HttpContext.Current?.Server?.MapPath("~/" + fileLocation);
                 if (!string.IsNullOrEmpty(completeFilePath) && File.Exists(Path.Combine(completeFilePath)))
                 {

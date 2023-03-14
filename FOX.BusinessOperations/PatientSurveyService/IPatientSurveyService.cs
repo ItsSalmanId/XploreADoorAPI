@@ -1,4 +1,5 @@
-﻿using FOX.DataModels.Models.PatientSurvey;
+﻿using FOX.DataModels.Models.CommonModel;
+using FOX.DataModels.Models.PatientSurvey;
 using FOX.DataModels.Models.Security;
 using System.Collections.Generic;
 
@@ -7,7 +8,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
     public interface IPatientSurveyService
     {
         bool SetSurveytProgress(long patientAccount, bool InProgress);
-        void UpdatePatientSurvey(PatientSurvey patientSurvey, UserProfile profile);
+        ResponseModel UpdatePatientSurvey(PatientSurvey patientSurvey, UserProfile profile);
         List<PatientSurvey> GetPatientSurveytList(PatientSurveySearchRequest patientSurveySearchRequest, long practiceCode);
         List<string> GetPatientSurveytProviderList(long practiceCode);
         List<string> GetPSRegionList(string searchText, long practiceCode);
@@ -29,5 +30,6 @@ namespace FOX.BusinessOperations.PatientSurveyService
         string GetPSFormat(long practiceCode);
         bool UpdatePSFormat(string format, UserProfile profile);
         PatientSurvey GetSurveyDetailedFromEmail(string surveyId, long practiceCode);
+        SurveyServiceLog SurveyPerformByUser(SelectiveSurveyList objSelectiveSurveyList, long practiceCode);
     }
 }
