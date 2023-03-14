@@ -117,6 +117,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private readonly GenericRepository<RegionCoverLetter> _RegionCoverLetterRepository;
         private readonly GenericRepository<TaskWorkInterfaceMapping> _TaskWorkInterfaceMapping;
         private readonly GenericRepository<AdmissionImportantNotes> _admissionImportantNotes;
+        private readonly GenericRepository<FoxTblGeneralNotes> _foxTblGeneralNotes;
         private static List<Thread> threadsList = new List<Thread>();
         private readonly GroupService _groupService;
         private long talkRehabWorkID = 0;
@@ -180,6 +181,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             _groupService = new GroupService();
             _TaskWorkInterfaceMapping = new GenericRepository<TaskWorkInterfaceMapping>(_TaskContext);
             _admissionImportantNotes = new GenericRepository<AdmissionImportantNotes>(_QueueContext);
+            _foxTblGeneralNotes = new GenericRepository<FoxTblGeneralNotes>(_QueueContext);
         }
         public void InsertUpdateDocuments(FOX_TBL_PATIENT_DOCUMENTS obj, UserProfile profile)
         {
@@ -5680,29 +5682,37 @@ namespace FOX.BusinessOperations.IndexInfoServices
             }
         }
 
-        public ResponseModel AddAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes, UserProfile userProfile)
+        public AdmissionImportantNotes AddAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes, UserProfile userProfile)
         {
-            ResponseModel response = new ResponseModel();
-            if (objAdmissionImportantNotes != null )
+            //ResponseModel response = new ResponseModel();
+            long generalNotId = 0;
+            if (objAdmissionImportantNotes.ADMISSION_IMPORTANT_NOTES_ID == 0)
             {
-                objAdmissionImportantNotes.ADMISSION_IMPORTAN_NOTES_ID = Helper.getMaximumId("ADMISSION_IMPORTAN_NOTES_ID");
+                generalNotId = Helper.getMaximumId("ADMISSION_IMPORTANT_NOTES_ID");
+            }
+            if (objAdmissionImportantNotes != null && generalNotId != 0)
+            {
+                objAdmissionImportantNotes.ADMISSION_IMPORTANT_NOTES_ID = generalNotId;
+                objAdmissionImportantNotes.CREATED_FROM = "FOX PORTAL";
                 objAdmissionImportantNotes.PRACTICE_CODE = userProfile.PracticeCode;
                 objAdmissionImportantNotes.CREATED_BY = userProfile.UserName;
                 objAdmissionImportantNotes.CREATED_DATE = Helper.GetCurrentDate();
+                objAdmissionImportantNotes.MODIFIED_BY = userProfile.UserName;
+                objAdmissionImportantNotes.MODIFIED_DATE = Helper.GetCurrentDate();
                 objAdmissionImportantNotes.DELETED = false;
                 _admissionImportantNotes.Insert(objAdmissionImportantNotes);
                 _admissionImportantNotes.Save();
-                response.ErrorMessage = "";
-                response.Message = "Admission important notes inserted successfully";
-                response.Success = true;
             }
             else
             {
-                response.ErrorMessage = "";
-                response.Message = "Admission important notes not inserted successfully";
-                response.Success = false;
+                objAdmissionImportantNotes.PRACTICE_CODE = userProfile.PracticeCode;
+                objAdmissionImportantNotes.MODIFIED_BY = userProfile.UserName;
+                objAdmissionImportantNotes.MODIFIED_DATE = Helper.GetCurrentDate();
+                objAdmissionImportantNotes.DELETED = false;
+                _admissionImportantNotes.Update(objAdmissionImportantNotes);
+                _admissionImportantNotes.Save();
             }
-            return response;
+            return objAdmissionImportantNotes;
         }
 
         public AdmissionImportantNotes GetAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes, UserProfile userProfile)

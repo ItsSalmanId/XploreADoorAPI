@@ -73,7 +73,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         void SaveLogMessage(Index_infoReq workId, UserProfile userProfile);
         long GetTalkRehabTaskWorkID(long taskId, UserProfile profile);
         long MarkTaskAsComplete(long taskId, UserProfile profile);
-        ResponseModel AddAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes, UserProfile userProfile);
-        AdmissionImportantNotes GetAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes, UserProfile userProfile);
+        AdmissionImportantNotes AddAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes, UserProfile userProfile);
+        AdmissionImportantNotes GetAdmissionImportantNotes(AdmissionImportantNotes objFoxTblGeneralNotes, UserProfile userProfile);
     }
 }
