@@ -673,12 +673,14 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 }
                 sourceAddDetail.SENDER_ID = obj.SENDER_ID;
                 sourceAddDetail.UNIT_CASE_NO = obj.UNIT_CASE_NO;
-                if (!String.IsNullOrWhiteSpace(sourceAddDetail.DEPARTMENT_ID) && obj.DEPARTMENT_ID != "0" && sourceAddDetail.DEPARTMENT_ID != obj.DEPARTMENT_ID)
+               // if (!String.IsNullOrWhiteSpace(sourceAddDetail.DEPARTMENT_ID) && obj.DEPARTMENT_ID != "0" && sourceAddDetail.DEPARTMENT_ID != obj.DEPARTMENT_ID)
+                if (obj.DEPARTMENT_ID != "0" && sourceAddDetail.DEPARTMENT_ID != obj.DEPARTMENT_ID)
                 {
                     string logMsg = string.Format("ID: {0} Discipline changed from '{1}' to '{2}'.", sourceAddDetail.UNIQUE_ID, Helper.GetDepartmentNames(sourceAddDetail.DEPARTMENT_ID), Helper.GetDepartmentNames(obj.DEPARTMENT_ID));
                     listLogMsgs.Add(logMsg);
                 }
-                if (!String.IsNullOrWhiteSpace(obj.DEPARTMENT_ID) && obj.DEPARTMENT_ID != "0")
+               // if (!String.IsNullOrWhiteSpace(obj.DEPARTMENT_ID) && obj.DEPARTMENT_ID != "0")
+                if (obj.DEPARTMENT_ID != "0")
                 {
                     sourceAddDetail.DEPARTMENT_ID = obj.DEPARTMENT_ID;
                 }
@@ -4287,9 +4289,21 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 if (!string.IsNullOrEmpty(sourceDetail?.DEPARTMENT_ID))
                 {
-                    if (sourceDetail.DEPARTMENT_ID.Contains("1"))
+                    if (sourceDetail.DEPARTMENT_ID.EndsWith("1"))
+                    {
+                        sourceDetail.DEPARTMENT_ID = sourceDetail.DEPARTMENT_ID + ",";
+                    }
+                    if (sourceDetail.DEPARTMENT_ID.Contains("1,"))
                     {
                         discipline = discipline + " Occupational Therapy (OT), ";
+                        if (sourceDetail.DEPARTMENT_ID.EndsWith(","))
+                        {
+                            sourceDetail.DEPARTMENT_ID = sourceDetail.DEPARTMENT_ID.Remove(sourceDetail.DEPARTMENT_ID.Length - 1, 1);
+                        }
+                    }
+                    if (sourceDetail.DEPARTMENT_ID.Contains("10"))
+                    {
+                        discipline = discipline + " Skilled Nursing (SN), ";
                     }
                     if (sourceDetail.DEPARTMENT_ID.Contains("2"))
                     {
