@@ -1,9 +1,9 @@
 -- =============================================          
 -- Author:  Muhammad Salman          
 -- Create date: 12/03/2022          
--- Description: This SP trigger to get patient details for survey automation service          
--- =============================================          
--- FOX_PROC_GET_PATIENT_SURVEY_DETAILS_SERVICE 1011163          
+-- Description: This SP trigger to get patient details for survey automation service                
+-- FOX_PROC_GET_PATIENT_SURVEY_DETAILS_SERVICE 1011163 
+-- =============================================    
 CREATE PROCEDURE FOX_PROC_GET_PATIENT_SURVEY_DETAILS_SERVICE           
  -- Add the parameters for the stored procedure here          
  @PRACTICE_CODE BIGINT          

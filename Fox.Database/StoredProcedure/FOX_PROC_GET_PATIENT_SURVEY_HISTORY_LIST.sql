@@ -22,7 +22,8 @@ BEGIN
   ,SH.SURVEY_STATUS_CHILD                        
   ,SH.SURVEY_DATE              
   ,IS_SMS            
-  ,IS_EMAIL,          
+  ,IS_EMAIL,  
+  -------Reason for case: When suvery perform via SMS or Email then place 'SMS' or 'Email' respectively in SURVEY_BY column 
    CASE                                                                               
        WHEN SL.IS_EMAIL = 1                                                                                                     
        THEN 'EMAIL'             

@@ -1,7 +1,8 @@
  -- =============================================                          
 -- CREATED BY :  Muhammad Salman                          
 -- CRFEATED date: 01/31/2022    
--- Description: This SP trigger to get automated survey details                        
+-- Description: This SP trigger to get automated survey details     
+-- FOX_PROC_GET_AUTOMATED_PERFORM_SURVEY_DETAILS 101271454860125,1012714  
 -- =============================================                                                                                                                                                  
 CREATE PROCEDURE [DBO].[FOX_PROC_GET_AUTOMATED_PERFORM_SURVEY_DETAILS]      
  @SURVEY_ID   BIGINT ,      

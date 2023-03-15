@@ -1,7 +1,8 @@
 -- =============================================                        
 -- Created By :  Muhammad Salman                        
 -- Created date: 02/03/2023   
--- Description: This SP trigger to get existing survey details                       
+-- Description: This SP trigger to get existing survey details    
+-- FOX_PROC_EXISTING_SURVEY_DETAIL 101271454860125,1012714  
 -- =============================================          
 CREATE PROCEDURE [DBO].[FOX_PROC_EXISTING_SURVEY_DETAIL]       
  (@PRACTICE_CODE   BIGINT,                                                                                                                                                                       
