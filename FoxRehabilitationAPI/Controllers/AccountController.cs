@@ -38,8 +38,7 @@ using System.Data;
 using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.GoogleRecaptcha;
 using Newtonsoft.Json;
-using RestSharp;
-using System.Web.Configuration;
+using System.Configuration;
 
 namespace FoxRehabilitationAPI.Controllers
 {
@@ -495,10 +494,10 @@ namespace FoxRehabilitationAPI.Controllers
             }
             else
             {
-                IRestResponse response = GetOtpCode(email);
-                if (!String.IsNullOrEmpty(response.Content))
+                var getOtpCode = GetOtpCode(email);
+                if (!string.IsNullOrEmpty(getOtpCode))
                 {
-                    return Request.CreateResponse(HttpStatusCode.OK, response.Content);
+                    return Request.CreateResponse(HttpStatusCode.OK, getOtpCode);
                 }
                 else
                 {
@@ -529,19 +528,19 @@ namespace FoxRehabilitationAPI.Controllers
             }
             else
             {
-                IRestResponse response = VerifyOtpCode(otp, otpIdentifier);
-                if (response.Content != null)
+                var verifyOtpCode = VerifyOtpCode(otp, otpIdentifier);
+                if (verifyOtpCode != null)
                 {
-                    OtpModel obj=JsonConvert.DeserializeObject<OtpModel>(response.Content);
+                    OtpModel obj = JsonConvert.DeserializeObject<OtpModel>(verifyOtpCode);
                     if (obj != null)
                     {
                         if (obj.status == true)
                         {
                             UserProfile profile = ClaimsModel.GetUserProfile(User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
-                            ResponseModel resp =_userManagementService.UpdateOtpEnableDate(profile.userID);
+                            ResponseModel resp = _userManagementService.UpdateOtpEnableDate(profile.userID);
                             if (resp != null)
                             {
-                                return Request.CreateResponse(HttpStatusCode.OK, response.Content);
+                                return Request.CreateResponse(HttpStatusCode.OK, verifyOtpCode);
                             }
                         }
                         else
@@ -556,7 +555,7 @@ namespace FoxRehabilitationAPI.Controllers
                     return Request.CreateResponse(HttpStatusCode.OK, result);
                 }
                 else
-                { 
+                {
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "Error occured to verify OTP code.");
                 }
             }
@@ -572,9 +571,9 @@ namespace FoxRehabilitationAPI.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Request with invalid parameter.");
             }
-            ResponseModel resp =_userManagementService.UpdateOtpEnableDate(Convert.ToInt64(userId));
+            ResponseModel resp = _userManagementService.UpdateOtpEnableDate(Convert.ToInt64(userId));
             if (resp != null)
-            { 
+            {
                 return Request.CreateResponse(HttpStatusCode.OK, resp);
             }
             else
@@ -594,14 +593,14 @@ namespace FoxRehabilitationAPI.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Request with invalid parameter.");
             }
-            ResponseModel resp =_userManagementService.UpdateMfaStatus(userId);
+            ResponseModel resp = _userManagementService.UpdateMfaStatus(userId);
             if (resp != null)
-            { 
+            {
                 return Request.CreateResponse(HttpStatusCode.OK, resp);
             }
             else
-            { 
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Error occured to update OTP enable date."); 
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Error occured to update OTP enable date.");
             }
 
         }
@@ -1080,43 +1079,40 @@ namespace FoxRehabilitationAPI.Controllers
             }
 
         }
-
-
-        //--method used to get otp code for MFA  
-        private IRestResponse GetOtpCode(string email)
+        // Description: This function is used to get otp code 
+        private static string GetOtpCode(string email)
         {
-
-            var client = new RestClient(WebConfigurationManager.AppSettings["GetOtpURL"]);
-            client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            request.AddHeader("Content-Type", "application/json");
+            var getOtpUrl = ConfigurationManager.AppSettings["GetOtpURL"];
             var body = @"{" + "\n" +
                         @"  ""applicationName"": ""Fox""," + "\n" +
                         @"  ""userName"": """ + email + "\",\n" +
                         @"  ""deviceInfo"": ""12345""," + "\n" +
                         @"  ""appDisplayName"": ""FOX Portal""" + "\n" +
                         @"}";
-            request.AddParameter("application/json", body, ParameterType.RequestBody);
-            IRestResponse response = client.Execute(request);
-            return response;
+            string convertedBody = body.ToString();
+            HttpClient client = new HttpClient();
+            var response = client.PostAsync(
+                    getOtpUrl,
+                     new StringContent(convertedBody, Encoding.UTF8, "application/json")).GetAwaiter().GetResult();
+            var result = response.Content.ReadAsStringAsync().Result;
+            return result;
         }
-        //--method used to verify otp code for MFA  
-        private IRestResponse VerifyOtpCode(string otp, string otpIdentifier)
+        // Description: This function is used to verfify otp code 
+        private static string VerifyOtpCode(string otp, string otpIdentifier)
         {
-            var client = new RestClient(WebConfigurationManager.AppSettings["VerifyOtpURL"]);
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Content-Type", "application/json");
+            var verifyOtpUrl = ConfigurationManager.AppSettings["VerifyOtpURL"];
             var body = @"{" + "\n" +
                         @"  ""deviceInfo"": ""12345""," + "\n" +
                         @"  ""notifier"": """ + otpIdentifier + "\",\n" +
                        @"  ""otp"": """ + otp + "\"\n" +
                         @"}";
-            request.AddParameter("application/json", body, ParameterType.RequestBody);
-            IRestResponse response = client.Execute(request);
-            return response;
+            string convertedBody = body.ToString();
+            HttpClient client = new HttpClient();
+            var response = client.PostAsync(
+                    verifyOtpUrl,
+                     new StringContent(convertedBody, Encoding.UTF8, "application/json")).GetAwaiter().GetResult();
+            var result = response.Content.ReadAsStringAsync().Result;
+            return result;
         }
     }
 }

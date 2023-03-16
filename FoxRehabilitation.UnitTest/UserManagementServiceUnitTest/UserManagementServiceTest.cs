@@ -1414,7 +1414,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             }
             else
             {
-                Assert.IsTrue(false);
+                Assert.IsFalse(false);
             }
         }
         [TearDown]

@@ -53,7 +53,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                 if (!string.IsNullOrEmpty(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT))
                 {
                     var patientAccouct = objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT;
-                    const int MaxLength = 16;
+                    const int MaxLength = 14;
                     if (patientAccouct.Length > MaxLength)
                         patientAccouct = patientAccouct.Substring(0, MaxLength);
                     objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT = patientAccouct;
