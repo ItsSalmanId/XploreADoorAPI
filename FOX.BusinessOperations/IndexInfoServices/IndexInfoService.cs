@@ -5685,32 +5685,35 @@ namespace FOX.BusinessOperations.IndexInfoServices
         public AdmissionImportantNotes AddAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes, UserProfile userProfile)
         {
             //ResponseModel response = new ResponseModel();
-            long generalNotId = 0;
-            if (objAdmissionImportantNotes.ADMISSION_IMPORTANT_NOTES_ID == 0)
+            if (!string.IsNullOrEmpty(objAdmissionImportantNotes.NOTES))
             {
-                generalNotId = Helper.getMaximumId("ADMISSION_IMPORTANT_NOTES_ID");
-            }
-            if (objAdmissionImportantNotes != null && generalNotId != 0)
-            {
-                objAdmissionImportantNotes.ADMISSION_IMPORTANT_NOTES_ID = generalNotId;
-                objAdmissionImportantNotes.CREATED_FROM = "FOX PORTAL";
-                objAdmissionImportantNotes.PRACTICE_CODE = userProfile.PracticeCode;
-                objAdmissionImportantNotes.CREATED_BY = userProfile.UserName;
-                objAdmissionImportantNotes.CREATED_DATE = Helper.GetCurrentDate();
-                objAdmissionImportantNotes.MODIFIED_BY = userProfile.UserName;
-                objAdmissionImportantNotes.MODIFIED_DATE = Helper.GetCurrentDate();
-                objAdmissionImportantNotes.DELETED = false;
-                _admissionImportantNotes.Insert(objAdmissionImportantNotes);
-                _admissionImportantNotes.Save();
-            }
-            else
-            {
-                objAdmissionImportantNotes.PRACTICE_CODE = userProfile.PracticeCode;
-                objAdmissionImportantNotes.MODIFIED_BY = userProfile.UserName;
-                objAdmissionImportantNotes.MODIFIED_DATE = Helper.GetCurrentDate();
-                objAdmissionImportantNotes.DELETED = false;
-                _admissionImportantNotes.Update(objAdmissionImportantNotes);
-                _admissionImportantNotes.Save();
+                long generalNotId = 0;
+                if (objAdmissionImportantNotes.ADMISSION_IMPORTANT_NOTES_ID == 0)
+                {
+                    generalNotId = Helper.getMaximumId("ADMISSION_IMPORTANT_NOTES_ID");
+                }
+                if (objAdmissionImportantNotes != null && generalNotId != 0)
+                {
+                    objAdmissionImportantNotes.ADMISSION_IMPORTANT_NOTES_ID = generalNotId;
+                    objAdmissionImportantNotes.CREATED_FROM = "FOX PORTAL";
+                    objAdmissionImportantNotes.PRACTICE_CODE = userProfile.PracticeCode;
+                    objAdmissionImportantNotes.CREATED_BY = userProfile.UserName;
+                    objAdmissionImportantNotes.CREATED_DATE = Helper.GetCurrentDate();
+                    objAdmissionImportantNotes.MODIFIED_BY = userProfile.UserName;
+                    objAdmissionImportantNotes.MODIFIED_DATE = Helper.GetCurrentDate();
+                    objAdmissionImportantNotes.DELETED = false;
+                    _admissionImportantNotes.Insert(objAdmissionImportantNotes);
+                    _admissionImportantNotes.Save();
+                }
+                else
+                {
+                    objAdmissionImportantNotes.PRACTICE_CODE = userProfile.PracticeCode;
+                    objAdmissionImportantNotes.MODIFIED_BY = userProfile.UserName;
+                    objAdmissionImportantNotes.MODIFIED_DATE = Helper.GetCurrentDate();
+                    objAdmissionImportantNotes.DELETED = false;
+                    _admissionImportantNotes.Update(objAdmissionImportantNotes);
+                    _admissionImportantNotes.Save();
+                }
             }
             return objAdmissionImportantNotes;
         }
