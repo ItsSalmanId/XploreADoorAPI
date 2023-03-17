@@ -52,11 +52,6 @@ namespace FOX.BusinessOperations.SurveyAutomationService
                 objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT = AppConfiguration.GetPracticeCode + objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT;
                 if (!string.IsNullOrEmpty(objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT))
                 {
-                    var patientAccouct = objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT;
-                    const int MaxLength = 14;
-                    if (patientAccouct.Length > MaxLength)
-                        patientAccouct = patientAccouct.Substring(0, MaxLength);
-                    objSurveyLink.ENCRYPTED_PATIENT_ACCOUNT = patientAccouct;
                     string surveyMethodRemoveChr = (objSurveyLink.SURVEY_METHOD.Replace("#", ""));
                     string surveyMethodRemoveChar = (surveyMethodRemoveChr.Replace("?", ""));
                     string surveyMethod = GetSurveyMethod(surveyMethodRemoveChar);
@@ -202,9 +197,9 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         // Description: This function is get patient details
         public SurveyAutomation GetPatientDetails(SurveyAutomation objSurveyAutomation)
         {
-            if (objSurveyAutomation != null && !string.IsNullOrEmpty(objSurveyAutomation.PATIENT_ACCOUNT))
+            if (objSurveyAutomation != null && objSurveyAutomation.PATIENT_ACCOUNT != 0)
             {
-                long tempSurveyId = long.Parse(objSurveyAutomation.PATIENT_ACCOUNT);
+                long tempSurveyId = objSurveyAutomation.PATIENT_ACCOUNT;
                 var existingPatientDetails = _patientSurveyRepository.GetFirst(r => r.SURVEY_ID == tempSurveyId && r.DELETED == false);
                 if (existingPatientDetails != null && existingPatientDetails.PATIENT_ACCOUNT_NUMBER != null)
                 {
