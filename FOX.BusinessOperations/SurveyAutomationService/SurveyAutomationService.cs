@@ -463,7 +463,7 @@ namespace FOX.BusinessOperations.SurveyAutomationService
         // Description: This function is used forcreate SMS body
         public static string SmsBody(string patientFirstName)
         {
-            string smsBody = " Hello " + patientFirstName + "!\n \n Your request to unsubscribe from receiving patient surveys is received. You will not receive any messages with patient survey link in future.\n\nRegards\n\n Fox Rehab Team ";
+            string smsBody = "Hello " + patientFirstName + "!\n \nYour request to unsubscribe from receiving patient surveys is received. You will not receive any messages with patient survey link in future.\n\nRegards\n\nFox Rehab Team ";
             return smsBody ?? "";
         }
         #endregion
