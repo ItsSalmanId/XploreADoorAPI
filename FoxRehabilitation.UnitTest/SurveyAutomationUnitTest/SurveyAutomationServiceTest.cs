@@ -45,9 +45,9 @@ namespace FoxRehabilitation.UnitTest.SurveyAutomationUnitTest
             }
         }
         [Test]
-        [TestCase("")]
-        [TestCase("101116354816636")]
-        public void GetPatientDetails_PatientDetailsModel_ReturnData(string patientAccount)
+        [TestCase(101116354816640)]
+        [TestCase(101116354816636)]
+        public void GetPatientDetails_PatientDetailsModel_ReturnData(long patientAccount)
         {
             //Arrange
             _surveyAutomation.PATIENT_ACCOUNT = patientAccount;
