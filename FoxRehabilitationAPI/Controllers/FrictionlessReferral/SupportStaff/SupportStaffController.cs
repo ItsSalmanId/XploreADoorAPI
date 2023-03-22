@@ -38,7 +38,7 @@ namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
         [HttpPost]
         public HttpResponseMessage SendPatientInviteOnEmail(PatientDetail patientDetails)
         {
-            if(patientDetails != null)
+            if (patientDetails != null)
             {
                 return Request.CreateResponse(HttpStatusCode.OK, _supportStaffService.SendInviteToPatientPortal(patientDetails));
             }
@@ -62,7 +62,7 @@ namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
         [HttpPost]
         public HttpResponseMessage GetOrderingReferralSourceInformation(ProviderReferralSourceRequest orderingReferralSourceInfo)
         {
-            if(orderingReferralSourceInfo != null)
+            if (orderingReferralSourceInfo != null)
             {
                 return Request.CreateResponse(HttpStatusCode.OK, _supportStaffService.GetOrderingReferralSource(orderingReferralSourceInfo));
             }
@@ -74,7 +74,7 @@ namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
         [HttpGet]
         public HttpResponseMessage GetFrictionlessReferralInformation(long referralId)
         {
-            if(referralId != 0)
+            if (referralId != 0)
             {
                 return Request.CreateResponse(HttpStatusCode.OK, _supportStaffService.GetFrictionLessReferralDetails(referralId));
             }
@@ -86,7 +86,7 @@ namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
         [HttpPost]
         public HttpResponseMessage SaveFrictionlessReferralInformation(FrictionLessReferral frictionLessReferralRquest)
         {
-            if(frictionLessReferralRquest != null)
+            if (frictionLessReferralRquest != null)
             {
                 return Request.CreateResponse(HttpStatusCode.OK, _supportStaffService.SaveFrictionLessReferralDetails(frictionLessReferralRquest));
             }
@@ -128,6 +128,18 @@ namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
             var uploadFiles = _supportStaffService.UploadFiles(requestUploadFilesAPIModel);
             var response = Request.CreateResponse(HttpStatusCode.OK, uploadFiles);
             return Task.FromResult(response);
+        }
+        [HttpPost]
+        public HttpResponseMessage GetInsuranceEligibility(EligibilityDetailRequest eligibilityDetailRequest)
+        {
+            if (eligibilityDetailRequest != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _supportStaffService.GetInsuranceEligibility(eligibilityDetailRequest));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Request is Empty");
+            }
         }
         #endregion
     }

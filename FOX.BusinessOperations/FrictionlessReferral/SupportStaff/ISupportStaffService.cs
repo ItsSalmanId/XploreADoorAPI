@@ -19,6 +19,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         ResponseModel DeleteWorkOrder(RequestDeleteWorkOrder requestDeleteWorkOrder);
         QRCodeModel GenerateQRCode(QRCodeModel obj);
         ResponseUploadFilesModel UploadFiles(RequestUploadFilesModel requestUploadFilesAPIModel);
+        string GetInsuranceEligibility(EligibilityDetailRequest eligibilityDetailRequest);
         #endregion
     }
 }

@@ -138,5 +138,26 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public bool IsFromIndexInfo { get; set; }
         public string PatientLastName { get; set; }
     }
+    public class EligibilityDetails
+    {
+        public long INSURANCE_ID { get; set; }
+        public long INSPAYER_ID { get; set; }
+        public string PAYER_NAME { get; set; }
+        public string INSPAYER_ELIGIBILITY_ID { get; set; }
+        public string PRAC_TYPE { get; set; }
+        public string PRACTICE_TAX_ID { get; set; }
+        public string PRACTICE_NAME { get; set; }
+    }
+    public class EligibilityDetailRequest
+    {
+        public string InsurancePayerID { get; set; }
+        public string ProviderFirstName { get; set; }
+        public string ProviderLastName { get; set; }
+        public string PatientFirstName { get; set; }
+        public string PatientLastName { get; set; }
+        public string PatientGender { get; set; }
+        public string PolicyNumber { get; set; }
+        public string DateOfBirth { get; set; }
+    }
     #endregion
 }

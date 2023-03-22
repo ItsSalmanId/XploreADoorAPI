@@ -32,6 +32,7 @@ using SelectPdf;
 using FOX.BusinessOperations.FaxServices;
 using ZXing;
 using System.Net;
+using System.Net.Http.Headers;
 
 namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
 {
@@ -251,7 +252,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             {
                 var providerNPI = new SqlParameter("PROVIDER_NPI", SqlDbType.VarChar) { Value = obj.ProviderNpi };
                 var practicecode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practiceCode };
-                 providerResponse = SpRepository<Provider>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PROVIDER_DETAILS_BY_NPI @PROVIDER_NPI, @PRACTICE_CODE", providerNPI, practicecode);
+                providerResponse = SpRepository<Provider>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PROVIDER_DETAILS_BY_NPI @PROVIDER_NPI, @PRACTICE_CODE", providerNPI, practicecode);
                 // Search on NPPES
                 if (providerResponse.Count == 0)
                 {
@@ -262,7 +263,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             }
             else if (practiceCode != 0 && !string.IsNullOrEmpty(obj.ProviderLastName.Trim()) && !string.IsNullOrEmpty(obj.ProviderState.Trim()))
             {
-                var firstName = new SqlParameter("FIRST_NAME", SqlDbType.VarChar) { Value = obj.ProviderFirstName ?? (object)DBNull.Value};
+                var firstName = new SqlParameter("FIRST_NAME", SqlDbType.VarChar) { Value = obj.ProviderFirstName ?? (object)DBNull.Value };
                 var lastName = new SqlParameter("LAST_NAME", SqlDbType.VarChar) { Value = obj.ProviderLastName };
                 var state = new SqlParameter("STATE", SqlDbType.VarChar) { Value = obj.ProviderState };
                 var practicecode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practiceCode };
@@ -423,7 +424,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     frictionLessReferralObj.PROVIDER_FAX = frictionLessReferralObj.PROVIDER_FAX.Replace("-", "");
                 }
                 if (!string.IsNullOrEmpty(frictionLessReferralObj.PROVIDER_PHONE_NO))
-                    {
+                {
                     frictionLessReferralObj.PROVIDER_PHONE_NO = frictionLessReferralObj.PROVIDER_PHONE_NO.Replace("-", "");
                 }
                 if (existingFrictionReferral == null)
@@ -482,7 +483,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 var date = Convert.ToDateTime(frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB);
                 frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB_STRING = date.ToShortDateString();
             }
-            
+
 
             return frictionLessReferralResponse;
         }
@@ -556,7 +557,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             {
                 System.Drawing.Image img;
                 PdfFocus f = new PdfFocus();
-               // f.Serial = "10261435399";
+                // f.Serial = "10261435399";
                 f.Serial = "80033727929";
                 f.OpenPdf(PdfPath);
                 if (f.PageCount > 0)
@@ -666,13 +667,13 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     var logoImgPathServer = "";
                     Random random = new Random();
 
-                            var randomString = random.Next();
-                            imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
-                            imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
+                    var randomString = random.Next();
+                    imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
+                    imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
 
-                            var randomStrings = random.Next();
-                            logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + "_" + randomStrings + ".jpg";
-                            logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + "_" + randomStrings + ".jpg";
+                    var randomStrings = random.Next();
+                    logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + "_" + randomStrings + ".jpg";
+                    logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + "_" + randomStrings + ".jpg";
                     Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter, PdfPath, i, imgPathServer, logoImgPathServer));
                     myThread.Start();
                     threadsList.Add(myThread);
@@ -713,7 +714,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             {
                 System.Drawing.Image img;
                 PdfFocus f = new PdfFocus();
-              //  f.Serial = "10261435399";
+                //  f.Serial = "10261435399";
                 f.Serial = "80033727929";
                 f.OpenPdf(PdfPath);
 
@@ -1075,7 +1076,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             {
                 AbsolutePath = System.Web.HttpContext.Current.Server.MapPath("~/" + AppConfiguration.QRCodeTempPath),
                 WORK_ID = FrictionLessReferralObj.WORK_ID
-             };
+            };
             var qrCode = GenerateQRCode(qr);
             string body = string.Empty;
             string templatePathOfSenderEmail = HttpContext.Current.Server.MapPath(@"~/HtmlTemplates/print-send-submit-order.html");
@@ -1139,10 +1140,10 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 if (frictionLessReferralObj.IS_SIGNED_REFERRAL)
                 {
                     int document_type = _foxdocumenttypeRepository.GetFirst(x => x.NAME == "Signed Order" && !x.DELETED && x.IS_ACTIVE == true).DOCUMENT_TYPE_ID;
-                    if(document_type != 0)
+                    if (document_type != 0)
                     {
                         workOrder.DOCUMENT_TYPE = document_type;
-                    }                
+                    }
                 }
                 else
                 {
@@ -1208,6 +1209,118 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 GenerateAndSaveImagesOfUploadedFiles(workId, frictionLessReferralObj, Profile);
             }
             return workId;
+        }
+
+        public string GetInsuranceEligibility(EligibilityDetailRequest eligibilityDetailRequest)
+        {
+            String htmlStr = string.Empty;
+            var insuranceID = new SqlParameter { ParameterName = "@INSURANCE_PAYER_ID", Value = eligibilityDetailRequest.InsurancePayerID };
+            var practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", Value = GetPracticeCode() };
+            var eligibilityReponse = SpRepository<EligibilityDetails>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_INSURANCE_ELIGIBILITY_DETAILS @INSURANCE_PAYER_ID, @PRACTICE_CODE", insuranceID, practiceCode);
+
+            #region New Implementation to check Eligiblity with RestFull API
+            if (eligibilityReponse != null)
+            {
+                //To See Detailed Documentation Please have the documents path  : FoxRehabilitationAPI\About Project\Eligibity-documents\
+                EligibilityModelNew objEligibilityNew = new EligibilityModelNew();
+                //*********************************** MTBCData ***************************************
+                objEligibilityNew.ViewType = "json_v1";
+                objEligibilityNew.ClientID = "FOXREHAB";
+                objEligibilityNew.ClientType = "PATIENT";
+                objEligibilityNew.ServerName = "10.10.30.76";
+                objEligibilityNew.UserID = "999999";
+                objEligibilityNew.InsuranceID = eligibilityReponse.INSURANCE_ID.ToString() ?? "";
+                objEligibilityNew.insPayerID = eligibilityReponse.INSPAYER_ID.ToString() ?? "";
+                //objEligibilityNew.PayerType = patientInsuranceInformation.INS_TYPE.ToString();
+                objEligibilityNew.PayerType = "P";
+                objEligibilityNew.PatientAccount = "999999999";
+                objEligibilityNew.ClaimNo = string.Empty;
+                objEligibilityNew.AppointmentID = string.Empty;
+                //objEligibilityNew.InsPayerDescriptionName = eligibilityModel.Inspayer_Description;
+                //*********************************** Payer Information ***************************************
+                objEligibilityNew.PayerName = eligibilityReponse.PAYER_NAME;
+                objEligibilityNew.PayerID = eligibilityReponse.INSPAYER_ELIGIBILITY_ID;
+                //************************************ Practice Information ************************************
+                objEligibilityNew.Address = string.Empty;
+                objEligibilityNew.City = string.Empty;
+                objEligibilityNew.DateOfService = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(DateTime.Now));
+                //objElig.InquiryDate;    //  Required value
+                objEligibilityNew.ProviderFirstName = eligibilityDetailRequest.ProviderFirstName;
+                objEligibilityNew.ProviderLastName = eligibilityDetailRequest.ProviderLastName;
+                objEligibilityNew.ProviderNPI = "1326092503";  // Table name providers
+                objEligibilityNew.ProviderSSN = string.Empty;
+                objEligibilityNew.Relationship = "S";
+                objEligibilityNew.Zip = string.Empty;
+                objEligibilityNew.State = string.Empty;
+                if (objEligibilityNew.Relationship.Contains("S"))
+                {
+                    objEligibilityNew.SubscriberDateOfBirth = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(eligibilityDetailRequest.DateOfBirth.ToString()));
+                    objEligibilityNew.SubscriberFirstName = eligibilityDetailRequest.PatientFirstName;
+                    objEligibilityNew.SubscriberGender = eligibilityDetailRequest.PatientGender;
+                    objEligibilityNew.SubscriberGroupNumber = string.Empty;
+                    objEligibilityNew.SubscriberLastName = eligibilityDetailRequest.PatientLastName;
+                    objEligibilityNew.SubscriberSSN = string.Empty;    //from patient table                                              
+                                                                       //*********************************** Dependent Level *****************************************
+                    objEligibilityNew.DependentDOB = string.Empty;
+                    objEligibilityNew.DependentFirstName = string.Empty;
+                    objEligibilityNew.DependentGender = string.Empty;
+                    objEligibilityNew.DependentLastName = string.Empty;
+                }
+                if (eligibilityReponse.PRAC_TYPE == "G")
+                {
+                    objEligibilityNew.OrganizationType = "2";  //Required value(if "I" then send 1 and if "G" then send 2 )
+                    objEligibilityNew.ProviderNPI = string.Empty; //if OrganizationType is "I" then you assign individual_npi
+                    objEligibilityNew.OrganizationNPI = "1326092503";  //if OrganizationType is "G" then you assign group_npi            
+                }
+                else
+                {
+                    objEligibilityNew.OrganizationType = "1";     // Required value(if "I" then send 1 and if "G" then send 2 )
+                    objEligibilityNew.OrganizationNPI = string.Empty; //if OrganizationType is "G" then you assign group_npi            
+                    objEligibilityNew.ProviderNPI = "1326092503"; //if OrganizationType is "I" then you assign individual_npi
+                }
+                objEligibilityNew.TaxID = eligibilityReponse.PRACTICE_TAX_ID;     //  Required value
+                objEligibilityNew.OrganizationName = eligibilityReponse.PRACTICE_NAME;
+                objEligibilityNew.SubscriberMemberID = eligibilityDetailRequest.PolicyNumber; //  Required value
+                                                                                              //********************************** Service Level Type **************************************
+                objEligibilityNew.ServiceType = "30";
+
+                var result = "";
+                string URl = WebConfigurationManager.AppSettings["EligibilityURL"].ToString();
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(URl);
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    var json = JsonConvert.SerializeObject(objEligibilityNew);
+                    var stringContent = new StringContent(json, System.Text.UnicodeEncoding.UTF8, "application/json");
+                    HttpResponseMessage responseMessage = client.PostAsync("", stringContent).Result;
+                    if (responseMessage.IsSuccessStatusCode)
+                    {
+                        var jsonString = responseMessage.Content.ReadAsStringAsync();
+                        result = jsonString.Result;
+                    }
+                    htmlStr = result; //added by aftab
+                }
+                #endregion
+
+                if (objEligibilityNew.ViewType.ToLower().Equals("json_v1"))
+                {
+                    htmlStr = htmlStr.Replace(@"id=""container""", @"id =""main-container-eligibility""");
+                    htmlStr = htmlStr.Replace(@"table-heading", @"table-heading-orange");
+                    htmlStr = htmlStr.Replace(@"document.getElementById('1').style.display = ''", "document.getElementById('1')==null?'':document.getElementById('1').style.display = ''");
+                    htmlStr = RemoveStyleNodeFromHtmlForMVP(htmlStr);
+                }
+            }
+            return htmlStr;
+        }
+
+        private string RemoveStyleNodeFromHtmlForMVP(string htmlStr)
+        {
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(htmlStr);
+            var eligiblitycont = doc.DocumentNode.SelectSingleNode("*//div[contains(@class,'container')]");
+            if (eligiblitycont != null)
+                htmlStr = eligiblitycont.OuterHtml;
+            return htmlStr;
         }
     }
     #endregion
