@@ -138,5 +138,42 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public bool IsFromIndexInfo { get; set; }
         public string PatientLastName { get; set; }
     }
+
+    public class ServiceAvailability : BaseModel
+    {
+        public string CITY_NAME { get; set; }
+        public long ZIP_CODE { get; set; }
+    }
+
+    public class ExternalUserInfo : BaseModel
+    {
+        public string SUBMITER_FIRST_NAME { get; set; }
+        public string SUBMITTER_LAST_NAME { get; set; }
+        public string SUBMITTER_PHONE { get; set; }
+        public string SUBMITTER_EMAIL { get; set; }
+        public string ZIP_CODE { get; set; }
+        public string CITY_NAME { get; set; }
+    }
+
+    public class TASEER : BaseModel
+    {
+        public long FOX_FRICTIONLESS_UNAVAILABLE_ID { get; set; }
+        public string FIRST_NAME { get; set; }
+        public string LAST_NAME { get; set; }
+        public string EMAIL { get; set; }
+        public string ZIP_CODE { get; set; }
+        public string CITY_NAME { get; set; }
+        public string PHONE_NUMBER { get; set; }
+        public DateTime CREATED_DATE { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime MODIFIED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public Boolean DELETED { get; set; }
+    }
+
+    public class test : BaseModel
+    {
+        public bool IsAvailable { get; set; }
+    }
     #endregion
 }

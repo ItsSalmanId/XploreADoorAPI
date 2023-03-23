@@ -86,4 +86,5 @@ namespace FOX.DataModels.Models.RequestForOrder
         public string CREATED_BY { get; set; }
         public DateTime CREATED_DATE { get; set; }
     }
+
 }
