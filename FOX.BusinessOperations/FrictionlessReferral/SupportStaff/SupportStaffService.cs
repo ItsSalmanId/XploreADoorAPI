@@ -33,6 +33,9 @@ using FOX.BusinessOperations.FaxServices;
 using ZXing;
 using System.Net;
 using System.Net.Http.Headers;
+using FOX.DataModels.Models.EligibilityService;
+using EligibilityServiceResponse = FOX.DataModels.Models.EligibilityService.EligibilityServiceResponse;
+using EligibilityServiceDetails = FOX.DataModels.Models.EligibilityService.EligibilityServiceDetails;
 
 namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
 {
@@ -1211,8 +1214,10 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             return workId;
         }
 
-        public string GetInsuranceEligibility(EligibilityDetailRequest eligibilityDetailRequest)
-        {
+        public EligibilityServiceResponse GetInsuranceEligibility(EligibilityDetailRequest eligibilityDetailRequest)
+         {
+            EligibilityModel objeligibilityModel = new EligibilityModel();
+            EligibilityServiceResponse response = new EligibilityServiceResponse();
             String htmlStr = string.Empty;
             var insuranceID = new SqlParameter { ParameterName = "@INSURANCE_PAYER_ID", Value = eligibilityDetailRequest.InsurancePayerID };
             var practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", Value = GetPracticeCode() };
@@ -1221,6 +1226,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             #region New Implementation to check Eligiblity with RestFull API
             if (eligibilityReponse != null)
             {
+                EligibilityServiceResponse objEligibilityServiceResponse = new EligibilityServiceResponse();
                 //To See Detailed Documentation Please have the documents path  : FoxRehabilitationAPI\About Project\Eligibity-documents\
                 EligibilityModelNew objEligibilityNew = new EligibilityModelNew();
                 //*********************************** MTBCData ***************************************
@@ -1229,36 +1235,37 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 objEligibilityNew.ClientType = "PATIENT";
                 objEligibilityNew.ServerName = "10.10.30.76";
                 objEligibilityNew.UserID = "999999";
-                objEligibilityNew.InsuranceID = eligibilityReponse.INSURANCE_ID.ToString() ?? "";
-                objEligibilityNew.insPayerID = eligibilityReponse.INSPAYER_ID.ToString() ?? "";
+                objEligibilityNew.InsuranceID = "550401259";//eligibilityReponse.INSURANCE_ID.ToString() ?? "";
+                objEligibilityNew.insPayerID = "550400726";//eligibilityReponse.INSPAYER_ID.ToString() ?? "";
                 //objEligibilityNew.PayerType = patientInsuranceInformation.INS_TYPE.ToString();
                 objEligibilityNew.PayerType = "P";
-                objEligibilityNew.PatientAccount = "999999999";
+                objEligibilityNew.PatientAccount = "9999999999";
                 objEligibilityNew.ClaimNo = string.Empty;
                 objEligibilityNew.AppointmentID = string.Empty;
                 //objEligibilityNew.InsPayerDescriptionName = eligibilityModel.Inspayer_Description;
                 //*********************************** Payer Information ***************************************
-                objEligibilityNew.PayerName = eligibilityReponse.PAYER_NAME;
-                objEligibilityNew.PayerID = eligibilityReponse.INSPAYER_ELIGIBILITY_ID;
+                objEligibilityNew.PayerName = "CMS";// eligibilityReponse.PAYER_NAME;
+                objEligibilityNew.PayerID = "CMS"; //eligibilityReponse.INSPAYER_ELIGIBILITY_ID;
                 //************************************ Practice Information ************************************
                 objEligibilityNew.Address = string.Empty;
                 objEligibilityNew.City = string.Empty;
                 objEligibilityNew.DateOfService = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(DateTime.Now));
                 //objElig.InquiryDate;    //  Required value
-                objEligibilityNew.ProviderFirstName = eligibilityDetailRequest.ProviderFirstName;
-                objEligibilityNew.ProviderLastName = eligibilityDetailRequest.ProviderLastName;
+                objEligibilityNew.ProviderFirstName = "Jeffrey";// eligibilityDetailRequest.ProviderFirstName;
+                objEligibilityNew.ProviderLastName = "Singer";// eligibilityDetailRequest.ProviderLastName;
                 objEligibilityNew.ProviderNPI = "1326092503";  // Table name providers
                 objEligibilityNew.ProviderSSN = string.Empty;
                 objEligibilityNew.Relationship = "S";
-                objEligibilityNew.Zip = string.Empty;
+                objEligibilityNew.SubscriberMemberID = "9KA5R46TA89";// eligibilityDetailRequest.PolicyNumber; //  Required value
+                objEligibilityNew.Zip = "023608120"; //string.Empty;
                 objEligibilityNew.State = string.Empty;
                 if (objEligibilityNew.Relationship.Contains("S"))
                 {
-                    objEligibilityNew.SubscriberDateOfBirth = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(eligibilityDetailRequest.DateOfBirth.ToString()));
-                    objEligibilityNew.SubscriberFirstName = eligibilityDetailRequest.PatientFirstName;
-                    objEligibilityNew.SubscriberGender = eligibilityDetailRequest.PatientGender;
+                    objEligibilityNew.SubscriberDateOfBirth = "19410718";//Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(eligibilityDetailRequest.DateOfBirth.ToString()));
+                    objEligibilityNew.SubscriberFirstName = "Stephen";// eligibilityDetailRequest.PatientFirstName;
+                    objEligibilityNew.SubscriberGender = "Male";// eligibilityDetailRequest.PatientGender;
                     objEligibilityNew.SubscriberGroupNumber = string.Empty;
-                    objEligibilityNew.SubscriberLastName = eligibilityDetailRequest.PatientLastName;
+                    objEligibilityNew.SubscriberLastName = "Hobday";// eligibilityDetailRequest.PatientLastName;
                     objEligibilityNew.SubscriberSSN = string.Empty;    //from patient table                                              
                                                                        //*********************************** Dependent Level *****************************************
                     objEligibilityNew.DependentDOB = string.Empty;
@@ -1278,9 +1285,9 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     objEligibilityNew.OrganizationNPI = string.Empty; //if OrganizationType is "G" then you assign group_npi            
                     objEligibilityNew.ProviderNPI = "1326092503"; //if OrganizationType is "I" then you assign individual_npi
                 }
-                objEligibilityNew.TaxID = eligibilityReponse.PRACTICE_TAX_ID;     //  Required value
+                objEligibilityNew.TaxID = "202225666";// eligibilityReponse.PRACTICE_TAX_ID;     //  Required value
                 objEligibilityNew.OrganizationName = eligibilityReponse.PRACTICE_NAME;
-                objEligibilityNew.SubscriberMemberID = eligibilityDetailRequest.PolicyNumber; //  Required value
+                objEligibilityNew.SubscriberMemberID = "9KA5R46TA89";// eligibilityDetailRequest.PolicyNumber; //  Required value
                                                                                               //********************************** Service Level Type **************************************
                 objEligibilityNew.ServiceType = "30";
 
@@ -1298,19 +1305,85 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                         var jsonString = responseMessage.Content.ReadAsStringAsync();
                         result = jsonString.Result;
                     }
-                    htmlStr = result; //added by aftab
+                     objeligibilityModel = JsonConvert.DeserializeObject<EligibilityModel>(result);
+                    if (objeligibilityModel != null)
+                    {
+                        if (objeligibilityModel.PatientInfo != null)
+                        {
+                            response.FirstName = objeligibilityModel.PatientInfo.FirstName;
+                            response.LastName = objeligibilityModel.PatientInfo.LastName;
+                            response.DOB = Convert.ToDateTime(objeligibilityModel.PatientInfo.Dob);
+                            response.Gender = objeligibilityModel.PatientInfo.Gender;
+                            response.PolicyNumber = objeligibilityModel.PatientInfo.PolicyNumber;
+                        }
+                        response.EligibilityPeriod = objeligibilityModel.EligibilityPeriod;
+                        response.EligibilityStatus = objeligibilityModel.EligibilityStatus;
+                        if (objeligibilityModel.PayerDetails != null)
+                        {
+                            response.PlanName = objeligibilityModel.PayerDetails.PayerName;
+                            response.PlanType = objeligibilityModel.PayerDetails.PayerId;
+                        }
+                        
+                        //DateTime date = DateTime.ParseExact(String.Format("{0}/{1}/{2}",m.Groups["month"].Value,m.Groups["day"].Value,m.Groups["year"].Value), "MM/dd/yyyy", null);
+                        if (objeligibilityModel.EligibilityBenefit != null)
+                        {
+                            var eligibilityBenifits = objeligibilityModel.EligibilityBenefit.FindAll(x => !string.IsNullOrEmpty(x.ServiceType)
+                            && (x.ServiceType.ToLower().Contains("physical therapy") ||
+                            x.ServiceType.ToLower().Contains("occupational therapy") ||
+                            x.ServiceType.ToLower().Contains("speech therapy") ||
+                            x.ServiceType.ToLower().Contains("exercise physiology")));
+                            if (eligibilityBenifits != null && eligibilityBenifits.Count > 0)
+                            {
+                               response.EligibilityServices = new List<EligibilityServiceDetails>();
+                                foreach (var elig in eligibilityBenifits)
+                                {
+                                    if (elig.ServiceInformation != null && elig.ServiceInformation.Count > 0)
+                                    {
+                                        if (elig.ServiceInformation.Count == 1)
+                                        {
+                                            //if(elig.ServiceInformation[0].NetworkType != null)
+                                            //{
+                                                EligibilityServiceDetails Eligdetails = new EligibilityServiceDetails();
+                                                Eligdetails.ServiceType = elig.ServiceType;
+                                                Eligdetails.CoInsurance = elig.ServiceInformation[0].CoInsurance == null ? "0" : elig.ServiceInformation[0].CoInsurance.ToString();
+                                                Eligdetails.DeductibleBase = elig.ServiceInformation[0].DeductibleBase == null ? "0" : elig.ServiceInformation[0].DeductibleBase.ToString();
+                                                Eligdetails.DeductibleRemaining = elig.ServiceInformation[0].DeductibleRemaining == null ? "0" : elig.ServiceInformation[0].DeductibleRemaining.ToString();
+                                                Eligdetails.OutOfPocket = elig.ServiceInformation[0].OutOfPocket == null ? "0" : elig.ServiceInformation[0].OutOfPocket.ToString();
+                                                Eligdetails.StartDate = elig.ServiceInformation[0].StartDate == null ? "" : string.Format("{0:MM/dd/yyyy}", elig.ServiceInformation[0].StartDate.ToString());
+                                                Eligdetails.EndDate = elig.ServiceInformation[0].EndDate == null ? "0" : string.Format("{0:MM/dd/yyyy}", elig.ServiceInformation[0].EndDate.ToString());
+                                                Eligdetails.OutOfPocketRemaining = elig.ServiceInformation[0].OutOfPocketRemaining == null ? "0" : elig.ServiceInformation[0].OutOfPocketRemaining.ToString();
+                                            Eligdetails.NetworkType = "y";// elig.ServiceInformation[0].NetworkType.ToString().ToLower() == "y" ? "In-Network Benefits" : "Out-Network Benefits";
+                                                response.EligibilityServices.Add(Eligdetails);
+                                            //}
+                                        }
+                                        else
+                                        {
+                                            elig.ServiceInformation = elig.ServiceInformation.OrderBy(i => Convert.ToDateTime(i.StartDate)).ToList();
+                                            foreach (var info in elig.ServiceInformation)
+                                            {
+                                                //if (info.NetworkType != null)
+                                                //{
+                                                    EligibilityServiceDetails Eligdetails = new EligibilityServiceDetails();
+                                                    Eligdetails.ServiceType = elig.ServiceType;
+                                                    Eligdetails.CoInsurance = info.CoInsurance == null ? "0" : info.CoInsurance.ToString();
+                                                    Eligdetails.DeductibleBase = info.DeductibleBase == null ? "0" : info.DeductibleBase.ToString();
+                                                    Eligdetails.DeductibleRemaining = info.DeductibleRemaining == null ? "0" : info.DeductibleRemaining.ToString();
+                                                    Eligdetails.OutOfPocket = info.OutOfPocket == null ? "0" : info.OutOfPocket.ToString();
+                                                    Eligdetails.OutOfPocketRemaining = info.OutOfPocketRemaining == null ? "0" : info.OutOfPocketRemaining.ToString();
+                                                Eligdetails.NetworkType = "y";// info.NetworkType.ToString().ToLower() == "y" ? "In-Network Benefits" : "Out-Network Benefits";
+                                                    response.EligibilityServices.Add(Eligdetails);
+                                                //}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 #endregion
-
-                if (objEligibilityNew.ViewType.ToLower().Equals("json_v1"))
-                {
-                    htmlStr = htmlStr.Replace(@"id=""container""", @"id =""main-container-eligibility""");
-                    htmlStr = htmlStr.Replace(@"table-heading", @"table-heading-orange");
-                    htmlStr = htmlStr.Replace(@"document.getElementById('1').style.display = ''", "document.getElementById('1')==null?'':document.getElementById('1').style.display = ''");
-                    htmlStr = RemoveStyleNodeFromHtmlForMVP(htmlStr);
-                }
             }
-            return htmlStr;
+            return response;
         }
 
         private string RemoveStyleNodeFromHtmlForMVP(string htmlStr)
