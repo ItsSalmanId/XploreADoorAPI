@@ -26,6 +26,8 @@ namespace FOX.BusinessOperations.CaseServices
         private readonly DbContextCases _CaseContext = new DbContextCases();
         private readonly DbContextPatient _PatientContext = new DbContextPatient();
         private readonly DbContextSettings _dbContextSettings = new DbContextSettings();
+        private readonly DbContextCommon _DbContextCommon = new DbContextCommon();
+        private readonly DbContextIndexinfo _IndexinfoContext = new DbContextIndexinfo();
         //respository
         private readonly GenericRepository<FOX_TBL_CASE> _CaseRepository;
         private readonly GenericRepository<FOX_VW_CASE> _vwCaseRepository;
@@ -68,6 +70,9 @@ namespace FOX.BusinessOperations.CaseServices
         private readonly GenericRepository<FoxProviderClass> _FoxProviderClassRepository;
         private readonly GenericRepository<FOX_TBL_CASE_TREATMENT_TEAM> _CaseTreatmentTeamRepository;
         private readonly GenericRepository<FOX_TBL_HOLD_NON_REASONS> _foxTblHoldNonRepository;
+        private readonly GenericRepository<Provider> _providerRepository;
+        private readonly GenericRepository<ReferralSource> _fox_tbl_ordering_ref_source;
+
 
         public CaseServices()
         {
@@ -111,6 +116,8 @@ namespace FOX.BusinessOperations.CaseServices
             _FoxProviderClassRepository = new GenericRepository<FoxProviderClass>(_dbContextSettings);
             _CaseTreatmentTeamRepository = new GenericRepository<FOX_TBL_CASE_TREATMENT_TEAM>(_CaseContext);
             _foxTblHoldNonRepository = new GenericRepository<FOX_TBL_HOLD_NON_REASONS>(_CaseContext);
+            _providerRepository = new GenericRepository<Provider>(_DbContextCommon);
+            _fox_tbl_ordering_ref_source = new GenericRepository<ReferralSource>(_IndexinfoContext);
 
         }
 
@@ -120,6 +127,25 @@ namespace FOX.BusinessOperations.CaseServices
             ResponseAddEditCase responseAddEditCase = new ResponseAddEditCase();
             try
             {
+                long? provider_code = 0;
+                long? reffral_code = 0;
+                if (profile.isTalkRehab)
+                {
+                    provider_code = getProviderCode(model);
+                    reffral_code = getReffralCode(model);
+
+                    if(provider_code == 0)
+                    {
+                        responseAddEditCase.Message = "Provider not Exist.";
+                        return responseAddEditCase;
+                    }
+                    else if(reffral_code == 0)
+                    {
+                        responseAddEditCase.Message = "Referring Physicain not Exist.";
+                        return responseAddEditCase;
+                    }
+                }
+
                 var restOfPatientData = new FOX_TBL_PATIENT();
                 if (model != null && profile != null)
                 {
@@ -203,6 +229,9 @@ namespace FOX.BusinessOperations.CaseServices
                         caseObj.ADMISSION_DATE = Convert.ToDateTime(model.ADMISSION_DATE_String); //edded by faheem
                     if (!string.IsNullOrEmpty(model.END_CARE_DATE_String))
                         caseObj.END_CARE_DATE = Convert.ToDateTime(model.END_CARE_DATE_String); //edded by faheem
+                    else
+                        caseObj.END_CARE_DATE = Convert.ToDateTime("01/01/1900");
+
                     if (!string.IsNullOrEmpty(model.START_CARE_DATE_String))
                         caseObj.START_CARE_DATE = Convert.ToDateTime(model.START_CARE_DATE_String); //edded by faheem
                     caseObj.VISIT_PER_WEEK = model.VISIT_PER_WEEK;
@@ -285,17 +314,22 @@ namespace FOX.BusinessOperations.CaseServices
                         //if (model.Is_Chnage)
                         //Task 149402:Dev Task: FOX-RT 105. Disabling editing of patient info. from RFO, Usman Nasir
                         //InsertInterfaceTeamData(interfaceSynch, profile);
+
                     }
                     else
                     {
                         //Task 149402:Dev Task: FOX-RT 105. Disabling editing of patient info. from RFO, Usman Nasir
                         //InsertInterfaceTeamData(interfaceSynch, profile);
                         _CaseRepository.Insert(caseObj);
+
                     }
                     _CaseContext.SaveChanges();
-                   if (profile.isTalkRehab) {
-                        InsertDataAdditionalinfo(locationName, certifyState, caseObj);
+
+                    if (profile.isTalkRehab)
+                    {
+                        InsertDataAdditionalInfo(locationName, certifyState, caseObj, provider_code, reffral_code,IsEditCase);
                     }
+
                     //Create tasks
                     if (model.openIssueList != null)
                     {
@@ -326,30 +360,55 @@ namespace FOX.BusinessOperations.CaseServices
             }
             return responseAddEditCase;
         }
-        public void InsertDataAdditionalinfo(string locationName, string certifyState, FOX_TBL_CASE model)
+
+        public void InsertDataAdditionalInfo(string locationName, string certifyState, FOX_TBL_CASE model, long? provider_code, long? reffral_code, bool isEditcase)
         {
             try
             {
-                if (!string.IsNullOrEmpty(locationName) && !string.IsNullOrEmpty(certifyState) && model != null)
-                {
-                    var caseId = new SqlParameter { ParameterName = "case_id", SqlDbType = SqlDbType.BigInt, Value = model.CASE_ID };
-                    var reason = new SqlParameter { ParameterName = "reason", SqlDbType = SqlDbType.NVarChar, Value = model.VoidReason ?? "" };
-                    var providerId = new SqlParameter { ParameterName = "providerid", SqlDbType = SqlDbType.BigInt, Value = model.TREATING_PROVIDER_ID };
-                    var refProviderId = new SqlParameter { ParameterName = "ref_provider_id", SqlDbType = SqlDbType.BigInt, Value = model.TREATING_PROVIDER_ID };
-                    var pos = new SqlParameter { ParameterName = "pos", SqlDbType = SqlDbType.NVarChar, Value = locationName };
-                    var region = new SqlParameter { ParameterName = "region", SqlDbType = SqlDbType.NVarChar, Value = certifyState };
-                    var patientAccount = new SqlParameter { ParameterName = "patient_account", SqlDbType = SqlDbType.BigInt, Value = model.PATIENT_ACCOUNT };
-                    var caseStatusId = new SqlParameter { ParameterName = "case_status_id", SqlDbType = SqlDbType.BigInt, Value = model.CASE_STATUS_ID };
-                    var result = SpRepository<CaseAdditionalInfoRresponce>.GetListWithStoreProcedure(@"exec AF_PROC_CASE_ADDITIONAL_INFO @case_id, @reason, @providerid,@ref_provider_id,@pos,@region,@patient_account,@case_status_id",
-                              caseId, reason, providerId, refProviderId, pos, region, patientAccount, caseStatusId);
-                }
+                var case_id = new SqlParameter { ParameterName = "case_id", SqlDbType = SqlDbType.BigInt, Value = model.CASE_ID };
+                var reason = new SqlParameter { ParameterName = "reason", SqlDbType = SqlDbType.NVarChar, Value = model.VoidReason ?? "" };
+                var providerid = new SqlParameter { ParameterName = "providerid", SqlDbType = SqlDbType.BigInt, Value = provider_code };
+                var ref_provider_id = new SqlParameter { ParameterName = "ref_provider_id", SqlDbType = SqlDbType.BigInt, Value = reffral_code };
+                var pos = new SqlParameter { ParameterName = "pos", SqlDbType = SqlDbType.NVarChar, Value = locationName };
+                var region = new SqlParameter { ParameterName = "region", SqlDbType = SqlDbType.NVarChar, Value = certifyState };
+                var patient_account = new SqlParameter { ParameterName = "patient_account", SqlDbType = SqlDbType.BigInt, Value = model.PATIENT_ACCOUNT };
+                var case_status_id = new SqlParameter { ParameterName = "case_status_id", SqlDbType = SqlDbType.BigInt, Value = model.CASE_STATUS_ID };
+                var is_edit_case = new SqlParameter { ParameterName = "is_edit_case", SqlDbType = SqlDbType.BigInt, Value = isEditcase };
+                var result = SpRepository<CaseAdditionalInfoRresponce>.GetListWithStoreProcedure(@"exec AF_PROC_CASE_ADDITIONAL_INFO @case_id, @reason, @providerid,@ref_provider_id,@pos,@region,@patient_account,@case_status_id, @is_edit_case",
+                case_id, reason, providerid, ref_provider_id, pos, region, patient_account, case_status_id, is_edit_case);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-
         }
+
+        public long? getProviderCode(FOX_TBL_CASE model)
+        {
+            var code = _providerRepository.GetSingle(t => t.FOX_PROVIDER_ID == model.TREATING_PROVIDER_ID);
+            if ( code.PROVIDER_CODE == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return code.PROVIDER_CODE;
+            }
+        }
+        
+        public long? getReffralCode(FOX_TBL_CASE model)
+        {
+            var code = _fox_tbl_ordering_ref_source.GetSingle(t => t.SOURCE_ID == model.CERTIFYING_REF_SOURCE_ID);
+            if(code.REFERRAL_CODE == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return code.REFERRAL_CODE;
+            }
+        }
+
         private List<OpenIssueList> CreateIntelligentTasks(long patientAccount, long caseId, List<OpenIssueList> openIssueList, UserProfile profile)
         {
             try
