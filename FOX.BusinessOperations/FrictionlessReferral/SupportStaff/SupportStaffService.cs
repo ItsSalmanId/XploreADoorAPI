@@ -1215,43 +1215,47 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             try
             {
                 long practiceCode = GetPracticeCode();
-                 var zipCode = new SqlParameter("ZIP_CODE", SqlDbType.BigInt) { Value = serviceAvailability.ZIP_CODE };
+                var zipCode = new SqlParameter("ZIP_CODE", SqlDbType.BigInt) { Value = !string.IsNullOrEmpty(serviceAvailability.ZIP_CODE) ? Convert.ToInt64(serviceAvailability.ZIP_CODE) : 0 };
                 var cityName = new SqlParameter("CITY_NAME", SqlDbType.VarChar) { Value = serviceAvailability.CITY_NAME ?? (object)DBNull.Value };
                 var pracCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practiceCode };
-                var result = SpRepository<test>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_IS_SERVICE_AVAILABLE @ZIP_CODE,  @CITY_NAME, @PRACTICE_CODE",
+                var result = SpRepository<ServiceAvailable>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_IS_SERVICE_AVAILABLE @ZIP_CODE,  @CITY_NAME, @PRACTICE_CODE",
                     zipCode, cityName, pracCode);
                 return result.IsAvailable;
             }
             catch (Exception)
             {
-
                 throw;
             }
-
         }
 
         public ResponseModel SaveExternalUserInfo(ExternalUserInfo externalUserInfo)
         {
             try
             {
-                var firID = new SqlParameter("FRICTIONLESS_UNAVAILABLE_ID", SqlDbType.BigInt) { Value = Helper.getMaximumId("FOX_FRICTIONLESS_UNAVAILABLE_ID") };
-                var firstName = new SqlParameter("SUBMITER_FIRST_NAME", SqlDbType.VarChar) { Value = externalUserInfo.SUBMITER_FIRST_NAME };
-                var lastName = new SqlParameter("SUBMITTER_LAST_NAME", SqlDbType.VarChar) { Value = externalUserInfo.SUBMITTER_LAST_NAME };
-                var phoneNumber = new SqlParameter("SUBMITTER_PHONE", SqlDbType.VarChar) { Value = externalUserInfo.SUBMITTER_PHONE ?? (object)DBNull.Value };
-                var email = new SqlParameter("SUBMITTER_EMAIL", SqlDbType.VarChar) { Value = externalUserInfo.SUBMITTER_EMAIL ?? (object)DBNull.Value };
-                var zipCode = new SqlParameter("ZIP_CODE", SqlDbType.VarChar) { Value = externalUserInfo.ZIP_CODE };
-                var cityName = new SqlParameter("CITY_NAME", SqlDbType.VarChar) { Value = externalUserInfo.CITY_NAME };
-                var pracCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
-                var result = SpRepository<ResponseModel>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_SAVE_EXTERNAL_USER_INFO @FRICTIONLESS_UNAVAILABLE_ID, @SUBMITER_FIRST_NAME, @SUBMITTER_LAST_NAME, @SUBMITTER_PHONE, @SUBMITTER_EMAIL, @ZIP_CODE, @CITY_NAME, @PRACTICE_CODE",
-                firID, firstName, lastName, phoneNumber, email, zipCode, cityName, pracCode);
+                if (externalUserInfo != null)
+                {
+                    var firID = new SqlParameter("FRICTIONLESS_UNAVAILABLE_ID", SqlDbType.BigInt) { Value = Helper.getMaximumId("FOX_FRICTIONLESS_UNAVAILABLE_ID") };
+                    var firstName = new SqlParameter("SUBMITER_FIRST_NAME", SqlDbType.VarChar) { Value = externalUserInfo.SUBMITER_FIRST_NAME };
+                    var lastName = new SqlParameter("SUBMITTER_LAST_NAME", SqlDbType.VarChar) { Value = externalUserInfo.SUBMITTER_LAST_NAME };
+                    var phoneNumber = new SqlParameter("SUBMITTER_PHONE", SqlDbType.VarChar) { Value = externalUserInfo.SUBMITTER_PHONE ?? (object)DBNull.Value };
+                    var email = new SqlParameter("SUBMITTER_EMAIL", SqlDbType.VarChar) { Value = externalUserInfo.SUBMITTER_EMAIL ?? (object)DBNull.Value };
+                    var zipCode = new SqlParameter("ZIP_CODE", SqlDbType.VarChar) { Value = externalUserInfo.ZIP_CODE };
+                    var cityName = new SqlParameter("CITY_NAME", SqlDbType.VarChar) { Value = externalUserInfo.CITY_NAME };
+                    var pracCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
+                    var result = SpRepository<ResponseModel>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_SAVE_EXTERNAL_USER_INFO @FRICTIONLESS_UNAVAILABLE_ID, @SUBMITER_FIRST_NAME, @SUBMITTER_LAST_NAME, @SUBMITTER_PHONE, @SUBMITTER_EMAIL, @ZIP_CODE, @CITY_NAME, @PRACTICE_CODE",
+                    firID, firstName, lastName, phoneNumber, email, zipCode, cityName, pracCode);
+                    return new ResponseModel()
+                    {
+                        Message = "Record Inserted Into DB."
+                    };
+                }
                 return new ResponseModel()
                 {
-                    Message = "Record Inserted Into DB."
+                    Message = "External User Info Model is Null"
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
                 throw;
             }
         }

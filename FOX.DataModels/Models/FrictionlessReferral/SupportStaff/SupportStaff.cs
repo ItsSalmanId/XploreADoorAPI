@@ -142,7 +142,7 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
     public class ServiceAvailability : BaseModel
     {
         public string CITY_NAME { get; set; }
-        public long ZIP_CODE { get; set; }
+        public string ZIP_CODE { get; set; }
     }
 
     public class ExternalUserInfo : BaseModel
@@ -171,7 +171,7 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public Boolean DELETED { get; set; }
     }
 
-    public class test : BaseModel
+    public class ServiceAvailable : BaseModel
     {
         public bool IsAvailable { get; set; }
     }
