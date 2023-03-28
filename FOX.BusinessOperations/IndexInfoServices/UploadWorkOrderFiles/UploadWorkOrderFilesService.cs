@@ -50,13 +50,15 @@ namespace FOX.BusinessOperations.IndexInfoServices.UploadWorkOrderFiles
         {
             var result = new ResSaveUploadWorkOrderFiles();
             long workId = reqSaveUploadWorkOrderFiles.WORK_ID;
+            string zipFilePath = "";
 
             var originalQueueFilesCount = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
             Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SaveUploadWorkOrderFiles > GenerateAndSaveImagesOfUploadedFiles || Start Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
-            _IUploadOrderImagesService.GenerateAndSaveImagesOfUploadedFiles(workId, reqSaveUploadWorkOrderFiles.FileNameList, Profile, originalQueueFilesCount);
+            zipFilePath = _IUploadOrderImagesService.GenerateAndSaveImagesOfUploadedFilesZip(workId, reqSaveUploadWorkOrderFiles.FileNameList, Profile, originalQueueFilesCount);
             Helper.TokenTaskCancellationExceptionLog("UploadWorkOrderFiles: In Function  SaveUploadWorkOrderFiles > GenerateAndSaveImagesOfUploadedFiles || End Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
 
             result.WORK_ID = workId;
+            result.zipFilePath = zipFilePath;
             result.FilePaths = SpRepository<FilePath>.GetListWithStoreProcedure(@"exec FOX_GET_File_PAGES  @WORK_ID", new SqlParameter("WORK_ID ", SqlDbType.BigInt) { Value = workId });
             result.Message = $"Upload Work Order Files Successfully. WorkId = { workId }";
             result.ErrorMessage = "";

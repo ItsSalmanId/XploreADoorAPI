@@ -17,10 +17,13 @@ using FOX.DataModels.Models.SenderName;
 using FOX.DataModels.Models.ServiceConfiguration;
 using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.RequestForOrder;
+using System.IO.Compression;
 using System.Threading;
 using System.Diagnostics;
 using System.Data.SqlClient;
 using System.Data;
+using ICSharpCode.SharpZipLib.Zip;
+using ICSharpCode.SharpZipLib.Core;
 
 namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
 {
@@ -105,7 +108,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             var workId = Helper.getMaximumId("WORK_ID");
             Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages Work_ID (" + workId + ") || Start Time of Function SubmitUploadOrderImages" + Helper.GetCurrentDate().ToLocalTime());
             OriginalQueue originalQueue = new OriginalQueue();
-          
+
             originalQueue.WORK_ID = workId;
             originalQueue.UNIQUE_ID = workId.ToString();
             originalQueue.PRACTICE_CODE = Profile.PracticeCode;
@@ -165,24 +168,24 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                 SavePdfToImages(coverfilePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
                 Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > SavePdfToImages || End Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
 
-                    FOX_TBL_NOTES_HISTORY notes = new FOX_TBL_NOTES_HISTORY();
-                    notes.NOTE_ID = Helper.getMaximumId("NOTE_ID");
-                   
-                    notes.CREATED_BY = Profile.UserName;
-                    notes.CREATED_DATE = Helper.GetCurrentDate().ToString();
-                    notes.DELETED = false;
-                    notes.MODIFIED_DATE = Helper.GetCurrentDate();
-                    notes.MODIFIED_BY = Profile.UserName;
-                    notes.PRACTICE_CODE = Profile.PracticeCode;
-                    _NotesRepository.Insert(notes);
-                    _NotesRepository.Save();
+                FOX_TBL_NOTES_HISTORY notes = new FOX_TBL_NOTES_HISTORY();
+                notes.NOTE_ID = Helper.getMaximumId("NOTE_ID");
 
-                    var newObj = new FOX_TBL_NOTES_HISTORY()
-                    {
-                        WORK_ID = workId,
-                        NOTE_DESC = "Custom ordering referral source is added by the user. See the attached referral for details"
-                    };
-                    InsertNotesHistory(newObj, Profile);
+                notes.CREATED_BY = Profile.UserName;
+                notes.CREATED_DATE = Helper.GetCurrentDate().ToString();
+                notes.DELETED = false;
+                notes.MODIFIED_DATE = Helper.GetCurrentDate();
+                notes.MODIFIED_BY = Profile.UserName;
+                notes.PRACTICE_CODE = Profile.PracticeCode;
+                _NotesRepository.Insert(notes);
+                _NotesRepository.Save();
+
+                var newObj = new FOX_TBL_NOTES_HISTORY()
+                {
+                    WORK_ID = workId,
+                    NOTE_DESC = "Custom ordering referral source is added by the user. See the attached referral for details"
+                };
+                InsertNotesHistory(newObj, Profile);
             }
             if (!String.IsNullOrWhiteSpace(reqSubmitUploadOrderImagesModel.NOTE_DESC))
             {
@@ -197,7 +200,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             {
                 var procedureDetail = InsertUpdateSpecialty(reqSubmitUploadOrderImagesModel, Profile, originalQueue, reqSubmitUploadOrderImagesModel.PATIENT_ACCOUNT);
             }
-                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages || End Time of Function SubmitUploadOrderImages" + Helper.GetCurrentDate().ToLocalTime());
+            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages || End Time of Function SubmitUploadOrderImages" + Helper.GetCurrentDate().ToLocalTime());
             return new ResSubmitUploadOrderImagesModel() { Message = "Work Order Created Successfully. workId = " + workId, ErrorMessage = "", Success = true };
             //}
             //catch (Exception exception)
@@ -207,7 +210,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             //    return new ResSubmitUploadOrderImagesModel() { Message = "Work Order Created Successfully.", ErrorMessage = exception.ToString(), Success = false };
             //    //return new ResSubmitUploadOrderImagesModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
             //}
-            
+
         }
         private OriginalQueue InsertUpdateSpecialty(ReqSubmitUploadOrderImagesModel obj, UserProfile profile, OriginalQueue sourceAddDetail, long? pat_account)
         {
@@ -229,49 +232,212 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
         {
             //try
             //{
-                var config = Helper.GetServiceConfiguration(profile.PracticeCode);
-                if (config.PRACTICE_CODE != null
-                    && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
-                    && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
-                {
-                    //string pdfPath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.PdfPath);
-                    //string imagesPath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.ImagesPath);
+            var config = Helper.GetServiceConfiguration(profile.PracticeCode);
+            if (config.PRACTICE_CODE != null
+                && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
+                && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
+            {
+                //string pdfPath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.PdfPath);
+                //string imagesPath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.ImagesPath);
 
-                    int totalPages = 0;
-                    long pageCounter = originalQueueFilesCount;
-                    foreach (var filePath1 in FileNameList)
+                int totalPages = 0;
+                long pageCounter = originalQueueFilesCount;
+                foreach (var filePath1 in FileNameList)
+                {
+                    string filePath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.RequestForOrderUploadImages + @"\" + filePath1);
+                    var ext = Path.GetExtension(filePath).ToLower();
+                    if (!Directory.Exists(config.ORIGINAL_FILES_PATH_SERVER))
                     {
-                        string filePath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.RequestForOrderUploadImages + @"\" + filePath1);
-                        var ext = Path.GetExtension(filePath).ToLower();
-                        if (!Directory.Exists(config.ORIGINAL_FILES_PATH_SERVER))
-                        {
-                            Directory.CreateDirectory(config.ORIGINAL_FILES_PATH_SERVER);
-                        }
-                        if (ext == ".tiff" || ext == ".tif" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".gif" || ext == ".bmp")
-                        {
-                            ConvertPDFToImages pdfToImg = new ConvertPDFToImages();
-                            int numberOfPages = pdfToImg.tifToImage(filePath, config.IMAGES_PATH_SERVER, workId, pageCounter, config.IMAGES_PATH_DB, out pageCounter, true);
-                            totalPages += numberOfPages;
-                        }
-                        else
-                        {
-                            int numberOfPages = getNumberOfPagesOfPDF(filePath);
-                            SavePdfToImages(filePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
-                            totalPages += numberOfPages;
-                        }
+                        Directory.CreateDirectory(config.ORIGINAL_FILES_PATH_SERVER);
                     }
-
-                AddToDatabase("", totalPages + originalQueueFilesCount, profile.UserName, workId, config.PRACTICE_CODE); 
+                    if (ext == ".tiff" || ext == ".tif" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".gif" || ext == ".bmp")
+                    {
+                        ConvertPDFToImages pdfToImg = new ConvertPDFToImages();
+                        int numberOfPages = pdfToImg.tifToImage(filePath, config.IMAGES_PATH_SERVER, workId, pageCounter, config.IMAGES_PATH_DB, out pageCounter, true);
+                        totalPages += numberOfPages;
+                    }
+                    else
+                    {
+                        int numberOfPages = getNumberOfPagesOfPDF(filePath);
+                        SavePdfToImages(filePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
+                        totalPages += numberOfPages;
+                    }
                 }
-                else
+                List<string> filePathsZip = new List<string>();
+                var originalQueueFilesList = _OriginalQueueFiles.GetMany(x => x.WORK_ID == workId && x.deleted == false);
+               // var test = _QueueRepository.GetFirst(x => x.WORK_ID == workId && x.DELETED == false);
+                foreach (var item in FileNameList)
                 {
-                    throw new Exception("DB configuration for file paths not found. See service configuration.");
+                    filePathsZip.Add(HttpContext.Current.Server.MapPath("~/" + AppConfiguration.RequestForOrderUploadImages + @"\" + item));
                 }
+                string zipfolderpath = config.ORIGINAL_FILES_PATH_SERVER;
+                string FileName = workId + "_" + DateTime.Now.Ticks + ".zip";
+                var filePath2 = @"" + zipfolderpath + "\\" + FileName;
+                var filePath3 = @"" + zipfolderpath + "\\Newfolder";
+                //ZIP FILE LOGIC
+                try
+                {
+                    using (var zipStream = new ZipOutputStream(File.Create(filePath2)))
+                    {
+                        foreach (string filePaths in filePathsZip)
+                        {
+                            byte[] fileBytes = System.IO.File.ReadAllBytes(filePaths);
+                            var fileEntry = new ZipEntry(Path.GetFileName(filePaths))
+                            {
+                                Size = fileBytes.Length
+                            };
+                            zipStream.PutNextEntry(fileEntry);
+                            zipStream.Write(fileBytes, 0, fileBytes.Length);
+                        }
+                        zipStream.Flush();
+                        zipStream.Close();
+                    }
+                    AddToDatabase(filePath2, totalPages + originalQueueFilesCount, profile.UserName, workId, config.PRACTICE_CODE);
+                }
+                catch (Exception)
+                {
+                    // EventLogg.writeLog("Exception occurred while creating and saving zip." + ex);
+                    filePath2 = "";
+                }
+            }
+            else
+            {
+                throw new Exception("DB configuration for file paths not found. See service configuration.");
+            }
             //}
             //catch (Exception ex)
             //{
             //    throw ex;
             //}
+        }
+        public string GenerateAndSaveImagesOfUploadedFilesZip(long workId, List<string> FileNameList, UserProfile profile, int originalQueueFilesCount = 0)
+        {
+            //try
+            //{
+            var config = Helper.GetServiceConfiguration(profile.PracticeCode);
+            if (config.PRACTICE_CODE != null
+                && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
+                && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
+            {
+                //string pdfPath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.PdfPath);
+                //string imagesPath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.ImagesPath);
+
+                int totalPages = 0;
+                long pageCounter = originalQueueFilesCount;
+                foreach (var filePath1 in FileNameList)
+                {
+                    string filePath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.RequestForOrderUploadImages + @"\" + filePath1);
+                    var ext = Path.GetExtension(filePath).ToLower();
+                    if (!Directory.Exists(config.ORIGINAL_FILES_PATH_SERVER))
+                    {
+                        Directory.CreateDirectory(config.ORIGINAL_FILES_PATH_SERVER);
+                    }
+                    if (ext == ".tiff" || ext == ".tif" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".gif" || ext == ".bmp")
+                    {
+                        ConvertPDFToImages pdfToImg = new ConvertPDFToImages();
+                        int numberOfPages = pdfToImg.tifToImage(filePath, config.IMAGES_PATH_SERVER, workId, pageCounter, config.IMAGES_PATH_DB, out pageCounter, true);
+                        totalPages += numberOfPages;
+                    }
+                    else
+                    {
+                        int numberOfPages = getNumberOfPagesOfPDF(filePath);
+                        SavePdfToImages(filePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
+                        totalPages += numberOfPages;
+                    }
+                }
+                List<string> filePathsZip = new List<string>();
+                var originalQueueFilesList = _OriginalQueueFiles.GetMany(x => x.WORK_ID == workId && x.deleted == false);
+                var originalQueueData = _QueueRepository.GetFirst(x => x.WORK_ID == workId && x.DELETED == false);
+                foreach (var item in FileNameList)
+                {
+                    filePathsZip.Add(HttpContext.Current.Server.MapPath("~/" + AppConfiguration.RequestForOrderUploadImages + @"\" + item));
+                }
+                string zipfolderpath = config.ORIGINAL_FILES_PATH_SERVER;
+                string FileName = workId + "_" + DateTime.Now.Ticks + ".zip";
+                var filePath2 = @"" + zipfolderpath + "\\" + FileName;
+                var filePath3 = @"" + zipfolderpath + "\\Newfolder";
+                ZipFile file = null;
+                if (!string.IsNullOrEmpty(originalQueueData.FILE_PATH)) { 
+                try
+                {
+
+                    FileStream fs = File.OpenRead(originalQueueData.FILE_PATH);
+                    file = new ZipFile(fs);
+                    foreach (ZipEntry zipEntry in file)
+                    {
+                        if (!zipEntry.IsFile)
+                        {
+                            // Ignore directories
+                            continue;
+                        }
+                        String entryFileName = zipEntry.Name;
+                        // to remove the folder from the entry:- entryFileName = Path.GetFileName(entryFileName);
+                        // Optionally match entrynames against a selection list here to skip as desired.
+                        // The unpacked length is available in the zipEntry.Size property.
+
+                        // 4K is optimum
+                        byte[] buffer = new byte[4096];
+                        Stream zipStream = file.GetInputStream(zipEntry);
+
+                        // Manipulate the output filename here as desired.
+                        String fullZipToPath = Path.Combine(filePath3, entryFileName);
+                        string directoryName = Path.GetDirectoryName(fullZipToPath);
+                        filePathsZip.Add(fullZipToPath);
+                        if (directoryName.Length > 0)
+                        {
+                            Directory.CreateDirectory(directoryName);
+                        }
+                        // Unzip file in buffered chunks. This is just as fast as unpacking to a buffer the full size
+                        // of the file, but does not waste memory.
+                        // The "using" will close the stream even if an exception occurs.
+                        using (FileStream streamWriter = File.Create(fullZipToPath))
+                        {
+                            StreamUtils.Copy(zipStream, streamWriter, buffer);
+                        }
+                    }
+                }
+                finally
+                {
+                    if (file != null)
+                    {
+                        file.IsStreamOwner = true; // Makes close also shut the underlying stream
+                        file.Close(); // Ensure we release resources
+                    }
+                } }
+
+                try
+                {
+                    using (var zipStream = new ZipOutputStream(File.Create(filePath2)))
+                    {
+                        foreach (string filePaths in filePathsZip)
+                        {
+                            byte[] fileBytes = System.IO.File.ReadAllBytes(filePaths);
+                            var fileEntry = new ZipEntry(Path.GetFileName(filePaths))
+                            {
+                                Size = fileBytes.Length
+                            };
+                            zipStream.PutNextEntry(fileEntry);
+                            zipStream.Write(fileBytes, 0, fileBytes.Length);
+                        }
+                        zipStream.Flush();
+                        zipStream.Close();
+                    }
+
+                    AddToDatabase(filePath2, totalPages + originalQueueFilesCount, profile.UserName, workId, config.PRACTICE_CODE);
+                    return filePath2;
+                }
+
+                catch (Exception)
+                {
+                    // EventLogg.writeLog("Exception occurred while creating and saving zip." + ex);
+                    filePath2 = "";
+                }
+            }
+            else
+            {
+                throw new Exception("DB configuration for file paths not found. See service configuration.");
+            }
+            return "";
         }
         private int getNumberOfPagesOfPDF(string PdfPath)
         {
