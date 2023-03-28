@@ -4839,8 +4839,18 @@ namespace FOX.BusinessOperations.PatientServices
                     {
                         var datetimeUtc = Convert.ToDateTime(details.InsuranceToCreateUpdate.DED_MET_AS_OF_IN_STRING);
                         var easternZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                        var estDate = TimeZoneInfo.ConvertTimeFromUtc(datetimeUtc, easternZone);
-                        details.InsuranceToCreateUpdate.DED_AMT_VERIFIED_ON = Convert.ToDateTime(estDate);
+                        var estDates = TimeZoneInfo.ConvertTimeFromUtc(datetimeUtc, easternZone);
+                        if (estDates < DateTime.Today)
+                        {
+                            var estDate = estDates.AddDays(1);
+                            details.InsuranceToCreateUpdate.DED_AMT_VERIFIED_ON = Convert.ToDateTime(estDate);
+                        }
+                        else
+                        {
+                            var estDate = estDates;
+                            details.InsuranceToCreateUpdate.DED_AMT_VERIFIED_ON = Convert.ToDateTime(estDate);
+
+                        }
                     }
                     //DED_MET_AS_OF Date
                     if (!string.IsNullOrEmpty(details.InsuranceToCreateUpdate.DED_MET_AS_OF_IN_STRING))
