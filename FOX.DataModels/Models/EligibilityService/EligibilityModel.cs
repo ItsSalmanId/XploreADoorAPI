@@ -178,8 +178,8 @@ namespace FOX.DataModels.Models.EligibilityService
 
     public partial class PayerDetails
     {
-        public string PayerName { get; set; }
-        public string PayerId { get; set; }
+        public string Payer_Name { get; set; }
+        public string Payer_ID { get; set; }
     }
 
     public partial class ProvierDetails

@@ -158,6 +158,7 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public string PatientGender { get; set; }
         public string PolicyNumber { get; set; }
         public string DateOfBirth { get; set; }
+        public string PatientDisciplineId { get; set; }
     }
     #endregion
 }
