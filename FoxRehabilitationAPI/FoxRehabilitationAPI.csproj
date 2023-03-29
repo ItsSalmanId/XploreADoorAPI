@@ -18,10 +18,10 @@
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication />
-    <IISExpressWindowsAuthentication />
-    <IISExpressUseClassicPipelineMode />
+    <IISExpressSSLPort>44362</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -356,6 +356,7 @@
     <Compile Include="Controllers\Settings\ReferralSource\ReferralSourceController.cs" />
     <Compile Include="Controllers\SignatureRequiredController.cs" />
     <Compile Include="Controllers\SupervisorController.cs" />
+    <Compile Include="Controllers\SurveyAutomationController.cs" />
     <Compile Include="Controllers\TasksController.cs" />
     <Compile Include="Controllers\UnAssignedQueueController.cs" />
     <Compile Include="Controllers\UploadFilesController.cs" />
@@ -430,6 +431,7 @@
     <None Include="Properties\PublishProfiles\LocalFiles.pubxml" />
     <None Include="Properties\PublishProfiles\UAT.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="HtmlTemplates\UnsubscribeAutomatedPatientSurveyEmailTemplate.html" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
@@ -457,6 +459,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="bin\roslyn\" />
+    <Folder Include="Views\EvaluationSetup\" />
+    <Folder Include="Views\Group\" />
+    <Folder Include="Views\PerformAudit\" />
+    <Folder Include="Views\QAReport\" />
+    <Folder Include="Views\SignatureRequired\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

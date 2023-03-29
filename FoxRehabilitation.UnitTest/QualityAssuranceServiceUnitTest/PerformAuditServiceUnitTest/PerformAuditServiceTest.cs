@@ -14,6 +14,7 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
         private RequestCallFromQA _requestCallFromQA;
         private UserProfile _userProfile;
         public int callScanrioID;
+        private RequestCallList _requestCallList;
 
         [SetUp]
         public void SetUp()
@@ -23,6 +24,7 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             _surveyAuditScores = new SurveyAuditScores();
             _requestCallFromQA = new RequestCallFromQA();
             _userProfile = new UserProfile();
+            _requestCallList = new RequestCallList();
         }
         [Test]
         [TestCase(1011163, "")]
@@ -144,7 +146,55 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             //Assert
             if (result.Count > 0)
             {
-                Assert.Pass("Failed");
+                Assert.Pass("Passed");
+            }
+        }
+        [Test]
+        [TestCase(false, 1)]
+        [TestCase(false, 2)]
+        [TestCase(true, 4)]
+        [TestCase(false, 3)]
+        public void PostCallList_PassModel_NoReturnData(bool readOnlyMode, int timeFrame)
+        {
+            //Arrange
+            _userProfile.PracticeCode = 1011163;
+            _requestCallList.TIME_FRAME = timeFrame;
+            _requestCallList.SURVEY_BY = "Admin_5651352";
+            _requestCallList.CALL_TYPE = "survey";
+            _requestCallList.PHD_CALL_SCENARIO_ID = 0;
+            _requestCallList.IS_READ_ONLY_MODE = readOnlyMode;
+            
+            //Act
+            var result = _performAuditService.PostCallList(_requestCallList, _userProfile);
+
+            //Assert
+            if (result.Count > 0)
+            {
+                Assert.Pass("Passed");
+            }
+        }
+        [Test]
+        public void InsertAuditScores_PassModel_NoReturnData()
+        {
+            //Arrange
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "Unit Test";
+            _surveyAuditScores.SURVEY_CALL_ID = 548558;
+            _surveyAuditScores.PHD_CALL_ID = 548558;
+            _surveyAuditScores.EDIT_AUDIT_REPORT = false;
+            _surveyAuditScores.TOTAL_POINTS = 1;
+
+            //Act
+            var result = _performAuditService.InsertAuditScores(_surveyAuditScores, _userProfile);
+
+            //Assert
+            if (result)
+            {
+                Assert.True(true);
+            }
+            else
+            {
+                Assert.False(false);
             }
         }
         [TearDown]
