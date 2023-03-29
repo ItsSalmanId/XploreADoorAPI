@@ -264,7 +264,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QADashboardService
                     obj.data = new List<long>();
                     foreach (var range in lineGraphResponseModel.dateRanges)
                     {
-                        var avgValue = lineGraphResponseModel.lineGraphData.Find(a => a.DATE_RANGE == range && a.AGENT_NAME == name.value);
+                        var avgValue = lineGraphResponseModel.lineGraphData.Find(a => a.DATE_RANGE == range && !string.IsNullOrEmpty(a.AGENT_NAME) && a.AGENT_NAME.ToLower() == name.value.ToLower());
                         obj.data.Add(avgValue == null ? 0 : avgValue.EVALUATION_PERCENTAGE);
                     }
                     lineGraphResponseModel.series.Add(obj);
