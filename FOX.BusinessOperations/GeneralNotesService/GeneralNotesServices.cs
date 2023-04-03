@@ -58,7 +58,7 @@ namespace FOX.BusinessOperations.GeneralNotesService
                 var sortBy = new SqlParameter { ParameterName = "SORT_BY", Value = request.Sort_By };
                 var sortOrder = new SqlParameter { ParameterName = "SORT_ORDER", Value = request.Sort_Order };
                 var result = SpRepository<FOX_TBL_GENERAL_NOTE>.GetListWithStoreProcedure(@" exec [FOX_PROC_GET_ALL_GENERAL_NOTES] @PRACTICE_CODE, @CURRENT_PAGE, @RECORDS_PER_PAGE, @SEARCH_TEXT, @PATIENT_ACCOUNT,@SORT_BY,@SORT_ORDER", practiceCode, currentPage, recordsPerPage, searchText, patientAccount, sortBy, sortOrder);
-                if (result != null && result.Count > 0)
+                if (result.Count > 0)
                 {
                     foreach (var note in result)
                     {
@@ -78,36 +78,15 @@ namespace FOX.BusinessOperations.GeneralNotesService
                             note.IS_YELLOW = false;
                         }
                         var vrHistory = _generalNotesRepository.GetMany(h => h.PARENT_GENERAL_NOTE_ID == note.GENERAL_NOTE_ID && !h.DELETED && h.PRACTICE_CODE == note.PRACTICE_CODE);
-                        if (vrHistory != null && vrHistory.Count > 0)
+                        var practiceCodeParam = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = System.Data.SqlDbType.BigInt, Value = profile.PracticeCode };
+                        var Generalnoteid = new SqlParameter { ParameterName = "GENERAL_NOTE_ID", SqlDbType = System.Data.SqlDbType.BigInt, Value = note.GENERAL_NOTE_ID };
+                        var vrNoteHistory = SpRepository<FOX_TBL_GENERAL_NOTE>.GetListWithStoreProcedure(@" exec [FOX_PROC_GET_ALL_GENERAL_NOTES_HISTORY] @PRACTICE_CODE, @GENERAL_NOTE_ID", practiceCodeParam, Generalnoteid);
+                        if (vrNoteHistory != null && vrNoteHistory.Count > 0)
                         {
-                            var vrNoteHistory = (from n in vrHistory
-                                                 join u in _securityContext.Users on n.CREATED_BY equals u.USER_NAME into un
-                                                 from u in un.DefaultIfEmpty()
-                                                 select new FOX_TBL_GENERAL_NOTE
-                                                 {
-                                                     CREAETED_BY_FIRST_NAME = u != null ? u.FIRST_NAME : "",
-                                                     CREATED_BY_LAST_NAME = u != null ? u.LAST_NAME : "",
-                                                     CREATED_BY_FULL_NAME = u != null ? u.LAST_NAME != null && u.LAST_NAME != "" ? u.LAST_NAME + ", " + u.FIRST_NAME : u.FIRST_NAME : "",
-                                                     CREATED_BY = n.CREATED_BY,
-                                                     PRACTICE_CODE = n.PRACTICE_CODE,
-                                                     DELETED = n.DELETED,
-                                                     CASE_ID = n.CASE_ID != null ? n.CASE_ID : 0,
-                                                     CREATED_DATE = n.CREATED_DATE,
-                                                     GENERAL_NOTE_ID = n.GENERAL_NOTE_ID,
-                                                     NOTE_DESCRIPTION = n.NOTE_DESCRIPTION,
-                                                     PATIENT_ACCOUNT = n.PATIENT_ACCOUNT,
-                                                     PARENT_GENERAL_NOTE_ID = n.PARENT_GENERAL_NOTE_ID,
-                                                     MODIFIED_BY = n.MODIFIED_BY,
-                                                     MODIFIED_DATE = n.MODIFIED_DATE
-                                                 }
-                           ).ToList();
-                            if (vrNoteHistory != null && vrNoteHistory.Count > 0)
-                            {
-                                note.LAST_REPLY_BY = vrNoteHistory.Last().CREATED_BY_FULL_NAME;
-                                note.LAST_REPLY_ON = vrNoteHistory.Last().CREATED_DATE;
-                                note.NOTE_REPLIES = vrNoteHistory;
-                                note.NOTE_REPLIES.RemoveAt(0);
-                            }
+                            note.LAST_REPLY_BY = vrNoteHistory.Last().CREATED_BY_FULL_NAME;
+                            note.LAST_REPLY_ON = vrNoteHistory.Last().CREATED_DATE;
+                            note.NOTE_REPLIES = vrNoteHistory;
+                            note.NOTE_REPLIES.RemoveAt(0);
                         }
                     }
                 }
@@ -179,26 +158,9 @@ namespace FOX.BusinessOperations.GeneralNotesService
                                   Note = n,
                                   NoteHistory = nh
                               }).FirstOrDefault();
-                var noteHistory = (from n in vrNote.NoteHistory
-                                   join u in _securityContext.Users on n.CREATED_BY equals u.USER_NAME into un
-                                   from u in un.DefaultIfEmpty()
-                                   select new FOX_TBL_GENERAL_NOTE()
-                                   {
-                                       CASE_ID = n.CASE_ID,
-                                       CREAETED_BY_FIRST_NAME = u.FIRST_NAME,
-                                       CREATED_BY_LAST_NAME = u.LAST_NAME,
-                                       CREATED_BY_FULL_NAME = u.LAST_NAME != null && u.LAST_NAME != "" ? u.LAST_NAME + ", " + u.FIRST_NAME : u.FIRST_NAME,
-                                       CREATED_BY = n.CREATED_BY,
-                                       CREATED_DATE = n.CREATED_DATE,
-                                       DELETED = n.DELETED,
-                                       GENERAL_NOTE_ID = n.GENERAL_NOTE_ID,
-                                       MODIFIED_BY = n.MODIFIED_BY,
-                                       MODIFIED_DATE = n.MODIFIED_DATE,
-                                       NOTE_DESCRIPTION = n.NOTE_DESCRIPTION,
-                                       PATIENT_ACCOUNT = n.PATIENT_ACCOUNT,
-                                       PARENT_GENERAL_NOTE_ID = n.PARENT_GENERAL_NOTE_ID,
-                                       PRACTICE_CODE = n.PRACTICE_CODE
-                                   }).ToList();
+                var practiceCodeParam = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = System.Data.SqlDbType.BigInt, Value = profile.PracticeCode };
+                var Generalnoteid = new SqlParameter { ParameterName = "GENERAL_NOTE_ID", SqlDbType = System.Data.SqlDbType.BigInt, Value = request.GENERAL_NOTE_ID };
+                var noteHistory = SpRepository<FOX_TBL_GENERAL_NOTE>.GetListWithStoreProcedure(@" exec [FOX_PROC_GET_ALL_GENERAL_NOTES_HISTORY] @PRACTICE_CODE, @GENERAL_NOTE_ID", practiceCodeParam, Generalnoteid);
                 if (vrNote != null)
                 {
                     vrNote.NoteHistory = noteHistory;
