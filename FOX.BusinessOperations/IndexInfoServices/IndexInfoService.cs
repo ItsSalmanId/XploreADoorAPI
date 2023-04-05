@@ -117,7 +117,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private readonly GenericRepository<RegionCoverLetter> _RegionCoverLetterRepository;
         private readonly GenericRepository<TaskWorkInterfaceMapping> _TaskWorkInterfaceMapping;
         private readonly GenericRepository<AdmissionImportantNotes> _admissionImportantNotes;
-        private readonly GenericRepository<FoxTblGeneralNotes> _foxTblGeneralNotes;
         private static List<Thread> threadsList = new List<Thread>();
         private readonly GroupService _groupService;
         private long talkRehabWorkID = 0;
@@ -181,7 +180,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
             _groupService = new GroupService();
             _TaskWorkInterfaceMapping = new GenericRepository<TaskWorkInterfaceMapping>(_TaskContext);
             _admissionImportantNotes = new GenericRepository<AdmissionImportantNotes>(_QueueContext);
-            _foxTblGeneralNotes = new GenericRepository<FoxTblGeneralNotes>(_QueueContext);
         }
         public void InsertUpdateDocuments(FOX_TBL_PATIENT_DOCUMENTS obj, UserProfile profile)
         {
@@ -5706,7 +5704,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
         public AdmissionImportantNotes AddAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes, UserProfile userProfile)
         {
-            //ResponseModel response = new ResponseModel();
             if (!string.IsNullOrEmpty(objAdmissionImportantNotes.NOTES))
             {
                 long generalNotId = 0;

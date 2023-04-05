@@ -30,8 +30,6 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<FOX_TBL_REFERRAL_SOURCE>().Property(t => t.FOX_SOURCE_CATEGORY_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<GROUP>().Property(t => t.GROUP_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<AdmissionImportantNotes>().Property(t => t.ADMISSION_IMPORTANT_NOTES_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
-            modelBuilder.Entity<FoxTblGeneralNotes>().Property(t => t.GENERAL_NOTE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
-
         }
 
         public virtual DbSet<Models.OriginalQueueModel.OriginalQueue> WorkQueue { get; set; }
@@ -47,7 +45,5 @@ namespace FOX.DataModels.Context
         public virtual DbSet<FOX_TBL_REFERRAL_SOURCE> FOX_TBL_REFERRAL_SOURCE { get; set; }
         public virtual DbSet<GROUP> UserGroups { get; set; }
         public virtual DbSet<AdmissionImportantNotes> AdmissionImportantNotes { get; set; }
-        public virtual DbSet<FoxTblGeneralNotes> FoxTblGeneralNotes { get; set; }
-
     }
 }
