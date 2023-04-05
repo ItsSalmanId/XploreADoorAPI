@@ -2753,14 +2753,18 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     threadsList.Add(myThread);
                     AddFilesToDatabase(imgPath, workId, lworkid, logoImgPath);
                 }
-                //noOfPages = noOfPages + 1;
-                long ConvertedWorkID = Convert.ToInt64(workId);
-                noOfPages = _OriginalQueueFiles.GetMany(t => t.WORK_ID == ConvertedWorkID && !t.deleted)?.Count() ?? 0;
-                AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, approval, config.PRACTICE_CODE, decline);
+                while (noOfPages > threadCounter.Count)
+                {
+                    //loop untill record complete
+                }
                 foreach (var thread in threadsList)
                 {
                     thread.Abort();
                 }
+                //noOfPages = noOfPages + 1;
+                long ConvertedWorkID = Convert.ToInt64(workId);
+                noOfPages = _OriginalQueueFiles.GetMany(t => t.WORK_ID == ConvertedWorkID && !t.deleted)?.Count() ?? 0;
+                AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, approval, config.PRACTICE_CODE, decline);
             }
         }
         public void newThreadImplementaion(ref List<int> threadCounter, string PdfPath, int i, string imgPath, string logoImgPath)
