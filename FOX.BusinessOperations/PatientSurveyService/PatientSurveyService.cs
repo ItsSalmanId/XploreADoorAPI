@@ -1099,7 +1099,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
             var _surveyId = new SqlParameter { ParameterName = "SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = 0 };
             var _patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = surveyCallsLogs.patientAccountNumber};
 
-            var result = SpRepository<PatientSurveyCallLog>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PS_CALL_LOG_LIST_taseer
+            var result = SpRepository<PatientSurveyCallLog>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PS_CALL_LOG_LIST
                          @PRACTICE_CODE, @SURVEY_ID, @PATIENT_ACCOUNT,@CURRENT_PAGE,@RECORD_PER_PAGE", PracticeCode, _surveyId, _patientAccount,currentPage, recordPerpage);
             return result;
         }
@@ -1236,13 +1236,13 @@ namespace FOX.BusinessOperations.PatientSurveyService
         public List<PatientSurveyInBoundCallResponse> GetPatientSurveyInBoundCalls(SurveyCallsLogs surveyCallsLogs, long profilePracticeCode)
         {
             List<PatientSurveyInBoundCallResponse> result = new List<PatientSurveyInBoundCallResponse>();
-            if (surveyCallsLogs != null && profilePracticeCode != 0)
+            if (surveyCallsLogs != null && profilePracticeCode != 0 && !string.IsNullOrEmpty(surveyCallsLogs.patientAccountNumber))
             {
                 var patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(surveyCallsLogs.patientAccountNumber) };
                 var currentPage = new SqlParameter { ParameterName = "CURRENT_PAGE", SqlDbType = SqlDbType.BigInt, Value = surveyCallsLogs.CurrentPage };
                 var recordPerpage = new SqlParameter { ParameterName = "RECORD_PER_PAGE", SqlDbType = SqlDbType.BigInt, Value = surveyCallsLogs.RecordPerPage };
                 var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profilePracticeCode };
-                result = SpRepository<PatientSurveyInBoundCallResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SURVEY_INBOUND_CALL_DETAILS_bkp_02162023 @PATIENT_ACCOUNT, @PRACTICE_CODE,@CURRENT_PAGE,@RECORD_PER_PAGE", patientAccount, practiceCode, currentPage, recordPerpage);
+                result = SpRepository<PatientSurveyInBoundCallResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SURVEY_INBOUND_CALL_DETAILS @PATIENT_ACCOUNT, @PRACTICE_CODE,@CURRENT_PAGE,@RECORD_PER_PAGE", patientAccount, practiceCode, currentPage, recordPerpage);
             }
             return result;
         }
