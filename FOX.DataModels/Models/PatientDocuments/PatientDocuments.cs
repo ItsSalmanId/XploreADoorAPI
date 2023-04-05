@@ -103,7 +103,7 @@ namespace FOX.DataModels.Models.PatientDocuments
         public string MODIFIED_BY { get; set; }
         public DateTime? MODIFIED_DATE { get; set; }
         public bool DELETED { get; set; }
-        public long FOX_PHD_CALL_DETAILS_ID { get; set; }
+        public long? FOX_PHD_CALL_DETAILS_ID { get; set; }
     }
     public class DocumenttypeAndpatientcases
     {

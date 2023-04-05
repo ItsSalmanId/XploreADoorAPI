@@ -103,9 +103,8 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             //try
             //{
             var workId = Helper.getMaximumId("WORK_ID");
-            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages Work_ID (" + workId + ") || Start Time of Function SubmitUploadOrderImages" + Helper.GetCurrentDate().ToLocalTime());
             OriginalQueue originalQueue = new OriginalQueue();
-          
+
             originalQueue.WORK_ID = workId;
             originalQueue.UNIQUE_ID = workId.ToString();
             originalQueue.PRACTICE_CODE = Profile.PracticeCode;
@@ -140,11 +139,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
 
             _QueueRepository.Insert(originalQueue);
             _QueueRepository.Save();
-
-            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > GenerateAndSaveImagesOfUploadedFiles || Start Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
             GenerateAndSaveImagesOfUploadedFiles(workId, reqSubmitUploadOrderImagesModel.FileNameList, Profile);
-            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > GenerateAndSaveImagesOfUploadedFiles || End Time of Function GenerateAndSaveImagesOfUploadedFiles" + Helper.GetCurrentDate().ToLocalTime());
-
             if (reqSubmitUploadOrderImagesModel.Is_Manual_ORS)
             {
                 string body = string.Empty;
@@ -161,28 +156,26 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                 var ext = Path.GetExtension(coverfilePath).ToLower();
                 int numberOfPages = getNumberOfPagesOfPDF(coverfilePath);
 
-                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > SavePdfToImages || Start Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
                 SavePdfToImages(coverfilePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
-                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages > SavePdfToImages || End Time of Function SavePdfToImages" + Helper.GetCurrentDate().ToLocalTime());
 
-                    FOX_TBL_NOTES_HISTORY notes = new FOX_TBL_NOTES_HISTORY();
-                    notes.NOTE_ID = Helper.getMaximumId("NOTE_ID");
-                   
-                    notes.CREATED_BY = Profile.UserName;
-                    notes.CREATED_DATE = Helper.GetCurrentDate().ToString();
-                    notes.DELETED = false;
-                    notes.MODIFIED_DATE = Helper.GetCurrentDate();
-                    notes.MODIFIED_BY = Profile.UserName;
-                    notes.PRACTICE_CODE = Profile.PracticeCode;
-                    _NotesRepository.Insert(notes);
-                    _NotesRepository.Save();
+                FOX_TBL_NOTES_HISTORY notes = new FOX_TBL_NOTES_HISTORY();
+                notes.NOTE_ID = Helper.getMaximumId("NOTE_ID");
 
-                    var newObj = new FOX_TBL_NOTES_HISTORY()
-                    {
-                        WORK_ID = workId,
-                        NOTE_DESC = "Custom ordering referral source is added by the user. See the attached referral for details"
-                    };
-                    InsertNotesHistory(newObj, Profile);
+                notes.CREATED_BY = Profile.UserName;
+                notes.CREATED_DATE = Helper.GetCurrentDate().ToString();
+                notes.DELETED = false;
+                notes.MODIFIED_DATE = Helper.GetCurrentDate();
+                notes.MODIFIED_BY = Profile.UserName;
+                notes.PRACTICE_CODE = Profile.PracticeCode;
+                _NotesRepository.Insert(notes);
+                _NotesRepository.Save();
+
+                var newObj = new FOX_TBL_NOTES_HISTORY()
+                {
+                    WORK_ID = workId,
+                    NOTE_DESC = "Custom ordering referral source is added by the user. See the attached referral for details"
+                };
+                InsertNotesHistory(newObj, Profile);
             }
             if (!String.IsNullOrWhiteSpace(reqSubmitUploadOrderImagesModel.NOTE_DESC))
             {
@@ -197,7 +190,6 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             {
                 var procedureDetail = InsertUpdateSpecialty(reqSubmitUploadOrderImagesModel, Profile, originalQueue, reqSubmitUploadOrderImagesModel.PATIENT_ACCOUNT);
             }
-                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SubmitUploadOrderImages || End Time of Function SubmitUploadOrderImages" + Helper.GetCurrentDate().ToLocalTime());
             return new ResSubmitUploadOrderImagesModel() { Message = "Work Order Created Successfully. workId = " + workId, ErrorMessage = "", Success = true };
             //}
             //catch (Exception exception)
@@ -207,7 +199,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             //    return new ResSubmitUploadOrderImagesModel() { Message = "Work Order Created Successfully.", ErrorMessage = exception.ToString(), Success = false };
             //    //return new ResSubmitUploadOrderImagesModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
             //}
-            
+
         }
         private OriginalQueue InsertUpdateSpecialty(ReqSubmitUploadOrderImagesModel obj, UserProfile profile, OriginalQueue sourceAddDetail, long? pat_account)
         {
@@ -228,45 +220,46 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
         public void GenerateAndSaveImagesOfUploadedFiles(long workId, List<string> FileNameList, UserProfile profile, int originalQueueFilesCount = 0)
         {
             //try
-            //{
-                var config = Helper.GetServiceConfiguration(profile.PracticeCode);
-                if (config.PRACTICE_CODE != null
-                    && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
-                    && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
-                {
-                    //string pdfPath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.PdfPath);
-                    //string imagesPath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.ImagesPath);
+            //{ 
 
-                    int totalPages = 0;
-                    long pageCounter = originalQueueFilesCount;
-                    foreach (var filePath1 in FileNameList)
+            var config = Helper.GetServiceConfiguration(profile.PracticeCode);
+            if (config.PRACTICE_CODE != null
+                && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
+                && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
+            {
+                //string pdfPath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.PdfPath);
+                //string imagesPath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.ImagesPath);
+
+                int totalPages = 0;
+                long pageCounter = originalQueueFilesCount;
+                foreach (var filePath1 in FileNameList)
+                {
+                    string filePath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.RequestForOrderUploadImages + @"\" + filePath1);
+                    var ext = Path.GetExtension(filePath).ToLower();
+                    if (!Directory.Exists(config.ORIGINAL_FILES_PATH_SERVER))
                     {
-                        string filePath = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.RequestForOrderUploadImages + @"\" + filePath1);
-                        var ext = Path.GetExtension(filePath).ToLower();
-                        if (!Directory.Exists(config.ORIGINAL_FILES_PATH_SERVER))
-                        {
-                            Directory.CreateDirectory(config.ORIGINAL_FILES_PATH_SERVER);
-                        }
-                        if (ext == ".tiff" || ext == ".tif" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".gif" || ext == ".bmp")
-                        {
-                            ConvertPDFToImages pdfToImg = new ConvertPDFToImages();
-                            int numberOfPages = pdfToImg.tifToImage(filePath, config.IMAGES_PATH_SERVER, workId, pageCounter, config.IMAGES_PATH_DB, out pageCounter, true);
-                            totalPages += numberOfPages;
-                        }
-                        else
-                        {
-                            int numberOfPages = getNumberOfPagesOfPDF(filePath);
-                            SavePdfToImages(filePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
-                            totalPages += numberOfPages;
-                        }
+                        Directory.CreateDirectory(config.ORIGINAL_FILES_PATH_SERVER);
                     }
+                    if (ext == ".tiff" || ext == ".tif" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".gif" || ext == ".bmp")
+                    {
+                        ConvertPDFToImages pdfToImg = new ConvertPDFToImages();
+                        int numberOfPages = pdfToImg.tifToImage(filePath, config.IMAGES_PATH_SERVER, workId, pageCounter, config.IMAGES_PATH_DB, out pageCounter, true);
+                        totalPages += numberOfPages;
+                    }
+                    else
+                    {
+                        int numberOfPages = getNumberOfPagesOfPDF(filePath);
+                        SavePdfToImages(filePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
+                        totalPages += numberOfPages;
+                    }
+                }
 
-                AddToDatabase("", totalPages + originalQueueFilesCount, profile.UserName, workId, config.PRACTICE_CODE); 
-                }
-                else
-                {
-                    throw new Exception("DB configuration for file paths not found. See service configuration.");
-                }
+                AddToDatabase("", totalPages + originalQueueFilesCount, profile.UserName, workId, config.PRACTICE_CODE);
+            }
+            else
+            {
+                throw new Exception("DB configuration for file paths not found. See service configuration.");
+            }
             //}
             //catch (Exception ex)
             //{
@@ -282,15 +275,12 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
         private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, int pageCounter, out long pageCounterOut)
         {
             List<int> threadCounter = new List<int>();
-            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SavePdfToImages > Checking Time of Directory Create || Start Time of Function SavePdfToImages > Checking Time of Directory Create" + Helper.GetCurrentDate().ToLocalTime());
             if (!Directory.Exists(config.IMAGES_PATH_SERVER))
             {
                 Directory.CreateDirectory(config.IMAGES_PATH_SERVER);
             }
-            Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SavePdfToImages > Checking Time of Directory Create || End Time of Function SavePdfToImages > Checking Time of Directory Create" + Helper.GetCurrentDate().ToLocalTime());
             if (System.IO.File.Exists(PdfPath))
             {
-                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SavePdfToImages > Checking Time of Threading || Start Time of Function SavePdfToImages > Checking Time of Threading" + Helper.GetCurrentDate().ToLocalTime());
                 for (int i = 0; i < noOfPages; i++, pageCounter++)
                 {
                     Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter, PdfPath, i, config, workId, pageCounter));
@@ -309,7 +299,6 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                 {
                     thread.Abort();
                 }
-                Helper.TokenTaskCancellationExceptionLog("UploadOrderImages: In Function  SavePdfToImages > Checking Time of Threading || End Time of Function SavePdfToImages > Checking Time of Threading" + Helper.GetCurrentDate().ToLocalTime());
                 //AddToDatabase(PdfPath, noOfPages, workId);
             }
             pageCounterOut = pageCounter;
@@ -394,7 +383,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             }
         }
 
-        private void AddToDatabase(string filePath, int noOfPages, string userName, long workId, long? practiceCode )
+        private void AddToDatabase(string filePath, int noOfPages, string userName, long workId, long? practiceCode)
         {
             try
             {

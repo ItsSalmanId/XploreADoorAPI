@@ -143,21 +143,28 @@ namespace FoxRehabilitationAPI.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetPSDRegionAndRecommendationWise(patientSurveySearchRequest, GetProfile()));
         }
 
-        [HttpGet]
-        public HttpResponseMessage GetPSCallLogList(string patientAccount)
+        [HttpPost]
+        public HttpResponseMessage GetPSCallLogList(SurveyCallsLogs surveyCallsLogs)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetPSCallLogList(Convert.ToInt64(patientAccount), GetProfile().PracticeCode));
-        }
-        [HttpGet]
-        public HttpResponseMessage GetPatientSurveyInboundCall(string patientAccount)
-        {
-            if (!string.IsNullOrEmpty(patientAccount))
+            if (surveyCallsLogs != null)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetPatientSurveyInBoundCalls(Convert.ToInt64(patientAccount), GetProfile().PracticeCode));
+                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetPSCallLogList(surveyCallsLogs, GetProfile().PracticeCode));
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient Account is missing");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Survey Calls Logs model is null");
+            }
+        }
+        [HttpPost]
+        public HttpResponseMessage GetPatientSurveyInboundCall(SurveyCallsLogs surveyCallsLogs)
+        {
+            if (surveyCallsLogs != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetPatientSurveyInBoundCalls(surveyCallsLogs, GetProfile().PracticeCode));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Survey Calls Logs model is null");
             }
         }
         [HttpGet]

@@ -1091,14 +1091,16 @@ namespace FOX.BusinessOperations.PatientSurveyService
             return result;
         }
 
-        public List<PatientSurveyCallLog> GetPSCallLogList(long patientAccount, long practiceCode)
+        public List<PatientSurveyCallLog> GetPSCallLogList(SurveyCallsLogs surveyCallsLogs, long practiceCode)
         {
             var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
+            var currentPage = new SqlParameter { ParameterName = "CURRENT_PAGE", SqlDbType = SqlDbType.BigInt, Value = surveyCallsLogs.CurrentPage };
+            var recordPerpage = new SqlParameter { ParameterName = "RECORD_PER_PAGE", SqlDbType = SqlDbType.BigInt, Value = surveyCallsLogs.RecordPerPage };
             var _surveyId = new SqlParameter { ParameterName = "SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = 0 };
-            var _patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = patientAccount };
+            var _patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = surveyCallsLogs.patientAccountNumber};
 
             var result = SpRepository<PatientSurveyCallLog>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PS_CALL_LOG_LIST
-                         @PRACTICE_CODE, @SURVEY_ID, @PATIENT_ACCOUNT", PracticeCode, _surveyId, _patientAccount);
+                         @PRACTICE_CODE, @SURVEY_ID, @PATIENT_ACCOUNT,@CURRENT_PAGE,@RECORD_PER_PAGE", PracticeCode, _surveyId, _patientAccount,currentPage, recordPerpage);
             return result;
         }
         public List<string> GetPSProvidersList(long practiceCode, string provider)
@@ -1231,14 +1233,16 @@ namespace FOX.BusinessOperations.PatientSurveyService
         /// <param name="patientAccountNumber"></param>
         /// <param name="profilePracticeCode"></param>
         /// <returns></returns>
-        public List<PatientSurveyInBoundCallResponse> GetPatientSurveyInBoundCalls(long patientAccountNumber, long profilePracticeCode)
+        public List<PatientSurveyInBoundCallResponse> GetPatientSurveyInBoundCalls(SurveyCallsLogs surveyCallsLogs, long profilePracticeCode)
         {
             List<PatientSurveyInBoundCallResponse> result = new List<PatientSurveyInBoundCallResponse>();
-            if (patientAccountNumber != 0 && profilePracticeCode != 0)
+            if (surveyCallsLogs != null && profilePracticeCode != 0 && !string.IsNullOrEmpty(surveyCallsLogs.patientAccountNumber))
             {
-                var patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = patientAccountNumber };
+                var patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(surveyCallsLogs.patientAccountNumber) };
+                var currentPage = new SqlParameter { ParameterName = "CURRENT_PAGE", SqlDbType = SqlDbType.BigInt, Value = surveyCallsLogs.CurrentPage };
+                var recordPerpage = new SqlParameter { ParameterName = "RECORD_PER_PAGE", SqlDbType = SqlDbType.BigInt, Value = surveyCallsLogs.RecordPerPage };
                 var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profilePracticeCode };
-                result = SpRepository<PatientSurveyInBoundCallResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SURVEY_INBOUND_CALL_DETAILS @PATIENT_ACCOUNT, @PRACTICE_CODE", patientAccount, practiceCode);
+                result = SpRepository<PatientSurveyInBoundCallResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SURVEY_INBOUND_CALL_DETAILS @PATIENT_ACCOUNT, @PRACTICE_CODE,@CURRENT_PAGE,@RECORD_PER_PAGE", patientAccount, practiceCode, currentPage, recordPerpage);
             }
             return result;
         }

@@ -301,6 +301,21 @@ namespace FOX.DataModels.GenericRepository
                 throw ex;
             }
         }
+
+        //this function return single record from Query in text by Irfan Ullah
+        public TEntity ExecuteCommandSingle(string query, params object[] parameters)
+        {
+            SetDataBaseConfigurationString(); //Very important it will set the connection string for FOX or CCRemote
+            try
+            {
+                Context.Database.CommandTimeout = 300;
+                return DbSet.SqlQuery(query, parameters).FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         private void SetDataBaseConfigurationString()
         {
             if (EntityHelper.isTalkRehab == true)

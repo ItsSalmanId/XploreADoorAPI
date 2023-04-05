@@ -74,14 +74,15 @@ namespace FOX.BusinessOperations.IndexedQueueService
             {
                 if (item.Checked == true)
                 {
-
+                    var uniueId = string.IsNullOrEmpty(workQueue?.UNIQUE_ID) ? "0" : workQueue?.UNIQUE_ID;
+                    var NEWWORKID = workQueue?.WORK_ID == null ? 0 : workQueue?.WORK_ID;
                     var fileid = Helper.getMaximumId("FOXREHAB_FILE_ID");
                     var FILE_ID = new SqlParameter("@FILE_ID ", SqlDbType.BigInt) { Value = fileid };
-                    var UNIQUE_ID = new SqlParameter("@UNIQUE_ID ", SqlDbType.VarChar) { Value = workQueue.UNIQUE_ID };
+                    var UNIQUE_ID = new SqlParameter("@UNIQUE_ID ", SqlDbType.VarChar) { Value = uniueId };
                     //  var UNIQUE_ID_1 = new SqlParameter("UNIQUE_ID_1", SqlDbType.VarChar) { Value = item.UNIQUE_ID };
                     var File_Path_1 = new SqlParameter("@File_Path_1", SqlDbType.VarChar) { Value = item.file_path1 };
                     var File_path = new SqlParameter("@File_path", SqlDbType.VarChar) { Value = item.FILE_PATH };
-                    var NEW_WORK_ID = new SqlParameter("@NEW_WORK_ID ", SqlDbType.BigInt) { Value = workQueue.WORK_ID };
+                    var NEW_WORK_ID = new SqlParameter("@NEW_WORK_ID ", SqlDbType.BigInt) { Value = NEWWORKID };
                     var OLD_Work_ID = new SqlParameter("@Old_work_id ", SqlDbType.BigInt) { Value = item.WORK_ID };
                     result = SpRepository<string>.GetSingleObjectWithStoreProcedure(
                         @"exec Fox_Queue_Split_Document  @FILE_ID,@UNIQUE_ID,@File_Path_1,@File_path,@NEW_WORK_ID,@Old_work_id",
