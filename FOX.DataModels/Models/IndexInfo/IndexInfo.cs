@@ -1057,4 +1057,19 @@ namespace FOX.DataModels.Models.IndexInfo
         public string splitedIDs { get; set; }
         public long workID { get; set; }
     }
+    [Table("FOX_TBL_ADMISSION_IMPORTANT_NOTES")]
+    public class AdmissionImportantNotes 
+    {
+        [Key]
+        public long ADMISSION_IMPORTANT_NOTES_ID { get; set; }
+        public long? WORK_ID { get; set; }
+        public long? PRACTICE_CODE { get; set; }
+        public string NOTES { get; set; }
+        public string CREATED_FROM { get; set; }
+        public DateTime? CREATED_DATE { get; set; }
+        public string CREATED_BY { get; set; }
+        public DateTime? MODIFIED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public bool? DELETED { get; set; }
+    }
 }

@@ -1,4 +1,5 @@
-﻿using FOX.DataModels.Models.IndexInfo;
+﻿using FOX.DataModels.Models.CommonModel;
+using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.OriginalQueueModel;
 using FOX.DataModels.Models.Patient;
 using FOX.DataModels.Models.Security;
@@ -72,5 +73,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         void SaveLogMessage(Index_infoReq workId, UserProfile userProfile);
         long GetTalkRehabTaskWorkID(long taskId, UserProfile profile);
         long MarkTaskAsComplete(long taskId, UserProfile profile);
+        AdmissionImportantNotes AddAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes, UserProfile userProfile);
+        AdmissionImportantNotes GetAdmissionImportantNotes(AdmissionImportantNotes objFoxTblGeneralNotes, UserProfile userProfile);
     }
 }
