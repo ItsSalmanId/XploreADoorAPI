@@ -2075,9 +2075,9 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     //}
                     //else
                     //{
-                    senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == usr.PRACTICE_CODE) && !t.DELETED);
+                    senderType = _SenderTypeRepository.GetSingleOrDefault(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == usr.PRACTICE_CODE) && !t.DELETED) ?? null;
                     // }
-                    result.SENDER_TYPE = senderType != null ? !string.IsNullOrWhiteSpace(senderType.SENDER_TYPE_NAME) ? senderType.SENDER_TYPE_NAME : "" : "";
+                    result.SENDER_TYPE = senderType != null ? !string.IsNullOrWhiteSpace(senderType.SENDER_TYPE_NAME ?? "") ? senderType.SENDER_TYPE_NAME : "" : "";
                     return result;
 
                 }
@@ -3392,7 +3392,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     ORS = GetOrderingRefrralSource(sourceDetail.SENDER_ID ?? 0);
                 }
                 //var ORS = _InsertUpdateOrderingSourceRepository.GetFirst(t => t.SOURCE_ID == sourceDetail.SENDER_ID);
-                var Indexer = GetIndexer(sourceDetail.COMPLETED_BY, profile.PracticeCode);
+                var Indexer = new User();
+                if (sourceDetail != null)
+                {
+                    Indexer = GetIndexer(sourceDetail.COMPLETED_BY, profile.PracticeCode);
+                }
                 //var Indexer = _User.GetFirst(T => T.USER_NAME == sourceDetail.COMPLETED_BY);
                 var notes = GetNotes_History(obj, profile);
                 var app_user = new User();
@@ -3527,7 +3531,24 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     porta_logs.Add("Completed Date & Time :" + sourceDetail.COMPLETED_DATE);
                     if (Indexer != null)
                     {
-                        porta_logs.Add("Username : " + Indexer.LAST_NAME + ", " + Indexer.FIRST_NAME);
+                        string str = "";
+                        if (String.IsNullOrEmpty(Indexer.FIRST_NAME) && String.IsNullOrEmpty(Indexer.FIRST_NAME))
+                        {
+                            str = "Username : ";
+                        }
+                        else if (!String.IsNullOrEmpty(Indexer.FIRST_NAME) && !String.IsNullOrEmpty(Indexer.FIRST_NAME))
+                        {
+                            str = "Username : " + Indexer.LAST_NAME + "," + Indexer.FIRST_NAME;
+                        }
+                        else if (String.IsNullOrEmpty(Indexer.LAST_NAME))
+                        {
+                            str = "Username :" + Indexer.FIRST_NAME;
+                        }
+                        else if (String.IsNullOrEmpty(Indexer.FIRST_NAME))
+                        {
+                            str = "Username :" + Indexer.LAST_NAME;
+                        }
+                        porta_logs.Add(str);
                     }
                     porta_logs.Add("Indexer >");
 
@@ -4252,7 +4273,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             var file_name = "";
             if (frictionLessReferralData != null)
             {
-                 file_name = frictionLessReferralData.PATIENT_LAST_NAME + "_" + documentType;
+                file_name = frictionLessReferralData.PATIENT_LAST_NAME + "_" + documentType;
             }
             else
             {
@@ -4368,8 +4389,8 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     URGENT.Remove();
                 }
                 body = htmldoc.DocumentNode.OuterHtml;
-            
-                if(frictionLessReferralData != null)
+
+                if (frictionLessReferralData != null)
                 {
                     patient = new Patient();
                     body = body.Replace("[[PATIENT_NAME]]", frictionLessReferralData.PATIENT_LAST_NAME + ", " + frictionLessReferralData.PATIENT_FIRST_NAME);
@@ -4502,7 +4523,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 }
                 else
                 {
-                    if(frictionLessReferralData != null)
+                    if (frictionLessReferralData != null)
                     {
                         body = body.Replace("[[provider_name]]", frictionLessReferralData.PROVIDER_LAST_NAME + ", " + frictionLessReferralData.PROVIDER_FIRST_NAME + " " + frictionLessReferralData.PROVIDER_REGION);
                         body = body.Replace("[[provider_NPI]]", frictionLessReferralData.PROVIDER_NPI ?? "");
@@ -4523,14 +4544,15 @@ namespace FOX.BusinessOperations.IndexInfoServices
                             body = body.Replace("[[provider_fax]]", "");
                         }
                     }
-                    else {
+                    else
+                    {
                         body = body.Replace("[[provider_name]]", "");
                         body = body.Replace("[[provider_NPI]]", "");
                         body = body.Replace("[[provider_phone]]", "");
                         body = body.Replace("[[provider_fax]]", "");
                         body = body.Replace("[[provider_date]]", "");
                     }
-                }          
+                }
                 if (obj._approval)
                 {
                     body = body.Replace("[[Signature]]", obj.base64textString ?? "");
