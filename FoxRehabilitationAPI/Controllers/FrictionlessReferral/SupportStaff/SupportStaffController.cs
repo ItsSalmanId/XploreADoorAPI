@@ -132,8 +132,6 @@ namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
         [HttpPost]
         public HttpResponseMessage CheckServiceAvailability(ServiceAvailability serviceAvailability)
         {
-
-
             if(serviceAvailability != null)
             {
                 var responseModel = _supportStaffService.CheckServiceAvailability(serviceAvailability);
