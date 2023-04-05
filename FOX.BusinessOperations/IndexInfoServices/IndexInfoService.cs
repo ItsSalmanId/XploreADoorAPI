@@ -47,6 +47,8 @@ using System.Threading.Tasks;
 using FOX.BusinessOperations.GroupServices;
 using FOX.DataModels;
 using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
+using System.Net.Mail;
+using System.Web.Configuration;
 
 namespace FOX.BusinessOperations.IndexInfoServices
 {
@@ -118,6 +120,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private readonly GenericRepository<TaskWorkInterfaceMapping> _TaskWorkInterfaceMapping;
         private readonly GenericRepository<AdmissionImportantNotes> _admissionImportantNotes;
         private static List<Thread> threadsList = new List<Thread>();
+        private static List<Thread> threadsListForEmail = new List<Thread>();
         private readonly GroupService _groupService;
         private long talkRehabWorkID = 0;
         private long talkRehabInterfaceID = 0;
@@ -2529,6 +2532,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         {
             try
             {
+                int threadCounters = 0;
                 AttachmentData attachmentPath = new CommonServices.CommonServices().GeneratePdfForEmailToSender(data.UNIQUE_ID.ToString(), profile);
                 if (!string.IsNullOrEmpty(attachmentPath.FILE_PATH) && !string.IsNullOrEmpty(attachmentPath.FILE_NAME))
                 {
@@ -2547,15 +2551,21 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     }
                     else
                     {
-                        sent = Helper.Email(sendTo, subject, body, profile, data.work_id, null, null, new List<string> { Path.Combine(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME) });
+                        List<int> threadCounterForEmail = new List<int>();
+                        Thread Thread = new Thread(() => this.newThreadImplementaionForEmail(threadCounters, ref threadCounterForEmail, sendTo, subject, body, profile, data.work_id, null, null, new List<string> { Path.Combine(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME) }));
+                        Thread.Start();
+                        threadsListForEmail.Add(Thread);
+                        sent = true;
                     }
 
                     if (sent)
                     {
-                        ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, body, "tempcoversletter");
-                        string coverfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
-
-                        SavePdfToImages(coverfilePath, config, WORK_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
+                        var coverFilePath = HTMLToPDFSautinsoft(config, body, "tempcoversletter");
+                        SavePdfToImages(coverFilePath, config, WORK_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
+                        foreach (var thread in threadsList)
+                        {
+                            thread.Abort();
+                        }
                     }
 
                     return sent;
@@ -2569,6 +2579,96 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 //Helper.LogException(ex, profile);
                 throw;
+            }
+        }
+        private string HTMLToPDFSautinsoft(ServiceConfiguration conf, string htmlString, string fileName, string linkMessage = null)
+        {
+            try
+            {
+                PdfMetamorphosis p = new PdfMetamorphosis();
+                //p.Serial = "10262870570";//server
+                p.Serial = "10261942764";//development
+                p.PageSettings.Size.A4();
+                p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
+                p.PageSettings.MarginLeft.Inch(0.1f);
+                p.PageSettings.MarginRight.Inch(0.1f);
+                if (p != null)
+                {
+                    string pdfFilePath = Path.Combine(conf.ORIGINAL_FILES_PATH_SERVER);
+                    //string finalsetpath = conf.ORIGINAL_FILES_PATH_SERVER.Remove(conf.ORIGINAL_FILES_PATH_SERVER.Length - 1);
+                    if (!Directory.Exists(pdfFilePath))
+                    {
+                        Directory.CreateDirectory(pdfFilePath);
+                    }
+                    fileName = fileName + DateTime.Now.Ticks + ".pdf";
+                    string pdfFilePathnew = pdfFilePath + "\\" + fileName;
+                    if (p.HtmlToPdfConvertStringToFile(htmlString, pdfFilePathnew) == 0)
+                    {
+                        return pdfFilePathnew;
+                    }
+                    else
+                    {
+                        var ex = p.TraceSettings.ExceptionList.Count > 0 ? p.TraceSettings.ExceptionList[0] : null;
+                        var msg = ex != null ? ex.Message + Environment.NewLine + ex.StackTrace : "An error occured during converting HTML to PDF!";
+                        return "";
+                    }
+                }
+                return "";
+            }
+            catch (Exception)
+            {
+                return "";
+            }
+        }
+        public void newThreadImplementaionForEmail(int counter, ref List<int> threadCounterForEmail, string to, string subject, string body, UserProfile profile = null, long? WORK_ID = null, List<string> CC = null, List<string> BCC = null, List<string> AttachmentFilePaths = null, string from = "foxrehab@carecloud.com")
+        {
+            try
+            {
+                //bool IsMailSent = false;
+                using (SmtpClient smtp = new SmtpClient())
+                {
+                    using (MailMessage mail = new MailMessage())
+                    {
+                        mail.From = new MailAddress(from);
+                        mail.To.Add(new MailAddress(to));
+                        mail.Subject = subject;
+                        mail.Body = body;
+                        mail.IsBodyHtml = true;
+                        mail.SubjectEncoding = Encoding.UTF8;
+                        if (CC != null && CC.Count > 0)
+                        {
+                            foreach (var item in CC) { mail.CC.Add(item); }
+                        }
+                        if (BCC != null && BCC.Count > 0)
+                        {
+                            foreach (var item in BCC) { mail.Bcc.Add(item); }
+                        }
+                        if (AttachmentFilePaths != null && AttachmentFilePaths.Count > 0)
+                        {
+                            foreach (string filePth in AttachmentFilePaths)
+                            {
+                                if (File.Exists(filePth)) { mail.Attachments.Add(new Attachment(filePth)); }
+                            }
+                        }
+                        if (profile != null && profile.isTalkRehab)
+                        {
+                            smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["NoReplyUserName"], WebConfigurationManager.AppSettings["NoReplyPassword"]);
+                        }
+                        else
+                        {
+                            smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["FoxRehabUserName"], WebConfigurationManager.AppSettings["FoxRehabPassword"]);
+                        }
+                        smtp.Send(mail);
+                        //IsMailSent = true;
+                    }
+                }
+                counter = 1;
+                threadCounterForEmail.Add(1);
+                //return IsMailSent;
+            }
+            catch (Exception)
+            {
+                threadCounterForEmail.Add(1);
             }
         }
         //New Thread Implementation
@@ -2659,7 +2759,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 {
                     //loop untill record complete
                 }
-
                 foreach (var thread in threadsList)
                 {
                     thread.Abort();
@@ -2811,18 +2910,13 @@ namespace FOX.BusinessOperations.IndexInfoServices
             AttachmentData attachmentPath = commonService.GeneratePdfForEmailToSender(data.UNIQUE_ID.ToString(), profile);
             try
             {
-
-
                 if (!string.IsNullOrEmpty(attachmentPath.FILE_PATH) && !string.IsNullOrEmpty(attachmentPath.FILE_NAME))
                 {
                     string coverLetterTemplate = GetEmailOrFaxToSenderTemplate(data);
 
                     var config = Helper.GetServiceConfiguration(profile.PracticeCode);
-
-                    ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, coverLetterTemplate, "tempcoversletter");
-
-                    string coverfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
-                    SavePdfToImages(coverfilePath, config, data.UNIQUE_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
+                    var coverFilePath = HTMLToPDFSautinsoft(config, coverLetterTemplate, "tempcoversletter");
+                    SavePdfToImages(coverFilePath, config, data.UNIQUE_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
                     string newFileName = commonService.AddCoverPageForFax(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME, coverLetterTemplate);
 
                     if (!attachmentPath.FILE_PATH.EndsWith("\\"))
