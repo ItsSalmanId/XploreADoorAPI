@@ -273,7 +273,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                 string zipfolderpath = config.ORIGINAL_FILES_PATH_SERVER;
                 string FileName = workId + "_" + DateTime.Now.Ticks + ".zip";
                 var filePath2 = @"" + zipfolderpath + "\\" + FileName;
-                var filePath3 = @"" + zipfolderpath + "\\Newfolder";
+              //  var filePath3 = @"" + zipfolderpath + "\\Newfolder";
                 //ZIP FILE LOGIC
                 try
                 {
@@ -355,7 +355,11 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                 string zipfolderpath = config.ORIGINAL_FILES_PATH_SERVER;
                 string FileName = workId + "_" + DateTime.Now.Ticks + ".zip";
                 var filePath2 = @"" + zipfolderpath + "\\" + FileName;
-                var filePath3 = @"" + zipfolderpath + "\\Newfolder";
+                var newZipFilePath = @"" + zipfolderpath + "\\NewZipFile";
+                if (!Directory.Exists(newZipFilePath))
+                {
+                    Directory.CreateDirectory(newZipFilePath);
+                }
                 ZipFile file = null;
                 if (!string.IsNullOrEmpty(originalQueueData.FILE_PATH)) { 
                 try
@@ -380,7 +384,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                         Stream zipStream = file.GetInputStream(zipEntry);
 
                         // Manipulate the output filename here as desired.
-                        String fullZipToPath = Path.Combine(filePath3, entryFileName);
+                        String fullZipToPath = Path.Combine(newZipFilePath, entryFileName);
                         string directoryName = Path.GetDirectoryName(fullZipToPath);
                         filePathsZip.Add(fullZipToPath);
                         if (directoryName.Length > 0)
