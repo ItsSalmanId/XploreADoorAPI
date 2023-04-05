@@ -499,12 +499,12 @@ namespace FOX.BusinessOperations.AccountService
                                            .Replace("[[COMMENTS]]", user.COMMENTS);
                     }
                     string subjectOfAdminEmail = "New signup request: " + user.LAST_NAME + ", " + user.FIRST_NAME + ", " + user.USER_TYPE;
-                    if(AppConfiguration.ClientURL.Contains("https://fox.mtbc.com/"))
+                    if (AppConfiguration.ClientURL.Contains("https://fox.mtbc.com/"))
                     {
-                     sendToOfAdminEmail = "support@foxrehab.org";
+                        sendToOfAdminEmail = "support@foxrehab.org";
                     }
                     List<string> _bccListOfAdminEmail = new List<string>();
-                    Helper.SendEmail(sendToOfAdminEmail, subjectOfAdminEmail, bodyOfAdminEmail, null,null,null, _bccListOfAdminEmail);
+                    Helper.SendEmail(sendToOfAdminEmail, subjectOfAdminEmail, bodyOfAdminEmail, null, null, null, _bccListOfAdminEmail);
 
                     #endregion
                     PasswordHistory ph = new PasswordHistory()
@@ -743,11 +743,15 @@ namespace FOX.BusinessOperations.AccountService
             bool _isValidUser = false;
             string serverName = System.Web.HttpContext.Current?.Request?.Url?.Host;
             string showUrl = HttpContext.Current?.Request?.Url?.AbsoluteUri;
-            if (data.userIP != null)
+            if (data.userIP != null && data.userIP != "undefined")
             {
                 data.userIP = Encrypt.DecrypStringEncryptedInClient(data.userIP);
             }
-           if (data.userName.ToLower().Contains("@foxrehab.org"))
+            else
+            {
+                data.userIP = "";
+            }
+            if (data.userName.ToLower().Contains("@foxrehab.org"))
             {
                 _isValidUser = true;
                 return _isValidUser;
@@ -756,15 +760,15 @@ namespace FOX.BusinessOperations.AccountService
             {
                 if (serverName != "localhost" && !showUrl.Contains("172.16.0.207"))
                 {
-                    if (string.IsNullOrEmpty(data.userIP))
+                    if (string.IsNullOrEmpty(data.userIP) || data.userIP == "undefined")
                     {
                         _isValidUser = true;
                         return _isValidUser;
                     }
-                   if (!string.IsNullOrEmpty(data.userIP) && data.userIP.Contains(":"))
+                    if (!string.IsNullOrEmpty(data.userIP) && data.userIP.Contains(":"))
                     {
-                       string getIpV6 = GetUserCountryByIp(data.userIP);
-                       if (!string.IsNullOrEmpty(getIpV6) && getIpV6.ToLower().Contains("united states"))
+                        string getIpV6 = GetUserCountryByIp(data.userIP);
+                        if (!string.IsNullOrEmpty(getIpV6) && getIpV6.ToLower().Contains("united states"))
                         {
                             _isValidUser = true;
                         }
@@ -905,12 +909,12 @@ namespace FOX.BusinessOperations.AccountService
                     if (token != null)
                     {
                         var tokenSecurityID = Helper.getMaximumId("Fox_TokenSecurityID");
-                        var paramSecurityID = new SqlParameter { ParameterName = "TokenSecurityID", SqlDbType = SqlDbType.BigInt, Value = tokenSecurityID } ;
+                        var paramSecurityID = new SqlParameter { ParameterName = "TokenSecurityID", SqlDbType = SqlDbType.BigInt, Value = tokenSecurityID };
                         var paramtokenAuthToken = new SqlParameter { ParameterName = "AUTHTOKEN", SqlDbType = SqlDbType.NVarChar, Value = token.AuthToken };
                         var paramtokenIssuedOn = new SqlParameter { ParameterName = "ISSUEDON", SqlDbType = SqlDbType.NVarChar, Value = token.IssuedOn };
                         var paramtokenUserName = new SqlParameter { ParameterName = "USER_NAME", SqlDbType = SqlDbType.NVarChar, Value = profile.UserName };
                         var profileTokenResponse = SpRepository<ProfileTokensSecurity>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_INSERT_TOKEN_ON_LOGOUT @TokenSecurityID, @AUTHTOKEN, @ISSUEDON, @USER_NAME",
-                            paramSecurityID, paramtokenAuthToken, paramtokenIssuedOn,  paramtokenUserName);
+                            paramSecurityID, paramtokenAuthToken, paramtokenIssuedOn, paramtokenUserName);
 
                         token.ExpiresOn = DateTime.Now;
                         token.isLogOut = true;
@@ -920,7 +924,7 @@ namespace FOX.BusinessOperations.AccountService
                         return resp;
                     }
                 }
-                if(token==null && profile.isTalkRehab)
+                if (token == null && profile.isTalkRehab)
                 {
                     resp.Success = true;
                     return resp;
@@ -946,7 +950,7 @@ namespace FOX.BusinessOperations.AccountService
                         {
                             UserName = user.EMAIL,
                             Password = encryptedPassword,
-                            DeviceInfo = (EntityHelper.isTalkRehab)? "CC_Remote_Portal. App_Name: MTBC CC Remote. Browser: " + detectedBrowser : "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
+                            DeviceInfo = (EntityHelper.isTalkRehab) ? "CC_Remote_Portal. App_Name: MTBC CC Remote. Browser: " + detectedBrowser : "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
                             AdResponse = string.Empty,
                             ServiceResponse = string.Empty,
                             CreatedDate = Helper.GetCurrentDate(),
@@ -988,7 +992,7 @@ namespace FOX.BusinessOperations.AccountService
                         {
                             UserName = user.UserEmailAddress,
                             Password = encryptedPassword,
-                            DeviceInfo = (EntityHelper.isTalkRehab)? "CC_Remote_Portal. App_Name: MTBC CC Remote. Browser: " + detectedBrowser : "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
+                            DeviceInfo = (EntityHelper.isTalkRehab) ? "CC_Remote_Portal. App_Name: MTBC CC Remote. Browser: " + detectedBrowser : "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
                             AdResponse = string.Empty,
                             ServiceResponse = string.Empty,
                             CreatedDate = Helper.GetCurrentDate(),
@@ -1009,7 +1013,7 @@ namespace FOX.BusinessOperations.AccountService
                         {
                             UserName = user.UserEmailAddress,
                             Password = encryptedPassword,
-                            DeviceInfo = (EntityHelper.isTalkRehab)? "CC_Remote_Portal. App_Name: MTBC CC Remote. Browser: " + detectedBrowser : "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
+                            DeviceInfo = (EntityHelper.isTalkRehab) ? "CC_Remote_Portal. App_Name: MTBC CC Remote. Browser: " + detectedBrowser : "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
                             AdResponse = string.Empty,
                             ServiceResponse = string.Empty,
                             CreatedDate = Helper.GetCurrentDate(),
@@ -1030,7 +1034,7 @@ namespace FOX.BusinessOperations.AccountService
                         {
                             UserName = user.Email,
                             Password = encryptedPassword,
-                            DeviceInfo = (EntityHelper.isTalkRehab)? "CC_Remote_Portal. App_Name: MTBC CC Remote. Browser: " + detectedBrowser : "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
+                            DeviceInfo = (EntityHelper.isTalkRehab) ? "CC_Remote_Portal. App_Name: MTBC CC Remote. Browser: " + detectedBrowser : "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
                             AdResponse = string.Empty,
                             ServiceResponse = string.Empty,
                             CreatedDate = Helper.GetCurrentDate(),
@@ -1051,7 +1055,7 @@ namespace FOX.BusinessOperations.AccountService
                         {
                             UserName = user.Email,
                             Password = encryptedPassword,
-                            DeviceInfo = (EntityHelper.isTalkRehab)? "CC_Remote_Portal. App_Name: MTBC CC Remote. Browser: " + detectedBrowser : "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
+                            DeviceInfo = (EntityHelper.isTalkRehab) ? "CC_Remote_Portal. App_Name: MTBC CC Remote. Browser: " + detectedBrowser : "Fox_Portal. App_Name: MTBC Fox Portal. Browser: " + detectedBrowser,
                             AdResponse = string.Empty,
                             ServiceResponse = string.Empty,
                             CreatedDate = Helper.GetCurrentDate(),
