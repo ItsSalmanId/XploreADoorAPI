@@ -13,5 +13,6 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
         ResGetSourceDataModel GetSourceData(string email, string userId, long practiceCode, string userName);
         ResSubmitUploadOrderImagesModel SubmitUploadOrderImages(ReqSubmitUploadOrderImagesModel reqSubmitUploadOrderImagesModel, UserProfile Profile);
         void GenerateAndSaveImagesOfUploadedFiles(long workId, List<string> FileNameList, UserProfile profile, int originalQueueFilesCount = 0);
+        string GenerateAndSaveImagesOfUploadedFilesZip(long workId, List<string> FileNameList, UserProfile profile, int originalQueueFilesCount = 0);
     }
 }
