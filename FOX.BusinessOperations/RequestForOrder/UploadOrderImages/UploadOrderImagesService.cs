@@ -265,7 +265,6 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                 }
                 List<string> filePathsZip = new List<string>();
                 var originalQueueFilesList = _OriginalQueueFiles.GetMany(x => x.WORK_ID == workId && x.deleted == false);
-               // var test = _QueueRepository.GetFirst(x => x.WORK_ID == workId && x.DELETED == false);
                 foreach (var item in FileNameList)
                 {
                     filePathsZip.Add(HttpContext.Current.Server.MapPath("~/" + AppConfiguration.RequestForOrderUploadImages + @"\" + item));
@@ -273,7 +272,6 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                 string zipfolderpath = config.ORIGINAL_FILES_PATH_SERVER;
                 string FileName = workId + "_" + DateTime.Now.Ticks + ".zip";
                 var filePath2 = @"" + zipfolderpath + "\\" + FileName;
-              //  var filePath3 = @"" + zipfolderpath + "\\Newfolder";
                 //ZIP FILE LOGIC
                 try
                 {
@@ -312,8 +310,6 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
         }
         public string GenerateAndSaveImagesOfUploadedFilesZip(long workId, List<string> FileNameList, UserProfile profile, int originalQueueFilesCount = 0)
         {
-            //try
-            //{
             var config = Helper.GetServiceConfiguration(profile.PracticeCode);
             if (config.PRACTICE_CODE != null
                 && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
