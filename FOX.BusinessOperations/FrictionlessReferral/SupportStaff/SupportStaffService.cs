@@ -1210,7 +1210,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 originalQueue.ASSIGNED_TO = null;
                 originalQueue.ASSIGNED_BY = null;
                 originalQueue.ASSIGNED_DATE = null;
-                _QueueRepository.Insert(originalQueue);
+                _QueueRepository.Insert(originalQueue); 
                 _QueueRepository.Save();
                 GenerateAndSaveImagesOfUploadedFiles(workId, frictionLessReferralObj, Profile);
             }
@@ -1249,7 +1249,7 @@ SELECT
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 EligibilityDetails student = new EligibilityDetails();
-                student.INSURANCE_ID = Convert.ToInt32(dt.Rows[i]["INSURANCE_ID"]);
+                student.INSURANCE_ID = Convert.ToInt64(dt.Rows[i]["INSURANCE_ID"]);
                 student.INSPAYER_ID = Convert.ToInt32(dt.Rows[i]["INSPAYER_ID"]);
                 student.PAYER_NAME = dt.Rows[i]["PAYER_NAME"].ToString();
                 student.INSPAYER_ELIGIBILITY_ID = (dt.Rows[i]["INSPAYER_ELIGIBILITY_ID"]).ToString();
@@ -1298,9 +1298,9 @@ SELECT
                 objEligibilityNew.DateOfService = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(DateTime.Now));
                 //objElig.InquiryDate;    //  Required value
                 //objEligibilityNew.ProviderFirstName = "Jeffrey";
-                objEligibilityNew.ProviderFirstName = eligibilityDetailRequest.ProviderFirstName;
+                objEligibilityNew.ProviderFirstName = "";// eligibilityDetailRequest.ProviderFirstName;
                 //objEligibilityNew.ProviderLastName = "Singer";// eligibilityDetailRequest.ProviderLastName;
-                objEligibilityNew.ProviderLastName =  eligibilityDetailRequest.ProviderLastName;
+                objEligibilityNew.ProviderLastName = "";// eligibilityDetailRequest.ProviderLastName;
                 objEligibilityNew.ProviderNPI = "1326092503";  // Table name providers
                 objEligibilityNew.ProviderSSN = string.Empty;
                 objEligibilityNew.Relationship = "S";
