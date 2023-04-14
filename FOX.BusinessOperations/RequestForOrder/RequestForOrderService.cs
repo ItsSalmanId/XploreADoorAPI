@@ -208,6 +208,7 @@ namespace FOX.BusinessOperations.RequestForOrder
         {
             try
             {
+                Helper.TokenTaskCancellationExceptionLog("SendEmail : Start Function"  + Helper.GetCurrentDate().ToLocalTime());
                 var config = Helper.GetServiceConfiguration(Profile.PracticeCode);
                 if (config.PRACTICE_CODE != null
                     && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
@@ -246,9 +247,13 @@ namespace FOX.BusinessOperations.RequestForOrder
                     string linkMessage = @"
                                 <p>Please <a href='" + link + @"'>click here for signing</a> to confirm that you have reviewed and are an agreement of this request.   Once you click, the document will electronically be signed by you with the current date and time.  Thank you for your confidence in our practice.
                                 ";
-
+                    Helper.TokenTaskCancellationExceptionLog("HTMLToPDF : Start Function" + Helper.GetCurrentDate().ToLocalTime());
                     ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestSendEmailModel.AttachmentHTML, requestSendEmailModel.FileName.Replace(' ', '_'), "email", linkMessage);
+                    var coverFilePath = HTMLToPDF3(config, requestSendEmailModel.AttachmentHTML, requestSendEmailModel.FileName.Replace(' ', '_'), "email", linkMessage);
+                    Helper.TokenTaskCancellationExceptionLog("HTMLToPDF : END Function" + Helper.GetCurrentDate().ToLocalTime());
+                    Helper.TokenTaskCancellationExceptionLog("AddHtmlToDB : START Function" + Helper.GetCurrentDate().ToLocalTime());
                     AddHtmlToDB(requestSendEmailModel.WorkId, requestSendEmailModel.AttachmentHTML, Profile.UserName);
+                    Helper.TokenTaskCancellationExceptionLog("AddHtmlToDB : END Function" + Helper.GetCurrentDate().ToLocalTime());
                     if (responseHTMLToPDF != null && (responseHTMLToPDF?.Success ?? false))
                     {
                         //string attachmentPath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
@@ -434,7 +439,9 @@ namespace FOX.BusinessOperations.RequestForOrder
                         }
                         else
                         {
+                            Helper.TokenTaskCancellationExceptionLog("Email : Start Function" + Helper.GetCurrentDate().ToLocalTime());
                             emailStatus = Helper.Email(requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath });
+                            Helper.TokenTaskCancellationExceptionLog("Email : END Function" + Helper.GetCurrentDate().ToLocalTime());
                         }
 
                         var queueResult = _QueueRepository.GetFirst(s => s.WORK_ID == requestSendEmailModel.WorkId && s.DELETED == false);
@@ -446,12 +453,15 @@ namespace FOX.BusinessOperations.RequestForOrder
                              _QueueRepository.Save();
                         }                
                         string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
+                        Helper.TokenTaskCancellationExceptionLog("getNumberOfPagesOfPDF : Start Function" + Helper.GetCurrentDate().ToLocalTime());
                         int numberOfPages = getNumberOfPagesOfPDF(filePath);
+                        Helper.TokenTaskCancellationExceptionLog("getNumberOfPagesOfPDF : END Function" + Helper.GetCurrentDate().ToLocalTime());
                         //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
                         //SavePdfToImages(filePath, imagesPath, requestSendEmailModel.WorkId, numberOfPages, "Email", requestSendEmailModel.EmailAddress, Profile.UserName);
-                       
+                        Helper.TokenTaskCancellationExceptionLog("SavePdfToImages : Start Function" + Helper.GetCurrentDate().ToLocalTime());
                         SavePdfToImages(filePath, config, requestSendEmailModel.WorkId, numberOfPages, "Email", requestSendEmailModel.EmailAddress, Profile.UserName, requestSendEmailModel._isFromIndexInfo);
-
+                        Helper.TokenTaskCancellationExceptionLog("SavePdfToImages : END Function" + Helper.GetCurrentDate().ToLocalTime());
+                        Helper.TokenTaskCancellationExceptionLog("SendEmail : END Function" + Helper.GetCurrentDate().ToLocalTime());
                         return new ResponseModel() { Message = "Email sent successfully, our admission team is processing your referral", ErrorMessage = "", Success = true };
                     }
                     else
@@ -556,6 +566,74 @@ namespace FOX.BusinessOperations.RequestForOrder
                 return new ResponseModel() { Message = "Fax sent successfully, our admission team is processing your referral.", ErrorMessage = exception.ToString(), Success = false };
             }
         }
+        private string HTMLToPDF3(string htmlString, string fileName, string type,string linkMessage = null)
+        {
+            try
+            {
+                PdfMetamorphosis p = new PdfMetamorphosis();
+                p.PageSettings.Size.A4();
+                p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
+                p.PageSettings.Numbering.PosX.Mm = p.PageSettings.Size.Width.Mm / (float)2.5;
+                p.PageSettings.Numbering.PosY.Mm = p.PageSettings.Size.Height.Mm - 10;
+                if (p != null)
+                {
+                    if (p.HtmlToPdfConvertStringToFile(htmlString, fileName) == 0)
+                    {
+                        return fileName;
+                    }
+                    else
+                    {
+                        var ex = p.TraceSettings.ExceptionList.Count > 0 ? p.TraceSettings.ExceptionList[0] : null;
+                        var msg = ex != null ? ex.Message + Environment.NewLine + ex.StackTrace : "An error occured during converting HTML to PDF!";
+                        return "";
+                    }
+                }
+                return "";
+            }
+            catch (Exception ex)
+            {
+                return "";
+            }
+        }
+        private string HTMLToPDF3(ServiceConfiguration conf, string htmlString, string fileName, string type, string linkMessage = null)
+        {
+            try
+            {
+                PdfMetamorphosis p = new PdfMetamorphosis();
+                //p.Serial = "10262870570";//server
+                p.Serial = "10261942764";//development
+                p.PageSettings.Size.A4();
+                p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
+                p.PageSettings.MarginLeft.Inch(0.1f);
+                p.PageSettings.MarginRight.Inch(0.1f);
+                if (p != null)
+                {
+                    string pdfFilePath = Path.Combine(conf.ORIGINAL_FILES_PATH_SERVER);
+                    //string finalsetpath = conf.ORIGINAL_FILES_PATH_SERVER.Remove(conf.ORIGINAL_FILES_PATH_SERVER.Length - 1);
+                    if (!Directory.Exists(pdfFilePath))
+                    {
+                        Directory.CreateDirectory(pdfFilePath);
+                    }
+                    fileName = fileName + DateTime.Now.Ticks + ".pdf";
+                    string pdfFilePathnew = pdfFilePath + "\\" + fileName;
+                    if (p.HtmlToPdfConvertStringToFile(htmlString, pdfFilePathnew) == 0)
+                    {
+                        return pdfFilePathnew;
+                    }
+                    else
+                    {
+                        var ex = p.TraceSettings.ExceptionList.Count > 0 ? p.TraceSettings.ExceptionList[0] : null;
+                        var msg = ex != null ? ex.Message + Environment.NewLine + ex.StackTrace : "An error occured during converting HTML to PDF!";
+                        return "";
+                    }
+                }
+                return "";
+            }
+            catch (Exception ex)
+            {
+                return "";
+            }
+        }
         private ResponseHTMLToPDF HTMLToPDF(ServiceConfiguration config, string htmlString, string fileName, string type, string linkMessage = null)
         {
             try
@@ -563,7 +641,6 @@ namespace FOX.BusinessOperations.RequestForOrder
                 HtmlDocument htmlDoc = new HtmlDocument();
                 htmlDoc.LoadHtml(htmlString);
                 htmlDoc.DocumentNode.SelectSingleNode("//*[contains(@id,'print-footer')]")?.Remove();
-
 
                 if (!string.IsNullOrWhiteSpace(linkMessage))
                 {
