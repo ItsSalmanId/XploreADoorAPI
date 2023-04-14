@@ -1,5 +1,6 @@
 ﻿using FOX.BusinessOperations.CommonService;
 using FOX.BusinessOperations.Security;
+using FOX.DataModels;
 using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.Security;
 using FoxRehabilitationAPI.Models;
@@ -26,12 +27,13 @@ namespace FoxRehabilitationAPI.Filters
                 if (accessedTokenFromRequst != null && accessedTokenFromRequst != "undefined" && accessedTokenFromRequst != "null")
                 {
                     UserProfile profile = new UserProfile();
-                    var accessToken = new SqlParameter("TOKEN", SqlDbType.VarChar) { Value = accessedTokenFromRequst ?? "0" };
-                    var ExpiredToken = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_CHECK_EXPIRED_TOKEN  @TOKEN", accessToken);
                     if (HttpContext.Current.User != null && HttpContext.Current.User.Identity != null)
                     {
                         profile = ClaimsModel.GetUserProfile(HttpContext.Current.User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
+                        EntityHelper.isTalkRehab = !string.IsNullOrEmpty(profile?.isTalkRehab.ToString()) && profile?.isTalkRehab.ToString().ToLower() == "true" ? true : false;
                     }
+                    var accessToken = new SqlParameter("TOKEN", SqlDbType.VarChar) { Value = accessedTokenFromRequst ?? "0" };
+                    var ExpiredToken = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_CHECK_EXPIRED_TOKEN  @TOKEN", accessToken);
                     if (ExpiredToken == null)
                     {
                         if (profile?.UserName == "6455testing" || profile?.UserName == "1163TESTING")
