@@ -2013,7 +2013,7 @@ namespace FOX.BusinessOperations.PatientServices
                         }
                     }
                 }
-                patient_Details.FinancialClassList = GetFinancialClassDDValues(profile.PracticeCode.ToString());
+                patient_Details.FinancialClassList = GetFinancialClassDDValues(profile.PracticeCode.ToString(), profile.isTalkRehab);
                 GetRestOfPatientData(patient_Details);
                 if (patient_Details.PCP != null && patient_Details.PCP != 0)
                 {
@@ -3076,11 +3076,21 @@ namespace FOX.BusinessOperations.PatientServices
             var conTypes = SpRepository<ContactTypesForDropdown>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_Contact_Types @PRACTICE_CODE", parmPracticeCode);
             return conTypes;
         }
-        public List<BestTimeToCallForDropdown> GetPatientBestTimeToCall(long practiceCode)
+        public List<BestTimeToCallForDropdown> GetPatientBestTimeToCall(long practiceCode, bool isTalkRehab)
         {
-            var parmPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practiceCode };
-            var bestTimes = SpRepository<BestTimeToCallForDropdown>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_BEST_TIME_TO_CALL] @PRACTICE_CODE", parmPracticeCode);
-            return bestTimes;
+            if (isTalkRehab)
+            {
+                var parmPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = 1011163 };
+                var bestTimes = SpRepository<BestTimeToCallForDropdown>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_BEST_TIME_TO_CALL] @PRACTICE_CODE", parmPracticeCode);
+                return bestTimes;
+            }
+            else
+            {
+                var parmPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practiceCode };
+                var bestTimes = SpRepository<BestTimeToCallForDropdown>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_BEST_TIME_TO_CALL] @PRACTICE_CODE", parmPracticeCode);
+                return bestTimes;
+            }
+            
         }
 
         public List<ContactType> GetAllPatientContactTypes(UserProfile profile)
@@ -4405,7 +4415,7 @@ namespace FOX.BusinessOperations.PatientServices
 
                 //fetch cases for dropdown
                 patient_Ins_Elig_Details.PatientCasesList = GetPatientCasesForDD(patient_Account);
-                var fcList = GetFinancialClassDDValues(profile.PracticeCode.ToString());
+                var fcList = GetFinancialClassDDValues(profile.PracticeCode.ToString(), profile.isTalkRehab);
                 if (fcList != null && fcList.Count > 0)
                 {
                     patient_Ins_Elig_Details.FinancialClassList = fcList.Where(e => e.SHOW_FOR_INSURANCE).ToList();
@@ -9241,7 +9251,7 @@ namespace FOX.BusinessOperations.PatientServices
             //}
         }
 
-        public List<FinancialClass> GetFinancialClassDDValues(string practiceCode)
+        public List<FinancialClass> GetFinancialClassDDValues(string practiceCode, bool isTalkRehab)
         {
             if (practiceCode == "0")
             {
@@ -9249,8 +9259,16 @@ namespace FOX.BusinessOperations.PatientServices
             }
             else
             {
-                var PracticeCode = Convert.ToInt64(practiceCode);
-                return _financialClassRepository.GetMany(e => e.PRACTICE_CODE == PracticeCode && !e.DELETED);
+                if (isTalkRehab)
+                {
+                    return _financialClassRepository.GetMany(e => e.PRACTICE_CODE == 1011163 && !e.DELETED);
+                }
+                else
+                {
+                    var PracticeCode = Convert.ToInt64(practiceCode);
+                    return _financialClassRepository.GetMany(e => e.PRACTICE_CODE == PracticeCode && !e.DELETED);
+                }
+
             }
         }
 

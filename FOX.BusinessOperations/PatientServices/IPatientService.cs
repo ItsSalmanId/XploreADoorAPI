@@ -31,7 +31,7 @@ namespace FOX.BusinessOperations.PatientServices
         Patient GetCurrentPatientDemographics(long patient_Account, UserProfile profile);
         List<PatientPOSLocation> AddUpdatePatientPOSLocation(PatientPOSLocation POSData, UserProfile profile);
         List<ContactTypesForDropdown> GetPatientContactTypes(long practiceCode);
-        List<BestTimeToCallForDropdown> GetPatientBestTimeToCall(long practiceCode);     
+        List<BestTimeToCallForDropdown> GetPatientBestTimeToCall(long practiceCode, bool isTalkRehab);     
         List<ContactType> GetAllPatientContactTypes(UserProfile profile);
         PatientContact GetPatientContactDetails(long patient_Account);
         PatientContact SaveContact(PatientContact contact, UserProfile profile);
@@ -53,7 +53,7 @@ namespace FOX.BusinessOperations.PatientServices
         List<MedicareLimitHistory> GetMedicareLimitHistory(MedicareLimitHistorySearchReq req, UserProfile profile);
         splitauthorization getsplitauthorization(long parent_id, UserProfile profile);
         ResponseModel DeletePatPos(PatientPOSLocation obj, UserProfile profile);
-        List<FinancialClass> GetFinancialClassDDValues(string practiceCode);
+        List<FinancialClass> GetFinancialClassDDValues(string practiceCode, bool talkRehab);
         ReconcileDemographics GetLatestEligibilityRecords(PatientEligibilitySearchModel patientEligibilitySearchModel, UserProfile profile);
         List<AdvanceInsuranceSearch> GetInsurancePayersForAdvanceSearch(AdvanceInsuranceSearch obj);
         List<AdvancePatientSearch> GetPatientsForAdvanceSearch(AdvancePatientSearch obj, UserProfile profile);

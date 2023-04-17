@@ -20,7 +20,7 @@ namespace FOX.BusinessOperations.CaseServices
         ResponseGetCasesDDL GetCasesDDLTalkrehab(CasesSearchRequest casesmodel);
         List<FOX_TBL_IDENTIFIER> GetIdentifierList(long practiceCode);
         List<SmartIdentifierRes> GetSmartIdentifier(SmartIdentifierReq obj, UserProfile profile);
-        List<FOX_TBL_SOURCE_OF_REFERRAL> GetSourceofReferral(long practiceCode);
+        List<FOX_TBL_SOURCE_OF_REFERRAL> GetSourceofReferral(long practiceCode, bool isTalkRehab);
         List<GetSmartPoslocRes> GetSmartPosLocation(GetSmartPoslocReq obj, UserProfile Profile);
         GetOpenIssueAllListRes GetOpenIssueList(GetOpenIssueListReq req, UserProfile profile);
         GetNONandHOLDAllListRes GetNONandHOLDIssueList(GetOpenIssueListReq req, UserProfile profile);
