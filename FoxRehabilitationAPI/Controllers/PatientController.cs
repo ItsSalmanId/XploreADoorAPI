@@ -155,14 +155,8 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetPatientBestTimeToCall()
         {
             var profile = GetProfile();
-            if (profile.isTalkRehab)
-            {
-                return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetPatientBestTimeToCall(profile.PracticeCode, profile.isTalkRehab));
-            }
-            else
-            {
-                return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetPatientBestTimeToCall(profile.PracticeCode, profile.isTalkRehab));
-            }
+            return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetPatientBestTimeToCall(profile.PracticeCode, profile.isTalkRehab));
+            
         }
         [HttpGet]
         public HttpResponseMessage GetAllPatientContactTypes()
