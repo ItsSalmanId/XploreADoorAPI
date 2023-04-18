@@ -1,5 +1,6 @@
 ﻿using FOX.BusinessOperations.CommonServices;
 using FOX.BusinessOperations.IndexInfoServices;
+using FOX.DataModels.Models.CasesModel;
 using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.OriginalQueueModel;
 using FOX.DataModels.Models.Security;
@@ -382,11 +383,11 @@ namespace FoxRehabilitationAPI.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.MarkTaskAsComplete(taskId, GetProfile()));
         }
         [HttpPost]
-        public HttpResponseMessage AddAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes)
+        public HttpResponseMessage AddAdmissionImportantNotes(FOX_TBL_NOTES objFoxTblNotes)
         {
-            if (objAdmissionImportantNotes != null)
+            if (objFoxTblNotes != null)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.AddAdmissionImportantNotes(objAdmissionImportantNotes, GetProfile()));
+                return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.AddAdmissionImportantNotes(objFoxTblNotes, GetProfile()));
             }
             else
             {
@@ -394,7 +395,7 @@ namespace FoxRehabilitationAPI.Controllers
             }
         }
         [HttpPost]
-        public HttpResponseMessage GetAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes)
+        public HttpResponseMessage GetAdmissionImportantNotes(FOX_TBL_NOTES objAdmissionImportantNotes)
         {
             if (objAdmissionImportantNotes != null)
             {

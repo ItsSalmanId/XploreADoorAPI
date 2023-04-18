@@ -126,8 +126,12 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private long talkRehabInterfaceID = 0;
         private long talkRehabTaskID = 0;
         private long retrycatch = 0;
+        private readonly GenericRepository<FOX_TBL_NOTES> _NoteRepository;
+        private readonly GenericRepository<FOX_TBL_NOTES_TYPE> _NotesTypeRepository;
         public IndexInfoService()
         {
+            _NoteRepository = new GenericRepository<FOX_TBL_NOTES>(_QueueContext);
+            _NotesTypeRepository = new GenericRepository<FOX_TBL_NOTES_TYPE>(_CaseContext);
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
             _OriginalQueueFiles = new GenericRepository<OriginalQueueFiles>(_QueueContext);
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
@@ -183,6 +187,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             _groupService = new GroupService();
             _TaskWorkInterfaceMapping = new GenericRepository<TaskWorkInterfaceMapping>(_TaskContext);
             _admissionImportantNotes = new GenericRepository<AdmissionImportantNotes>(_QueueContext);
+
         }
         public void InsertUpdateDocuments(FOX_TBL_PATIENT_DOCUMENTS obj, UserProfile profile)
         {
@@ -5796,53 +5801,58 @@ namespace FOX.BusinessOperations.IndexInfoServices
             }
         }
 
-        public AdmissionImportantNotes AddAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes, UserProfile userProfile)
+        public FOX_TBL_NOTES AddAdmissionImportantNotes(FOX_TBL_NOTES objFoxTblNotes, UserProfile userProfile)
         {
-            if (!string.IsNullOrEmpty(objAdmissionImportantNotes.NOTES))
+            if (!string.IsNullOrEmpty(objFoxTblNotes.NOTES))
             {
                 long generalNotId = 0;
-                if (objAdmissionImportantNotes.ADMISSION_IMPORTANT_NOTES_ID == 0)
+                if (objFoxTblNotes.NOTES_ID == 0)
                 {
-                    generalNotId = Helper.getMaximumId("ADMISSION_IMPORTANT_NOTES_ID");
+                    generalNotId = Helper.getMaximumId("NOTES_ID");
                 }
-                if (objAdmissionImportantNotes != null && generalNotId != 0)
+                if (objFoxTblNotes != null && generalNotId != 0)
                 {
-                    objAdmissionImportantNotes.ADMISSION_IMPORTANT_NOTES_ID = generalNotId;
-                    objAdmissionImportantNotes.CREATED_FROM = "FOX PORTAL";
-                    objAdmissionImportantNotes.PRACTICE_CODE = userProfile.PracticeCode;
-                    objAdmissionImportantNotes.CREATED_BY = userProfile.UserName;
-                    objAdmissionImportantNotes.CREATED_DATE = Helper.GetCurrentDate();
-                    objAdmissionImportantNotes.MODIFIED_BY = userProfile.UserName;
-                    objAdmissionImportantNotes.MODIFIED_DATE = Helper.GetCurrentDate();
-                    objAdmissionImportantNotes.DELETED = false;
-                    _admissionImportantNotes.Insert(objAdmissionImportantNotes);
-                    _admissionImportantNotes.Save();
+                    long getPracticeCode = AppConfiguration.GetPracticeCode;
+                    SqlParameter notesName = new SqlParameter { ParameterName = "@Name", SqlDbType = SqlDbType.VarChar, Value = "Admission Importent Notes" };
+                    SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = getPracticeCode };
+                    var getNotesTypeId = SpRepository<FOX_TBL_NOTES_TYPE>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_NOTES_TYPE @Name, @PRACTICE_CODE", notesName, pracCode);
+                    objFoxTblNotes.NOTES_ID = generalNotId;
+                    //objFoxTblNotes.CREATED_FROM = "FOX PORTAL";
+                    objFoxTblNotes.PRACTICE_CODE = userProfile.PracticeCode;
+                    objFoxTblNotes.CREATED_BY = userProfile.UserName;
+                    objFoxTblNotes.CREATED_DATE = Helper.GetCurrentDate();
+                    objFoxTblNotes.MODIFIED_BY = userProfile.UserName;
+                    objFoxTblNotes.MODIFIED_DATE = Helper.GetCurrentDate();
+                    objFoxTblNotes.NOTES_TYPE_ID = getNotesTypeId.NOTES_TYPE_ID;
+                    objFoxTblNotes.DELETED = false;
+                    _NoteRepository.Insert(objFoxTblNotes);
+                    _NoteRepository.Save();
                 }
                 else
                 {
-                    objAdmissionImportantNotes.PRACTICE_CODE = userProfile.PracticeCode;
-                    objAdmissionImportantNotes.MODIFIED_BY = userProfile.UserName;
-                    objAdmissionImportantNotes.MODIFIED_DATE = Helper.GetCurrentDate();
-                    objAdmissionImportantNotes.DELETED = false;
-                    _admissionImportantNotes.Update(objAdmissionImportantNotes);
-                    _admissionImportantNotes.Save();
+                    objFoxTblNotes.PRACTICE_CODE = userProfile.PracticeCode;
+                    objFoxTblNotes.MODIFIED_BY = userProfile.UserName;
+                    objFoxTblNotes.MODIFIED_DATE = Helper.GetCurrentDate();
+                    objFoxTblNotes.DELETED = false;
+                    _NoteRepository.Update(objFoxTblNotes);
+                    _NoteRepository.Save();
                 }
             }
-            return objAdmissionImportantNotes;
+            return objFoxTblNotes;
         }
 
-        public AdmissionImportantNotes GetAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes, UserProfile userProfile)
+        public FOX_TBL_NOTES GetAdmissionImportantNotes(FOX_TBL_NOTES objFoxTblNotes, UserProfile userProfile)
         {
-            AdmissionImportantNotes getAdmissionImportantNotes = new AdmissionImportantNotes();
-            if (objAdmissionImportantNotes != null)
+            FOX_TBL_NOTES getFoxTblNotes = new FOX_TBL_NOTES();
+            if (objFoxTblNotes != null)
             {
-                getAdmissionImportantNotes = _admissionImportantNotes.GetFirst(r => r.WORK_ID == objAdmissionImportantNotes.WORK_ID && r.PRACTICE_CODE == userProfile.PracticeCode && r.DELETED == false);
+                getFoxTblNotes = _NoteRepository.GetFirst(r => r.WORK_ID == objFoxTblNotes.WORK_ID && r.PRACTICE_CODE == userProfile.PracticeCode && r.DELETED == false);
             }
             else
             {
-                getAdmissionImportantNotes = null;
+                objFoxTblNotes = null;
             }
-            return getAdmissionImportantNotes;
+            return getFoxTblNotes;
         }
     }
 }
