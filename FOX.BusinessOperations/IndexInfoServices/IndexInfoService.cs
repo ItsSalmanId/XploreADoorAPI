@@ -118,7 +118,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private readonly GenericRepository<FOX_TBL_ZIP_STATE_COUNTY> _zipStateCountyRepository;
         private readonly GenericRepository<RegionCoverLetter> _RegionCoverLetterRepository;
         private readonly GenericRepository<TaskWorkInterfaceMapping> _TaskWorkInterfaceMapping;
-        private readonly GenericRepository<AdmissionImportantNotes> _admissionImportantNotes;
         private static List<Thread> threadsList = new List<Thread>();
         private static List<Thread> threadsListForEmail = new List<Thread>();
         private readonly GroupService _groupService;
@@ -126,8 +125,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private long talkRehabInterfaceID = 0;
         private long talkRehabTaskID = 0;
         private long retrycatch = 0;
+        private readonly GenericRepository<FOX_TBL_NOTES> _NoteRepository;
         public IndexInfoService()
         {
+            _NoteRepository = new GenericRepository<FOX_TBL_NOTES>(_DbContextCommon);
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
             _OriginalQueueFiles = new GenericRepository<OriginalQueueFiles>(_QueueContext);
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
@@ -182,7 +183,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
             _RegionCoverLetterRepository = new GenericRepository<RegionCoverLetter>(security);
             _groupService = new GroupService();
             _TaskWorkInterfaceMapping = new GenericRepository<TaskWorkInterfaceMapping>(_TaskContext);
-            _admissionImportantNotes = new GenericRepository<AdmissionImportantNotes>(_QueueContext);
         }
         public void InsertUpdateDocuments(FOX_TBL_PATIENT_DOCUMENTS obj, UserProfile profile)
         {
@@ -5807,27 +5807,31 @@ namespace FOX.BusinessOperations.IndexInfoServices
             }
         }
 
-        public AdmissionImportantNotes AddAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes, UserProfile userProfile)
+        public FOX_TBL_NOTES AddAdmissionImportantNotes(FOX_TBL_NOTES objAdmissionImportantNotes, UserProfile userProfile)
         {
             if (!string.IsNullOrEmpty(objAdmissionImportantNotes.NOTES))
             {
                 long generalNotId = 0;
-                if (objAdmissionImportantNotes.ADMISSION_IMPORTANT_NOTES_ID == 0)
+                if (objAdmissionImportantNotes.NOTES_ID == 0)
                 {
-                    generalNotId = Helper.getMaximumId("ADMISSION_IMPORTANT_NOTES_ID");
+                    generalNotId = Helper.getMaximumId("NOTES_ID");
                 }
                 if (objAdmissionImportantNotes != null && generalNotId != 0)
                 {
-                    objAdmissionImportantNotes.ADMISSION_IMPORTANT_NOTES_ID = generalNotId;
-                    objAdmissionImportantNotes.CREATED_FROM = "FOX PORTAL";
+                    long getPracticeCode = AppConfiguration.GetPracticeCode;
+                    SqlParameter notesName = new SqlParameter { ParameterName = "@Name", SqlDbType = SqlDbType.VarChar, Value = "Admission Importent Notes" };
+                    SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = getPracticeCode };
+                    var getNotesTypeId = SpRepository<FOX_TBL_NOTES_TYPE>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_NOTES_TYPE @Name, @PRACTICE_CODE", notesName, pracCode);
+                    objAdmissionImportantNotes.NOTES_ID = generalNotId;
                     objAdmissionImportantNotes.PRACTICE_CODE = userProfile.PracticeCode;
                     objAdmissionImportantNotes.CREATED_BY = userProfile.UserName;
                     objAdmissionImportantNotes.CREATED_DATE = Helper.GetCurrentDate();
                     objAdmissionImportantNotes.MODIFIED_BY = userProfile.UserName;
                     objAdmissionImportantNotes.MODIFIED_DATE = Helper.GetCurrentDate();
+                    objAdmissionImportantNotes.NOTES_TYPE_ID = getNotesTypeId.NOTES_TYPE_ID;
                     objAdmissionImportantNotes.DELETED = false;
-                    _admissionImportantNotes.Insert(objAdmissionImportantNotes);
-                    _admissionImportantNotes.Save();
+                    _NoteRepository.Insert(objAdmissionImportantNotes);
+                    _NoteRepository.Save();
                 }
                 else
                 {
@@ -5835,25 +5839,25 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     objAdmissionImportantNotes.MODIFIED_BY = userProfile.UserName;
                     objAdmissionImportantNotes.MODIFIED_DATE = Helper.GetCurrentDate();
                     objAdmissionImportantNotes.DELETED = false;
-                    _admissionImportantNotes.Update(objAdmissionImportantNotes);
-                    _admissionImportantNotes.Save();
+                    _NoteRepository.Update(objAdmissionImportantNotes);
+                    _NoteRepository.Save();
                 }
             }
             return objAdmissionImportantNotes;
         }
 
-        public AdmissionImportantNotes GetAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes, UserProfile userProfile)
+        public FOX_TBL_NOTES GetAdmissionImportantNotes(FOX_TBL_NOTES objAdmissionImportantNotes, UserProfile userProfile)
         {
-            AdmissionImportantNotes getAdmissionImportantNotes = new AdmissionImportantNotes();
+            FOX_TBL_NOTES getFoxTblNotes = new FOX_TBL_NOTES();
             if (objAdmissionImportantNotes != null)
             {
-                getAdmissionImportantNotes = _admissionImportantNotes.GetFirst(r => r.WORK_ID == objAdmissionImportantNotes.WORK_ID && r.PRACTICE_CODE == userProfile.PracticeCode && r.DELETED == false);
+                getFoxTblNotes = _NoteRepository.GetFirst(r => r.WORK_ID == objAdmissionImportantNotes.WORK_ID && r.PRACTICE_CODE == userProfile.PracticeCode && r.DELETED == false);
             }
             else
             {
-                getAdmissionImportantNotes = null;
+                objAdmissionImportantNotes = null;
             }
-            return getAdmissionImportantNotes;
+            return getFoxTblNotes;
         }
     }
 }
