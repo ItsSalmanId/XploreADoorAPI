@@ -239,6 +239,7 @@
     <Compile Include="IndexedQueueService\IndexedQueueServices.cs" />
     <Compile Include="IndexInfoServices\IIndexInfoService.cs" />
     <Compile Include="IndexInfoServices\IndexInfoService.cs" />
+    <Compile Include="IndexInfoServices\IndexInfoServiceBase.cs" />
     <Compile Include="IndexInfoServices\UploadWorkOrderFiles\IUploadWorkOrderFilesService.cs.cs" />
     <Compile Include="IndexInfoServices\UploadWorkOrderFiles\UploadWorkOrderFilesService.cs" />
     <Compile Include="OriginalQueueService\IOriginalQueueService.cs" />
