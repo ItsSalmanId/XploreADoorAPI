@@ -5817,7 +5817,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = getPracticeCode };
                     var getNotesTypeId = SpRepository<FOX_TBL_NOTES_TYPE>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_NOTES_TYPE @Name, @PRACTICE_CODE", notesName, pracCode);
                     objFoxTblNotes.NOTES_ID = generalNotId;
-                    //objFoxTblNotes.CREATED_FROM = "FOX PORTAL";
                     objFoxTblNotes.PRACTICE_CODE = userProfile.PracticeCode;
                     objFoxTblNotes.CREATED_BY = userProfile.UserName;
                     objFoxTblNotes.CREATED_DATE = Helper.GetCurrentDate();
