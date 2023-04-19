@@ -5439,7 +5439,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             if (Profile.isTalkRehab)
             {
                 var chart_Id = new SqlParameter("@Chart_Id", SqlDbType.VarChar) { Value = req.Patient_Account };
-                result = SpRepository<PatientListResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_FOR_INDEX_INFO_FOR_CCR
+                result = SpRepository<PatientListResponse>.GetListWithStoreProcedure(@"exec CCR_PROC_GET_PATIENT_FOR_INDEX_INFO
                              @First_Name,@Last_Name,@Middle_Name,@Chart_Id,@SSN,@Gender,@PRACTICE_CODE,@CURRENT_PAGE,@RECORD_PER_PAGE,@PRACTICE_ORGANIZATION_ID,@Date_Of_Birth,@Patient_Alias",
                              first_Name, last_Name, middle_Name, chart_Id, SSN, gender, Practice_Code, _currentPage, _recordPerPage, _PRACTICE_ORGANIZATION_ID, date_Of_Birth, Patient_Alias);
             }
