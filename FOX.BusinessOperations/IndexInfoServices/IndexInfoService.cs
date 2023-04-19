@@ -128,7 +128,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private readonly GenericRepository<FOX_TBL_NOTES> _NoteRepository;
         public IndexInfoService()
         {
-            _NoteRepository = new GenericRepository<FOX_TBL_NOTES>(_CaseContext);
+            _NoteRepository = new GenericRepository<FOX_TBL_NOTES>(_DbContextCommon);
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
             _OriginalQueueFiles = new GenericRepository<OriginalQueueFiles>(_QueueContext);
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
