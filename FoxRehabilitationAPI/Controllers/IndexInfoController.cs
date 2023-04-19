@@ -383,11 +383,11 @@ namespace FoxRehabilitationAPI.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.MarkTaskAsComplete(taskId, GetProfile()));
         }
         [HttpPost]
-        public HttpResponseMessage AddAdmissionImportantNotes(FOX_TBL_NOTES objFoxTblNotes)
+        public HttpResponseMessage AddAdmissionImportantNotes(FOX_TBL_NOTES objAdmissionImportantNotes)
         {
-            if (objFoxTblNotes != null)
+            if (objAdmissionImportantNotes != null)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.AddAdmissionImportantNotes(objFoxTblNotes, GetProfile()));
+                return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.AddAdmissionImportantNotes(objAdmissionImportantNotes, GetProfile()));
             }
             else
             {
