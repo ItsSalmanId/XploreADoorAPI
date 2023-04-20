@@ -806,7 +806,10 @@ namespace FOX.BusinessOperations.PatientServices
                                 }
                                 UpdateDefaultLocations(loc.Loc_ID, patientAccount, loc.Patient_POS_ID);
                                 //if (facilityType.NAME?.ToLower())
-                                SaveGuarantorForPatientFromPOS(loc, profile);
+                                if(!profile.isTalkRehab)
+                                {
+                                    SaveGuarantorForPatientFromPOS(loc, profile);
+                                }
                             }
                             if (index == 0 && (loc.Patient_POS_Details.CODE.ToLower().Contains("hom"))) // update
                             {
@@ -836,7 +839,10 @@ namespace FOX.BusinessOperations.PatientServices
                                 }
                                 loc.Patient_Account = patientAccount;
                                 UpdateDefaultLocations(loc.Loc_ID, patientAccount, posT.Patient_POS_ID);
-                                SaveGuarantorForPatientFromPOS(loc, profile);
+                                if (!profile.isTalkRehab)
+                                {
+                                    SaveGuarantorForPatientFromPOS(loc, profile);
+                                }
                             }
                         }
                     }
@@ -2625,7 +2631,10 @@ namespace FOX.BusinessOperations.PatientServices
                             loc.Deleted = false;
                             _PatientPOSLocationRepository.Insert(loc);
                             _PatientPOSLocationRepository.Save();
-                            SaveGuarantorForPatientFromPOS(loc, profile);
+                            if (!profile.isTalkRehab)
+                            {
+                                SaveGuarantorForPatientFromPOS(loc, profile);
+                            }
                             //Task 149402:Dev Task: FOX-RT 105. Disabling editing of patient info. from RFO
                             //InsertInterfaceTeamData(interfaceSynch, profile);
                         }
@@ -2753,7 +2762,10 @@ namespace FOX.BusinessOperations.PatientServices
 
                     //this commented temporarygiving error in this method 03/06/2019
                     UpdateCoordinates(loc.Patient_POS_Details, profile);
-                    SaveGuarantorForPatientFromPOS(loc, profile);
+                    if (!profile.isTalkRehab)
+                    {
+                        SaveGuarantorForPatientFromPOS(loc, profile);
+                    }
                     //Task 149402:Dev Task: FOX-RT 105. Disabling editing of patient info. from RFO
                     //InsertInterfaceTeamData(interfaceSynch, profile);
                 }
@@ -2796,7 +2808,10 @@ namespace FOX.BusinessOperations.PatientServices
                         _PatientPOSLocationRepository.Save();
                         //this commented temporarygiving error in this method 03/06/2019
                         UpdateCoordinates(loc.Patient_POS_Details, profile);
-                        SaveGuarantorForPatientFromPOS(loc, profile);
+                        if (!profile.isTalkRehab)
+                        {
+                            SaveGuarantorForPatientFromPOS(loc, profile);
+                        }
                         //Task 149402:Dev Task: FOX-RT 105. Disabling editing of patient info. from RFO
                         //InsertInterfaceTeamData(interfaceSynch, profile);
 
@@ -9279,7 +9294,10 @@ namespace FOX.BusinessOperations.PatientServices
                         posdata.Patient_Account = obj.Patient_Account;
                         posdata.Loc_ID = loc.LOC_ID;
                         posdata.Patient_POS_Details = loc;
-                        SaveGuarantorForPatientFromPOS(posdata, profile);
+                        if (!profile.isTalkRehab) 
+                        {
+                            SaveGuarantorForPatientFromPOS(posdata, profile);
+                        }
                     }
                     else
                     {
