@@ -2005,7 +2005,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 var parmPracticeCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
                 var id = new SqlParameter("@SOURCE_ID", SqlDbType.BigInt) { Value = Source_ID };
-                var result = SpRepository<SmartOrderSource>.GetSingleObjectWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE_BY_ID] @PRACTICE_CODE, @SOURCE_ID", parmPracticeCode, id);
+                var result = SpRepository<SmartOrderSource>.GetSingleObjectWithStoreProcedure(@"exec [CCR_GET_SMART_ORDERING_SOURCE_BY_ID] @PRACTICE_CODE, @SOURCE_ID", parmPracticeCode, id);
                 return result; 
             }
             catch (Exception ex)
