@@ -147,6 +147,13 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetSmartOrderingSource(obj, GetProfile()));
         }
+        
+        [HttpGet]
+        public HttpResponseMessage GetSmartOrderingSourceByID(long id)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetSmartOrderingSourceByID(id, GetProfile()));
+        }
+
         [HttpPost]
         public HttpResponseMessage GetSmartRefRegion(SmartReq obj)
         {
