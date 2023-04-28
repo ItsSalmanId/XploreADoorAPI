@@ -2156,7 +2156,16 @@ namespace FOX.BusinessOperations.CaseServices
             var parmPracticeCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
             var smartvalue = new SqlParameter("@SEARCHVALUE", SqlDbType.VarChar) { Value = searchValue };
             var disciplineId_sqlparm = new SqlParameter("@DISCIPLINE_ID", SqlDbType.VarChar) { Value = disciplineId };
-            var result = SpRepository<Provider>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_PROVIDER_BY_ID] @PRACTICE_CODE, @SEARCHVALUE, @DISCIPLINE_ID", parmPracticeCode, smartvalue, disciplineId_sqlparm).ToList();
+            var result = new List<Provider>();
+            if (Profile.isTalkRehab)
+            {
+                result = SpRepository<Provider>.GetListWithStoreProcedure(@"exec [CCR_GET_SMART_PROVIDER_BY_ID] @PRACTICE_CODE, @SEARCHVALUE, @DISCIPLINE_ID", parmPracticeCode, smartvalue, disciplineId_sqlparm).ToList();
+            }
+            else
+            {
+                result = SpRepository<Provider>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_PROVIDER_BY_ID] @PRACTICE_CODE, @SEARCHVALUE, @DISCIPLINE_ID", parmPracticeCode, smartvalue, disciplineId_sqlparm).ToList();
+            }
+            
             if (result.Any())
                 return result;
             else

@@ -1984,11 +1984,27 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 var result = new List<SmartOrderSource>();
                 if (!obj.Is_From_RFO)
                 {
-                    result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    if (Profile.isTalkRehab)
+                    {
+                        result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [CCR_GET_SMART_ORDERING_SOURCE] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    }
+                    else
+                    {
+                        result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    }
+                    
                 }
                 else
                 {
-                    result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE_RFO] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    if (Profile.isTalkRehab)
+                    {
+                        result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [CCR_GET_SMART_ORDERING_SOURCE_RFO] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    }
+                    else
+                    {
+                        result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE_RFO] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    }
+                    
                 }
 
                 if (result.Any())
