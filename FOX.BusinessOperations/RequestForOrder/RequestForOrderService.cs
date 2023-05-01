@@ -493,9 +493,13 @@ namespace FOX.BusinessOperations.RequestForOrder
                     && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
                     && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
                 {
-                    ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestSendFAXModel.AttachmentHTML, requestSendFAXModel.FileName, "fax");
+                    Helper.TokenTaskCancellationExceptionLog("HTMLToPDF : Start Function" + Helper.GetCurrentDate().ToLocalTime());
+                    //ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestSendFAXModel.AttachmentHTML, requestSendFAXModel.FileName, "fax");
+                    ResponseHTMLToPDF responseHTMLToPDFTemp = HTMLToPDF3(config, requestSendFAXModel.AttachmentHTML, requestSendFAXModel.FileName, "email");
 
-                    if (responseHTMLToPDF != null && (responseHTMLToPDF?.Success ?? false))
+                    Helper.TokenTaskCancellationExceptionLog("HTMLToPDF : END Function" + Helper.GetCurrentDate().ToLocalTime());
+
+                    if (responseHTMLToPDFTemp != null && (responseHTMLToPDFTemp?.Success ?? false))
                     {
                         //var resultfax = _IFaxService.SendFax(new string[] { requestSendFAXModel.ReceipientFaxNumber }, new string[] { "" }, null, responseHTMLToPDF.FileName, responseHTMLToPDF.FilePath, requestSendFAXModel.Subject, false, Profile);
 
@@ -511,18 +515,19 @@ namespace FOX.BusinessOperations.RequestForOrder
                         //ResponseHTMLToPDF responseHTMLToPDF2 = HTMLToPDF2(config, htmlstring, "tempdfdelivery");
                        
                         //string deliveryfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
-                        string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
+                        string filePath = responseHTMLToPDFTemp?.FilePath + responseHTMLToPDFTemp?.FileName;
                         int numberOfPages = getNumberOfPagesOfPDF(filePath);
                         //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
                         //SavePdfToImages(filePath, imagesPath, requestSendFAXModel.WorkId, numberOfPages, "Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName);
-
+                        Helper.TokenTaskCancellationExceptionLog("SavePdfToImages : Start Function" + Helper.GetCurrentDate().ToLocalTime());
                         SavePdfToImages(filePath, config, requestSendFAXModel.WorkId, numberOfPages, "Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
-
+                        Helper.TokenTaskCancellationExceptionLog("SavePdfToImages : END Function" + Helper.GetCurrentDate().ToLocalTime());
                         //SavePdfToImages(deliveryfilePath, config, requestSendFAXModel.WorkId, 1, "DR:Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
 
                         var commonService = new CommonServices.CommonServices();
+                        Helper.TokenTaskCancellationExceptionLog("GeneratePdfForSupportedDoc : Start Function" + Helper.GetCurrentDate().ToLocalTime());
                         AttachmentData attachmentPath = commonService.GeneratePdfForSupportedDoc(config, requestSendFAXModel.WorkId.ToString(), Profile);
-
+                        Helper.TokenTaskCancellationExceptionLog("GeneratePdfForSupportedDoc : END Function" + Helper.GetCurrentDate().ToLocalTime());
                         if (!attachmentPath.FILE_PATH.EndsWith("\\"))
                         {
                             attachmentPath.FILE_PATH = attachmentPath.FILE_PATH + "\\";
@@ -540,7 +545,9 @@ namespace FOX.BusinessOperations.RequestForOrder
                             htmlstring = "<html><body><h2>Delivery Report</h2><p>Subject:" + requestSendFAXModel.Subject + "</p><p>From:" + requestSendFAXModel.SenderName + "</p><p>To:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Sent:" + DateTime.Now + "</p><br/><div style='padding:10px;width: 50%;'><p>Delivery report for:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Delivered Successfully:</p><p>Message delivered to recipient. </p></div></body></html>";
                         }
                         //hl
+                        Helper.TokenTaskCancellationExceptionLog("HTMLToPDF2 : Start Function" + Helper.GetCurrentDate().ToLocalTime());
                         ResponseHTMLToPDF responseHTMLToPDF2 = HTMLToPDF2(config, htmlstring, "tempdfdelivery");
+                        Helper.TokenTaskCancellationExceptionLog("HTMLToPDF2 : END Function" + Helper.GetCurrentDate().ToLocalTime());
 
                         string deliveryfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
 
@@ -595,11 +602,9 @@ namespace FOX.BusinessOperations.RequestForOrder
                 return "";
             }
         }
-        private string HTMLToPDF3(ServiceConfiguration conf, string htmlString, string fileName, string type, string linkMessage = null)
+        private ResponseHTMLToPDF HTMLToPDF3(ServiceConfiguration conf, string htmlString, string fileName, string type, string linkMessage = null)
         {
-            try
-            {
-                PdfMetamorphosis p = new PdfMetamorphosis();
+            PdfMetamorphosis p = new PdfMetamorphosis();
                 //p.Serial = "10262870570";//server
                 p.Serial = "10261942764";//development
                 p.PageSettings.Size.A4();
@@ -608,31 +613,37 @@ namespace FOX.BusinessOperations.RequestForOrder
                 p.PageSettings.MarginRight.Inch(0.1f);
                 if (p != null)
                 {
-                    string pdfFilePath = Path.Combine(conf.ORIGINAL_FILES_PATH_SERVER);
+                if (type == "fax")
+                {
+                    if (!EntityHelper.isTalkRehab)
+                    {
+                        PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at +1 (800) 597 - 0848 or email admit@foxrehab.org",
+                                           new Font("Arial", 10));
+                        p.PageSettings.Footer.Text(text.ToString());
+                    }
+                }
+                string pdfFilePath = Path.Combine(conf.ORIGINAL_FILES_PATH_SERVER);
                     //string finalsetpath = conf.ORIGINAL_FILES_PATH_SERVER.Remove(conf.ORIGINAL_FILES_PATH_SERVER.Length - 1);
                     if (!Directory.Exists(pdfFilePath))
                     {
                         Directory.CreateDirectory(pdfFilePath);
                     }
-                    fileName = fileName + DateTime.Now.Ticks + ".pdf";
+                    fileName += fileName + DateTime.Now.Ticks + ".pdf";
                     string pdfFilePathnew = pdfFilePath + "\\" + fileName;
                     if (p.HtmlToPdfConvertStringToFile(htmlString, pdfFilePathnew) == 0)
                     {
-                        return pdfFilePathnew;
+                        //return pdfFilePathnew;
+                        return new ResponseHTMLToPDF() { FileName = fileName, FilePath = pdfFilePathnew, Success = true, ErrorMessage = "" };
                     }
                     else
                     {
                         var ex = p.TraceSettings.ExceptionList.Count > 0 ? p.TraceSettings.ExceptionList[0] : null;
                         var msg = ex != null ? ex.Message + Environment.NewLine + ex.StackTrace : "An error occured during converting HTML to PDF!";
-                        return "";
+                        return new ResponseHTMLToPDF() { FileName = fileName, FilePath = pdfFilePathnew, Success = true, ErrorMessage = "" };
+                        //return "";
                     }
                 }
-                return "";
-            }
-            catch (Exception ex)
-            {
-                return "";
-            }
+                return new ResponseHTMLToPDF() { FileName = fileName, FilePath = "", Success = true, ErrorMessage = "" };
         }
         private ResponseHTMLToPDF HTMLToPDF(ServiceConfiguration config, string htmlString, string fileName, string type, string linkMessage = null)
         {
