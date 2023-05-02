@@ -546,10 +546,11 @@ namespace FOX.BusinessOperations.RequestForOrder
                         }
                         //hl
                         Helper.TokenTaskCancellationExceptionLog("HTMLToPDF2 : Start Function" + Helper.GetCurrentDate().ToLocalTime());
-                        ResponseHTMLToPDF responseHTMLToPDF2 = HTMLToPDF2(config, htmlstring, "tempdfdelivery");
+                        ResponseHTMLToPDF responseHTMLToPDF4 = HTMLToPDF4(config, htmlstring, "tempdfdelivery");
+
                         Helper.TokenTaskCancellationExceptionLog("HTMLToPDF2 : END Function" + Helper.GetCurrentDate().ToLocalTime());
 
-                        string deliveryfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
+                        string deliveryfilePath = responseHTMLToPDF4?.FilePath + responseHTMLToPDF4?.FileName;
 
                         SavePdfToImages(deliveryfilePath, config, requestSendFAXModel.WorkId, 1, "DR:Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
 
@@ -557,7 +558,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                     }
                     else
                     {
-                        return new ResponseModel() { Message = "Fax sent successfully, our admission team is processing your referral.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
+                        return new ResponseModel() { Message = "Fax sent successfully, our admission team is processing your referral.", ErrorMessage = responseHTMLToPDFTemp?.ErrorMessage, Success = false };
                         //return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = responseHTMLToPDF?.ErrorMessage, Success = false };
                     }
                 }
@@ -601,6 +602,40 @@ namespace FOX.BusinessOperations.RequestForOrder
             {
                 return "";
             }
+        }
+        private ResponseHTMLToPDF HTMLToPDF4(ServiceConfiguration conf, string htmlString, string fileName, string linkMessage = null)
+        {
+            PdfMetamorphosis p = new PdfMetamorphosis();
+            //p.Serial = "10262870570";//server
+            p.Serial = "10261942764";//development
+            p.PageSettings.Size.A4();
+            p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
+            p.PageSettings.MarginLeft.Inch(0.1f);
+            p.PageSettings.MarginRight.Inch(0.1f);
+            if (p != null)
+            {
+                string pdfFilePath = Path.Combine(conf.ORIGINAL_FILES_PATH_SERVER);
+                //string finalsetpath = conf.ORIGINAL_FILES_PATH_SERVER.Remove(conf.ORIGINAL_FILES_PATH_SERVER.Length - 1);
+                if (!Directory.Exists(pdfFilePath))
+                {
+                    Directory.CreateDirectory(pdfFilePath);
+                }
+                fileName += fileName + DateTime.Now.Ticks + ".pdf";
+                string pdfFilePathnew = pdfFilePath + "\\" + fileName;
+                if (p.HtmlToPdfConvertStringToFile(htmlString, pdfFilePathnew) == 0)
+                {
+                    //return pdfFilePathnew;
+                    return new ResponseHTMLToPDF() { FileName = fileName, FilePath = pdfFilePathnew, Success = true, ErrorMessage = "" };
+                }
+                else
+                {
+                    var ex = p.TraceSettings.ExceptionList.Count > 0 ? p.TraceSettings.ExceptionList[0] : null;
+                    var msg = ex != null ? ex.Message + Environment.NewLine + ex.StackTrace : "An error occured during converting HTML to PDF!";
+                    return new ResponseHTMLToPDF() { FileName = fileName, FilePath = pdfFilePathnew, Success = true, ErrorMessage = "" };
+                    //return "";
+                }
+            }
+            return new ResponseHTMLToPDF() { FileName = fileName, FilePath = "", Success = true, ErrorMessage = "" };
         }
         private ResponseHTMLToPDF HTMLToPDF3(ServiceConfiguration conf, string htmlString, string fileName, string type, string linkMessage = null)
         {
