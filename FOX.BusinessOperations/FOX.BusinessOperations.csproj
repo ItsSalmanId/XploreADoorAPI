@@ -74,6 +74,9 @@
     <Reference Include="htn">
       <HintPath>..\Libraries\htn.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\Libraries\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="itextsharp">
       <HintPath>..\Libraries\itextsharp.dll</HintPath>
     </Reference>

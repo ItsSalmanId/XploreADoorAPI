@@ -661,4 +661,8 @@ namespace FOX.DataModels.Models.TasksModel
         [Column("Deleted")]
         public bool Deleted { set; get; }
     }
+    public class CaseAdditionalInfoRresponce
+    {
+        public string message { get; set; }
+    }
 }

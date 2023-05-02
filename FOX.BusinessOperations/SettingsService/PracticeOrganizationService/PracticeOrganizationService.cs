@@ -33,7 +33,7 @@ namespace FOX.BusinessOperations.SettingsService.PracticeOrganizationService
             _code = praticOrganizations.FirstOrDefault().CODE;
             if (string.IsNullOrEmpty(_code))
                 return "00001";
-            long cd = Convert.ToInt64(_code);
+            long cd = Convert.ToInt64(Helper.RemoveSpecialCharacters(_code));//Helper.RemoveSpecialCharacters(_code) added by irfan ullah bg fixation
             cd = ++cd;
             _code = cd.ToString();
             _code = _code.PadLeft(5, '0');

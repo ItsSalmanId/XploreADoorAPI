@@ -86,7 +86,6 @@ namespace FOX.BusinessOperations.RequestForOrder
             _financialClassRepository = new GenericRepository<FinancialClass>(_PatientContext);
             _User = new GenericRepository<User>(security);
             _SenderTypeRepository = new GenericRepository<FOX_TBL_SENDER_TYPE>(_DbContextCommon);
-
         }
         public ResponseGeneratingWorkOrder GeneratingWorkOrder(long practiceCode, string userName, string email, long userId, UserProfile Profile)
         {
@@ -1045,7 +1044,9 @@ namespace FOX.BusinessOperations.RequestForOrder
             try
             {
                 OriginalQueue originalQueue = _QueueRepository.Get(t => t.WORK_ID == requestDeleteWorkOrder?.WorkId && !t.DELETED);
-
+                SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = Profile.PracticeCode };
+                SqlParameter workId = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = requestDeleteWorkOrder?.WorkId };
+                var deleteImportantNotes = SpRepository<FOX_TBL_NOTES>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_DELETE_ADMISSION_IMPORTANT_NOTES @PRACTICE_CODE, @WORK_ID", pracCode, workId);
                 if (originalQueue != null)
                 {
                     originalQueue.DELETED = true;
