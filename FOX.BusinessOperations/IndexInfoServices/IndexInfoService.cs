@@ -118,7 +118,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private readonly GenericRepository<FOX_TBL_ZIP_STATE_COUNTY> _zipStateCountyRepository;
         private readonly GenericRepository<RegionCoverLetter> _RegionCoverLetterRepository;
         private readonly GenericRepository<TaskWorkInterfaceMapping> _TaskWorkInterfaceMapping;
-        private readonly GenericRepository<AdmissionImportantNotes> _admissionImportantNotes;
         private static List<Thread> threadsList = new List<Thread>();
         private static List<Thread> threadsListForEmail = new List<Thread>();
         private readonly GroupService _groupService;
@@ -126,8 +125,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private long talkRehabInterfaceID = 0;
         private long talkRehabTaskID = 0;
         private long retrycatch = 0;
+        private readonly GenericRepository<FOX_TBL_NOTES> _NoteRepository;
         public IndexInfoService()
         {
+            _NoteRepository = new GenericRepository<FOX_TBL_NOTES>(_DbContextCommon);
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
             _OriginalQueueFiles = new GenericRepository<OriginalQueueFiles>(_QueueContext);
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
@@ -182,7 +183,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
             _RegionCoverLetterRepository = new GenericRepository<RegionCoverLetter>(security);
             _groupService = new GroupService();
             _TaskWorkInterfaceMapping = new GenericRepository<TaskWorkInterfaceMapping>(_TaskContext);
-            _admissionImportantNotes = new GenericRepository<AdmissionImportantNotes>(_QueueContext);
         }
         public void InsertUpdateDocuments(FOX_TBL_PATIENT_DOCUMENTS obj, UserProfile profile)
         {
@@ -1984,11 +1984,27 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 var result = new List<SmartOrderSource>();
                 if (!obj.Is_From_RFO)
                 {
-                    result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    if (Profile.isTalkRehab)
+                    {
+                        result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [CCR_GET_SMART_ORDERING_SOURCE] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    }
+                    else
+                    {
+                        result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    }
+                    
                 }
                 else
                 {
-                    result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE_RFO] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    if (Profile.isTalkRehab)
+                    {
+                        result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [CCR_GET_SMART_ORDERING_SOURCE_RFO] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    }
+                    else
+                    {
+                        result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE_RFO] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    }
+                    
                 }
 
                 if (result.Any())
@@ -2003,6 +2019,22 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 throw ex;
             }
         }
+        
+        public SmartOrderSource GetSmartOrderingSourceByID(long Source_ID, UserProfile Profile)
+        {
+            try
+            {
+                var parmPracticeCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
+                var id = new SqlParameter("@SOURCE_ID", SqlDbType.BigInt) { Value = Source_ID };
+                var result = SpRepository<SmartOrderSource>.GetSingleObjectWithStoreProcedure(@"exec [CCR_GET_SMART_ORDERING_SOURCE_BY_ID] @PRACTICE_CODE, @SOURCE_ID", parmPracticeCode, id);
+                return result; 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public List<SmartRefRegion> GetSmartRefRegion(SmartReq obj, UserProfile Profile)
         {
             try
@@ -5523,7 +5555,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
             var first_Name = new SqlParameter("@First_Name", SqlDbType.VarChar) { Value = req.First_Name };
             var last_Name = new SqlParameter("@Last_Name", SqlDbType.VarChar) { Value = req.Last_Name };
             var middle_Name = new SqlParameter("@Middle_Name", SqlDbType.VarChar) { Value = req.Middle_Name };
-            var chart_Id = new SqlParameter("@Chart_Id", SqlDbType.VarChar) { Value = req.Chart_Id };
             var SSN = new SqlParameter("@SSN", SqlDbType.VarChar) { Value = req.SSN };
             var gender = new SqlParameter("@Gender", SqlDbType.VarChar) { Value = req.Gender };
             var Practice_Code = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
@@ -5532,9 +5563,21 @@ namespace FOX.BusinessOperations.IndexInfoServices
             var date_Of_Birth = new SqlParameter { ParameterName = "@Date_Of_Birth", SqlDbType = SqlDbType.VarChar, Value = req.Date_Of_Birth == null ? "" : req.Date_Of_Birth?.ToString("MM/dd/yyyy") };
             var Patient_Alias = new SqlParameter { ParameterName = "@Patient_Alias", SqlDbType = SqlDbType.Bit, Value = req.INCLUDE_ALIAS };
             var _PRACTICE_ORGANIZATION_ID = new SqlParameter("@PRACTICE_ORGANIZATION_ID", SqlDbType.BigInt) { Value = Profile.PRACTICE_ORGANIZATION_ID ?? 0 };
-            var result = SpRepository<PatientListResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_FOR_INDEX_INFO
+            var result = new List<PatientListResponse>();
+            if (Profile.isTalkRehab)
+            {
+                var chart_Id = new SqlParameter("@Chart_Id", SqlDbType.VarChar) { Value = req.Patient_Account };
+                result = SpRepository<PatientListResponse>.GetListWithStoreProcedure(@"exec CCR_PROC_GET_PATIENT_FOR_INDEX_INFO
                              @First_Name,@Last_Name,@Middle_Name,@Chart_Id,@SSN,@Gender,@PRACTICE_CODE,@CURRENT_PAGE,@RECORD_PER_PAGE,@PRACTICE_ORGANIZATION_ID,@Date_Of_Birth,@Patient_Alias",
                              first_Name, last_Name, middle_Name, chart_Id, SSN, gender, Practice_Code, _currentPage, _recordPerPage, _PRACTICE_ORGANIZATION_ID, date_Of_Birth, Patient_Alias);
+            }
+            else
+            {
+                var chart_Id = new SqlParameter("@Chart_Id", SqlDbType.VarChar) { Value = req.Chart_Id };
+                result = SpRepository<PatientListResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_FOR_INDEX_INFO
+                             @First_Name,@Last_Name,@Middle_Name,@Chart_Id,@SSN,@Gender,@PRACTICE_CODE,@CURRENT_PAGE,@RECORD_PER_PAGE,@PRACTICE_ORGANIZATION_ID,@Date_Of_Birth,@Patient_Alias",
+                             first_Name, last_Name, middle_Name, chart_Id, SSN, gender, Practice_Code, _currentPage, _recordPerPage, _PRACTICE_ORGANIZATION_ID, date_Of_Birth, Patient_Alias);
+            }
             if (result.Any())
             {
                 var dob = string.IsNullOrEmpty(req.Date_Of_Birth_In_String) ? new DateTime() : Convert.ToDateTime(req.Date_Of_Birth_In_String);
@@ -5796,27 +5839,31 @@ namespace FOX.BusinessOperations.IndexInfoServices
             }
         }
 
-        public AdmissionImportantNotes AddAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes, UserProfile userProfile)
+        public FOX_TBL_NOTES AddAdmissionImportantNotes(FOX_TBL_NOTES objAdmissionImportantNotes, UserProfile userProfile)
         {
             if (!string.IsNullOrEmpty(objAdmissionImportantNotes.NOTES))
             {
                 long generalNotId = 0;
-                if (objAdmissionImportantNotes.ADMISSION_IMPORTANT_NOTES_ID == 0)
+                if (objAdmissionImportantNotes.NOTES_ID == 0)
                 {
-                    generalNotId = Helper.getMaximumId("ADMISSION_IMPORTANT_NOTES_ID");
+                    generalNotId = Helper.getMaximumId("NOTES_ID");
                 }
                 if (objAdmissionImportantNotes != null && generalNotId != 0)
                 {
-                    objAdmissionImportantNotes.ADMISSION_IMPORTANT_NOTES_ID = generalNotId;
-                    objAdmissionImportantNotes.CREATED_FROM = "FOX PORTAL";
+                    long getPracticeCode = AppConfiguration.GetPracticeCode;
+                    SqlParameter notesName = new SqlParameter { ParameterName = "@Name", SqlDbType = SqlDbType.VarChar, Value = "Admission Importent Notes" };
+                    SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = getPracticeCode };
+                    var getNotesTypeId = SpRepository<FOX_TBL_NOTES_TYPE>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_NOTES_TYPE @Name, @PRACTICE_CODE", notesName, pracCode);
+                    objAdmissionImportantNotes.NOTES_ID = generalNotId;
                     objAdmissionImportantNotes.PRACTICE_CODE = userProfile.PracticeCode;
                     objAdmissionImportantNotes.CREATED_BY = userProfile.UserName;
                     objAdmissionImportantNotes.CREATED_DATE = Helper.GetCurrentDate();
                     objAdmissionImportantNotes.MODIFIED_BY = userProfile.UserName;
                     objAdmissionImportantNotes.MODIFIED_DATE = Helper.GetCurrentDate();
+                    objAdmissionImportantNotes.NOTES_TYPE_ID = getNotesTypeId.NOTES_TYPE_ID;
                     objAdmissionImportantNotes.DELETED = false;
-                    _admissionImportantNotes.Insert(objAdmissionImportantNotes);
-                    _admissionImportantNotes.Save();
+                    _NoteRepository.Insert(objAdmissionImportantNotes);
+                    _NoteRepository.Save();
                 }
                 else
                 {
@@ -5824,25 +5871,25 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     objAdmissionImportantNotes.MODIFIED_BY = userProfile.UserName;
                     objAdmissionImportantNotes.MODIFIED_DATE = Helper.GetCurrentDate();
                     objAdmissionImportantNotes.DELETED = false;
-                    _admissionImportantNotes.Update(objAdmissionImportantNotes);
-                    _admissionImportantNotes.Save();
+                    _NoteRepository.Update(objAdmissionImportantNotes);
+                    _NoteRepository.Save();
                 }
             }
             return objAdmissionImportantNotes;
         }
 
-        public AdmissionImportantNotes GetAdmissionImportantNotes(AdmissionImportantNotes objAdmissionImportantNotes, UserProfile userProfile)
+        public FOX_TBL_NOTES GetAdmissionImportantNotes(FOX_TBL_NOTES objAdmissionImportantNotes, UserProfile userProfile)
         {
-            AdmissionImportantNotes getAdmissionImportantNotes = new AdmissionImportantNotes();
+            FOX_TBL_NOTES getFoxTblNotes = new FOX_TBL_NOTES();
             if (objAdmissionImportantNotes != null)
             {
-                getAdmissionImportantNotes = _admissionImportantNotes.GetFirst(r => r.WORK_ID == objAdmissionImportantNotes.WORK_ID && r.PRACTICE_CODE == userProfile.PracticeCode && r.DELETED == false);
+                getFoxTblNotes = _NoteRepository.GetFirst(r => r.WORK_ID == objAdmissionImportantNotes.WORK_ID && r.PRACTICE_CODE == userProfile.PracticeCode && r.DELETED == false);
             }
             else
             {
-                getAdmissionImportantNotes = null;
+                objAdmissionImportantNotes = null;
             }
-            return getAdmissionImportantNotes;
+            return getFoxTblNotes;
         }
     }
 }
