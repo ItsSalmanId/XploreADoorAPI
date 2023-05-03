@@ -140,7 +140,7 @@ namespace FOX.BusinessOperations.SearchOrderServices
                     result[i].ROW = i + 1;
 
                 }
-                exported = ExportToExcel.CreateExcelDocument<SearchOrder>(result, pathtowriteFile, CalledFrom.Replace(' ', '_'));
+                exported = ExportToExcel.CreateExcelDocument<SearchOrder>(result, pathtowriteFile, CalledFrom.Replace(' ', '_'), profile.isTalkRehab);
                 return virtualPath + fileName;
             }
 
