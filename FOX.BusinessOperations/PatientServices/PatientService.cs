@@ -9963,7 +9963,7 @@ namespace FOX.BusinessOperations.PatientServices
                 var pathToWriteFile = exportPath + "\\" + fileName;
                 DataTable dt = ExportToExcel.ListToDataTable(objToExport);
                 dt.TableName = "Patient_List";
-                exported = ExportToExcel.CreateExcelDocument(dt, pathToWriteFile);
+                exported = ExportToExcel.CreateExcelDocument(dt, pathToWriteFile, profile.isTalkRehab);
                 if (exported)
                 {
                     response.Success = true;
