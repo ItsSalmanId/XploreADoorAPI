@@ -160,7 +160,7 @@ namespace FOX.BusinessOperations.CommonServices
                 SqlParameter uniqueId = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = unique_Id };
                 SqlParameter practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
                 objOriginalQueue = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS @UNIQUE_ID, @PRACTICE_CODE", uniqueId, practiceCode);
-                var queue = _QueueRepository.GetFirst(e => e.UNIQUE_ID == unique_Id);
+               // var queue = _QueueRepository.GetFirst(e => e.UNIQUE_ID == unique_Id);
                 if (objOriginalQueue != null)
                 {
                     string file_Name = objOriginalQueue.UNIQUE_ID + " __" + DateTime.Now.Ticks + ".pdf";
@@ -174,10 +174,13 @@ namespace FOX.BusinessOperations.CommonServices
                     var localPath = config.ORIGINAL_FILES_PATH_DB + file_Name;
                     var pathForPDF = Path.Combine(config.ORIGINAL_FILES_PATH_SERVER, file_Name);
                     ImageHandler imgHandler = new ImageHandler();
+                    //OriginalQueueFiles objOriginalFiles = new OriginalQueueFiles();
+                    SqlParameter Id = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = unique_Id };
+                    var objOriginalFiles = SpRepository<OriginalQueueFiles>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_FILE_ALL_DETAILS @UNIQUE_ID", Id);
                     var imges = _OriginalQueueFilesRepository.GetMany(x => x.UNIQUE_ID == unique_Id);
-                    if (imges != null && imges.Count > 0)
+                    if (objOriginalFiles != null && objOriginalFiles.Count > 0)
                     {
-                        var imgPaths = (from x in imges select x.FILE_PATH1).ToArray();
+                        var imgPaths = (from x in objOriginalFiles select x.FILE_PATH1).ToArray();
                         imgHandler.ImagesToPdf(imgPaths, pathForPDF);
                         AttachmentData attachmentData = new AttachmentData();
                         attachmentData.FILE_PATH = folder;

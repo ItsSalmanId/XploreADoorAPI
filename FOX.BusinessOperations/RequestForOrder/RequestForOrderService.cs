@@ -546,7 +546,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                         }
                         //hl
                         Helper.TokenTaskCancellationExceptionLog("HTMLToPDF2 : Start Function" + Helper.GetCurrentDate().ToLocalTime());
-                        ResponseHTMLToPDF responseHTMLToPDF4 = HTMLToPDF4(config, htmlstring, "tempdfdelivery");
+                        ResponseHTMLToPDF responseHTMLToPDF4 = HTMLToPDF2(config, htmlstring, "tempdfdelivery");
 
                         Helper.TokenTaskCancellationExceptionLog("HTMLToPDF2 : END Function" + Helper.GetCurrentDate().ToLocalTime());
 
@@ -663,7 +663,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                     {
                         Directory.CreateDirectory(pdfFilePath);
                     }
-                    fileName += fileName + DateTime.Now.Ticks + ".pdf";
+                    fileName = fileName + DateTime.Now.Ticks + ".pdf";
                     string pdfFilePathnew = pdfFilePath + "\\" + fileName;
                     if (p.HtmlToPdfConvertStringToFile(htmlString, pdfFilePathnew) == 0)
                     {
@@ -918,8 +918,11 @@ namespace FOX.BusinessOperations.RequestForOrder
         private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, string sorcetype, string sorceName, string userName, bool _isFromIndexInfo)
         {
             List<int> threadCounter = new List<int>();
-            var originalQueueFilesCount = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
-            long pageCounter = originalQueueFilesCount;
+            //var originalQueueFilesCount = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
+            SqlParameter uniqueid = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.VarChar, Value = workId };
+            SqlParameter praCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = AppConfiguration.GetPracticeCode };
+            var originalQueueFilesCount = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS_LIST  @WORK_ID, @PRACTICE_CODE", uniqueid, praCode);
+            long pageCounter = originalQueueFilesCount.Count;
 
             if (!Directory.Exists(config.IMAGES_PATH_SERVER))
             {
@@ -1033,7 +1036,11 @@ namespace FOX.BusinessOperations.RequestForOrder
                 //}
                 //else
                 //{
-                noOfPages = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
+                //noOfPages = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
+                SqlParameter id = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.VarChar, Value = workId };
+                SqlParameter practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = AppConfiguration.GetPracticeCode };
+                 var noOfPage = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS_LIST  @WORK_ID, @PRACTICE_CODE", id, practiceCode);
+                noOfPages = noOfPage.Count;
                 AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, config.PRACTICE_CODE, _isFromIndexInfo);
                 //}
             }
