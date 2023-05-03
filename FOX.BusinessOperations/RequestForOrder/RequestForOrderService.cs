@@ -1043,17 +1043,19 @@ namespace FOX.BusinessOperations.RequestForOrder
         {
             try
             {
-                OriginalQueue originalQueue = _QueueRepository.Get(t => t.WORK_ID == requestDeleteWorkOrder?.WorkId && !t.DELETED);
+                SqlParameter uniqueId = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = requestDeleteWorkOrder?.WorkId };
+                SqlParameter practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = AppConfiguration.GetPracticeCode };
+                OriginalQueue objOriginalQueue = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS @UNIQUE_ID, @PRACTICE_CODE", uniqueId, practiceCode);
                 SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = Profile.PracticeCode };
                 SqlParameter workId = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = requestDeleteWorkOrder?.WorkId };
                 var deleteImportantNotes = SpRepository<FOX_TBL_NOTES>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_DELETE_ADMISSION_IMPORTANT_NOTES @PRACTICE_CODE, @WORK_ID", pracCode, workId);
-                if (originalQueue != null)
+                if (objOriginalQueue != null)
                 {
-                    originalQueue.DELETED = true;
-                    originalQueue.MODIFIED_BY = Profile.UserName;
-                    originalQueue.MODIFIED_DATE = DateTime.Now;
+                    objOriginalQueue.DELETED = true;
+                    objOriginalQueue.MODIFIED_BY = Profile.UserName;
+                    objOriginalQueue.MODIFIED_DATE = DateTime.Now;
 
-                    _QueueRepository.Update(originalQueue);
+                    _QueueRepository.Update(objOriginalQueue);
                     _QueueRepository.Save();
                     return new ResponseModel() { Message = "Delete work order successfully.", ErrorMessage = "", Success = true };
                 }
