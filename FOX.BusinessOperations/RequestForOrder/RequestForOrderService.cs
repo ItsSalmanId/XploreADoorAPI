@@ -494,7 +494,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                     && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
                 {
                     Helper.TokenTaskCancellationExceptionLog("HTMLToPDF : Start Function" + Helper.GetCurrentDate().ToLocalTime());
-                    //ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestSendFAXModel.AttachmentHTML, requestSendFAXModel.FileName, "fax");
+                    ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestSendFAXModel.AttachmentHTML, requestSendFAXModel.FileName, "fax");
                     ResponseHTMLToPDF responseHTMLToPDFTemp = HTMLToPDF3(config, requestSendFAXModel.AttachmentHTML, requestSendFAXModel.FileName, "email");
 
                     Helper.TokenTaskCancellationExceptionLog("HTMLToPDF : END Function" + Helper.GetCurrentDate().ToLocalTime());
@@ -532,7 +532,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                         {
                             attachmentPath.FILE_PATH = attachmentPath.FILE_PATH + "\\";
                         }
-
+                        //var emailStatus = Helper.Email("muhammadsalman7@carecloud.com", requestSendFAXModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath });
                         var resultfax = _IFaxService.SendFax(new string[] { requestSendFAXModel.ReceipientFaxNumber }, new string[] { "" }, null, attachmentPath.FILE_NAME, attachmentPath.FILE_PATH, requestSendFAXModel.Subject, false, Profile);
 
 
@@ -625,7 +625,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                 if (p.HtmlToPdfConvertStringToFile(htmlString, pdfFilePathnew) == 0)
                 {
                     //return pdfFilePathnew;
-                    return new ResponseHTMLToPDF() { FileName = fileName, FilePath = pdfFilePathnew, Success = true, ErrorMessage = "" };
+                    return new ResponseHTMLToPDF() { FileName = fileName, FilePath = pdfFilePath, Success = true, ErrorMessage = "" };
                 }
                 else
                 {
@@ -668,7 +668,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                     if (p.HtmlToPdfConvertStringToFile(htmlString, pdfFilePathnew) == 0)
                     {
                         //return pdfFilePathnew;
-                        return new ResponseHTMLToPDF() { FileName = fileName, FilePath = pdfFilePathnew, Success = true, ErrorMessage = "" };
+                        return new ResponseHTMLToPDF() { FileName = fileName, FilePath = pdfFilePath, Success = true, ErrorMessage = "" };
                     }
                     else
                     {

@@ -160,7 +160,7 @@ namespace FOX.BusinessOperations.CommonServices
                 SqlParameter uniqueId = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = unique_Id };
                 SqlParameter practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
                 objOriginalQueue = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS @UNIQUE_ID, @PRACTICE_CODE", uniqueId, practiceCode);
-                //var queue = _QueueRepository.GetFirst(e => e.UNIQUE_ID == unique_Id);
+                var queue = _QueueRepository.GetFirst(e => e.UNIQUE_ID == unique_Id);
                 if (objOriginalQueue != null)
                 {
                     string file_Name = objOriginalQueue.UNIQUE_ID + " __" + DateTime.Now.Ticks + ".pdf";
