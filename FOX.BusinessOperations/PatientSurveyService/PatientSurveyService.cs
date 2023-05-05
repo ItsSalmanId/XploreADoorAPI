@@ -227,6 +227,15 @@ namespace FOX.BusinessOperations.PatientSurveyService
                     var isprotectiveEquipment = new SqlParameter { ParameterName = "@IS_PROTECTIVE_EQUIPMENT", SqlDbType = SqlDbType.Bit, Value = dbSurvey.IS_PROTECTIVE_EQUIPMENT };
                     var surveyCompletedDate = new SqlParameter { ParameterName = "@SURVEY_COMPLETED_DATE", SqlDbType = SqlDbType.DateTime, Value = dbSurvey.SURVEY_COMPLETED_DATE };
 
+                    if (dbSurvey.NOT_ANSWERED_REASON == null)
+                    {
+                        if (patientSurvey.NOT_ANSWERED_REASON == null)
+                        {
+                            patientSurvey.NOT_ANSWERED_REASON = "";
+                        }
+                    }
+                    dbSurvey.NOT_ANSWERED_REASON = patientSurvey.NOT_ANSWERED_REASON;
+
                     if (dbSurvey.PRACTICE_CODE == null)
                     {
                         practiceCode.Value = DBNull.Value;
@@ -463,7 +472,12 @@ namespace FOX.BusinessOperations.PatientSurveyService
                     {
                         surveyCompletedDate.Value = DBNull.Value;
                     }
-
+                    var notAnsweredReason = new SqlParameter { ParameterName = "@NOT_ANSWERED_REASON", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.NOT_ANSWERED_REASON };
+                    if (dbSurvey.SURVEY_STATUS_CHILD != "Not Answered")
+                    {
+                        patientSurvey.NOT_ANSWERED_REASON = "";
+                        notAnsweredReason.Value = patientSurvey.NOT_ANSWERED_REASON;
+                    }
                     var PatientSurveyList = SpRepository<PatientSurvey>.GetListWithStoreProcedure(@"exec FOX_PROC_UPDTAE_PATIENT_SURVEY
                  @SURVEY_ID, @PRACTICE_CODE, @FACILITY_OR_CLIENT_ID, @PATIENT_ACCOUNT_NUMBER, @RESPONSIBLE_PARTY_LAST_NAME, @RESPONSIBLE_PARTY_FIRST_NAME, @RESPONSIBLE_PARTY_MIDDLE_INITIAL, @RESPONSIBLE_PARTY_ADDRESS,
                  @RESPONSIBLE_PARTY_CITY, @RESPONSIBLE_PARTY_STATE, @RESPONSIBLE_PARTY_ZIP_CODE, @RESPONSIBLE_PARTY_TELEPHONE, @RESPONSIBLE_PARTY_SSN, @RESPONSIBLE_PARTY_SEX, @RESPONSIBLE_PARTY_DATE_OF_BIRTH, @PATIENT_LAST_NAME, 
@@ -471,12 +485,12 @@ namespace FOX.BusinessOperations.PatientSurveyService
                  @ALTERNATE_CONTACT_LAST_NAME, @ALTERNATE_CONTACT_FIRST_NAME, @ALTERNATE_CONTACT_MIDDLE_INITIAL, @ALTERNATE_CONTACT_TELEPHONE, @EMR_LOCATION_CODE, @EMR_LOCATION_DESCRIPTION, @SERVICE_OR_PAYMENT_DESCRIPTION, @PROVIDER, 
                  @REGION, @LAST_VISIT_DATE, @DISCHARGE_DATE, @ATTENDING_DOCTOR_NAME, @PT_OT_SLP, @REFERRAL_DATE, @PROCEDURE_OR_TRAN_CODE, @SERVICE_OR_PAYMENT_AMOUNT, @IS_CONTACT_HQ, @IS_RESPONSED_BY_HQ, @IS_QUESTION_ANSWERED,
                  @IS_REFERABLE, @IS_IMPROVED_SETISFACTION, @FEEDBACK, @SURVEY_FLAG, @SURVEY_STATUS_BASE, @SURVEY_STATUS_CHILD, @SURVEY_FORMAT_TYPE, @IS_SURVEYED, @IN_PROGRESS, @FILE_NAME, @SHEET_NAME, @TOTAL_RECORD_IN_FILE, 
-                 @CREATED_BY, @CREATED_DATE, @MODIFIED_BY, @MODIFIED_DATE, @DELETED,@IS_EXCEPTIONAL, @IS_PROTECTIVE_EQUIPMENT, @SURVEY_COMPLETED_DATE"
+                 @CREATED_BY, @CREATED_DATE, @MODIFIED_BY, @MODIFIED_DATE, @DELETED,@IS_EXCEPTIONAL, @IS_PROTECTIVE_EQUIPMENT, @SURVEY_COMPLETED_DATE, @NOT_ANSWERED_REASON"
                      , surveyId, practiceCode, clientId, patientAccount, resLastName, resFirstName, resMidName, resPartyAdd, resPartyCity, tesPartyStat, restPartyZip, resPartyPhone, restPartySSN, restPartSex, restPartDOB
                      , patLastName, patFirstName, patMidName, patAddress, patCity, patState, patZIP, patPhone, patSSN, patGender, patDOB, altLastName, altFirstName, altMidName, altPhone, emrLocCode, emrLocDes
                      , servicePaymentDesc, provider, region, lastVisitDate, dischargeDate, attendingDocName, ptOtSlp, referralDate, procTranCode, servicePaymentAmnt, isContactHQ, isResponsedByHq, isQuestionAnswered
                      , isReferrable, isImprovedSetisfaction, feedback, surveyFlag, surveyStatusBase, surveyStatusChild, surveyFormat, isSurveyed, inProgress, fileName, sheetName, totalRecordInFile, createdBy
-                     , createdDate, modifiedBy, modifiedDate, delete, isExceptional, isprotectiveEquipment, surveyCompletedDate);
+                     , createdDate, modifiedBy, modifiedDate, delete, isExceptional, isprotectiveEquipment, surveyCompletedDate, notAnsweredReason);
 
                     if (patientAccount.Value.ToString() != null && practiceCode.Value != null)
                     {
