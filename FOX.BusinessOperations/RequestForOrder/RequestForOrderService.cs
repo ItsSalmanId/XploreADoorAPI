@@ -503,7 +503,6 @@ namespace FOX.BusinessOperations.RequestForOrder
                     string belowSpace = spaceBelowDateNode.OuterHtml;
                     string spaceBelowDateReplace = "<td><br><br></td>";
                     faxHtmlBody = faxHtmlBody.Replace(belowSpace, spaceBelowDateReplace);
-                    //HTMLToPDFSautinsoftInFax
                     ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDFSautinsoftInFax(config, faxHtmlBody, requestSendFAXModel.FileName, "fax");
                     if (responseHTMLToPDF != null && (responseHTMLToPDF?.Success ?? false))
                     {
@@ -534,7 +533,6 @@ namespace FOX.BusinessOperations.RequestForOrder
                         {
                             attachmentPath.FILE_PATH = attachmentPath.FILE_PATH + "\\";
                         }
-                        //var emailStatus = Helper.Email("muhammadsalman7@carecloud.com", requestSendFAXModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath });
                         var resultfax = _IFaxService.SendFax(new string[] { requestSendFAXModel.ReceipientFaxNumber }, new string[] { "" }, null, attachmentPath.FILE_NAME, attachmentPath.FILE_PATH, requestSendFAXModel.Subject, false, Profile);
 
 
@@ -569,35 +567,6 @@ namespace FOX.BusinessOperations.RequestForOrder
                 //TO DO Log exception here
                 //throw exception;
                 return new ResponseModel() { Message = "Fax sent successfully, our admission team is processing your referral.", ErrorMessage = exception.ToString(), Success = false };
-            }
-        }
-        private string HTMLToPDF3(string htmlString, string fileName, string type,string linkMessage = null)
-        {
-            try
-            {
-                PdfMetamorphosis p = new PdfMetamorphosis();
-                p.PageSettings.Size.A4();
-                p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
-                p.PageSettings.Numbering.PosX.Mm = p.PageSettings.Size.Width.Mm / (float)2.5;
-                p.PageSettings.Numbering.PosY.Mm = p.PageSettings.Size.Height.Mm - 10;
-                if (p != null)
-                {
-                    if (p.HtmlToPdfConvertStringToFile(htmlString, fileName) == 0)
-                    {
-                        return fileName;
-                    }
-                    else
-                    {
-                        var ex = p.TraceSettings.ExceptionList.Count > 0 ? p.TraceSettings.ExceptionList[0] : null;
-                        var msg = ex != null ? ex.Message + Environment.NewLine + ex.StackTrace : "An error occured during converting HTML to PDF!";
-                        return "";
-                    }
-                }
-                return "";
-            }
-            catch (Exception ex)
-            {
-                return "";
             }
         }
         private ResponseHTMLToPDF HTMLToPDFDeliverySautinsoft(ServiceConfiguration conf, string htmlString, string fileName, string linkMessage = null)
@@ -675,7 +644,6 @@ namespace FOX.BusinessOperations.RequestForOrder
                 HtmlDocument htmlDoc = new HtmlDocument();
                 htmlDoc.LoadHtml(htmlString);
                 htmlDoc.DocumentNode.SelectSingleNode("//*[contains(@id,'print-footer')]")?.Remove();
-
                 if (!string.IsNullOrWhiteSpace(linkMessage))
                 {
                     var htmlNode_link = htmlDoc.DocumentNode.SelectSingleNode("//*[contains(@id,'link')]");
@@ -906,7 +874,6 @@ namespace FOX.BusinessOperations.RequestForOrder
         private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, string sorcetype, string sorceName, string userName, bool _isFromIndexInfo)
         {
             List<int> threadCounter = new List<int>();
-            //var originalQueueFilesCount = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
             SqlParameter uniqueid = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.VarChar, Value = workId };
             SqlParameter praCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = AppConfiguration.GetPracticeCode };
             var originalQueueFilesCount = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS_LIST  @WORK_ID, @PRACTICE_CODE", uniqueid, praCode);
