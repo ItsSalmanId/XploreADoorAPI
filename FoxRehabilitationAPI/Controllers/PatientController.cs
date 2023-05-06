@@ -155,7 +155,8 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetPatientBestTimeToCall()
         {
             var profile = GetProfile();
-            return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetPatientBestTimeToCall(profile.PracticeCode));
+            return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetPatientBestTimeToCall(profile.PracticeCode, profile.isTalkRehab));
+            
         }
         [HttpGet]
         public HttpResponseMessage GetAllPatientContactTypes()
@@ -307,7 +308,7 @@ namespace FoxRehabilitationAPI.Controllers
             //{
             //    return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetFinancialClassDDValues(profile.PracticeCode.ToString()));
             //}
-            return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetFinancialClassDDValues(profile.PracticeCode.ToString()));
+            return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetFinancialClassDDValues(profile.PracticeCode.ToString(), profile.isTalkRehab));
         }
 
         [HttpPost]
