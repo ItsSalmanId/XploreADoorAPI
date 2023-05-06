@@ -209,7 +209,6 @@ namespace FOX.BusinessOperations.RequestForOrder
         {
             try
             {
-                Helper.TokenTaskCancellationExceptionLog("SendEmail : Start Function"  + Helper.GetCurrentDate().ToLocalTime());
                 var config = Helper.GetServiceConfiguration(Profile.PracticeCode);
                 if (config.PRACTICE_CODE != null
                     && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
@@ -248,13 +247,8 @@ namespace FOX.BusinessOperations.RequestForOrder
                     string linkMessage = @"
                                 <p>Please <a href='" + link + @"'>click here for signing</a> to confirm that you have reviewed and are an agreement of this request.   Once you click, the document will electronically be signed by you with the current date and time.  Thank you for your confidence in our practice.
                                 ";
-                    Helper.TokenTaskCancellationExceptionLog("HTMLToPDF : Start Function" + Helper.GetCurrentDate().ToLocalTime());
                     ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestSendEmailModel.AttachmentHTML, requestSendEmailModel.FileName.Replace(' ', '_'), "email", linkMessage);
-                    var coverFilePath = HTMLToPDF(config, requestSendEmailModel.AttachmentHTML, requestSendEmailModel.FileName.Replace(' ', '_'), "email", linkMessage);
-                    Helper.TokenTaskCancellationExceptionLog("HTMLToPDF : END Function" + Helper.GetCurrentDate().ToLocalTime());
-                    Helper.TokenTaskCancellationExceptionLog("AddHtmlToDB : START Function" + Helper.GetCurrentDate().ToLocalTime());
                     AddHtmlToDB(requestSendEmailModel.WorkId, requestSendEmailModel.AttachmentHTML, Profile.UserName);
-                    Helper.TokenTaskCancellationExceptionLog("AddHtmlToDB : END Function" + Helper.GetCurrentDate().ToLocalTime());
                     if (responseHTMLToPDF != null && (responseHTMLToPDF?.Success ?? false))
                     {
                         //string attachmentPath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
@@ -440,9 +434,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                         }
                         else
                         {
-                            Helper.TokenTaskCancellationExceptionLog("Email : Start Function" + Helper.GetCurrentDate().ToLocalTime());
                             emailStatus = Helper.Email(requestSendEmailModel.EmailAddress, requestSendEmailModel.Subject, _body, Profile, requestSendEmailModel.WorkId, null, _bccList, new List<string>() { attachmentPath });
-                            Helper.TokenTaskCancellationExceptionLog("Email : END Function" + Helper.GetCurrentDate().ToLocalTime());
                         }
 
                         var queueResult = _QueueRepository.GetFirst(s => s.WORK_ID == requestSendEmailModel.WorkId && s.DELETED == false);
@@ -454,15 +446,10 @@ namespace FOX.BusinessOperations.RequestForOrder
                              _QueueRepository.Save();
                         }                
                         string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
-                        Helper.TokenTaskCancellationExceptionLog("getNumberOfPagesOfPDF : Start Function" + Helper.GetCurrentDate().ToLocalTime());
                         int numberOfPages = getNumberOfPagesOfPDF(filePath);
-                        Helper.TokenTaskCancellationExceptionLog("getNumberOfPagesOfPDF : END Function" + Helper.GetCurrentDate().ToLocalTime());
                         //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
                         //SavePdfToImages(filePath, imagesPath, requestSendEmailModel.WorkId, numberOfPages, "Email", requestSendEmailModel.EmailAddress, Profile.UserName);
-                        Helper.TokenTaskCancellationExceptionLog("SavePdfToImages : Start Function" + Helper.GetCurrentDate().ToLocalTime());
                         SavePdfToImages(filePath, config, requestSendEmailModel.WorkId, numberOfPages, "Email", requestSendEmailModel.EmailAddress, Profile.UserName, requestSendEmailModel._isFromIndexInfo);
-                        Helper.TokenTaskCancellationExceptionLog("SavePdfToImages : END Function" + Helper.GetCurrentDate().ToLocalTime());
-                        Helper.TokenTaskCancellationExceptionLog("SendEmail : END Function" + Helper.GetCurrentDate().ToLocalTime());
                         return new ResponseModel() { Message = "Email sent successfully, our admission team is processing your referral", ErrorMessage = "", Success = true };
                     }
                     else
