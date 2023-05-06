@@ -109,6 +109,7 @@
     <Content Include="StoredProcedure\FOX_PROC_DASHBOARD_AVERAGE_TREND.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DASHBOARD_GET_NO_OF_RECORD_BY_TIME.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DASHBOARD_GET_TOTAL.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_DELETE_ADMISSION_IMPORTANT_NOTES.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DELETE_COUNTIES_REFERRAL_REGION.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DELETE_FRICTIONLESS_WORK_FILE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DELETE_NOTIFICATIONS.sql" />
