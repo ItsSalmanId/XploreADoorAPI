@@ -30,6 +30,7 @@ using System.Linq;
 using FOX.DataModels.Models.SenderType;
 using System.Threading;
 using FOX.DataModels;
+using System.Text.RegularExpressions;
 
 namespace FOX.BusinessOperations.RequestForOrder
 {
@@ -493,11 +494,62 @@ namespace FOX.BusinessOperations.RequestForOrder
                     && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
                     && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
                 {
-                    Helper.TokenTaskCancellationExceptionLog("HTMLToPDF : Start Function" + Helper.GetCurrentDate().ToLocalTime());
-                    ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestSendFAXModel.AttachmentHTML, requestSendFAXModel.FileName, "fax");
-                    ResponseHTMLToPDF responseHTMLToPDFTemp = HTMLToPDF3(config, requestSendFAXModel.AttachmentHTML, requestSendFAXModel.FileName, "email");
+                    string orininalHtml = requestSendFAXModel.AttachmentHTML;
+                    string Body = requestSendFAXModel.AttachmentHTML;
+                    
+                    string inputString = "id=\"tbl-PrintSendSubmitOrder-printbody\" style=\"border-bottom: 1px solid #12222E; width: 100%;\"";
+                    //string inputString = "id = \"tbl - PrintSendSubmitOrder - printbody\" style=\"border-bottom:1px solid #12222E;width:100%;\"";
+                       //Body = Body.Replace(inputString, "style = \"width:100%;\"").Replace(uperLine, replaceUperLine);
+                       string uperLine = "<td _ngcontent-nws-c151=\"\" id=\"stringTopBorderLine\"></td>";
+                    //string uperLine = "<ng-container id=\"stringTopBorderLine\"></ng-container>";
+                    //string uperLine = "<td id=\"stringTopBorderLine\"></td>";
+                    string replaceUperLine = "<tr><td colspan=\"2\" style=\"width: 100%; height: 1px; border-top: 1px solid #000\" id=\"replaceStringTopBorderLine\"></td></ tr > ";
+                    //Body = Body.Replace(inputString, "style = \"width:100%;\"").Replace(uperLine, replaceUperLine);
+                    string aboveSpace = "<td _ngcontent-nws-c151=\"\" id=\"spaceAboveDateAndSign\" style=\"height: 30px;\"></td>";
+                    string aboveSpaceReplace = "<td><br><br><br><br><br><br><br><br><br><br><br><br></td>";
+                    //string belowSpace = "<br><br><br><br><br><br><br>";
+                    string belowSpace = "<td _ngcontent-nws-c151=\"\" id=\"spaceBelowDateAndSign\" style=\"height: 30px;\"></td>";
+                    //string belowSpace = "<td _ngcontent-nws-c151=\"\"style=\"height:30px;\" id=\"spaceBelowDateAndSign\"></td>";
+                    //string belowSpaceReplace = "<td style=\"height:80px;\" id=\"spaceAboveDateAndSign\"></td>";
+                    string belowSpaceReplace = "<td><br><br></td>";
 
+                    Body = Body.Replace(uperLine, replaceUperLine).Replace(aboveSpace, aboveSpaceReplace).Replace(belowSpace, belowSpaceReplace).Replace(uperLine, replaceUperLine);
+
+                    ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, Body, requestSendFAXModel.FileName, "fax");
+                    
+                    ResponseHTMLToPDF responseHTMLToPDFTemp = HTMLToPDF3(config, Body, requestSendFAXModel.FileName, "fax");
+
+                    ResponseHTMLToPDF responseHTMLToPDFTempP = HTMLToPDF3(config, requestSendFAXModel.AttachmentHTML, requestSendFAXModel.FileName, "fax");
                     Helper.TokenTaskCancellationExceptionLog("HTMLToPDF : END Function" + Helper.GetCurrentDate().ToLocalTime());
+                    //Body = Body.Replace(uperLine, replaceUperLine);
+                    HtmlDocument doc = new HtmlDocument();
+                    doc.LoadHtml(requestSendFAXModel.AttachmentHTML);
+                    HtmlNode divNode = doc.GetElementbyId("td-PrintSendSubmitOrder-signature");
+                    string divHtml = divNode.OuterHtml;
+                    string dateAndSignatureDiv = @"<tr id='test'>
+        <table style='width: 50%; margin-top: 50px;'>
+                <tbody>
+                    <td style = 'width:50px;'> Signature </td>
+                     <img style = 'width:30%; height: 70px;margin:0px 6px -6px 6px;' * ngIf = '!FromSignatureRequired && PrintSendSubmitOrderModelObj.hasSignature && PrintSendSubmitOrderModelObj.SaveAll_IndexinfObj.isUserHasORS'src = '{{PrintSendSubmitOrderModelObj.SignPath}}' alt = 'Signature'/>
+                  <td style = 'width: 50%; height:1px; border-bottom: 1px solid #000;' * ngIf = 'PrintSendSubmitOrderModelObj.hasSignature && !PrintSendSubmitOrderModelObj.SaveAll_IndexinfObj.isUserHasORS' ></td >
+                   <td style = 'width: 50%; height:1px; border-bottom: 1px solid #000;' * ngIf = 'FromSignatureRequired' ></td >
+                    <span style = 'display:inline-block;border-bottom:1px solid #12222E;width:20%;' * ngIf = '!PrintSendSubmitOrderModelObj.hasSignature && !PrintSendSubmitOrderModelObj.hasORS' ></span >
+                     <p style = 'display:inline-block;border-bottom:1px solid;width:auto;' * ngIf = '!FromSignatureRequired && !PrintSendSubmitOrderModelObj.hasSignature && PrintSendSubmitOrderModelObj.hasORS' >{{ orsName_region}}
+                <td style = 'width: 30px;' > Date </td >
+                 <td style = 'width: 50%; height:1px; border-bottom: 1px solid #000;' * ngIf = 'PrintSendSubmitOrderModelObj.hasSignature && !PrintSendSubmitOrderModelObj.SaveAll_IndexinfObj.isUserHasORS' ></td>
+                  <td style = 'width: 50%; height:1px; border-bottom: 1px solid #000;' * ngIf = '!FromSignatureRequired && PrintSendSubmitOrderModelObj.hasSignature && PrintSendSubmitOrderModelObj.SaveAll_IndexinfObj.isUserHasORS' ></td >
+                   <td style = 'width: 50%; height:1px; border-bottom: 1px solid #000;' * ngIf = '!FromSignatureRequired && !PrintSendSubmitOrderModelObj.hasSignature && PrintSendSubmitOrderModelObj.hasORS' >{ { Assign_Date | date: 'MM/dd/yyyy'} }{ { Assign_Date | date:'hh:mm aa'} }</td >
+                 <td style = 'width: 50%; height:1px; border-bottom: 1px solid #000;' * ngIf = '!FromSignatureRequired && !PrintSendSubmitOrderModelObj.hasSignature && !PrintSendSubmitOrderModelObj.hasORS' >{ { Assign_Date | date: 'MM/dd/yyyy'} }{ { Assign_Date | date:'hh:mm aa'} }</td >
+                <td style = 'width: 50%; height:1px; border-bottom: 1px solid #000;' * ngIf = 'FromSignatureRequired' ></td >
+               </p>>
+            </tbody >
+           </table >
+           </tr >";
+
+                    string test = "<td id=\"td-PrintSendSubmitOrder-signature\"></td><table style = \"width: 50%; margin-top: 50px;\"><tbody><td style = \"width:50px;\"> Signature </td ><img style = \"width:30%; height: 70px;margin:0px 6px -6px 6px;\" *ngIf=\"!FromSignatureRequired && PrintSendSubmitOrderModelObj.hasSignature && PrintSendSubmitOrderModelObj.SaveAll_IndexinfObj.isUserHasORS\" src=\"{{PrintSendSubmitOrderModelObj.SignPath}}\" alt=\"Signature\"/><td style=\"width: 50%; height:1px; border-bottom: 1px solid #000;\" *ngIf=\"PrintSendSubmitOrderModelObj.hasSignature && !PrintSendSubmitOrderModelObj.SaveAll_IndexinfObj.isUserHasORS\"></td><td style=\"width: 50%; height:1px; border-bottom: 1px solid #000;\" *ngIf=\"FromSignatureRequired\"></td><td style=\"display:inline-block;border-bottom:1px solid #12222E;width:20%;\" *ngIf=\"!PrintSendSubmitOrderModelObj.hasSignature && !PrintSendSubmitOrderModelObj.hasORS\"></td><td style=\"display:inline-block;border-bottom:1px solid;width:auto;\" *ngIf=\"!FromSignatureRequired && !PrintSendSubmitOrderModelObj.hasSignature && PrintSendSubmitOrderModelObj.hasORS\">{{orsName_region}}</td><td style=\"width: 30px;\"> Date </td><td style=\"width: 50%; height:1px; border-bottom: 1px solid #000;\" *ngIf=\"PrintSendSubmitOrderModelObj.hasSignature && !PrintSendSubmitOrderModelObj.SaveAll_IndexinfObj.isUserHasORS\"></td><td style=\"width: 50%; height:1px; border-bottom: 1px solid #000;\" *ngIf=\"!FromSignatureRequired && PrintSendSubmitOrderModelObj.hasSignature && PrintSendSubmitOrderModelObj.SaveAll_IndexinfObj.isUserHasORS\"></td><td style=\"width: 50%; height:1px; border-bottom: 1px solid #000;\" *ngIf=\"!FromSignatureRequired && PrintSendSubmitOrderModelObj.hasSignature && PrintSendSubmitOrderModelObj.SaveAll_IndexinfObj.isUserHasORS\">{{Assign_Date | date: 'MM/dd/yyyy'}}{{Assign_Date | date:'hh:mm aa'}}</td><td style=\"width: 50%; height:1px; border-bottom: 1px solid #000;\" *ngIf=\"!FromSignatureRequired && !PrintSendSubmitOrderModelObj.hasSignature && PrintSendSubmitOrderModelObj.hasORS\">{{Assign_Date | date: 'MM/dd/yyyy'}}{{Assign_Date | date:'hh:mm aa'}}</td><td style=\"width: 50%; height:1px; border-bottom: 1px solid #000;\" *ngIf=\"FromSignatureRequired\"></td></tbody></table></tr></td>";
+                    string testHmtl = "<td id=\"td-PrintSendSubmitOrder-signature\"><table style=\"width: 50%; margin-top: 50px;\" ><tbody><td style=\"width:50px;\" > Signature </td ><td><img style=\"width:30%; height: 70px;margin:0px 6px -6px 6px;\" *ngIf=\"!FromSignatureRequired && PrintSendSubmitOrderModelObj.hasSignature && PrintSendSubmitOrderModelObj.SaveAll_IndexinfObj.isUserHasORS\" src=\"{{PrintSendSubmitOrderModelObj.SignPath}}\" alt = \"Signature\" /><p style=\"display:inline-block;\" *ngIf=\"PrintSendSubmitOrderModelObj.hasSignature && !PrintSendSubmitOrderModelObj.SaveAll_IndexinfObj.isUserHasORS\"><span style=\"display:inline-block;border-bottom:1px solid #12222E;width:142px;\" ></span ></p><p style=\"display:inline-block;\" *ngIf=\"FromSignatureRequired\" ><span style=\"display:inline-block;border-bottom:1px solid #12222E;width:142px;\" ></span ></p><span style=\"display:inline-block;border-bottom:1px solid #12222E;width:20%;\" *ngIf=\"!PrintSendSubmitOrderModelObj.hasSignature && !PrintSendSubmitOrderModelObj.hasORS\" ></ span ><p style=\"display:inline-block;border-bottom:1px solid;width:auto;\" *ngIf =\"!FromSignatureRequired && !PrintSendSubmitOrderModelObj.hasSignature && PrintSendSubmitOrderModelObj.hasORS\">{{orsName_region}}</p></td><td style=\"width: 30px;\" > Date </td ><td><span style=\"display:inline-block;border-bottom:1px solid #12222E;width:20%;\" *ngIf=\"PrintSendSubmitOrderModelObj.hasSignature && !PrintSendSubmitOrderModelObj.SaveAll_IndexinfObj.isUserHasORS\" ></span ><span style=\"display:inline-block;border-bottom:1px solid #12222E;width:auto;\" *ngIf=\"!FromSignatureRequired && PrintSendSubmitOrderModelObj.hasSignature && PrintSendSubmitOrderModelObj.SaveAll_IndexinfObj.isUserHasORS\">{{Assign_Date | date: 'MM/dd/yyyy'}}{{Assign_Date | date:'hh:mm aa'}}</span><span style=\"display:inline-block;border-bottom:1px solid #12222E;width:auto;\" *ngIf=\"!FromSignatureRequired && !PrintSendSubmitOrderModelObj.hasSignature && PrintSendSubmitOrderModelObj.hasORS\">{{Assign_Date | date: 'MM/dd/yyyy'}}{{Assign_Date | date:'hh:mm aa'}}</span><span style=\"display:inline-block;border-bottom:1px solid #12222E;width:20%;\" *ngIf=\"!FromSignatureRequired && !PrintSendSubmitOrderModelObj.hasSignature && !PrintSendSubmitOrderModelObj.hasORS\" ></span ><span style=\"display:inline-block;border-bottom:1px solid #12222E;width:20%;\" *ngIf=\"FromSignatureRequired\"></span></td></tbody></table></td>";
+
+                    string temp1 = "<table style=\"width:50%; margin-top: 50px;\"><tbody><tr>";
 
                     if (responseHTMLToPDFTemp != null && (responseHTMLToPDFTemp?.Success ?? false))
                     {
@@ -648,15 +700,15 @@ namespace FOX.BusinessOperations.RequestForOrder
                 p.PageSettings.MarginRight.Inch(0.1f);
                 if (p != null)
                 {
-                if (type == "fax")
-                {
-                    if (!EntityHelper.isTalkRehab)
-                    {
-                        PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at +1 (800) 597 - 0848 or email admit@foxrehab.org",
-                                           new Font("Arial", 10));
-                        p.PageSettings.Footer.Text(text.ToString());
-                    }
-                }
+                //if (type == "fax")
+                //{
+                //    if (!EntityHelper.isTalkRehab)
+                //    {
+                //        PdfTextSection text = new PdfTextSection(10, 10, "Please sign and return to FOX at +1 (800) 597 - 0848 or email admit@foxrehab.org",
+                //                           new Font("Arial", 10));
+                //        p.PageSettings.Footer.Text(text.ToString());
+                //    }
+                //}
                 string pdfFilePath = Path.Combine(conf.ORIGINAL_FILES_PATH_SERVER);
                     //string finalsetpath = conf.ORIGINAL_FILES_PATH_SERVER.Remove(conf.ORIGINAL_FILES_PATH_SERVER.Length - 1);
                     if (!Directory.Exists(pdfFilePath))
