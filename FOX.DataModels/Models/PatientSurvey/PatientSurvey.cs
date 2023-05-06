@@ -136,6 +136,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public bool? IS_SMS { get; set; }
         [NotMapped]
         public bool? IS_EMAIL { get; set; }
+        public string NOT_ANSWERED_REASON { get; set; }
     }
     [Table("FOX_TBL_SURVEY_AUTOMATION_SERVICE_LOG")]
     public class SurveyServiceLog
@@ -477,6 +478,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string SORT_BY { get; set; }
         public string SORT_ORDER { get; set; }
         public int IS_SURVEYED { get; set; }
+        public string NOT_ANSWERED_REASON { get; set; }
     }
 
     public class PatientSurveyCall
@@ -523,6 +525,10 @@ namespace FOX.DataModels.Models.PatientSurvey
         public int PENDING_ALL { get; set; }
         public int NOT_ENOUGH_SERVICES_PROVIDE { get; set; }
         public int DISCHARGE_TO_SURVEY_TIME_DAYS_AVERAGE { get; set; }
+        public int VM_LEFT { get; set; }
+        public int MB_FULL { get; set; }
+        public int LINE_BUSY { get; set; }
+        public int WRONG_NUM { get; set; }
     }
     public class AverageDaysSurveyCompleted
     {

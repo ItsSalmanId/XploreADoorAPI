@@ -1654,7 +1654,15 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 //var result = SpRepository<IndexPatRes>.GetListWithStoreProcedure(@"exec Fox_Get_Patient_Info_Index_Info
                 //             @Last_Name, @First_Name, @Middle_Name, @SSN, @Gender, @Date_Of_Birth, @Chart_Id, @PRACTICE_CODE, @PRACTICE_ORGANIZATION_ID,@WORK_ID, @Patient_Alias, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER",
                 //             last_Name, first_Name, middle_Name, sSN, gender, date_Of_Birth, chart_Id, Practice_Code, _PRACTICE_ORGANIZATION_ID, work_id, Patient_Alias, _currentPage, _recordPerPage, _sortBy, _sortOrder);
-                var result = SpRepository<IndexPatRes>.GetSingleObjectWithStoreProcedure(@"exec Fox_Get_Patient_Info_Index_Info_single_record @PATIENT_ACCOUNT,@PRACTICE_CODE,@PRACTICE_ORGANIZATION_ID,@WORK_ID", _patientAccount, Practice_Code, _PRACTICE_ORGANIZATION_ID, work_id);
+                var result = new IndexPatRes();
+                if (Profile.isTalkRehab)
+                {
+                    result = SpRepository<IndexPatRes>.GetSingleObjectWithStoreProcedure(@"exec CCR_Get_Patient_Info_Index_Info_single_record @PATIENT_ACCOUNT,@PRACTICE_CODE,@PRACTICE_ORGANIZATION_ID,@WORK_ID", _patientAccount, Practice_Code, _PRACTICE_ORGANIZATION_ID, work_id);
+                }
+                else
+                {
+                    result = SpRepository<IndexPatRes>.GetSingleObjectWithStoreProcedure(@"exec Fox_Get_Patient_Info_Index_Info_single_record @PATIENT_ACCOUNT,@PRACTICE_CODE,@PRACTICE_ORGANIZATION_ID,@WORK_ID", _patientAccount, Practice_Code, _PRACTICE_ORGANIZATION_ID, work_id);
+                }
                 var res = getPatientsLastORS(req.Patient_Account, req.Practice_Code);
 
                 if (res != null)
@@ -1984,11 +1992,27 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 var result = new List<SmartOrderSource>();
                 if (!obj.Is_From_RFO)
                 {
-                    result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    if (Profile.isTalkRehab)
+                    {
+                        result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [CCR_GET_SMART_ORDERING_SOURCE] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    }
+                    else
+                    {
+                        result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    }
+                    
                 }
                 else
                 {
-                    result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE_RFO] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    if (Profile.isTalkRehab)
+                    {
+                        result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [CCR_GET_SMART_ORDERING_SOURCE_RFO] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    }
+                    else
+                    {
+                        result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE_RFO] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    }
+                    
                 }
 
                 if (result.Any())
@@ -2003,6 +2027,22 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 throw ex;
             }
         }
+        
+        public SmartOrderSource GetSmartOrderingSourceByID(long Source_ID, UserProfile Profile)
+        {
+            try
+            {
+                var parmPracticeCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
+                var id = new SqlParameter("@SOURCE_ID", SqlDbType.BigInt) { Value = Source_ID };
+                var result = SpRepository<SmartOrderSource>.GetSingleObjectWithStoreProcedure(@"exec [CCR_GET_SMART_ORDERING_SOURCE_BY_ID] @PRACTICE_CODE, @SOURCE_ID", parmPracticeCode, id);
+                return result; 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public List<SmartRefRegion> GetSmartRefRegion(SmartReq obj, UserProfile Profile)
         {
             try
@@ -5523,7 +5563,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
             var first_Name = new SqlParameter("@First_Name", SqlDbType.VarChar) { Value = req.First_Name };
             var last_Name = new SqlParameter("@Last_Name", SqlDbType.VarChar) { Value = req.Last_Name };
             var middle_Name = new SqlParameter("@Middle_Name", SqlDbType.VarChar) { Value = req.Middle_Name };
-            var chart_Id = new SqlParameter("@Chart_Id", SqlDbType.VarChar) { Value = req.Chart_Id };
             var SSN = new SqlParameter("@SSN", SqlDbType.VarChar) { Value = req.SSN };
             var gender = new SqlParameter("@Gender", SqlDbType.VarChar) { Value = req.Gender };
             var Practice_Code = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
@@ -5532,9 +5571,21 @@ namespace FOX.BusinessOperations.IndexInfoServices
             var date_Of_Birth = new SqlParameter { ParameterName = "@Date_Of_Birth", SqlDbType = SqlDbType.VarChar, Value = req.Date_Of_Birth == null ? "" : req.Date_Of_Birth?.ToString("MM/dd/yyyy") };
             var Patient_Alias = new SqlParameter { ParameterName = "@Patient_Alias", SqlDbType = SqlDbType.Bit, Value = req.INCLUDE_ALIAS };
             var _PRACTICE_ORGANIZATION_ID = new SqlParameter("@PRACTICE_ORGANIZATION_ID", SqlDbType.BigInt) { Value = Profile.PRACTICE_ORGANIZATION_ID ?? 0 };
-            var result = SpRepository<PatientListResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_FOR_INDEX_INFO
+            var result = new List<PatientListResponse>();
+            if (Profile.isTalkRehab)
+            {
+                var chart_Id = new SqlParameter("@Chart_Id", SqlDbType.VarChar) { Value = req.Patient_Account };
+                result = SpRepository<PatientListResponse>.GetListWithStoreProcedure(@"exec CCR_PROC_GET_PATIENT_FOR_INDEX_INFO
                              @First_Name,@Last_Name,@Middle_Name,@Chart_Id,@SSN,@Gender,@PRACTICE_CODE,@CURRENT_PAGE,@RECORD_PER_PAGE,@PRACTICE_ORGANIZATION_ID,@Date_Of_Birth,@Patient_Alias",
                              first_Name, last_Name, middle_Name, chart_Id, SSN, gender, Practice_Code, _currentPage, _recordPerPage, _PRACTICE_ORGANIZATION_ID, date_Of_Birth, Patient_Alias);
+            }
+            else
+            {
+                var chart_Id = new SqlParameter("@Chart_Id", SqlDbType.VarChar) { Value = req.Chart_Id };
+                result = SpRepository<PatientListResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_FOR_INDEX_INFO
+                             @First_Name,@Last_Name,@Middle_Name,@Chart_Id,@SSN,@Gender,@PRACTICE_CODE,@CURRENT_PAGE,@RECORD_PER_PAGE,@PRACTICE_ORGANIZATION_ID,@Date_Of_Birth,@Patient_Alias",
+                             first_Name, last_Name, middle_Name, chart_Id, SSN, gender, Practice_Code, _currentPage, _recordPerPage, _PRACTICE_ORGANIZATION_ID, date_Of_Birth, Patient_Alias);
+            }
             if (result.Any())
             {
                 var dob = string.IsNullOrEmpty(req.Date_Of_Birth_In_String) ? new DateTime() : Convert.ToDateTime(req.Date_Of_Birth_In_String);

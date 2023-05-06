@@ -328,13 +328,13 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             }
         }
         [Test]
-        [TestCase(101116354816561)]
-        [TestCase(101116354610685)]
-        public void GetPatientBestTimeToCall_EmptyModel_ReturnData(long practiceCode)
+        [TestCase(101116354816561, false)]
+        [TestCase(101116354610685, true)]
+        public void GetPatientBestTimeToCall_EmptyModel_ReturnData(long practiceCode, bool isTalkRehab)
         {
             //Arrange
             //Act
-            var result = _patientService.GetPatientBestTimeToCall(practiceCode);
+            var result = _patientService.GetPatientBestTimeToCall(practiceCode, isTalkRehab);
 
             //Assert
             if (result != null)
@@ -579,13 +579,13 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             }
         }
         [Test]
-        [TestCase("1011163")]
-        [TestCase("0")]
-        public void GetFinancialClassDDValues_FinancialClassDDValuesModel_ReturnData(string practiceCode)
+        [TestCase("1011163", true)]
+        [TestCase("0", false)]
+        public void GetFinancialClassDDValues_FinancialClassDDValuesModel_ReturnData(string practiceCode, bool isTalkRehab)
         {
             //Arrange
             //Act
-            var result = _patientService.GetFinancialClassDDValues(practiceCode);
+            var result = _patientService.GetFinancialClassDDValues(practiceCode, isTalkRehab);
 
             //Assert
             if (result != null)
