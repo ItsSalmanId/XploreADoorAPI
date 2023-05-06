@@ -3665,6 +3665,15 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     //taskLoglist.Add(new TaskLog() { ACTION = "indexer :", ACTION_DETAIL = "Indexer >" });
 
                     porta_logs.Add("Completed Date & Time :" + sourceDetail.COMPLETED_DATE);
+                    FOX_TBL_NOTES getFoxTblNotes = new FOX_TBL_NOTES();
+                    if (WORK_QUEUE != null)
+                    {
+                        getFoxTblNotes = _NoteRepository.GetFirst(r => r.WORK_ID == WORK_QUEUE.WORK_ID && r.PRACTICE_CODE == AppConfiguration.GetPracticeCode && r.DELETED == false);
+                    }
+                    if (getFoxTblNotes != null && getFoxTblNotes.NOTES != null)
+                    {
+                        porta_logs.Add("Important Notes for Admission: " + getFoxTblNotes.NOTES);
+                    }
                     if (Indexer != null)
                     {
                         string str = "";
