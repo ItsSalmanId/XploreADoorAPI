@@ -308,10 +308,19 @@ namespace FOX.BusinessOperations.CommonServices
                 //}
                 //else
                 //{
-                senderTypeList = _FOX_TBL_SENDER_TYPE.GetMany(t => t.PRACTICE_CODE == profile.PracticeCode && !t.DELETED && t.DISPLAY_ORDER != null)
-                .OrderBy(t => t.DISPLAY_ORDER)
-                //.OrderBy(t => t.SENDER_TYPE_NAME)
-                .ToList();
+                if (profile.isTalkRehab)
+                {
+                    senderTypeList = _FOX_TBL_SENDER_TYPE.GetMany(t => t.PRACTICE_CODE == 1011163 && !t.DELETED && t.DISPLAY_ORDER != null)
+                    .OrderBy(t => t.DISPLAY_ORDER)
+                    .ToList();
+                }
+                else
+                {
+                    senderTypeList = _FOX_TBL_SENDER_TYPE.GetMany(t => t.PRACTICE_CODE == profile.PracticeCode && !t.DELETED && t.DISPLAY_ORDER != null)
+                    .OrderBy(t => t.DISPLAY_ORDER)
+                    //.OrderBy(t => t.SENDER_TYPE_NAME)
+                    .ToList();
+                }
                 // }
                 return new ResponseGetSenderTypesModel() { SenderTypeList = senderTypeList, ErrorMessage = "", Message = "Get Sender Types List Successfully.", Success = true };
             }
