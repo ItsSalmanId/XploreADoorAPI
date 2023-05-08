@@ -156,10 +156,9 @@ namespace FOX.BusinessOperations.CommonServices
         {
             try
             {
-                OriginalQueue objOriginalQueue = new OriginalQueue();
                 SqlParameter uniqueId = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = unique_Id };
                 SqlParameter practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
-                objOriginalQueue = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS @UNIQUE_ID, @PRACTICE_CODE", uniqueId, practiceCode);
+                var objOriginalQueue = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS @UNIQUE_ID, @PRACTICE_CODE", uniqueId, practiceCode);
                 if (objOriginalQueue != null)
                 {
                     string file_Name = objOriginalQueue.UNIQUE_ID + " __" + DateTime.Now.Ticks + ".pdf";
@@ -173,9 +172,8 @@ namespace FOX.BusinessOperations.CommonServices
                     var localPath = config.ORIGINAL_FILES_PATH_DB + file_Name;
                     var pathForPDF = Path.Combine(config.ORIGINAL_FILES_PATH_SERVER, file_Name);
                     ImageHandler imgHandler = new ImageHandler();
-                    //OriginalQueueFiles objOriginalFiles = new OriginalQueueFiles();
-                    SqlParameter Id = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = unique_Id };
-                    var objOriginalFiles = SpRepository<OriginalQueueFiles>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_FILE_ALL_DETAILS @UNIQUE_ID", Id);
+                    SqlParameter uniqueWorkId = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = unique_Id };
+                    var objOriginalFiles = SpRepository<OriginalQueueFiles>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_FILE_ALL_DETAILS @UNIQUE_ID", uniqueWorkId);
                     if (objOriginalFiles != null && objOriginalFiles.Count > 0)
                     {
                         var imgPaths = (from x in objOriginalFiles select x.FILE_PATH1).ToArray();
