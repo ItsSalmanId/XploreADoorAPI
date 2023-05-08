@@ -1654,7 +1654,15 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 //var result = SpRepository<IndexPatRes>.GetListWithStoreProcedure(@"exec Fox_Get_Patient_Info_Index_Info
                 //             @Last_Name, @First_Name, @Middle_Name, @SSN, @Gender, @Date_Of_Birth, @Chart_Id, @PRACTICE_CODE, @PRACTICE_ORGANIZATION_ID,@WORK_ID, @Patient_Alias, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER",
                 //             last_Name, first_Name, middle_Name, sSN, gender, date_Of_Birth, chart_Id, Practice_Code, _PRACTICE_ORGANIZATION_ID, work_id, Patient_Alias, _currentPage, _recordPerPage, _sortBy, _sortOrder);
-                var result = SpRepository<IndexPatRes>.GetSingleObjectWithStoreProcedure(@"exec Fox_Get_Patient_Info_Index_Info_single_record @PATIENT_ACCOUNT,@PRACTICE_CODE,@PRACTICE_ORGANIZATION_ID,@WORK_ID", _patientAccount, Practice_Code, _PRACTICE_ORGANIZATION_ID, work_id);
+                var result = new IndexPatRes();
+                if (Profile.isTalkRehab)
+                {
+                    result = SpRepository<IndexPatRes>.GetSingleObjectWithStoreProcedure(@"exec CCR_Get_Patient_Info_Index_Info_single_record @PATIENT_ACCOUNT,@PRACTICE_CODE,@PRACTICE_ORGANIZATION_ID,@WORK_ID", _patientAccount, Practice_Code, _PRACTICE_ORGANIZATION_ID, work_id);
+                }
+                else
+                {
+                    result = SpRepository<IndexPatRes>.GetSingleObjectWithStoreProcedure(@"exec Fox_Get_Patient_Info_Index_Info_single_record @PATIENT_ACCOUNT,@PRACTICE_CODE,@PRACTICE_ORGANIZATION_ID,@WORK_ID", _patientAccount, Practice_Code, _PRACTICE_ORGANIZATION_ID, work_id);
+                }
                 var res = getPatientsLastORS(req.Patient_Account, req.Practice_Code);
 
                 if (res != null)
@@ -3657,6 +3665,15 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     //taskLoglist.Add(new TaskLog() { ACTION = "indexer :", ACTION_DETAIL = "Indexer >" });
 
                     porta_logs.Add("Completed Date & Time :" + sourceDetail.COMPLETED_DATE);
+                    FOX_TBL_NOTES getFoxTblNotes = new FOX_TBL_NOTES();
+                    if (WORK_QUEUE != null)
+                    {
+                        getFoxTblNotes = _NoteRepository.GetFirst(r => r.WORK_ID == WORK_QUEUE.WORK_ID && r.PRACTICE_CODE == AppConfiguration.GetPracticeCode && r.DELETED == false);
+                    }
+                    if (getFoxTblNotes != null && getFoxTblNotes.NOTES != null)
+                    {
+                        porta_logs.Add("Important Notes for Admission: " + getFoxTblNotes.NOTES);
+                    }
                     if (Indexer != null)
                     {
                         string str = "";

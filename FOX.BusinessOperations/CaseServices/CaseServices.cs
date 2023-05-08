@@ -410,17 +410,6 @@ namespace FOX.BusinessOperations.CaseServices
         {
             try
             {
-                var case_id = new SqlParameter { ParameterName = "case_id", SqlDbType = SqlDbType.BigInt, Value = model.CASE_ID };
-                var reason = new SqlParameter { ParameterName = "reason", SqlDbType = SqlDbType.NVarChar, Value = model.VoidReason ?? "" };
-                var providerid = new SqlParameter { ParameterName = "providerid", SqlDbType = SqlDbType.BigInt, Value = provider_code };
-                var ref_provider_id = new SqlParameter { ParameterName = "ref_provider_id", SqlDbType = SqlDbType.BigInt, Value = reffral_code };
-                var pos = new SqlParameter { ParameterName = "pos", SqlDbType = SqlDbType.NVarChar, Value = locationName };
-                var region = new SqlParameter { ParameterName = "region", SqlDbType = SqlDbType.NVarChar, Value = certifyState };
-                var patient_account = new SqlParameter { ParameterName = "patient_account", SqlDbType = SqlDbType.BigInt, Value = model.PATIENT_ACCOUNT };
-                var case_status_id = new SqlParameter { ParameterName = "case_status_id", SqlDbType = SqlDbType.BigInt, Value = model.CASE_STATUS_ID };
-                var is_edit_case = new SqlParameter { ParameterName = "is_edit_case", SqlDbType = SqlDbType.BigInt, Value = isEditcase };
-                var result = SpRepository<CaseAdditionalInfoRresponce>.GetListWithStoreProcedure(@"exec AF_PROC_CASE_ADDITIONAL_INFO @case_id, @reason, @providerid,@ref_provider_id,@pos,@region,@patient_account,@case_status_id, @is_edit_case",
-                case_id, reason, providerid, ref_provider_id, pos, region, patient_account, case_status_id, is_edit_case);
                 var reasonHistory = "";
                 string NewCaseStatus = "";
                 string changeReason = "";
@@ -450,25 +439,38 @@ namespace FOX.BusinessOperations.CaseServices
                 {
                     reasonHistory = "Case# " + model.CASE_NO + " created by " + profile.FirstName + " " + profile.LastName + ".";
                 }
-                if(caseStatus.NAME == "Pending")
+                if (caseStatus.NAME == "Pending")
                 {
                     foreach (var open in updateModel.openIssueList)
                         if (open.Notes != null)
                         {
-                            open.Notes = open.Notes.Replace("<p>","");
+                            open.Notes = open.Notes.Replace("<p>", "");
                             open.Notes = open.Notes.Replace("</p>", "");
-                            open.Notes = open.Notes.Replace("<br>","");
+                            open.Notes = open.Notes.Replace("<br>", "");
                             changeReason += open.Notes + " ";
                         }
                 }
                 else
                 {
-                    if(updateModel.NON_ADMIT_REASON != null)
+                    if (updateModel.NON_ADMIT_REASON != null)
                     {
                         updateModel.NON_ADMIT_REASON = updateModel.NON_ADMIT_REASON.Replace("<br>", "");
                     }
                     changeReason = updateModel.NON_ADMIT_REASON;
                 }
+
+                var case_id = new SqlParameter { ParameterName = "case_id", SqlDbType = SqlDbType.BigInt, Value = model.CASE_ID };
+                var reason = new SqlParameter { ParameterName = "reason", SqlDbType = SqlDbType.NVarChar, Value = changeReason == null ? " " : changeReason };
+                var providerid = new SqlParameter { ParameterName = "providerid", SqlDbType = SqlDbType.BigInt, Value = provider_code };
+                var ref_provider_id = new SqlParameter { ParameterName = "ref_provider_id", SqlDbType = SqlDbType.BigInt, Value = reffral_code };
+                var pos = new SqlParameter { ParameterName = "pos", SqlDbType = SqlDbType.NVarChar, Value = locationName };
+                var region = new SqlParameter { ParameterName = "region", SqlDbType = SqlDbType.NVarChar, Value = certifyState };
+                var patient_account = new SqlParameter { ParameterName = "patient_account", SqlDbType = SqlDbType.BigInt, Value = model.PATIENT_ACCOUNT };
+                var case_status_id = new SqlParameter { ParameterName = "case_status_id", SqlDbType = SqlDbType.BigInt, Value = model.CASE_STATUS_ID };
+                var is_edit_case = new SqlParameter { ParameterName = "is_edit_case", SqlDbType = SqlDbType.BigInt, Value = isEditcase };
+                var result = SpRepository<CaseAdditionalInfoRresponce>.GetListWithStoreProcedure(@"exec AF_PROC_CASE_ADDITIONAL_INFO @case_id, @reason, @providerid,@ref_provider_id,@pos,@region,@patient_account,@case_status_id, @is_edit_case",
+                case_id, reason, providerid, ref_provider_id, pos, region, patient_account, case_status_id, is_edit_case);
+                
                 var case_id_Param = new SqlParameter("@Case_Id", SqlDbType.BigInt) { Value = model.CASE_ID };
                 var case_no_Param = new SqlParameter("@Case_No", SqlDbType.VarChar) { Value = model.CASE_NO };
                 var username_Param = new SqlParameter("@UserName", SqlDbType.VarChar) { Value = profile.UserName };
