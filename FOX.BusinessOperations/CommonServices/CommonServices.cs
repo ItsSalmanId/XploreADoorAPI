@@ -176,7 +176,6 @@ namespace FOX.BusinessOperations.CommonServices
                     //OriginalQueueFiles objOriginalFiles = new OriginalQueueFiles();
                     SqlParameter Id = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = unique_Id };
                     var objOriginalFiles = SpRepository<OriginalQueueFiles>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_FILE_ALL_DETAILS @UNIQUE_ID", Id);
-                    var imges = _OriginalQueueFilesRepository.GetMany(x => x.UNIQUE_ID == unique_Id);
                     if (objOriginalFiles != null && objOriginalFiles.Count > 0)
                     {
                         var imgPaths = (from x in objOriginalFiles select x.FILE_PATH1).ToArray();

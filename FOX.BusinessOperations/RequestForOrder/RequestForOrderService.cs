@@ -30,7 +30,6 @@ using System.Linq;
 using FOX.DataModels.Models.SenderType;
 using System.Threading;
 using FOX.DataModels;
-using System.Text.RegularExpressions;
 
 namespace FOX.BusinessOperations.RequestForOrder
 {
