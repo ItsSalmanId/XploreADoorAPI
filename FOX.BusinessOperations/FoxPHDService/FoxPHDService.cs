@@ -345,7 +345,8 @@ namespace FOX.BusinessOperations.FoxPHDService
                     string deliveryReportId = "";
                     System.Drawing.Image img;
                     PdfFocus pdfFocus = new PdfFocus();
-                    pdfFocus.Serial = "10261435399";
+                   // pdfFocus.Serial = "10261435399";
+                    pdfFocus.Serial = "80033727929";
                     pdfFocus.OpenPdf(PdfPath);
                     if (pdfFocus.PageCount > 0)
                     {
@@ -1684,7 +1685,7 @@ namespace FOX.BusinessOperations.FoxPHDService
         public DefaultVauesForPhdUsers GetDefaultHandlingValue(UserProfile profile)
         {
             var user = _userRepository.GetFirst(x => x.USER_NAME == profile.UserName && !x.DELETED);
-            var phdSanarios = _DefaultVauesForPhdUsersRepository.GetFirst(x => x.USER_ID == user.USER_ID && x.PRACTICE_CODE == user.PRACTICE_CODE && !x.DELETED);
+            var phdSanarios = _DefaultVauesForPhdUsersRepository.GetSingleOrDefault(x => x.USER_ID == user.USER_ID && x.PRACTICE_CODE == user.PRACTICE_CODE && !x.DELETED);
             return phdSanarios;
 
         }

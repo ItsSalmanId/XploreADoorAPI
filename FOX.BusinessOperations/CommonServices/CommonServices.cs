@@ -25,6 +25,10 @@ using FOX.DataModels.Models.StatesModel;
 using FOX.DataModels.Models.ServiceConfiguration;
 using System.Web.Configuration;
 using FOX.DataModels.Models.Settings.Announcement;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using System.Security.Cryptography;
+using System.Text;
+using SautinSoft;
 
 namespace FOX.BusinessOperations.CommonServices
 {
@@ -152,10 +156,12 @@ namespace FOX.BusinessOperations.CommonServices
         {
             try
             {
-                var queue = _QueueRepository.GetFirst(e => e.UNIQUE_ID == unique_Id);
-                if (queue != null)
+                SqlParameter uniqueId = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = unique_Id };
+                SqlParameter practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                var objOriginalQueue = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS @UNIQUE_ID, @PRACTICE_CODE", uniqueId, practiceCode);
+                if (objOriginalQueue != null)
                 {
-                    string file_Name = queue.UNIQUE_ID + " __" + DateTime.Now.Ticks + ".pdf";
+                    string file_Name = objOriginalQueue.UNIQUE_ID + " __" + DateTime.Now.Ticks + ".pdf";
                     string folder = config.ORIGINAL_FILES_PATH_SERVER;
 
                     if (!Directory.Exists(config.ORIGINAL_FILES_PATH_SERVER))
@@ -166,10 +172,11 @@ namespace FOX.BusinessOperations.CommonServices
                     var localPath = config.ORIGINAL_FILES_PATH_DB + file_Name;
                     var pathForPDF = Path.Combine(config.ORIGINAL_FILES_PATH_SERVER, file_Name);
                     ImageHandler imgHandler = new ImageHandler();
-                    var imges = _OriginalQueueFilesRepository.GetMany(x => x.UNIQUE_ID == unique_Id);
-                    if (imges != null && imges.Count > 0)
+                    SqlParameter uniqueWorkId = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = unique_Id };
+                    var objOriginalFiles = SpRepository<OriginalQueueFiles>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_FILE_ALL_DETAILS @UNIQUE_ID", uniqueWorkId);
+                    if (objOriginalFiles != null && objOriginalFiles.Count > 0)
                     {
-                        var imgPaths = (from x in imges select x.FILE_PATH1).ToArray();
+                        var imgPaths = (from x in objOriginalFiles select x.FILE_PATH1).ToArray();
                         imgHandler.ImagesToPdf(imgPaths, pathForPDF);
                         AttachmentData attachmentData = new AttachmentData();
                         attachmentData.FILE_PATH = folder;
@@ -188,10 +195,13 @@ namespace FOX.BusinessOperations.CommonServices
         {
             try
             {
-                var queue = _QueueRepository.GetFirst(e => e.UNIQUE_ID == unique_Id);
-                if (queue != null)
+                OriginalQueue objOriginalQueue = new OriginalQueue();
+                SqlParameter uniqueId = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = unique_Id };
+                SqlParameter practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                objOriginalQueue = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS @UNIQUE_ID, @PRACTICE_CODE", uniqueId, practiceCode);
+                if (objOriginalQueue != null)
                 {
-                    string file_Name = queue.UNIQUE_ID + " __" + DateTime.Now.Ticks + ".pdf";
+                    string file_Name = objOriginalQueue.UNIQUE_ID + " __" + DateTime.Now.Ticks + ".pdf";
                     string folder = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.ExportedFilesPath);
                     if (!Directory.Exists(folder))
                     {
@@ -201,10 +211,12 @@ namespace FOX.BusinessOperations.CommonServices
                     var localPath = profile.PracticeDocumentDirectory + "/" + file_Name;
                     var pathForPDF = Path.Combine(folder, file_Name);
                     ImageHandler imgHandler = new ImageHandler();
-                    var imges = _OriginalQueueFilesRepository.GetMany(x => x.UNIQUE_ID == unique_Id);
-                    if (imges != null && imges.Count > 0)
+                    List<OriginalQueueFiles> originalQueueFilesList = new List<OriginalQueueFiles>();
+                    SqlParameter uniqueIdd = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = unique_Id };
+                    originalQueueFilesList = SpRepository<OriginalQueueFiles>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_File_All_DETAILS @UNIQUE_ID", uniqueIdd);
+                    if (originalQueueFilesList != null && originalQueueFilesList.Count > 0)
                     {
-                        var imgPaths = (from x in imges select x.FILE_PATH1).ToArray();
+                        var imgPaths = (from x in originalQueueFilesList select x.FILE_PATH1).ToArray();
                         imgHandler.ImagesToPdf(imgPaths, pathForPDF);
                         AttachmentData attachmentData = new AttachmentData();
                         attachmentData.FILE_PATH = folder;
@@ -216,8 +228,46 @@ namespace FOX.BusinessOperations.CommonServices
             }
             catch (Exception exception)
             {
-                //return new AttachmentData();
-                throw exception;
+                if (exception != null && !string.IsNullOrEmpty(exception.Message) && exception.Message.Contains("no pages"))
+                {
+                    return new AttachmentData();
+                }
+                else
+                {
+                    //return new AttachmentData();
+                    throw exception;
+                }
+            }
+        }
+        private string HTMLToPDFSautinsoft(string htmlString, string fileName, string linkMessage = null)
+        {
+            try
+            {
+                PdfMetamorphosis p = new PdfMetamorphosis();
+                //p.Serial = "10262870570";//server
+                p.Serial = "10261942764";//development
+                p.PageSettings.Size.A4();
+                p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
+                p.PageSettings.MarginLeft.Inch(0.1f);
+                p.PageSettings.MarginRight.Inch(0.1f);
+                if (p != null)
+                {
+                    if (p.HtmlToPdfConvertStringToFile(htmlString, fileName) == 0)
+                    {
+                        return fileName;
+                    }
+                    else
+                    {
+                        var ex = p.TraceSettings.ExceptionList.Count > 0 ? p.TraceSettings.ExceptionList[0] : null;
+                        var msg = ex != null ? ex.Message + Environment.NewLine + ex.StackTrace : "An error occured during converting HTML to PDF!";
+                        return "";
+                    }
+                }
+                return "";
+            }
+            catch (Exception)
+            {
+                return "";
             }
         }
 
@@ -298,10 +348,19 @@ namespace FOX.BusinessOperations.CommonServices
                 //}
                 //else
                 //{
-                senderTypeList = _FOX_TBL_SENDER_TYPE.GetMany(t => t.PRACTICE_CODE == profile.PracticeCode && !t.DELETED && t.DISPLAY_ORDER != null)
-                .OrderBy(t => t.DISPLAY_ORDER)
-                //.OrderBy(t => t.SENDER_TYPE_NAME)
-                .ToList();
+                if (profile.isTalkRehab)
+                {
+                    senderTypeList = _FOX_TBL_SENDER_TYPE.GetMany(t => t.PRACTICE_CODE == 1011163 && !t.DELETED && t.DISPLAY_ORDER != null)
+                    .OrderBy(t => t.DISPLAY_ORDER)
+                    .ToList();
+                }
+                else
+                {
+                    senderTypeList = _FOX_TBL_SENDER_TYPE.GetMany(t => t.PRACTICE_CODE == profile.PracticeCode && !t.DELETED && t.DISPLAY_ORDER != null)
+                    .OrderBy(t => t.DISPLAY_ORDER)
+                    //.OrderBy(t => t.SENDER_TYPE_NAME)
+                    .ToList();
+                }
                 // }
                 return new ResponseGetSenderTypesModel() { SenderTypeList = senderTypeList, ErrorMessage = "", Message = "Get Sender Types List Successfully.", Success = true };
             }
@@ -314,44 +373,36 @@ namespace FOX.BusinessOperations.CommonServices
 
         public ResponseGetSenderNamesModel GetSenderNames(ReqGetSenderNamesModel model, UserProfile profile = null)
         {
-            try
-            {
-                long practiceCode = profile?.PracticeCode ?? (model?.PracticeCode ?? 0);
-                string userName = profile?.UserName ?? (model?.UserName ?? "");
+            long practiceCode = profile?.PracticeCode ?? (model?.PracticeCode ?? 0);
+            string userName = profile?.UserName ?? (model?.UserName ?? "");
 
-                if (string.IsNullOrWhiteSpace(model?.SearchValue ?? ""))
-                {
-                    model.SearchValue = "";
-                }
-                var senderNameList = _FOX_TBL_SENDER_NAME.GetMany(
-                                        t => t.PRACTICE_CODE == practiceCode
-                                            && !t.DELETED
-                                            && t.FOX_TBL_SENDER_TYPE_ID == model.SenderTypeId
-                                            && (
-                                                t.SENDER_NAME_CODE.Contains(model.SearchValue)
-                                                || t.SENDER_NAME_DESCRIPTION.Contains(model.SearchValue)
-                                            )
+            if (string.IsNullOrWhiteSpace(model?.SearchValue ?? ""))
+            {
+                model.SearchValue = "";
+            }
+            var senderNameList = _FOX_TBL_SENDER_NAME.GetMany(
+                                    t => t.PRACTICE_CODE == practiceCode
+                                        && !t.DELETED
+                                        && t.FOX_TBL_SENDER_TYPE_ID == model.SenderTypeId
+                                        && (
+                                            t.SENDER_NAME_CODE.Contains(model.SearchValue)
+                                            || t.SENDER_NAME_DESCRIPTION.Contains(model.SearchValue)
                                         )
-                                        .Take(30)
-                                        .ToList();
+                                    )
+                                    .Take(30)
+                                    .ToList();
 
-                var senderName = _FOX_TBL_SENDER_NAME.GetFirst(
-                                        t => t.PRACTICE_CODE == practiceCode
-                                            && !t.DELETED
-                                            && t.SENDER_NAME_CODE.Equals(userName)
-                                        );
-                if (senderName != null)
-                {
-                    senderNameList.Insert(0, senderName);
-                }
-
-                return new ResponseGetSenderNamesModel() { SenderNameList = senderNameList, ErrorMessage = "", Message = "Get Sender Name List Successfully.", Success = true };
-            }
-            catch (Exception exception)
+            var senderName = _FOX_TBL_SENDER_NAME.GetFirst(
+                                    t => t.PRACTICE_CODE == practiceCode
+                                        && !t.DELETED
+                                        && t.SENDER_NAME_CODE.Equals(userName)
+                                    );
+            if (senderName != null)
             {
-                //throw exception;
-                return new ResponseGetSenderNamesModel() { SenderNameList = null, ErrorMessage = exception.ToString(), Message = "We encountered an error while processing your request.", Success = false };
+                senderNameList.Insert(0, senderName);
             }
+
+            return new ResponseGetSenderNamesModel() { SenderNameList = senderNameList, ErrorMessage = "", Message = "Get Sender Name List Successfully.", Success = true };
         }
 
         public string AddCoverPageForFax(string filePath, string fileName, string coverLetterTemplate)
@@ -359,7 +410,7 @@ namespace FOX.BusinessOperations.CommonServices
             try
             {
                 string workOrderPDFpath = Path.Combine(filePath, fileName);
-                string coverLetterPDFPath = HTMLToPDF(coverLetterTemplate, workOrderPDFpath);
+                string coverLetterPDFPath = HTMLToPDFSautinsoft(coverLetterTemplate, workOrderPDFpath);
                 if (!string.IsNullOrEmpty(coverLetterPDFPath))
                 {
                     using (var ms = new MemoryStream())
@@ -639,7 +690,7 @@ namespace FOX.BusinessOperations.CommonServices
                     SqlParameter Deleted = new SqlParameter("DELETED", false);
                     SqlParameter CreatedBy = new SqlParameter("CREATED_BY", userProfile.PracticeCode);
                     SqlParameter Operation = new SqlParameter("OPERATION", "ADD");
-                    SpRepository<AnnouncementsHistory>.GetListWithStoreProcedure(@"exec FOX_PROC_CRUD_ANNOUNCEMENT_HISTORY @ANNOUNCEMENT_HISTORY_ID, @ANNOUNCEMENT_ID, @USER_ID, @USER_NAME, @SHOW_COUNT ,@MODIFIED_DATE, @CREATED_DATE, @PRACTICE_CODE, @DELETED, @CREATED_BY, @Operation", AnnouncmentHistoryId, AnnouncmentId, UserId, UserName, ShowCount, ModifiedDate, CreatedDate,PracticeCode, Deleted, CreatedBy, Operation);
+                    SpRepository<AnnouncementsHistory>.GetListWithStoreProcedure(@"exec FOX_PROC_CRUD_ANNOUNCEMENT_HISTORY @ANNOUNCEMENT_HISTORY_ID, @ANNOUNCEMENT_ID, @USER_ID, @USER_NAME, @SHOW_COUNT ,@MODIFIED_DATE, @CREATED_DATE, @PRACTICE_CODE, @DELETED, @CREATED_BY, @Operation", AnnouncmentHistoryId, AnnouncmentId, UserId, UserName, ShowCount, ModifiedDate, CreatedDate, PracticeCode, Deleted, CreatedBy, Operation);
                 }
                 else
                 {
@@ -679,11 +730,13 @@ namespace FOX.BusinessOperations.CommonServices
             return true;
         }
         // Delete Files From Server.
+
         public ResponseModel DeleteDownloadedFile(string fileLocation)
         {
             ResponseModel response = new ResponseModel();
             if (!string.IsNullOrEmpty(fileLocation))
             {
+                fileLocation = Encrypt.DecrypStringEncryptedInClient(fileLocation);
                 var completeFilePath = HttpContext.Current?.Server?.MapPath("~/" + fileLocation);
                 if (!string.IsNullOrEmpty(completeFilePath) && File.Exists(Path.Combine(completeFilePath)))
                 {

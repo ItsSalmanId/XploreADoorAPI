@@ -136,6 +136,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public bool? IS_SMS { get; set; }
         [NotMapped]
         public bool? IS_EMAIL { get; set; }
+        public string NOT_ANSWERED_REASON { get; set; }
     }
     [Table("FOX_TBL_SURVEY_AUTOMATION_SERVICE_LOG")]
     public class SurveyServiceLog
@@ -241,6 +242,10 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string CALL_BY { get; set; }
         [NotMapped]
         public string SERVICE_OR_PAYMENT_DESCRIPTION { get; set; }
+        [NotMapped]
+        public Double TOTAL_RECORD_PAGES { get; set; }
+        [NotMapped]
+        public int TOTAL_RECORD { get; set; }
 
     }
     public class PatientSurveyInBoundCallResponse
@@ -256,6 +261,8 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string CALL_RECORDING_PATH { get; set; }
         public string SERVICE_OR_PAYMENT_DESCRIPTION { get; set; }
         public string CALL_DURATION { get; set; }
+        public Double TOTAL_RECORD_PAGES { get; set; }
+        public int TOTAL_RECORD { get; set; }
     }
 
     [Table("FOX_TBL_PATIENT_SURVEY_FORMAT_TYPE")]
@@ -471,6 +478,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string SORT_BY { get; set; }
         public string SORT_ORDER { get; set; }
         public int IS_SURVEYED { get; set; }
+        public string NOT_ANSWERED_REASON { get; set; }
     }
 
     public class PatientSurveyCall
@@ -517,10 +525,19 @@ namespace FOX.DataModels.Models.PatientSurvey
         public int PENDING_ALL { get; set; }
         public int NOT_ENOUGH_SERVICES_PROVIDE { get; set; }
         public int DISCHARGE_TO_SURVEY_TIME_DAYS_AVERAGE { get; set; }
+        public int VM_LEFT { get; set; }
+        public int MB_FULL { get; set; }
+        public int LINE_BUSY { get; set; }
+        public int WRONG_NUM { get; set; }
     }
     public class AverageDaysSurveyCompleted
     {
         public int AVERAGE_DAY { get; set; }
     }
-   
+    public class SurveyCallsLogs
+    {
+        public string patientAccountNumber { get; set; }
+        public int CurrentPage { get; set; }
+        public int RecordPerPage { get; set; }
+    }
 }

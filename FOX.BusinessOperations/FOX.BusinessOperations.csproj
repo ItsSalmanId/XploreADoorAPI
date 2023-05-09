@@ -74,6 +74,9 @@
     <Reference Include="htn">
       <HintPath>..\Libraries\htn.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\Libraries\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="itextsharp">
       <HintPath>..\Libraries\itextsharp.dll</HintPath>
     </Reference>
@@ -88,9 +91,8 @@
     <Reference Include="PdfMetamorphosis">
       <HintPath>..\Libraries\PdfMetamorphosis.dll</HintPath>
     </Reference>
-    <Reference Include="SautinSoft.PdfFocus, Version=6.7.12.11, Culture=neutral, PublicKeyToken=0b79b934109b3e9e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\SautinSoft.PdfFocus.dll</HintPath>
+    <Reference Include="SautinSoft.PdfFocus, Version=8.6.1.18, Culture=neutral, PublicKeyToken=0b79b934109b3e9e, processorArchitecture=MSIL">
+      <HintPath>..\packages\sautinsoft.pdffocus.8.6.1.18\lib\net40\SautinSoft.PdfFocus.dll</HintPath>
     </Reference>
     <Reference Include="Select.HtmlToPdf, Version=18.1.0.0, Culture=neutral, PublicKeyToken=e0ae9f6e27a97018, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

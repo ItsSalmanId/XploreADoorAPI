@@ -757,8 +757,16 @@ namespace FOX.BusinessOperations.CommonService
         {
             if (!string.IsNullOrEmpty(userName))
             {
-                var usr = _UserRepository.GetSingle(e => e.USER_NAME.Equals(userName));
-                return usr.FIRST_NAME + " " + usr.LAST_NAME;
+                var usr = _UserRepository.ExecuteCommandSingle("select * from [dbo].fox_tbl_application_user WITH (NOLOCK) where USER_NAME= '"+ userName + "'");//code by irfan ullah
+                //var usr = _UserRepository.GetSingle(e => e.USER_NAME.Equals(userName));
+                if (usr != null)
+                {
+                    return usr.FIRST_NAME + " " + usr.LAST_NAME;
+                }
+                else
+                {
+                    return "";
+                }
             }
             else
             {
@@ -799,11 +807,20 @@ namespace FOX.BusinessOperations.CommonService
             if (patAccount.HasValue)
             {
                 var patient = _PatientRepository.GetFirst(e => e.Patient_Account == patAccount);
-                return patient.First_Name + " " + patient.Last_Name;
+                if (patient != null)
+                {
+                    return patient.First_Name + " " + patient.Last_Name;
+                }
+                else
+                {
+                    return "";
+                }
             }
             else
                 return "";
         }
+
+
         //public static string GetSenderName(long? senderId)
         //{
         //    if (senderId.HasValue)
@@ -852,9 +869,21 @@ namespace FOX.BusinessOperations.CommonService
             string Dis_str = string.Empty;
             if (!string.IsNullOrEmpty(depId))
             {
-                if (depId.Contains("1"))
+                if (depId.EndsWith("1"))
+                {
+                    depId = depId + ",";
+                }
+                if (depId.Contains("1,"))
                 {
                     Dis_str = Dis_str + " Occupational Therapy (OT), ";
+                    if (depId.EndsWith(","))
+                    {
+                        depId = depId.Remove(depId.Length - 1, 1);
+                    }
+                }
+                if (depId.Contains("10"))
+                {
+                    Dis_str = Dis_str + " Skilled Nursing (SN), ";
                 }
                 if (depId.Contains("2"))
                 {
@@ -1142,7 +1171,7 @@ namespace FOX.BusinessOperations.CommonService
             }
         }
 
-        public static void SendEmailOnException(string exceptionMsg = "", string exceptionDetails = "", string subject = "")
+        public static void SendEmailOnException(string exceptionMsg = "", string exceptionDetails = "", string subject = "",string exceptionEnvironment="")
         {
             //bool IsMailSent = false;
             string from = "noreply@carecloud.com";
@@ -1176,7 +1205,8 @@ namespace FOX.BusinessOperations.CommonService
             //add exception Details
             body += "<h3 style='color: #1960a7;margin: 0px;'> Exception Details: " + "</h3><br />";
             body += "<p style='color: #34495e;margin: 0px;'>" + exceptionDetails + "</p><br />";
-
+            body += "<h3 style='color: #1960a7;margin: 0px;'> Exception Environment:" + "</h3>";
+            body += "<p style='color: #34495e;margin: 0px;'>" + exceptionEnvironment + "</p><br />";///environment variable added by irfan ullah
             ////add original mail info
             //body += "<h3 style='color: #1960a7;margin: 0px;'> To: </h3><p style='color: #34495e;margin: 0px;'>" + OrgMailSentTo + "</p><br />";
             //body += "<h3 style='color: #1960a7;margin: 0px;'> Subject: </h3><p style='color: #34495e;margin: 0px;'>" + OrgMailSubject + "</p><br />";
@@ -1210,7 +1240,7 @@ namespace FOX.BusinessOperations.CommonService
             }
         }
 
-        public static void SendExceptionsEmail(string exceptionMsg = "", string exceptionDetails = "", string subject = "")
+        public static void SendExceptionsEmail(string exceptionMsg = "", string exceptionDetails = "", string subject = "",string exceptionEnvironment="")
         {
             //bool IsMailSent = false;
             string from = "noreply@carecloud.com";
@@ -1232,6 +1262,8 @@ namespace FOX.BusinessOperations.CommonService
             //add exception Details
             body += "<h3 style='color: #1960a7;margin: 0px;'> Exception Details: " + "</h3><br />";
             body += "<p style='color: #34495e;margin: 0px;'>" + exceptionDetails + "</p><br />";
+            body += "<h3 style='color: #1960a7;margin: 0px;'> Exception Environment :" + "</h3>";
+            body += "<p style='color: #34495e;margin: 0px;'>" + exceptionEnvironment + "</p><br />";///environment variable added by irfan ullah
             ////add original mail info
             //body += "<h3 style='color: #1960a7;margin: 0px;'> To: </h3><p style='color: #34495e;margin: 0px;'>" + OrgMailSentTo + "</p><br />";
             //body += "<h3 style='color: #1960a7;margin: 0px;'> Subject: </h3><p style='color: #34495e;margin: 0px;'>" + OrgMailSubject + "</p><br />";
@@ -1264,8 +1296,9 @@ namespace FOX.BusinessOperations.CommonService
                 throw ex;
             }
         }
-        public static void TokenTaskCancellationExceptionLog(string msg)
+        public static void TokenTaskCancellationExceptionLog(string msg,string exceptionEnvironment="")
         {
+           
             try
             {
                 if (msg.Contains("it is being used by another process"))
@@ -1286,7 +1319,7 @@ namespace FOX.BusinessOperations.CommonService
             }
             catch (Exception ex)
             {
-                Helper.SendEmailOnException(ex.Message, ex.ToString(), "Exception occurred in Token Exception Filter");
+                Helper.SendEmailOnException(ex.Message, ex.ToString(), "Exception occurred in Token Exception Filter", exceptionEnvironment);
             }
         }
 

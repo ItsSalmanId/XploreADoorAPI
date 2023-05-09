@@ -38,6 +38,9 @@ namespace FOX.DataModels.Models.Security
         public string EMAIL { get; set; }
         public List<RoleAndRights> ApplicationUserRoles { get; set; }
         public bool isTalkRehab { set; get; }
+        public bool MFA { set; get; }
+        public bool IS_AD_USER { set; get; }
+        public int showMfaEanbleScreen { set; get; }
 
     }
 

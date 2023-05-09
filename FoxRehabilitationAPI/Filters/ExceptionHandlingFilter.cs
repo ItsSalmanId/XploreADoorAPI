@@ -5,6 +5,10 @@ using Newtonsoft.Json;
 using FOX.DataModels.Models.Exceptions;
 using FOX.BusinessOperations.CommonServices;
 using FOX.BusinessOperations.CommonService;
+using System.Web;
+using FoxRehabilitationAPI.Models;
+using FOX.DataModels.Models.Security;
+using FOX.DataModels;
 
 namespace FoxRehabilitationAPI.Filters
 {
@@ -12,6 +16,8 @@ namespace FoxRehabilitationAPI.Filters
     {
         public override void OnException(HttpActionExecutedContext context)
         {
+            UserProfile profile = ClaimsModel.GetUserProfile(HttpContext.Current.User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
+            string exceptionEnvironment = EntityHelper.isTalkRehab ? "Care Cloud Remote" : "Fox Portal";//Environment variable in email by irfan ullah
             try
             {
                 var excpParam = JsonConvert.SerializeObject(context.ActionContext.ActionArguments.Values);
@@ -62,14 +68,14 @@ namespace FoxRehabilitationAPI.Filters
                         {
                             writer.WriteLine("Message: " + excpMsg + Environment.NewLine + Environment.NewLine + "URI:  " + uri + Environment.NewLine + Environment.NewLine + "Request parameters: " + excpParam + Environment.NewLine + Environment.NewLine + "StackTrace: " + excpStackTrace + Environment.NewLine + Environment.NewLine +
                                "///------------------Inner Exception------------------///" + Environment.NewLine + excpInnerMessage + "" + Environment.NewLine +
-                               "Date: " + DateTime.Now.ToString() + Environment.NewLine + Environment.NewLine + "-------------------------------------------------------||||||||||||---End Current Exception---||||||||||||||||-------------------------------------------------------" + Environment.NewLine);
+                               "Date: " + DateTime.Now.ToString() + Environment.NewLine + Environment.NewLine + "-------------------------------------------------------||||||||||||---End Current Exception---||||||||||||||||-------------------------------------------------------");
                             writer.Close();
                         }
                         return;
                     }
                     catch (Exception ex)
                     {
-                        Helper.SendExceptionsEmail(ex.Message, ex.ToString(), "Exception occurred in Exception Filter");
+                            Helper.SendExceptionsEmail(ex.Message, ex.ToString(), "Exception occurred in Exception Filter", exceptionEnvironment);
                     }
                 }
                 //FOX DEV LOGIC CLOSE
@@ -87,7 +93,7 @@ namespace FoxRehabilitationAPI.Filters
                     {
                         writer.WriteLine("Message: " + excpMsg + Environment.NewLine + Environment.NewLine + "URI: " + uri + Environment.NewLine + Environment.NewLine + "Request parameters: " + excpParam + Environment.NewLine + Environment.NewLine + "StackTrace: " + excpStackTrace + Environment.NewLine + Environment.NewLine +
                            "///------------------Inner Exception------------------///" + Environment.NewLine + excpInnerMessage + Environment.NewLine +
-                           "Date: " + DateTime.Now.ToString() + Environment.NewLine + Environment.NewLine + "-------------------------------------------------------||||||||||||---End Current Exception---||||||||||||||||-------------------------------------------------------" + Environment.NewLine);
+                           "Date: " + DateTime.Now.ToString() + Environment.NewLine + Environment.NewLine + "-------------------------------------------------------||||||||||||---End Current Exception---||||||||||||||||-------------------------------------------------------");
                         writer.Close();
                     }
                 }
@@ -107,30 +113,30 @@ namespace FoxRehabilitationAPI.Filters
                         {
                             writer.WriteLine("Message: " + excpMsg + Environment.NewLine + Environment.NewLine + "URI:  " + uri + Environment.NewLine + Environment.NewLine + "Request parameters: " + excpParam + Environment.NewLine + Environment.NewLine + "StackTrace: " + excpStackTrace + Environment.NewLine + Environment.NewLine +
                                "///------------------Inner Exception------------------///" + Environment.NewLine + excpInnerMessage + "" + Environment.NewLine +
-                               "Date: " + DateTime.Now.ToString() + Environment.NewLine + Environment.NewLine + "-------------------------------------------------------||||||||||||---End Current Exception---||||||||||||||||-------------------------------------------------------" + Environment.NewLine);
+                               "Date: " + DateTime.Now.ToString() + Environment.NewLine + Environment.NewLine + "-------------------------------------------------------||||||||||||---End Current Exception---||||||||||||||||-------------------------------------------------------");
                             writer.Close();
                         }
                     }
                     catch (Exception ex)
                     {
-                        Helper.SendEmailOnException(ex.Message, ex.ToString(), "Exception occurred in Exception Filter");
+                        Helper.SendEmailOnException(ex.Message, ex.ToString(), "Exception occurred in Exception Filter", exceptionEnvironment);
                     }
 
                 }
                 if (!uri.Contains("localhost"))
                 {
                     var expmsg = Environment.NewLine + "URI:  " + uri + Environment.NewLine + Environment.NewLine + "Request parameters: " + excpParam + Environment.NewLine + Environment.NewLine + "StackTrace: " + excpStackTrace + Environment.NewLine + Environment.NewLine +
-                                 "///------------------Inner Exception------------------///" + Environment.NewLine + Environment.NewLine + excpInnerMessage + Environment.NewLine + Environment.NewLine + "Date: " + DateTime.Now.ToString()
-                                 + Environment.NewLine + Environment.NewLine + "-------------------------------------------------------||||||||||||---End Current Exception---||||||||||||||||------------------------------" +
-                                 "-------------------------" + Environment.NewLine;
+                             "///------------------Inner Exception------------------///" + Environment.NewLine + Environment.NewLine + excpInnerMessage + Environment.NewLine + Environment.NewLine + "Date: " + DateTime.Now.ToString()
+                             + Environment.NewLine + Environment.NewLine + "-------------------------------------------------------||||||||||||---End Current Exception---||||||||||||||||------------------------------" +
+                             "-------------------------" + Environment.NewLine;
 
-                    Helper.SendExceptionsEmail(excpMsg, expmsg.ToString(), "Exception occurred in Exception Filter");
+                Helper.SendExceptionsEmail(excpMsg, expmsg.ToString(), "Exception occurred in Exception Filter",exceptionEnvironment);
                 }
             }
             catch (Exception ex)
             {
-               
-                Helper.SendEmailOnException(ex.Message, ex.ToString(), "Exception occurred in Exception Filter");
+
+                Helper.SendEmailOnException(ex.Message, ex.ToString(), "Exception occurred in Exception Filter", exceptionEnvironment);
             }
         }
     }

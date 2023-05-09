@@ -169,15 +169,49 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
         }
         [Test]
-        [TestCase(0)]
-        [TestCase(null)]
-        [TestCase(1011163)]
-        [TestCase(38403)]
-        public void GetSourceofReferral_SourceofReferralList_ReturnData(long practiceCode)
+        public void getReffralCode(FOX_TBL_CASE model)
+        {
+         
+            //Act
+            var result = _caseServices.getReffralCode(model);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
+        [Test]
+        public void getProviderCode(FOX_TBL_CASE model)
+        {
+         
+            //Act
+            var result = _caseServices.getProviderCode(model);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
+        [Test]
+        [TestCase(0,false)]
+        [TestCase(null,false)]
+        [TestCase(1011163,true)]
+        [TestCase(38403,false)]
+        public void GetSourceofReferral_SourceofReferralList_ReturnData(long practiceCode, bool isTalkRehab)
         {
             //Arrange
             //Act
-            var result = _caseServices.GetSourceofReferral(practiceCode);
+            var result = _caseServices.GetSourceofReferral(practiceCode, isTalkRehab);
 
             //Assert
             if (result.Count != 0)
@@ -694,9 +728,11 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             _foxTblCase.Comments = "test";
             _foxTblCase.ImportantNotes = "test";
             _foxTblCase.VoidReason = "test";
+            string locationName = "test";
+            string certifyState = "test";
 
             //Act
-            var result = _caseServices.AddEditCase(_foxTblCase, _userProfile);
+            var result = _caseServices.AddEditCase( locationName, certifyState,_foxTblCase, _userProfile);
 
             //Assert
             if (result != null)

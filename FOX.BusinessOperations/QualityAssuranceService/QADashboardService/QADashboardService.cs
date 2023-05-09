@@ -264,7 +264,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QADashboardService
                     obj.data = new List<long>();
                     foreach (var range in lineGraphResponseModel.dateRanges)
                     {
-                        var avgValue = lineGraphResponseModel.lineGraphData.Find(a => a.DATE_RANGE == range && a.AGENT_NAME == name.value);
+                        var avgValue = lineGraphResponseModel.lineGraphData.Find(a => a.DATE_RANGE == range && !string.IsNullOrEmpty(a.AGENT_NAME) && a.AGENT_NAME.ToLower() == name.value.ToLower());
                         obj.data.Add(avgValue == null ? 0 : avgValue.EVALUATION_PERCENTAGE);
                     }
                     lineGraphResponseModel.series.Add(obj);
@@ -306,7 +306,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QADashboardService
                         var repRoleID = feedbackCallerRole != null ? feedbackCallerRole.ROLE_ID : 0;
                         var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
                         var roleId = new SqlParameter { ParameterName = "ROLE_ID", SqlDbType = SqlDbType.BigInt, Value = repRoleID };
-                        surveyAgentList = SpRepository<FeedBackCaller>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_FEEDBACK_CALLER_LIST @PRACTICE_CODE, @ROLE_ID", practiceCode, roleId);
+                        surveyAgentList = SpRepository<FeedBackCaller>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_QADASHBOARD_SURVEY_TEAM_EMPLOYEE_LIST @PRACTICE_CODE, @ROLE_ID", practiceCode, roleId);
                     }
                     feedBackCallerList.AddRange(surveyAgentList);
                     feedBackCallerList = feedBackCallerList.GroupBy(item => item.NAME).Select(grp => grp.OrderBy(item => item.NAME).First()).ToList();

@@ -1,4 +1,6 @@
-﻿using FOX.DataModels.Models.IndexInfo;
+﻿using FOX.DataModels.Models.CasesModel;
+using FOX.DataModels.Models.CommonModel;
+using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.OriginalQueueModel;
 using FOX.DataModels.Models.Patient;
 using FOX.DataModels.Models.Security;
@@ -37,6 +39,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         List<SmartLocationRes> GetSmartLocations(SmartReq obj, UserProfile profile);
         List<SmartLocationRes> GetSmartLocations(string searchText, UserProfile profile);
         List<SmartOrderSource> GetSmartOrderingSource(SmartReq obj, UserProfile profile);
+        SmartOrderSource GetSmartOrderingSourceByID(long Source_ID, UserProfile profile);
         string GetRegionCoverLetterAttachment(string regionCode);
         List<SmartRefRegion> GetSmartRefRegion(SmartReq obj, UserProfile profile);
         List<AnalaysisReportRes> GetAnalysisRPT(AnalaysisReportReq obj, UserProfile Profile);
@@ -72,5 +75,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         void SaveLogMessage(Index_infoReq workId, UserProfile userProfile);
         long GetTalkRehabTaskWorkID(long taskId, UserProfile profile);
         long MarkTaskAsComplete(long taskId, UserProfile profile);
+        FOX_TBL_NOTES AddAdmissionImportantNotes(FOX_TBL_NOTES objFoxTblNotes, UserProfile userProfile);
+        FOX_TBL_NOTES GetAdmissionImportantNotes(FOX_TBL_NOTES objFoxTblNotes, UserProfile userProfile);
     }
 }
