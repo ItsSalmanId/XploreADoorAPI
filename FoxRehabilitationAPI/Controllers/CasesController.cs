@@ -88,7 +88,7 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetSourceofReferral()
         {
             var profile = GetProfile();
-            var result = _CaseServices.GetSourceofReferral(profile.PracticeCode, profile.isTalkRehab);
+            var result = _CaseServices.GetSourceofReferral(profile.PracticeCode);
             var response = Request.CreateResponse(HttpStatusCode.OK, result);
             return response;
         }
