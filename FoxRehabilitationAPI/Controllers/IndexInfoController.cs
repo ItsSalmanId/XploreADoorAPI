@@ -318,7 +318,7 @@ namespace FoxRehabilitationAPI.Controllers
         {
             if (patientAccount != null)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetPatientBalance(patientAccount));
+                return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetPatientBalance(patientAccount, GetProfile()));
             }
             else
             {
