@@ -908,7 +908,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 //                        && t.Work_ID == obj.WORK_ID
                 //                        && t.TASK_ID != null);
                 string tasktypeHBR = "";
-                var pendingBalance = getPendingHighBalance(pat_account);
+                var pendingBalance = getPendingHighBalance(pat_account, profile);
                 FoxDocumentType documentType = GetDocumentType(obj);
                 //var documentType = _foxdocumenttypeRepository.GetFirst(t => t.DOCUMENT_TYPE_ID == obj.DOCUMENT_TYPE && t.DELETED == false);
 
@@ -3912,7 +3912,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                     }
                                 }
                             }
-                            var amount = getPendingHighBalance(task.PATIENT_ACCOUNT);
+                            var amount = getPendingHighBalance(task.PATIENT_ACCOUNT, profile);
                             //taskLoglist.Add(new TaskLog() { ACTION = "Due Amount ", ACTION_DETAIL = "Due Amount: " + " $ " + Math.Round(Convert.ToDecimal(amount.Patient_Balance), 2) });
                             //porta_logs.Add("Due Amount: " + " $ " + Math.Round(Convert.ToDecimal(amount.Patient_Balance), 2) );
                             porta_logs.Add("Due Amount: " + " $ " + Math.Round(Convert.ToDecimal(amount.Statement_Patient_Balance), 2));
@@ -3987,16 +3987,19 @@ namespace FOX.BusinessOperations.IndexInfoServices
             //}
             //_TaskContext.SaveChanges();
         }
-        public pendingBalanceAmount getPendingHighBalance(long? PATIENT_ACCOUNT)
+        public pendingBalanceAmount getPendingHighBalance(long? PATIENT_ACCOUNT, UserProfile profile)
         {
             try
             {
+                var _practiceCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = profile.PracticeCode };
                 var _patientAccount = new SqlParameter("PATIENT_ACCOUNT", SqlDbType.BigInt) { Value = PATIENT_ACCOUNT };
+
+
                 //if (PATIENT_ACCOUNT == null)
                 //{
                 //    _patientAccount.Value = DBNull.Value;
                 //}
-                var result = SpRepository<pendingBalanceAmount>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_PENDING_BALANCE @PATIENT_ACCOUNT", _patientAccount);
+                var result = SpRepository<pendingBalanceAmount>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_PENDING_BALANCE_NEW_LOGIC @PRACTICE_CODE, @PATIENT_ACCOUNT", _practiceCode, _patientAccount);
                 if (result == null)
                 {
                     return new pendingBalanceAmount();
@@ -5397,9 +5400,9 @@ namespace FOX.BusinessOperations.IndexInfoServices
             return response;
         }
 
-        public pendingBalanceAmount GetPatientBalance(long? patientAccount)
+        public pendingBalanceAmount GetPatientBalance(long? patientAccount, UserProfile profile)
         {
-            return getPendingHighBalance(patientAccount);
+            return getPendingHighBalance(patientAccount, profile);
         }
         public List<PatientListResponse> GetpatientsList(getPatientReq req, UserProfile Profile)
         {
