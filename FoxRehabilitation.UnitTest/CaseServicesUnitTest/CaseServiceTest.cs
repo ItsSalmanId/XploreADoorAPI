@@ -199,15 +199,15 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             }
         }
         [Test]
-        [TestCase(0)]
-        [TestCase(null)]
-        [TestCase(1011163)]
-        [TestCase(38403)]
-        public void GetSourceofReferral_SourceofReferralList_ReturnData(long practiceCode)
+        [TestCase(0,false)]
+        [TestCase(null,false)]
+        [TestCase(1011163,true)]
+        [TestCase(38403,false)]
+        public void GetSourceofReferral_SourceofReferralList_ReturnData(long practiceCode, bool isTalkRehab)
         {
             //Arrange
             //Act
-            var result = _caseServices.GetSourceofReferral(practiceCode);
+            var result = _caseServices.GetSourceofReferral(practiceCode, isTalkRehab);
 
             //Assert
             if (result.Count != 0)
