@@ -23,8 +23,8 @@ namespace FOX.BusinessOperations.PatientSurveyService
         PSInitialData GetPSInitialData(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile);
         List<PSDStateAndRegionRecommendationWise> GetPSDStateAndRecommendationWise(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile);
         List<PSDStateAndRegionRecommendationWise> GetPSDRegionAndRecommendationWise(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile);
-        List<PatientSurveyCallLog> GetPSCallLogList(long patientAccount, long practiceCode);
-        List<PatientSurveyInBoundCallResponse> GetPatientSurveyInBoundCalls(long patientAccount, long practiceCode);
+        List<PatientSurveyCallLog> GetPSCallLogList(SurveyCallsLogs surveyCallsLogs, long practiceCode);
+        List<PatientSurveyInBoundCallResponse> GetPatientSurveyInBoundCalls(SurveyCallsLogs surveyCallsLogs, long practiceCode);
         List<string> GetPSStatesList(long practiceCode, string region);
         List<string> GetPSRegionsList(long practiceCode, string state);
         string GetPSFormat(long practiceCode);

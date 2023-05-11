@@ -28,6 +28,7 @@ using FOX.DataModels.Models.Settings.Announcement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using System.Security.Cryptography;
 using System.Text;
+using SautinSoft;
 
 namespace FOX.BusinessOperations.CommonServices
 {
@@ -155,10 +156,12 @@ namespace FOX.BusinessOperations.CommonServices
         {
             try
             {
-                var queue = _QueueRepository.GetFirst(e => e.UNIQUE_ID == unique_Id);
-                if (queue != null)
+                SqlParameter uniqueId = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = unique_Id };
+                SqlParameter practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                var objOriginalQueue = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS @UNIQUE_ID, @PRACTICE_CODE", uniqueId, practiceCode);
+                if (objOriginalQueue != null)
                 {
-                    string file_Name = queue.UNIQUE_ID + " __" + DateTime.Now.Ticks + ".pdf";
+                    string file_Name = objOriginalQueue.UNIQUE_ID + " __" + DateTime.Now.Ticks + ".pdf";
                     string folder = config.ORIGINAL_FILES_PATH_SERVER;
 
                     if (!Directory.Exists(config.ORIGINAL_FILES_PATH_SERVER))
@@ -169,10 +172,11 @@ namespace FOX.BusinessOperations.CommonServices
                     var localPath = config.ORIGINAL_FILES_PATH_DB + file_Name;
                     var pathForPDF = Path.Combine(config.ORIGINAL_FILES_PATH_SERVER, file_Name);
                     ImageHandler imgHandler = new ImageHandler();
-                    var imges = _OriginalQueueFilesRepository.GetMany(x => x.UNIQUE_ID == unique_Id);
-                    if (imges != null && imges.Count > 0)
+                    SqlParameter uniqueWorkId = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = unique_Id };
+                    var objOriginalFiles = SpRepository<OriginalQueueFiles>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_FILE_ALL_DETAILS @UNIQUE_ID", uniqueWorkId);
+                    if (objOriginalFiles != null && objOriginalFiles.Count > 0)
                     {
-                        var imgPaths = (from x in imges select x.FILE_PATH1).ToArray();
+                        var imgPaths = (from x in objOriginalFiles select x.FILE_PATH1).ToArray();
                         imgHandler.ImagesToPdf(imgPaths, pathForPDF);
                         AttachmentData attachmentData = new AttachmentData();
                         attachmentData.FILE_PATH = folder;
@@ -191,10 +195,13 @@ namespace FOX.BusinessOperations.CommonServices
         {
             try
             {
-                var queue = _QueueRepository.GetFirst(e => e.UNIQUE_ID == unique_Id);
-                if (queue != null)
+                OriginalQueue objOriginalQueue = new OriginalQueue();
+                SqlParameter uniqueId = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = unique_Id };
+                SqlParameter practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                objOriginalQueue = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS @UNIQUE_ID, @PRACTICE_CODE", uniqueId, practiceCode);
+                if (objOriginalQueue != null)
                 {
-                    string file_Name = queue.UNIQUE_ID + " __" + DateTime.Now.Ticks + ".pdf";
+                    string file_Name = objOriginalQueue.UNIQUE_ID + " __" + DateTime.Now.Ticks + ".pdf";
                     string folder = HttpContext.Current.Server.MapPath("~/" + AppConfiguration.ExportedFilesPath);
                     if (!Directory.Exists(folder))
                     {
@@ -204,10 +211,12 @@ namespace FOX.BusinessOperations.CommonServices
                     var localPath = profile.PracticeDocumentDirectory + "/" + file_Name;
                     var pathForPDF = Path.Combine(folder, file_Name);
                     ImageHandler imgHandler = new ImageHandler();
-                    var imges = _OriginalQueueFilesRepository.GetMany(x => x.UNIQUE_ID == unique_Id);
-                    if (imges != null && imges.Count > 0)
+                    List<OriginalQueueFiles> originalQueueFilesList = new List<OriginalQueueFiles>();
+                    SqlParameter uniqueIdd = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = unique_Id };
+                    originalQueueFilesList = SpRepository<OriginalQueueFiles>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_File_All_DETAILS @UNIQUE_ID", uniqueIdd);
+                    if (originalQueueFilesList != null && originalQueueFilesList.Count > 0)
                     {
-                        var imgPaths = (from x in imges select x.FILE_PATH1).ToArray();
+                        var imgPaths = (from x in originalQueueFilesList select x.FILE_PATH1).ToArray();
                         imgHandler.ImagesToPdf(imgPaths, pathForPDF);
                         AttachmentData attachmentData = new AttachmentData();
                         attachmentData.FILE_PATH = folder;
@@ -228,6 +237,37 @@ namespace FOX.BusinessOperations.CommonServices
                     //return new AttachmentData();
                     throw exception;
                 }
+            }
+        }
+        private string HTMLToPDFSautinsoft(string htmlString, string fileName, string linkMessage = null)
+        {
+            try
+            {
+                PdfMetamorphosis p = new PdfMetamorphosis();
+                //p.Serial = "10262870570";//server
+                p.Serial = "10261942764";//development
+                p.PageSettings.Size.A4();
+                p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
+                p.PageSettings.MarginLeft.Inch(0.1f);
+                p.PageSettings.MarginRight.Inch(0.1f);
+                if (p != null)
+                {
+                    if (p.HtmlToPdfConvertStringToFile(htmlString, fileName) == 0)
+                    {
+                        return fileName;
+                    }
+                    else
+                    {
+                        var ex = p.TraceSettings.ExceptionList.Count > 0 ? p.TraceSettings.ExceptionList[0] : null;
+                        var msg = ex != null ? ex.Message + Environment.NewLine + ex.StackTrace : "An error occured during converting HTML to PDF!";
+                        return "";
+                    }
+                }
+                return "";
+            }
+            catch (Exception)
+            {
+                return "";
             }
         }
 
@@ -370,7 +410,7 @@ namespace FOX.BusinessOperations.CommonServices
             try
             {
                 string workOrderPDFpath = Path.Combine(filePath, fileName);
-                string coverLetterPDFPath = HTMLToPDF(coverLetterTemplate, workOrderPDFpath);
+                string coverLetterPDFPath = HTMLToPDFSautinsoft(coverLetterTemplate, workOrderPDFpath);
                 if (!string.IsNullOrEmpty(coverLetterPDFPath))
                 {
                     using (var ms = new MemoryStream())

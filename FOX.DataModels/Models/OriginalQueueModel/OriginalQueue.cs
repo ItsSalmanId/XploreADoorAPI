@@ -596,4 +596,5 @@ namespace FOX.DataModels.Models.OriginalQueueModel
         public bool IsUniqueIdExist { get; set; } = false;
         public List<string> Unique_IdList { get; set; }
     }
+
 }

@@ -47,6 +47,8 @@ using System.Threading.Tasks;
 using FOX.BusinessOperations.GroupServices;
 using FOX.DataModels;
 using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
+using System.Net.Mail;
+using System.Web.Configuration;
 
 namespace FOX.BusinessOperations.IndexInfoServices
 {
@@ -117,13 +119,16 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private readonly GenericRepository<RegionCoverLetter> _RegionCoverLetterRepository;
         private readonly GenericRepository<TaskWorkInterfaceMapping> _TaskWorkInterfaceMapping;
         private static List<Thread> threadsList = new List<Thread>();
+        private static List<Thread> threadsListForEmail = new List<Thread>();
         private readonly GroupService _groupService;
         private long talkRehabWorkID = 0;
         private long talkRehabInterfaceID = 0;
         private long talkRehabTaskID = 0;
         private long retrycatch = 0;
+        private readonly GenericRepository<FOX_TBL_NOTES> _NoteRepository;
         public IndexInfoService()
         {
+            _NoteRepository = new GenericRepository<FOX_TBL_NOTES>(_DbContextCommon);
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
             _OriginalQueueFiles = new GenericRepository<OriginalQueueFiles>(_QueueContext);
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
@@ -908,7 +913,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 //                        && t.Work_ID == obj.WORK_ID
                 //                        && t.TASK_ID != null);
                 string tasktypeHBR = "";
-                var pendingBalance = getPendingHighBalance(pat_account);
+                var pendingBalance = getPendingHighBalance(pat_account, profile);
                 FoxDocumentType documentType = GetDocumentType(obj);
                 //var documentType = _foxdocumenttypeRepository.GetFirst(t => t.DOCUMENT_TYPE_ID == obj.DOCUMENT_TYPE && t.DELETED == false);
 
@@ -2567,6 +2572,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         {
             try
             {
+                int threadCounters = 0;
                 AttachmentData attachmentPath = new CommonServices.CommonServices().GeneratePdfForEmailToSender(data.UNIQUE_ID.ToString(), profile);
                 if (!string.IsNullOrEmpty(attachmentPath.FILE_PATH) && !string.IsNullOrEmpty(attachmentPath.FILE_NAME))
                 {
@@ -2585,15 +2591,21 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     }
                     else
                     {
-                        sent = Helper.Email(sendTo, subject, body, profile, data.work_id, null, null, new List<string> { Path.Combine(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME) });
+                        List<int> threadCounterForEmail = new List<int>();
+                        Thread Thread = new Thread(() => this.newThreadImplementaionForEmail(threadCounters, ref threadCounterForEmail, sendTo, subject, body, profile, data.work_id, null, null, new List<string> { Path.Combine(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME) }));
+                        Thread.Start();
+                        threadsListForEmail.Add(Thread);
+                        sent = true;
                     }
 
                     if (sent)
                     {
-                        ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, body, "tempcoversletter");
-                        string coverfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
-
-                        SavePdfToImages(coverfilePath, config, WORK_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
+                        var coverFilePath = HTMLToPDFSautinsoft(config, body, "tempcoversletter");
+                        SavePdfToImages(coverFilePath, config, WORK_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
+                        foreach (var thread in threadsList)
+                        {
+                            thread.Abort();
+                        }
                     }
 
                     return sent;
@@ -2607,6 +2619,96 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 //Helper.LogException(ex, profile);
                 throw;
+            }
+        }
+        private string HTMLToPDFSautinsoft(ServiceConfiguration conf, string htmlString, string fileName, string linkMessage = null)
+        {
+            try
+            {
+                PdfMetamorphosis p = new PdfMetamorphosis();
+                //p.Serial = "10262870570";//server
+                p.Serial = "10261942764";//development
+                p.PageSettings.Size.A4();
+                p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
+                p.PageSettings.MarginLeft.Inch(0.1f);
+                p.PageSettings.MarginRight.Inch(0.1f);
+                if (p != null)
+                {
+                    string pdfFilePath = Path.Combine(conf.ORIGINAL_FILES_PATH_SERVER);
+                    //string finalsetpath = conf.ORIGINAL_FILES_PATH_SERVER.Remove(conf.ORIGINAL_FILES_PATH_SERVER.Length - 1);
+                    if (!Directory.Exists(pdfFilePath))
+                    {
+                        Directory.CreateDirectory(pdfFilePath);
+                    }
+                    fileName = fileName + DateTime.Now.Ticks + ".pdf";
+                    string pdfFilePathnew = pdfFilePath + "\\" + fileName;
+                    if (p.HtmlToPdfConvertStringToFile(htmlString, pdfFilePathnew) == 0)
+                    {
+                        return pdfFilePathnew;
+                    }
+                    else
+                    {
+                        var ex = p.TraceSettings.ExceptionList.Count > 0 ? p.TraceSettings.ExceptionList[0] : null;
+                        var msg = ex != null ? ex.Message + Environment.NewLine + ex.StackTrace : "An error occured during converting HTML to PDF!";
+                        return "";
+                    }
+                }
+                return "";
+            }
+            catch (Exception)
+            {
+                return "";
+            }
+        }
+        public void newThreadImplementaionForEmail(int counter, ref List<int> threadCounterForEmail, string to, string subject, string body, UserProfile profile = null, long? WORK_ID = null, List<string> CC = null, List<string> BCC = null, List<string> AttachmentFilePaths = null, string from = "foxrehab@carecloud.com")
+        {
+            try
+            {
+                //bool IsMailSent = false;
+                using (SmtpClient smtp = new SmtpClient())
+                {
+                    using (MailMessage mail = new MailMessage())
+                    {
+                        mail.From = new MailAddress(from);
+                        mail.To.Add(new MailAddress(to));
+                        mail.Subject = subject;
+                        mail.Body = body;
+                        mail.IsBodyHtml = true;
+                        mail.SubjectEncoding = Encoding.UTF8;
+                        if (CC != null && CC.Count > 0)
+                        {
+                            foreach (var item in CC) { mail.CC.Add(item); }
+                        }
+                        if (BCC != null && BCC.Count > 0)
+                        {
+                            foreach (var item in BCC) { mail.Bcc.Add(item); }
+                        }
+                        if (AttachmentFilePaths != null && AttachmentFilePaths.Count > 0)
+                        {
+                            foreach (string filePth in AttachmentFilePaths)
+                            {
+                                if (File.Exists(filePth)) { mail.Attachments.Add(new Attachment(filePth)); }
+                            }
+                        }
+                        if (profile != null && profile.isTalkRehab)
+                        {
+                            smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["NoReplyUserName"], WebConfigurationManager.AppSettings["NoReplyPassword"]);
+                        }
+                        else
+                        {
+                            smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["FoxRehabUserName"], WebConfigurationManager.AppSettings["FoxRehabPassword"]);
+                        }
+                        smtp.Send(mail);
+                        //IsMailSent = true;
+                    }
+                }
+                counter = 1;
+                threadCounterForEmail.Add(1);
+                //return IsMailSent;
+            }
+            catch (Exception)
+            {
+                threadCounterForEmail.Add(1);
             }
         }
         //New Thread Implementation
@@ -2697,7 +2799,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 {
                     //loop untill record complete
                 }
-
                 foreach (var thread in threadsList)
                 {
                     thread.Abort();
@@ -2849,18 +2950,13 @@ namespace FOX.BusinessOperations.IndexInfoServices
             AttachmentData attachmentPath = commonService.GeneratePdfForEmailToSender(data.UNIQUE_ID.ToString(), profile);
             try
             {
-
-
                 if (!string.IsNullOrEmpty(attachmentPath.FILE_PATH) && !string.IsNullOrEmpty(attachmentPath.FILE_NAME))
                 {
                     string coverLetterTemplate = GetEmailOrFaxToSenderTemplate(data);
 
                     var config = Helper.GetServiceConfiguration(profile.PracticeCode);
-
-                    ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, coverLetterTemplate, "tempcoversletter");
-
-                    string coverfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
-                    SavePdfToImages(coverfilePath, config, data.UNIQUE_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
+                    var coverFilePath = HTMLToPDFSautinsoft(config, coverLetterTemplate, "tempcoversletter");
+                    SavePdfToImages(coverFilePath, config, data.UNIQUE_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
                     string newFileName = commonService.AddCoverPageForFax(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME, coverLetterTemplate);
 
                     if (!attachmentPath.FILE_PATH.EndsWith("\\"))
@@ -3569,6 +3665,15 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     //taskLoglist.Add(new TaskLog() { ACTION = "indexer :", ACTION_DETAIL = "Indexer >" });
 
                     porta_logs.Add("Completed Date & Time :" + sourceDetail.COMPLETED_DATE);
+                    FOX_TBL_NOTES getFoxTblNotes = new FOX_TBL_NOTES();
+                    if (WORK_QUEUE != null)
+                    {
+                        getFoxTblNotes = _NoteRepository.GetFirst(r => r.WORK_ID == WORK_QUEUE.WORK_ID && r.PRACTICE_CODE == AppConfiguration.GetPracticeCode && r.DELETED == false);
+                    }
+                    if (getFoxTblNotes != null && getFoxTblNotes.NOTES != null)
+                    {
+                        porta_logs.Add("Important Notes for Admission: " + getFoxTblNotes.NOTES);
+                    }
                     if (Indexer != null)
                     {
                         string str = "";
@@ -3952,7 +4057,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                     }
                                 }
                             }
-                            var amount = getPendingHighBalance(task.PATIENT_ACCOUNT);
+                            var amount = getPendingHighBalance(task.PATIENT_ACCOUNT, profile);
                             //taskLoglist.Add(new TaskLog() { ACTION = "Due Amount ", ACTION_DETAIL = "Due Amount: " + " $ " + Math.Round(Convert.ToDecimal(amount.Patient_Balance), 2) });
                             //porta_logs.Add("Due Amount: " + " $ " + Math.Round(Convert.ToDecimal(amount.Patient_Balance), 2) );
                             porta_logs.Add("Due Amount: " + " $ " + Math.Round(Convert.ToDecimal(amount.Statement_Patient_Balance), 2));
@@ -4027,16 +4132,19 @@ namespace FOX.BusinessOperations.IndexInfoServices
             //}
             //_TaskContext.SaveChanges();
         }
-        public pendingBalanceAmount getPendingHighBalance(long? PATIENT_ACCOUNT)
+        public pendingBalanceAmount getPendingHighBalance(long? PATIENT_ACCOUNT, UserProfile profile)
         {
             try
             {
+                var _practiceCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = profile.PracticeCode };
                 var _patientAccount = new SqlParameter("PATIENT_ACCOUNT", SqlDbType.BigInt) { Value = PATIENT_ACCOUNT };
+
+
                 //if (PATIENT_ACCOUNT == null)
                 //{
                 //    _patientAccount.Value = DBNull.Value;
                 //}
-                var result = SpRepository<pendingBalanceAmount>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_PENDING_BALANCE @PATIENT_ACCOUNT", _patientAccount);
+                var result = SpRepository<pendingBalanceAmount>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_PENDING_BALANCE_NEW_LOGIC @PRACTICE_CODE, @PATIENT_ACCOUNT", _practiceCode, _patientAccount);
                 if (result == null)
                 {
                     return new pendingBalanceAmount();
@@ -5437,9 +5545,9 @@ namespace FOX.BusinessOperations.IndexInfoServices
             return response;
         }
 
-        public pendingBalanceAmount GetPatientBalance(long? patientAccount)
+        public pendingBalanceAmount GetPatientBalance(long? patientAccount, UserProfile profile)
         {
-            return getPendingHighBalance(patientAccount);
+            return getPendingHighBalance(patientAccount, profile);
         }
         public List<PatientListResponse> GetpatientsList(getPatientReq req, UserProfile Profile)
         {
@@ -5749,6 +5857,59 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 throw ex;
             }
+        }
+
+        public FOX_TBL_NOTES AddAdmissionImportantNotes(FOX_TBL_NOTES objAdmissionImportantNotes, UserProfile userProfile)
+        {
+            if (!string.IsNullOrEmpty(objAdmissionImportantNotes.NOTES))
+            {
+                long generalNotId = 0;
+                if (objAdmissionImportantNotes.NOTES_ID == 0)
+                {
+                    generalNotId = Helper.getMaximumId("NOTES_ID");
+                }
+                if (objAdmissionImportantNotes != null && generalNotId != 0)
+                {
+                    long getPracticeCode = AppConfiguration.GetPracticeCode;
+                    SqlParameter notesName = new SqlParameter { ParameterName = "@Name", SqlDbType = SqlDbType.VarChar, Value = "Admission Importent Notes" };
+                    SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = getPracticeCode };
+                    var getNotesTypeId = SpRepository<FOX_TBL_NOTES_TYPE>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_NOTES_TYPE @Name, @PRACTICE_CODE", notesName, pracCode);
+                    objAdmissionImportantNotes.NOTES_ID = generalNotId;
+                    objAdmissionImportantNotes.PRACTICE_CODE = userProfile.PracticeCode;
+                    objAdmissionImportantNotes.CREATED_BY = userProfile.UserName;
+                    objAdmissionImportantNotes.CREATED_DATE = Helper.GetCurrentDate();
+                    objAdmissionImportantNotes.MODIFIED_BY = userProfile.UserName;
+                    objAdmissionImportantNotes.MODIFIED_DATE = Helper.GetCurrentDate();
+                    objAdmissionImportantNotes.NOTES_TYPE_ID = getNotesTypeId.NOTES_TYPE_ID;
+                    objAdmissionImportantNotes.DELETED = false;
+                    _NoteRepository.Insert(objAdmissionImportantNotes);
+                    _NoteRepository.Save();
+                }
+                else
+                {
+                    objAdmissionImportantNotes.PRACTICE_CODE = userProfile.PracticeCode;
+                    objAdmissionImportantNotes.MODIFIED_BY = userProfile.UserName;
+                    objAdmissionImportantNotes.MODIFIED_DATE = Helper.GetCurrentDate();
+                    objAdmissionImportantNotes.DELETED = false;
+                    _NoteRepository.Update(objAdmissionImportantNotes);
+                    _NoteRepository.Save();
+                }
+            }
+            return objAdmissionImportantNotes;
+        }
+
+        public FOX_TBL_NOTES GetAdmissionImportantNotes(FOX_TBL_NOTES objAdmissionImportantNotes, UserProfile userProfile)
+        {
+            FOX_TBL_NOTES getFoxTblNotes = new FOX_TBL_NOTES();
+            if (objAdmissionImportantNotes != null)
+            {
+                getFoxTblNotes = _NoteRepository.GetFirst(r => r.WORK_ID == objAdmissionImportantNotes.WORK_ID && r.PRACTICE_CODE == userProfile.PracticeCode && r.DELETED == false);
+            }
+            else
+            {
+                objAdmissionImportantNotes = null;
+            }
+            return getFoxTblNotes;
         }
     }
 }
