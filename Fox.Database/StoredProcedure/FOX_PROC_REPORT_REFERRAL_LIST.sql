@@ -3,7 +3,7 @@
 -- DESCRIPTION: <GET LIST OF Referral Reports>  
 -- =============================================           
 -- FOX_PROC_REPORT_REFERRAL_LIST 1011163, NULL, NULL, NULL, NULL, '', '', '', '', '', 1, 50, '', 'WORK_ID', 'ASC','1'     
-ALTER PROCEDURE [dbo].[FOX_PROC_REPORT_REFERRAL_LIST_OPTIMIZED_BY_SATTAR04062023] --1011163, NULL, NULL, NULL, NULL, '', '', '', '', '', 1, 50, '', 'WORK_ID', 'ASC','1'   
+ALTER PROCEDURE [dbo].[FOX_PROC_REPORT_REFERRAL_LIST] 
  (  
 @PRACTICE_CODE BIGINT  
 ,@INDEXED_DATE_FROM DATETIME  
