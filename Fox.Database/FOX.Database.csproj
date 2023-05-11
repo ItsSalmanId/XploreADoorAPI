@@ -254,6 +254,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_PAT_DOCUMENTS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_PAT_DOCUMENT_IMAGES.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_PENDING_BALANCE.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_PENDING_BALANCE_NEW_LOGIC.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_POS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_POS_BY_PA_FOR_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_SURVEY_CALL_LOG_LIST.sql" />
@@ -268,6 +269,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_UPDATE_HISTORY_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PENDING_DETAILED_REPORT.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PENDING_HIGH_BALANCE_DETAILED_REPORT.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_PENDING_HIGH_BALANCE_DETAILED_REPORT_NEW_LOGIC.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PERFORM_SURVEY_PATIENT_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PHD_CALLERS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PHD_CALL_DETAILS.sql" />
