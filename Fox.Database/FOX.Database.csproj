@@ -109,6 +109,7 @@
     <Content Include="StoredProcedure\FOX_PROC_DASHBOARD_AVERAGE_TREND.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DASHBOARD_GET_NO_OF_RECORD_BY_TIME.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DASHBOARD_GET_TOTAL.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_DELETE_ADMISSION_IMPORTANT_NOTES.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DELETE_COUNTIES_REFERRAL_REGION.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DELETE_FRICTIONLESS_WORK_FILE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DELETE_NOTIFICATIONS.sql" />
@@ -225,6 +226,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_MTBC_INSURANCES_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_NEW_TASK_DATA_FOR_DASHBOARD.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_NOTES_BY_WORKID_FOR_SERVICE.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_NOTES_TYPE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_NOTIFICATIONS_OF_TASKS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_NOTIFICATIONS_OF_TASKS_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_NOT_INTERFACE_TASKED.sql" />
