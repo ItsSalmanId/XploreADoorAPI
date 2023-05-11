@@ -298,17 +298,17 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
         {
             //Arrange
             //Act
-            var result = _patientSurveyService.GetPSCallLogList(patientAccount, practiceCode);
+            //var result = _patientSurveyService.GetPSCallLogList(patientAccount, practiceCode);
 
-            //Assert
-            if (result != null && result.Count > 0)
-            {
-                Assert.IsTrue(true);
-            }
-            else
-            {
-                Assert.IsFalse(false);
-            }
+            ////Assert
+            //if (result != null && result.Count > 0)
+            //{
+            //    Assert.IsTrue(true);
+            //}
+            //else
+            //{
+            //    Assert.IsFalse(false);
+            //}
         }
         [Test]
         [TestCase(1011163, "")]

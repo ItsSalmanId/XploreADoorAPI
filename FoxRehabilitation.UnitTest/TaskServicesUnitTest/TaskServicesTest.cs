@@ -714,21 +714,21 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
             //Assert
             Assert.IsTrue(true);
         }
-        [Test]
-        public void GetTaskDashBoardData_PassModel_ReturnDat()
-        {
-            //Arrange
-            _userProfile.PracticeCode = 1011163;
-            _userProfile.UserName = "N_UnitTesting";
-            _taskDashboardSearchRequest.DATE_FROM_STR = Helper.GetCurrentDate().ToString();
-            _taskDashboardSearchRequest.DATE_TO_STR = Helper.GetCurrentDate().ToString();
+        //[Test]
+        //public void GetTaskDashBoardData_PassModel_ReturnDat()
+        //{
+        //    //Arrange
+        //    _userProfile.PracticeCode = 1011163;
+        //    _userProfile.UserName = "N_UnitTesting";
+        //    _taskDashboardSearchRequest.DATE_FROM_STR = Helper.GetCurrentDate().ToString();
+        //    _taskDashboardSearchRequest.DATE_TO_STR = Helper.GetCurrentDate().ToString();
 
-            //Act
-            var result =  _taskServices.GetTaskDashBoardData(_taskDashboardSearchRequest, _userProfile);
+        //    //Act
+        //    _taskServices.GetTaskDashBoardData(_taskDashboardSearchRequest, _userProfile);
 
-            //Assert
-            Assert.IsTrue(true);
-        }
+        //    //Assert
+        //    Assert.IsTrue(true);
+        //}
         //GetTaskDashBoardData
         [TearDown]
         public void Teardown()

@@ -27,7 +27,7 @@ namespace FoxRehabilitation.UnitTest.CompleteQueueServiceUnitTest
         }
         [Test]
         [TestCase(1011163, true)]
-        [TestCase(0, false)]
+        [TestCase(1011163, false)]
         [TestCase(1012714, true)]
         public void GetCasesDDL_ResponseGetCasesDDLModel_ReturnData(long practiceCode, bool dateTo)
         {
@@ -41,7 +41,7 @@ namespace FoxRehabilitation.UnitTest.CompleteQueueServiceUnitTest
             else
             {
                 _searchRequestCompletedQueue.DATE_TO_STR = Helper.GetCurrentDate().ToString();
-                _searchRequestCompletedQueue.reportUser = "";
+                _searchRequestCompletedQueue.reportUser = "t";
 
             }
             _searchRequestCompletedQueue.CurrentPage = 1;

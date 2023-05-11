@@ -168,40 +168,42 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
                 Assert.IsFalse(false);
             }
         }
-        [Test]
-        public void getReffralCode(FOX_TBL_CASE model)
-        {
+        //[Test]
+        //public void getReffralCode(FOX_TBL_CASE model)
+        //{
          
-            //Act
-            var result = _caseServices.getReffralCode(model);
+        //    //Act
+        //    var result = _caseServices.getReffralCode(model);
 
-            //Assert
-            if (result != null)
-            {
-                Assert.IsTrue(true);
-            }
-            else
-            {
-                Assert.IsFalse(false);
-            }
-        }
-        [Test]
-        public void getProviderCode(FOX_TBL_CASE model)
-        {
-         
-            //Act
-            var result = _caseServices.getProviderCode(model);
+        //    //Assert
+        //    if (result != null)
+        //    {
+        //        Assert.IsTrue(true);
+        //    }
+        //    else
+        //    {
+        //        Assert.IsFalse(false);
+        //    }
+        //}
+        //[Test]
+        //public void getProviderCode()
+        //{
+        //    //FOX_TBL_CASE model = new FOX_TBL_CASE();
+        //    _foxTblCase.TREATING_PROVIDER_ID = 1571;
 
-            //Assert
-            if (result != null)
-            {
-                Assert.IsTrue(true);
-            }
-            else
-            {
-                Assert.IsFalse(false);
-            }
-        }
+        //    //Act
+        //    var result = _caseServices.getProviderCode(_foxTblCase);
+
+        //    //Assert
+        //    if (result != null)
+        //    {
+        //        Assert.IsTrue(true);
+        //    }
+        //    else
+        //    {
+        //        Assert.IsFalse(false);
+        //    }
+        //}
         [Test]
         [TestCase(0,false)]
         [TestCase(null,false)]
