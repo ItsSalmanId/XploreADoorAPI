@@ -1394,7 +1394,7 @@ SELECT
                                         {
                                             if (elig.ServiceInformation[0].NetworkType != null)
                                             {
-                                                if ((elig.ServiceInformation[0].NetworkType.ToString().ToLower() == "y" || elig.ServiceInformation[0].NetworkType.ToString().ToLower() == "n"))
+                                                if ((elig.ServiceInformation[0].NetworkType.ToString().ToLower() == "In Network" || elig.ServiceInformation[0].NetworkType.ToString().ToLower() == "Out of Network"))
                                                 {
                                                     EligibilityServiceDetails Eligdetails = new EligibilityServiceDetails();
                                                     Eligdetails.ServiceType = elig.ServiceType;
@@ -1405,7 +1405,7 @@ SELECT
                                                     Eligdetails.StartDate = elig.ServiceInformation[0].StartDate == null ? "" : string.Format("{0:MM/dd/yyyy}", elig.ServiceInformation[0].StartDate.ToString());
                                                     Eligdetails.EndDate = elig.ServiceInformation[0].EndDate == null ? "0" : string.Format("{0:MM/dd/yyyy}", elig.ServiceInformation[0].EndDate.ToString());
                                                     Eligdetails.OutOfPocketRemaining = elig.ServiceInformation[0].OutOfPocketRemaining == null ? "0" : elig.ServiceInformation[0].OutOfPocketRemaining.ToString();
-                                                    Eligdetails.NetworkType = elig.ServiceInformation[0].NetworkType.ToString().ToLower() == "y" ? "In-Network Benefits" : "Out-Network Benefits";
+                                                    Eligdetails.NetworkType = elig.ServiceInformation[0].NetworkType.ToString().ToLower() == "In Network" ? "In-Network Benefits" : "Out-Network Benefits";
                                                     response.EligibilityServices.Add(Eligdetails);
                                                 }
                                             }
@@ -1417,7 +1417,7 @@ SELECT
                                             {
                                                 if (info.NetworkType != null)
                                                 {
-                                                    if (info.NetworkType.ToString().ToLower() == "y" || info.NetworkType.ToString().ToLower() == "n")
+                                                    if (info.NetworkType.ToString().ToLower() == "In Network" || info.NetworkType.ToString().ToLower() == "Out of Network")
                                                     {
 
                                                         EligibilityServiceDetails Eligdetails = new EligibilityServiceDetails();
@@ -1427,7 +1427,7 @@ SELECT
                                                         Eligdetails.DeductibleRemaining = info.DeductibleRemaining == null ? "0" : info.DeductibleRemaining.ToString();
                                                         Eligdetails.OutOfPocket = info.OutOfPocket == null ? "0" : info.OutOfPocket.ToString();
                                                         Eligdetails.OutOfPocketRemaining = info.OutOfPocketRemaining == null ? "0" : info.OutOfPocketRemaining.ToString();
-                                                        Eligdetails.NetworkType = info.NetworkType.ToString().ToLower() == "y" ? "In-Network Benefits" : "Out-Network Benefits";
+                                                        Eligdetails.NetworkType = info.NetworkType.ToString().ToLower() == "In Network" ? "In-Network Benefits" : "Out-Network Benefits";
                                                         response.EligibilityServices.Add(Eligdetails);
                                                     }
                                                 }
