@@ -1,4 +1,11 @@
 ----------------------------------------------------------------------------------------------      
+-- AUTHOR:  <Aftab khan>                                                                                            
+-- CREATE DATE: <CREATE DATE, 05/11/2023>                                                                                            
+-- DESCRIPTION: <GET_PATIENT_PENDING_BALANCE_NEW_LOGIC>  
+-- =============================================           
+-- FOX_PROC_GET_PATIENT_PENDING_BALANCE_NEW_LOGIC  1011163
+-------------------------------------------------------------------
+----------------------------------------------------------------------------------------------      
 --Get patients whose       
 --financial class should not be Special Account and on the basis of      
 --claim first submission PROCESS_DATE > 45 days      
@@ -10,7 +17,7 @@
 --DX Code should not be 'Retainer'      
 --SUM(amt_due) >= 500      
 --Excluding all patients who has payment credit      
-----------------------------------------------------------------------------------------------      
+---------------------------------------------------------------------------------------
 CREATE PROCEDURE FOX_PROC_GET_PATIENT_PENDING_BALANCE_NEW_LOGIC                          
 @practice_code BIGINT NULL,      
 @PATIENT_ACCOUNT BIGINT NULL                        
