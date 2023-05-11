@@ -1,5 +1,10 @@
-    
-CREATE PROCEDURE [dbo].[FOX_PROC_GET_PENDING_HIGH_BALANCE_DETAILED_REPORT_NEW_LOGIC]-- 1011163,'','al001',1, 2000, '' , ''    
+-- AUTHOR:  <Aftab khan>                                                                                            
+-- CREATE DATE: <CREATE DATE, 05/11/2023>                                                                                            
+-- DESCRIPTION: <GET_PENDING_HIGH_BALANCE_DETAILED_REPORT>  
+-- =============================================           
+--  [FOX_PROC_GET_PENDING_HIGH_BALANCE_DETAILED_REPORT_NEW_LOGIC]-- 1011163,'','al001',1, 2000, '' , '' 
+
+CREATE PROCEDURE [dbo].[FOX_PROC_GET_PENDING_HIGH_BALANCE_DETAILED_REPORT_NEW_LOGIC]    
 @practice_code   BIGINT,    
 @search_string   VARCHAR(100),    
 @current_page    INT,    
@@ -18,10 +23,10 @@ IF OBJECT_ID('TEMPDB.DBO.#CLAIMS_PATIENT_ACCOUNT', 'U') IS NOT NULL DROP TABLE #
 SELECT C.Patient_Account,    
 SUM(amt_due) AS Patient_Balance    
 INTO #CLAIMS_PATIENT_ACCOUNT    
-FROM claims C    
-JOIN Patient P ON P.Patient_Account = C.Patient_Account AND P.Practice_Code=@practice_code    
-left join fox_tbl_patient ftp on ftp.patient_account =  P.patient_account AND P.Practice_Code=@practice_code    
-left join FOX_TBL_FINANCIAL_CLASS fc on fc.FINANCIAL_CLASS_ID = ftp.FINANCIAL_CLASS_ID AND P.Practice_Code=@practice_code    
+FROM claims C  WITH (NOLOCK) 
+JOIN Patient P WITH (NOLOCK)  ON P.Patient_Account = C.Patient_Account AND P.Practice_Code=@practice_code    
+left join fox_tbl_patient ftp WITH (NOLOCK) on ftp.patient_account =  P.patient_account AND P.Practice_Code=@practice_code    
+left join FOX_TBL_FINANCIAL_CLASS fc WITH (NOLOCK) on fc.FINANCIAL_CLASS_ID = ftp.FINANCIAL_CLASS_ID AND P.Practice_Code=@practice_code    
 WHERE isnull(C.deleted, 0) = 0                        
 AND P.PRACTICE_CODE = @practice_code    
 AND ISNULL(P.DELETED,0) = 0    
@@ -42,16 +47,16 @@ min(cls.PROCESS_DATE) AS PROCESS_DATE,
 c.claim_no,     
 C.Amt_Due    
 INTO #TEMPRECORD    
-FROM Patient P    
-left join fox_tbl_patient ftp on ftp.patient_account =  P.patient_account AND P.Practice_Code=@practice_code    
-left join FOX_TBL_FINANCIAL_CLASS fc on fc.FINANCIAL_CLASS_ID = ftp.FINANCIAL_CLASS_ID AND P.Practice_Code=@practice_code      
-LEFT JOIN #CLAIMS_PATIENT_ACCOUNT AS clms ON P.Patient_Account = clms.Patient_Account    
+FROM Patient P  WITH (NOLOCK)   
+left join fox_tbl_patient ftp WITH (NOLOCK) on ftp.patient_account =  P.patient_account AND P.Practice_Code=@practice_code    
+left join FOX_TBL_FINANCIAL_CLASS fc WITH (NOLOCK) on fc.FINANCIAL_CLASS_ID = ftp.FINANCIAL_CLASS_ID AND P.Practice_Code=@practice_code      
+LEFT JOIN #CLAIMS_PATIENT_ACCOUNT AS clms WITH (NOLOCK)  ON P.Patient_Account = clms.Patient_Account    
 join claims c on c.patient_account = clms.patient_account    
       AND ISNULL(C.PTL_STATUS,0) = 0    
       AND ISNULL(C.PAT_STATUS,'') IN ('N','R','B','D')    
    AND C.DX_Code1  <> 'RETAINER'    
    AND ISNULL(c.DELETED,0) = 0    
-join claims_submitted cls on cls.claim_no = c.claim_no     
+join claims_submitted cls WITH (NOLOCK) on cls.claim_no = c.claim_no     
       and isnull(CLS.deleted,0)=0     
       --and YEAR(PROCESS_DATE)>=2022             
    AND cls.SUBMISSION_TYPE = 'PAT'     
@@ -76,15 +81,15 @@ trd.Patient_Account,trd.claim_no,SC.PROCESS_DATE,
 trd.Amt_Due,    
 DATEDIFF(DAY, CONVERT(VARCHAR, SC.PROCESS_DATE, 23), CONVERT(VARCHAR, GETDATE(), 23)) AS CALCULATED_DIFF    
 into #TEMPRECORD1      
-FROM #TEMPRECORD TRD              
-join #SubmissionClaims SC on sc.Claim_No = trd.Claim_No    
+FROM #TEMPRECORD TRD  WITH (NOLOCK)             
+join #SubmissionClaims SC WITH (NOLOCK) on sc.Claim_No = trd.Claim_No    
      
     
 IF OBJECT_ID('TEMPDB.DBO.#fiveHindredAcct', 'U') IS NOT NULL DROP TABLE #fiveHindredAcct    
 select fd.Patient_Account,SUM(fd.Amt_Due) Patient_Balance    
 into #fiveHindredAcct    
-from #TEMPRECORD1 fd    
-join #SubmissionClaims  SC on SC.Claim_No = fd.Claim_No    
+from #TEMPRECORD1 fd  WITH (NOLOCK)   
+join #SubmissionClaims  SC WITH (NOLOCK) on SC.Claim_No = fd.Claim_No    
 group by fd.Patient_Account    
 having  SUM(fd.Amt_Due) >= 500     
     
@@ -93,8 +98,8 @@ having  SUM(fd.Amt_Due) >= 500
 IF OBJECT_ID('TEMPDB.DBO.#PatientNBC', 'U') IS NOT NULL DROP TABLE #PatientNBC    
 select SUM(Amount_over_paid) Amount_over_paid,C.Patient_Account    
 into #PatientNBC    
-from MIS_TBL_Claim_negative_balance nbc    
-join Claims C on C.Claim_No = nbc.Claim_no and ISNULL(C.Deleted,0) = 0 and c.Amt_Due < 0    
+from MIS_TBL_Claim_negative_balance nbc WITH (NOLOCK)    
+join Claims C WITH (NOLOCK) on C.Claim_No = nbc.Claim_no and ISNULL(C.Deleted,0) = 0 and c.Amt_Due < 0    
 where ISNULL(nbc.deleted,0) = 0     
 and Payment_Source = 'P'    
 and practice_code =  1012714    
@@ -107,9 +112,9 @@ fa.Patient_Balance,
 min(PROCESS_DATE) as PROCESS_DATE    
 ,DATEDIFF(DAY, CONVERT(VARCHAR, min(PROCESS_DATE), 23), CONVERT(VARCHAR, GETDATE(), 23)) AS CALCULATED_DIFF    
 into #HighBalancePatients    
-FROM #TEMPRECORD1 TRD    
-join #fiveHindredAcct fa on fa.Patient_Account = trd.Patient_Account    
-left join #PatientNBC nbc on nbc.Patient_Account = trd.Patient_Account    
+FROM #TEMPRECORD1 TRD  WITH (NOLOCK)   
+join #fiveHindredAcct fa WITH (NOLOCK)  on fa.Patient_Account = trd.Patient_Account    
+left join #PatientNBC nbc WITH (NOLOCK) on nbc.Patient_Account = trd.Patient_Account    
 where isnull(nbc.Amount_over_paid,0) <> 0    
 group by trd.Patient_Account,fa.Patient_Balance    
 --where trd.Claim_No = 6003723040    
@@ -136,38 +141,38 @@ group by trd.Patient_Account,fa.Patient_Balance
      CALCULATED_DIFF,                 
                     ROW_NUMBER() OVER(ORDER BY WQ.WORK_ID DESC) AS ACTIVEROW    
      INTO #HBRDATA                      
-    FROM FOX_TBL_WORK_QUEUE WQ                        
-    LEFT JOIN Patient P ON(P.Patient_Account = WQ.PATIENT_ACCOUNT)    
+    FROM FOX_TBL_WORK_QUEUE WQ  WITH (NOLOCK)                       
+    LEFT JOIN Patient P WITH (NOLOCK) ON(P.Patient_Account = WQ.PATIENT_ACCOUNT)    
               AND WQ.PRACTICE_CODE = @practice_code       
               --AND YEAR(WQ.CREATED_DATE)>=2022       
               AND ISNULL(WQ.DELETED, 0) = 0      
-    INNER JOIN #HighBalancePatients AS hbp ON hbp.Patient_Account = p.Patient_Account    
-    LEFT JOIN FOX_TBL_DOCUMENT_TYPE DOC ON(DOC.DOCUMENT_TYPE_ID = WQ.DOCUMENT_TYPE)                       
-    LEFT JOIN FOX_TBL_ORDERING_REF_SOURCE ORS ON(ORS.SOURCE_ID = WQ.SENDER_ID)        
+    INNER JOIN #HighBalancePatients AS hbp WITH (NOLOCK)  ON hbp.Patient_Account = p.Patient_Account    
+    LEFT JOIN FOX_TBL_DOCUMENT_TYPE DOC WITH (NOLOCK) ON(DOC.DOCUMENT_TYPE_ID = WQ.DOCUMENT_TYPE)                       
+    LEFT JOIN FOX_TBL_ORDERING_REF_SOURCE ORS WITH (NOLOCK)  ON(ORS.SOURCE_ID = WQ.SENDER_ID)        
               AND ORS.PRACTICE_CODE = @practice_code                        
-    LEFT JOIN FOX_TBL_PATIENT_POS POS ON(POS.Patient_Account = P.Patient_Account)                        
+    LEFT JOIN FOX_TBL_PATIENT_POS POS WITH (NOLOCK)  ON(POS.Patient_Account = P.Patient_Account)                        
               AND ISNULL(POS.Deleted, 0) = 0                        
               AND (ISNULL(POS.Is_Default, 0) = 1)                        
-    LEFT JOIN FOX_TBL_ACTIVE_LOCATIONS LOC ON(LOC.LOC_ID = POS.Loc_ID)                        
+    LEFT JOIN FOX_TBL_ACTIVE_LOCATIONS LOC WITH (NOLOCK) ON(LOC.LOC_ID = POS.Loc_ID)                        
               AND ISNULL(LOC.Deleted, 0) = 0                        
               AND ISNULL(LOC.IS_ACTIVE, 0) = 1                        
               AND LOC.PRACTICE_CODE = @practice_code                        
-    LEFT JOIN FOX_TBL_PATIENT_INSURANCE INS_PRIMARY ON INS_PRIMARY.Patient_Insurance_Id =                        
-                (SELECT TOP 1 Patient_Insurance_Id FROM FOX_TBL_PATIENT_INSURANCE AS ftPI WHERE ftPI.Patient_Account = P.Patient_Account                        
+    LEFT JOIN FOX_TBL_PATIENT_INSURANCE INS_PRIMARY WITH (NOLOCK) ON INS_PRIMARY.Patient_Insurance_Id =                        
+                (SELECT TOP 1 Patient_Insurance_Id FROM FOX_TBL_PATIENT_INSURANCE AS ftPI WITH (NOLOCK)  WHERE ftPI.Patient_Account = P.Patient_Account                        
                           AND ftPI.Pri_Sec_Oth_Type = 'P'                        
                           AND ISNULL(ftPI.INACTIVE, 0) = 0                        
                           AND ftPI.FOX_INSURANCE_STATUS = 'C'                        
                           AND ISNULL(ftPI.Deleted, 0) = 0)      
-    LEFT JOIN FOX_TBL_INSURANCE INS_PRI ON(INS_PRI.FOX_TBL_INSURANCE_ID = INS_PRIMARY.FOX_TBL_INSURANCE_ID)                        
+    LEFT JOIN FOX_TBL_INSURANCE INS_PRI WITH (NOLOCK)  ON(INS_PRI.FOX_TBL_INSURANCE_ID = INS_PRIMARY.FOX_TBL_INSURANCE_ID)                        
               AND INS_PRI.PRACTICE_CODE = @practice_code     
-    LEFT JOIN FOX_TBL_PATIENT_INSURANCE INS_SECONDARY ON INS_SECONDARY.Patient_Insurance_Id =                   
+    LEFT JOIN FOX_TBL_PATIENT_INSURANCE INS_SECONDARY WITH (NOLOCK) ON INS_SECONDARY.Patient_Insurance_Id =                   
           (SELECT TOP 1 Patient_Insurance_Id FROM FOX_TBL_PATIENT_INSURANCE AS ftPI WHERE ftPI.Patient_Account = P.Patient_Account    
              AND ftPI.Pri_Sec_Oth_Type = 'S'                        
              AND ISNULL(ftPI.INACTIVE, 0) = 0                        
              AND ftPI.FOX_INSURANCE_STATUS = 'C'                        
              AND ISNULL(ftPI.Deleted, 0) = 0                        
           )    
-    LEFT JOIN FOX_TBL_INSURANCE INS_SEC ON(INS_SEC.FOX_TBL_INSURANCE_ID = INS_SECONDARY.FOX_TBL_INSURANCE_ID)                        
+    LEFT JOIN FOX_TBL_INSURANCE INS_SEC WITH (NOLOCK) ON(INS_SEC.FOX_TBL_INSURANCE_ID = INS_SECONDARY.FOX_TBL_INSURANCE_ID)                        
               AND INS_SEC.PRACTICE_CODE = @practice_code                        
              WHERE WQ.WORK_STATUS = 'Completed'             
                    AND (@SEARCH_STRING IS NULL                        
