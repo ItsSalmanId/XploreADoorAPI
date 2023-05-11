@@ -71,7 +71,7 @@ GO
  --  0     
  --  10/22/2020 3:17:09 AM                      
                                                     
-CREATE PROCEDURE [dbo].[FOX_PROC_UPDTAE_PATIENT_SURVEY]                        
+ALTER PROCEDURE [dbo].[FOX_PROC_UPDTAE_PATIENT_SURVEY]                        
 @SURVEY_ID BIGINT NULL                    
 ,@PRACTICE_CODE BIGINT NULL                    
 ,@FACILITY_OR_CLIENT_ID VARCHAR(100) NULL                    
@@ -89,7 +89,7 @@ CREATE PROCEDURE [dbo].[FOX_PROC_UPDTAE_PATIENT_SURVEY]
 ,@RESPONSIBLE_PARTY_DATE_OF_BIRTH DATETIME NULL                    
 ,@PATIENT_LAST_NAME VARCHAR(50) NULL                    
 ,@PATIENT_FIRST_NAME VARCHAR(50) NULL                    
-,@PATIENT_MIDDLE_INITIAL CHAR(1) NULL                    
+,@PATIENT_MIDDLE_INITIAL CHAR(1) NULL                                   
                     
 ,@PATIENT_ADDRESS VARCHAR(500) NULL                    
 ,@PATIENT_CITY VARCHAR(50) NULL                    
@@ -108,7 +108,7 @@ CREATE PROCEDURE [dbo].[FOX_PROC_UPDTAE_PATIENT_SURVEY]
 ,@SERVICE_OR_PAYMENT_DESCRIPTION VARCHAR(200) NULL                    
 ,@PROVIDER VARCHAR(50) NULL                     
 ,@REGION VARCHAR(50) NULL                    
-,@LAST_VISIT_DATE DATETIME NULL                    
+,@LAST_VISIT_DATE DATETIME NULL                                  
                     
 ,@DISCHARGE_DATE DATETIME NULL                    
 ,@ATTENDING_DOCTOR_NAME VARCHAR(50) NULL                    
@@ -129,8 +129,7 @@ CREATE PROCEDURE [dbo].[FOX_PROC_UPDTAE_PATIENT_SURVEY]
 ,@IS_SURVEYED BIT NULL                     
 ,@IN_PROGRESS BIT NULL                    
 ,@FILE_NAME VARCHAR(200) NULL                    
-,@SHEET_NAME VARCHAR(200) NULL                    
-                    
+,@SHEET_NAME VARCHAR(200) NULL                                  
 ,@TOTAL_RECORD_IN_FILE BIGINT NULL                    
 ,@CREATED_BY VARCHAR(70) NULL                    
 ,@CREATED_DATE DATETIME NULL                    
@@ -139,7 +138,8 @@ CREATE PROCEDURE [dbo].[FOX_PROC_UPDTAE_PATIENT_SURVEY]
 ,@DELETED BIT NULL                
 ,@IS_EXCEPTIONAL BIT               
 ,@IS_PROTECTIVE_EQUIPMENT BIT            
-,@SURVEY_COMPLETED_DATE DATETIME NULL                
+,@SURVEY_COMPLETED_DATE DATETIME NULL    
+,@NOT_ANSWERED_REASON VARCHAR(150)    
                     
 AS                       
 BEGIN                            
@@ -162,14 +162,14 @@ SET
 ,RESPONSIBLE_PARTY_SEX = @RESPONSIBLE_PARTY_SEX                    
 ,RESPONSIBLE_PARTY_DATE_OF_BIRTH = CAST(@RESPONSIBLE_PARTY_DATE_OF_BIRTH AS DATETIME)                    
 ,PATIENT_LAST_NAME = @PATIENT_LAST_NAME                    
-,PATIENT_FIRST_NAME = @PATIENT_FIRST_NAME   
+,PATIENT_FIRST_NAME = @PATIENT_FIRST_NAME                    
 ,PATIENT_MIDDLE_INITIAL = @PATIENT_MIDDLE_INITIAL                    
                     
 ,PATIENT_ADDRESS = @PATIENT_ADDRESS                    
 ,PATIENT_CITY = @PATIENT_CITY                    
 ,PATIENT_STATE = @PATIENT_STATE                    
 ,PATIENT_ZIP_CODE = @PATIENT_ZIP_CODE                    
-,PATIENT_TELEPHONE_NUMBER = @PATIENT_TELEPHONE_NUMBER                    
+,PATIENT_TELEPHONE_NUMBER = @PATIENT_TELEPHONE_NUMBER       
 ,PATIENT_SOCIAL_SECURITY_NUMBER = @PATIENT_SOCIAL_SECURITY_NUMBER                    
 ,PATIENT_GENDER = @PATIENT_GENDER                    
 ,PATIENT_DATE_OF_BIRTH = CAST(@PATIENT_DATE_OF_BIRTH AS DATETIME)                    
@@ -213,6 +213,7 @@ SET
 ,DELETED = @DELETED                
 ,IS_EXCEPTIONAL = @IS_EXCEPTIONAL              
 ,IS_PROTECTIVE_EQUIPMENT = @IS_PROTECTIVE_EQUIPMENT            
-,SURVEY_COMPLETED_DATE = CAST(@SURVEY_COMPLETED_DATE  AS DATETIME)           
+,SURVEY_COMPLETED_DATE = CAST(@SURVEY_COMPLETED_DATE  AS DATETIME)    
+,NOT_ANSWERED_REASON = @NOT_ANSWERED_REASON    
 WHERE SURVEY_ID = @SURVEY_ID                    
 END 
