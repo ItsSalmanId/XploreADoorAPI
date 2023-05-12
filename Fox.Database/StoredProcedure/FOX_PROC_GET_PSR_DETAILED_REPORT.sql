@@ -1,11 +1,10 @@
--- =============================================                        
--- Modified By :  Muhammad Salman                        
--- Modified date: 12/03/2022                        
--- =============================================                                                                              
+-- =============================================                                  
+-- Modified By :  Aftab Khan                                  
+-- Modified date: 05/05/2023                                  
+-- =============================================                                                                                        
 -- EXEC [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT_AFTAB1]   '1011163', '8/20/2021', '9/7/2021', '', '', '', 'Both', 'ALL', '', 'Completed Survey ,Deceased,Unable to Complete Survey,Not Interested', 1,30, '', 'SURVEYCOMPLETEDDATE', 'DESC'                    
--- EXEC [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT]  '1011163', '10/01/2021', '10/19/2023', '', '', '', 'Both', 'ALL', '', 'Completed Survey,Deceased,Unable to complete survey,Callback,Not Answered,Not Interested,Not Enough Services Provided',1, 5000,'','SURVEYCOMPLETEDDATE', 'DESC'                                                             
-                                                                      
-ALTER PROCEDURE [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT]                                                                                                        
+  -- EXEC [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT]  '1012714', '04/01/2023', '05/20/2023', '', '', '', 'Both', 'ALL', '', 'Completed Survey,Deceased,Unable to complete survey,Callback,Not Answered,Not Interested,Not Enough Services Provided','MailBox Full,VM Left,Wrong PH#,Line Busy',1, 5000,'','SURVEYCOMPLETEDDATE', 'DESC'                                                                                                                                                  
+ALTER PROCEDURE [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT]                                                                                                                  
  (@PRACTICE_CODE BIGINT,                                                                             
   @DATE_FROM DATETIME,                                                                                                                   
   @DATE_TO DATETIME,                                                                                                                   
@@ -23,7 +22,8 @@ ALTER PROCEDURE [DBO].[FOX_PROC_GET_PSR_DETAILED_REPORT]
   @SORT_BY  VARCHAR(50),        
   @SORT_ORDER VARCHAR(5))                                                                                                                  
 AS        
-BEGIN                 
+BEGIN          
+        
  --declare                                                                                      
  -- @PRACTICE_CODE   BIGINT = '1011163',                                                                                                                   
  -- @DATE_FROM       DATETIME = '04/04/2023',                                                                                                                   
@@ -42,7 +42,15 @@ BEGIN
  -- @SORT_BY         VARCHAR(50) = 'r',                                                                                                                  
  -- @SORT_ORDER      VARCHAR(5)  = 'Desc'                                                                                         
                                                  
-                                                                                                                                
+                                                             
+ IF(@SORT_ORDER = '' )        
+   BEGIN                                                              
+ SET @SORT_ORDER =  'DESC'                                                        
+ END          
+  IF(@SORT_BY = '' )        
+   BEGIN                                                              
+ SET @SORT_BY =  'r'                                                        
+ END         
  IF(@FLAG = '')                                                              
   BEGIN                                                              
  SET @FLAG =  NULL                                                        
@@ -66,9 +74,13 @@ BEGIN
  IF(@STATE ='')                                    
  BEGIN                                    
      SELECT @TOATL_PAGESUDM = COUNT(*)                                                                                                                  
-     FROM FOX_TBL_PATIENT_SURVEY PS WITH (NOLOCK)                                                                                                                 
+     FROM FOX_TBL_PATIENT_SURVEY PS WITH (NOLOCK)  
+	 left JOIN FOX_TBL_PATIENT_SURVEY_NOT_ANSWERED_REASON NA WITH (NOLOCK) ON PS.SURVEY_ID = NA.SURVEY_ID AND ISNULL(NA.DELETED, 0) = 0                                                                                                                
        LEFT JOIN FOX_TBL_APPLICATION_USER AU WITH (NOLOCK) ON AU.USER_NAME = PS.MODIFIED_BY                                       
-     --LEFT join FOX_TBL_PATIENT_SURVEY_CALL_LOG as CL   on cl.PATIENT_ACCOUNT = ps.PATIENT_ACCOUNT_NUMBER                                                                  
+     --LEFT join FOX_TBL_PATIENT_SURVEY_CALL_LOG as CL   on cl.PATIENT_ACCOUNT = ps.PATIENT_ACCOUNT_NUMBER                                           
+    
+      
+                       
      WHERE ISNULL(PS.DELETED, 0) = 0                                                                  
         AND PS.PRACTICE_CODE = @PRACTICE_CODE                                                                                               
         AND PS.REGION <> ''                                                      
@@ -89,19 +101,23 @@ BEGIN
   -- (                                     
   --  SELECT Item                                                                                                                  
   --   FROM dbo.SplitStrings_CTE(@STATE, N',')                                      
- -- )            
+ -- )         
+    
         AND (                                                                                                                  
      (                                                         
    PS.SURVEY_STATUS_CHILD IN                                                                                  
     (                                                                                  
      SELECT Item                                              
      FROM dbo.SplitStrings_CTE(@SURVEYED_STATUS, N',')                                                                       
-   )       
+   )    
+       
    AND   (@NOT_ANSWERED_REASON IS NULL OR     
-    PS.NOT_ANSWERED_REASON IN (    
+    NA.NOT_ANSWERED_REASON IN (    
         SELECT Item    
         FROM dbo.SplitStrings_CTE(@NOT_ANSWERED_REASON, N',')    
-    ))       
+    ))    
+      
+    
     AND @SURVEYED_STATUS <> 'Pending'                                                                                                                  
    ----AND ISNULL(PS.IS_SURVEYED, 0) = @IS_NOT_SURVEYED                                                                                                          
     )                                                                                                
@@ -118,6 +134,7 @@ BEGIN
          OR PS.PT_OT_SLP LIKE @SEARCH_TEXT+'%'                     
          OR PS.REGION LIKE '%' + @SEARCH_TEXT+'%'                    
   OR PS.PROVIDER LIKE '%' + @SEARCH_TEXT+'%'              
+  -- OR PS.NOT_ANSWERED_REASON LIKE '%' + @SEARCH_TEXT+'%'          
          OR PS.SURVEY_STATUS_CHILD LIKE @SEARCH_TEXT+'%'                                         
    OR PS.SURVEY_STATUS_BASE LIKE @SEARCH_TEXT+'%'                                                                                                       
    OR PS.FEEDBACK LIKE '%' +@SEARCH_TEXT+'%'                                                                           
@@ -155,7 +172,8 @@ BEGIN
       PS.PATIENT_FIRST_NAME,                                                                                                                   
    PS.PATIENT_MIDDLE_INITIAL,                                                                                                         
       PS.PATIENT_LAST_NAME,        
-      PS.NOT_ANSWERED_REASON,         
+      --PS.NOT_ANSWERED_REASON, 
+	  NA.NOT_ANSWERED_REASON,
       PS.PATIENT_STATE,                                                                                                               
       PS.PT_OT_SLP,                                                           
       PS.REGION,                                                                                                                   
@@ -257,9 +275,19 @@ WHEN PS.IS_REFERABLE = 1
       ROW_NUMBER() OVER(ORDER BY PS.MODIFIED_DATE DESC) AS ACTIVEROW                                                                                                        
                                                               
      FROM FOX_TBL_PATIENT_SURVEY PS WITH (NOLOCK)                              
-  left JOIN FOX_TBL_SURVEY_AUTOMATION_SERVICE_LOG SL WITH (NOLOCK) ON PS.SURVEY_ID = SL.SURVEY_ID AND ISNULL(SL.DELETED, 0) = 0                                                                                                                 
+  left JOIN FOX_TBL_SURVEY_AUTOMATION_SERVICE_LOG SL WITH (NOLOCK) ON PS.SURVEY_ID = SL.SURVEY_ID AND ISNULL(SL.DELETED, 0) = 0  
+  left JOIN FOX_TBL_PATIENT_SURVEY_NOT_ANSWERED_REASON NA WITH (NOLOCK) ON PS.SURVEY_ID = NA.SURVEY_ID AND ISNULL(NA.DELETED, 0) = 0                                                                                                                
  LEFT JOIN FOX_TBL_APPLICATION_USER AU WITH (NOLOCK) ON AU.USER_NAME = PS.MODIFIED_BY                                                    
- --LEFT join FOX_TBL_PATIENT_SURVEY_CALL_LOG as CL   on cl.PATIENT_ACCOUNT = ps.PATIENT_ACCOUNT_NUMBER                                                                                                                                                            
+ --LEFT join FOX_TBL_PATIENT_SURVEY_CALL_LOG as CL   on cl.PATIENT_ACCOUNT = ps.PATIENT_ACCOUNT_NUMBER                                                   
+        
+          
+            
+              
+                
+                  
+                    
+                      
+                                                                                                              
      WHERE ISNULL(PS.DELETED, 0) = 0                                                  
     AND PS.PRACTICE_CODE = @PRACTICE_CODE                                                                                               
    AND PS.REGION <> ''                                
@@ -281,7 +309,9 @@ WHEN PS.IS_REFERABLE = 1
    --(                                      
    -- SELECT Item                                                                                                                  
    --  FROM dbo.SplitStrings_CTE(@STATE, N',')                             
-   --)                  
+   --)         
+     
+           
         AND (                                                                                                                  
      (                                                                                                                  
     PS.SURVEY_STATUS_CHILD IN                                                                                                                  
@@ -291,10 +321,11 @@ WHEN PS.IS_REFERABLE = 1
     )                                                                        
        
    AND   (@NOT_ANSWERED_REASON IS NULL OR     
-    PS.NOT_ANSWERED_REASON IN (    
+    NA.NOT_ANSWERED_REASON IN (    
         SELECT Item    
         FROM dbo.SplitStrings_CTE(@NOT_ANSWERED_REASON, N',')    
-    ))                                   
+    ))    
+                                 
     AND @SURVEYED_STATUS <> 'Pending'                                                                                                                  
  --AND ISNULL(PS.IS_SURVEYED, 0) = @IS_NOT_SURVEYED                                                              
      )                                                           
@@ -313,6 +344,7 @@ WHEN PS.IS_REFERABLE = 1
          OR PS.PROVIDER LIKE '%' + @SEARCH_TEXT+'%'                                                                                                              
    OR PS.ATTENDING_DOCTOR_NAME LIKE '%' + @SEARCH_TEXT+'%'                                                                                        
          OR PS.SURVEY_STATUS_CHILD LIKE @SEARCH_TEXT+'%'        
+   --OR PS.NOT_ANSWERED_REASON LIKE '%' + @SEARCH_TEXT+'%'         
    OR PS.SURVEY_STATUS_BASE LIKE @SEARCH_TEXT+'%'                                                                                                                
    OR PS.FEEDBACK LIKE '%' + @SEARCH_TEXT+'%'                                                                           
    OR CONVERT(VARCHAR, PS.MODIFIED_DATE, 101) LIKE  '%' + @SEARCH_TEXT+'%'                                                                           
@@ -596,6 +628,7 @@ OR (@SURVEYED_STATUS = 'Pending' AND ISNULL(PS.IS_SURVEYED, 0) = 0)
          OR PS.SURVEY_STATUS_CHILD LIKE @SEARCH_TEXT+'%'                                                                                 
    OR PS.SURVEY_STATUS_BASE LIKE @SEARCH_TEXT+'%'                                                                                                       
    OR PS.FEEDBACK LIKE '%' +@SEARCH_TEXT+'%'         
+   -- OR PS.NOT_ANSWERED_REASON LIKE '%' +@SEARCH_TEXT+'%'        
       OR CONVERT(VARCHAR, PS.MODIFIED_DATE, 101) LIKE  '%' + @SEARCH_TEXT+'%'                                                                               
       OR CONVERT(VARCHAR, PS.MODIFIED_DATE, 100) LIKE  '%' + @SEARCH_TEXT+'%'                                                                                                                 
          OR AU.FIRST_NAME LIKE @SEARCH_TEXT+'%'                                                                                                                  
@@ -671,7 +704,8 @@ OR (@SURVEYED_STATUS = 'Pending' AND ISNULL(PS.IS_SURVEYED, 0) = 0)
    SL.IS_EMAIL AS IS_EMAIL,                                                                                                               
       PS.MODIFIED_DATE,                                                                                            
       PS.SURVEY_COMPLETED_DATE,        
-      PS.NOT_ANSWERED_REASON,        
+      --PS.NOT_ANSWERED_REASON, 
+	  NA.NOT_ANSWERED_REASON,       
      CONVERT(VARCHAR(10), CAST( PS.SURVEY_COMPLETED_DATE AS TIME), 0) AS SURVEY_COMPLETED_TIME_STR,                                                                    
   CONVERT(VARCHAR(15), CAST( PS.SURVEY_COMPLETED_DATE AS DATE), 0) AS SURVEY_COMPLETED_DATE_STR,                                                                    
       PS.Created_Date,                                                                                                                   
@@ -733,10 +767,10 @@ OR (@SURVEYED_STATUS = 'Pending' AND ISNULL(PS.IS_SURVEYED, 0) = 0)
       ROW_NUMBER() OVER(ORDER BY PS.MODIFIED_DATE DESC) AS ACTIVEROW                                                                                                         
                                                               
      FROM FOX_TBL_PATIENT_SURVEY PS WITH (NOLOCK)                            
-   left JOIN FOX_TBL_SURVEY_AUTOMATION_SERVICE_LOG SL WITH (NOLOCK) ON PS.SURVEY_ID = SL.SURVEY_ID AND ISNULL(SL.DELETED, 0) = 0                                                                                                              
+   left JOIN FOX_TBL_SURVEY_AUTOMATION_SERVICE_LOG SL WITH (NOLOCK) ON PS.SURVEY_ID = SL.SURVEY_ID AND ISNULL(SL.DELETED, 0) = 0 
+   left JOIN FOX_TBL_PATIENT_SURVEY_NOT_ANSWERED_REASON NA WITH (NOLOCK) ON PS.SURVEY_ID = NA.SURVEY_ID AND ISNULL(SL.DELETED, 0) = 0                                                                                                               
  LEFT JOIN FOX_TBL_APPLICATION_USER AU WITH (NOLOCK)ON AU.USER_NAME = PS.MODIFIED_BY                                                  
- -- LEFT join FOX_TBL_PATIENT_SURVEY_CALL_LOG as CL   on cl.PATIENT_ACCOUNT = ps.PATIENT_ACCOUNT_NUMBER                                               
-                                                                                                                       
+ -- LEFT join FOX_TBL_PATIENT_SURVEY_CALL_LOG as CL   on cl.PATIENT_ACCOUNT = ps.PATIENT_ACCOUNT_NUMBER                                                                                                                                                     
      WHERE ISNULL(PS.DELETED, 0) = 0                                                  
     AND PS.PRACTICE_CODE = @PRACTICE_CODE                                                                                               
    AND PS.REGION <> ''                                                                             
@@ -816,7 +850,7 @@ WHEN @SORT_BY = 'PATIENTNAME'
         THEN PATIENT_LAST_NAME                                                                                                                  
        END DESC,                                                                                                    
        CASE                                                                                                 
-        WHEN @SORT_BY = 'STATE'                                 AND @SORT_ORDER = 'ASC'                                                                                                        
+        WHEN @SORT_BY = 'STATE'            AND @SORT_ORDER = 'ASC'                                                                                                                  
         THEN PATIENT_STATE                                                                                                                  
        END ASC,                                                                                                                  
      CASE                                                                                                                  
@@ -1010,4 +1044,4 @@ THEN SURVEYED_BY_LNAME
                                                                    
     OFFSET @START_FROM ROWS FETCH NEXT @RECORD_PER_PAGE ROWS ONLY                                    
     END                                                                                                                
-   END  
+   END 

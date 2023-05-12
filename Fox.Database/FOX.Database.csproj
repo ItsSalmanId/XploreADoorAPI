@@ -645,6 +645,7 @@
     <Content Include="Tables\FOX_TBL_PATIENT_SURVEY_DELETED_RECORDS.sql" />
     <Content Include="Tables\FOX_TBL_PATIENT_SURVEY_FORMAT_TYPE.sql" />
     <Content Include="Tables\FOX_TBL_PATIENT_SURVEY_HISTORY.sql" />
+    <Content Include="Tables\FOX_TBL_PATIENT_SURVEY_NOT_ANSWERED_REASON.sql" />
     <Content Include="Tables\FOX_TBL_PATIENT_UPDATE_HISTORY.sql" />
     <Content Include="Tables\FOX_TBL_PHD_CALLING_UPDATE_SERVICE_CONFIG.sql" />
     <Content Include="Tables\FOX_TBL_PHD_CALL_DETAILS.sql" />
