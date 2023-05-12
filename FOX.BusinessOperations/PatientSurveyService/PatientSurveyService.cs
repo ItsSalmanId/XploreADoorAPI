@@ -44,7 +44,6 @@ namespace FOX.BusinessOperations.PatientSurveyService
             try
             {
                 var surveyList = _patientSurveyRepository.GetMany(x => !x.DELETED && x.PATIENT_ACCOUNT_NUMBER == patientAccount);
-                long getPracticeCode = AppConfiguration.GetPracticeCode;
                 if (surveyList.Count > 0)
                 {
                     foreach (var survey in surveyList)
