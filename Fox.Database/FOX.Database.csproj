@@ -711,6 +711,7 @@
     <Content Include="Tables\FOX_TBL_TASK_SUB_TYPE_INTEL_TASK_FIELD.sql" />
     <Content Include="Tables\FOX_TBL_TASK_TASK_SUB_TYPE.sql" />
     <Content Include="Tables\FOX_TBL_TASK_TYPE.sql" />
+    <Content Include="Tables\Fox_TBL_TASK_WORK_INTERFACE_MAPPING.sql" />
     <Content Include="Tables\FOX_TBL_THERAPY_TREATMENT_REFERRAL_REQUEST_FORM.sql" />
     <Content Include="Tables\FOX_TBL_USER_GROUP.sql" />
     <Content Include="Tables\FOX_TBL_USER_RIGHTS.sql" />
