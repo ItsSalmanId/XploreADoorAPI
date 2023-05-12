@@ -80,8 +80,10 @@ namespace FOX.BusinessOperations.PatientSurveyService
             if (dbSurvey != null) //update
             {
                 PatientSurveyNotAnswered getPatientSurveyNotAnswered = new PatientSurveyNotAnswered();
-                getPatientSurveyNotAnswered = _patientSurveyNotAnswered.GetFirst(r => r.SURVEY_ID == patientSurvey.SURVEY_ID && r.PRACTICE_CODE == AppConfiguration.GetPracticeCode && r.DELETED == false);
-                if(getPatientSurveyNotAnswered != null && string.IsNullOrEmpty(getPatientSurveyNotAnswered.NOT_ANSWERED_REASON))
+                var surveyIdNotAnswered = patientSurvey.SURVEY_ID;
+                getPatientSurveyNotAnswered = _patientSurveyNotAnswered.GetFirst(r => r.SURVEY_ID == surveyIdNotAnswered && r.PRACTICE_CODE == AppConfiguration.GetPracticeCode && r.DELETED == false);
+                
+                if(patientSurvey.SURVEY_STATUS_CHILD != "Not Answered" && getPatientSurveyNotAnswered != null && !string.IsNullOrEmpty(getPatientSurveyNotAnswered.NOT_ANSWERED_REASON))
                 {
                     getPatientSurveyNotAnswered.DELETED = true;
                     _patientSurveyNotAnswered.Update(getPatientSurveyNotAnswered);
@@ -1288,8 +1290,8 @@ namespace FOX.BusinessOperations.PatientSurveyService
                     objPatientSurveyNotAnswered.PRACTICE_CODE = userProfile.PracticeCode;
                     objPatientSurveyNotAnswered.CREATED_BY = userProfile.UserName;
                     objPatientSurveyNotAnswered.CREATED_DATE = Helper.GetCurrentDate();
-                    //objPatientSurveyNotAnswered.MODIFIED_BY = userProfile.UserName;
-                    //objPatientSurveyNotAnswered.MODIFIED_DATE = Helper.GetCurrentDate();
+                    objPatientSurveyNotAnswered.MODIFIED_BY = userProfile.UserName;
+                    objPatientSurveyNotAnswered.MODIFIED_DATE = Helper.GetCurrentDate();
                     objPatientSurveyNotAnswered.DELETED = false;
                     _patientSurveyNotAnswered.Insert(objPatientSurveyNotAnswered);
                     _patientSurveyNotAnswered.Save();
