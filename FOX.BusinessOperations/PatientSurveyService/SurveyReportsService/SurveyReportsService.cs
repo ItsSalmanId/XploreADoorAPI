@@ -22,7 +22,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
         {
             _patientSurveyRepository = new GenericRepository<PatientSurvey>(_patientSurveyContext);
         }
-        public List<PatientSurvey> GetPSRDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile, PatientSurveyNotAnswered objNotAnswered)
+        public List<PatientSurvey> GetPSRDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile)
         {
                 patientSurveySearchRequest.DATE_TO = Helper.GetCurrentDate();
             switch (patientSurveySearchRequest.TIME_FRAME)
@@ -57,7 +57,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
             var format = new SqlParameter { ParameterName = "FORMAT", Value = patientSurveySearchRequest.FORMAT };
             var surveyedBy = new SqlParameter { ParameterName = "SURVEYED_BY", Value = patientSurveySearchRequest.SURVEYED_BY };
             var surveyStatus = new SqlParameter { ParameterName = "SURVEYED_STATUS", Value = patientSurveySearchRequest.SURVEYED_STATUS_CHILD };
-            var notAnsweredStatus = new SqlParameter { ParameterName = "NOT_ANSWERED_REASON", Value = objNotAnswered.NOT_ANSWERED_REASON };
+            var notAnsweredStatus = new SqlParameter { ParameterName = "NOT_ANSWERED_REASON", Value = patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON };
             var CurrentPage = new SqlParameter { ParameterName = "CURRENT_PAGE", SqlDbType = SqlDbType.Int, Value = patientSurveySearchRequest.CURRENT_PAGE };
             var RecordPerPage = new SqlParameter { ParameterName = "RECORD_PER_PAGE", SqlDbType = SqlDbType.Int, Value = patientSurveySearchRequest.RECORD_PER_PAGE };
             var searchText = new SqlParameter { ParameterName = "SEARCH_TEXT", Value = patientSurveySearchRequest.SEARCH_TEXT };
@@ -121,8 +121,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
         }
         public PSDRChartData GetALLPendingPSRDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile)
         {
-            PatientSurveyNotAnswered objNotAnswered = new PatientSurveyNotAnswered();
-            objNotAnswered.NOT_ANSWERED_REASON = "";
+            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
             List<PatientSurvey> list = new List<PatientSurvey>();
             PSDRChartData obj = new PSDRChartData();
             string surveyedStatusChild = patientSurveySearchRequest.SURVEYED_STATUS_CHILD;
@@ -130,15 +129,15 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
             patientSurveySearchRequest.RECORD_PER_PAGE = 0;
 
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Completed Survey ,Deceased,Unable to Complete Survey,Not Interested";
-            objNotAnswered.NOT_ANSWERED_REASON = "";
+            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
             list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile, objNotAnswered);
+            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.COMPLETED = list.Count;
 
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Completed Survey";
-            objNotAnswered.NOT_ANSWERED_REASON = "";
+            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
             list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile, objNotAnswered);
+            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.COMPLETED_SURVEY = list.Count;
 
             //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Recommended";
@@ -147,68 +146,68 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
             //obj.NOT_RECOMMENDED = list.Count;
 
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Deceased";
-            objNotAnswered.NOT_ANSWERED_REASON = "";
+            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
             list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile, objNotAnswered);
+            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.DECEASED = list.Count;
 
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Unable to Complete Survey";
-            objNotAnswered.NOT_ANSWERED_REASON = "";
+            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
             list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile, objNotAnswered);
+            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.NOT_ENOUGH_SERVICES_PROVIDE = list.Count;
 
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Callback,Not Answered,New Case Same Discipline";
-            objNotAnswered.NOT_ANSWERED_REASON = "";
+            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
             list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile, objNotAnswered);
+            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.INCOMPLETE = list.Count;
 
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Callback";
-            objNotAnswered.NOT_ANSWERED_REASON = "";
+            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
             list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile, objNotAnswered);
+            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.CALL_BACK = list.Count;
 
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
-            objNotAnswered.NOT_ANSWERED_REASON = "MailBox Full,VM Left,Wrong PH#,Line Busy";
+            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "MailBox Full,VM Left,Wrong PH#,Line Busy";
             list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile, objNotAnswered);
+            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.NOT_ANSWERED = list.Count;
 
-            objNotAnswered.NOT_ANSWERED_REASON = "Line Busy";
+            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "Line Busy";
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
             list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile, objNotAnswered);
+            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.LINE_BUSY = list.Count;
 
-            objNotAnswered.NOT_ANSWERED_REASON = "MailBox Full";
+            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "MailBox Full";
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
             list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile, objNotAnswered);
+            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.MB_FULL = list.Count;
 
-            objNotAnswered.NOT_ANSWERED_REASON = "Wrong PH#";
+            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "Wrong PH#";
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
             list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile, objNotAnswered);
+            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.WRONG_NUM = list.Count;
-            objNotAnswered.NOT_ANSWERED_REASON = "VM Left";
+            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "VM Left";
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
             list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile, objNotAnswered);
+            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.VM_LEFT = list.Count;
 
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Interested";
-            objNotAnswered.NOT_ANSWERED_REASON = "";
+            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
             list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile, objNotAnswered);
+            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.NOT_INTERESTED = list.Count;
 
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "New Case Same Discipline";
-            objNotAnswered.NOT_ANSWERED_REASON = "";
+            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
             list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile, objNotAnswered);
+            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.NEW_CASE_SAME_DISCIPLINE = list.Count;
 
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = surveyedStatusChild;
@@ -260,8 +259,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
                 }
                 List<PatientSurvey> result = new List<PatientSurvey>();
                 var pathtowriteFile = exportPath + "\\" + fileName;
-                PatientSurveyNotAnswered objNotAnswered = new PatientSurveyNotAnswered();
-                result = GetPSRDetailedReport(patientSurveySearchRequest, profile, objNotAnswered);
+                result = GetPSRDetailedReport(patientSurveySearchRequest, profile);
                 for (int i = 0; i < result.Count; i++)
                 {
                     result[i].ROW = i + 1;

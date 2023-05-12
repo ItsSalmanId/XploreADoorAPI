@@ -449,7 +449,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string USER_NAME { get; set; }
     }
 
-    public class PatientSurveySearchRequest: BaseModel
+    public class PatientSurveySearchRequest : BaseModel
     {
         public long SURVEY_ID { get; set; }
         public string PATIENT_ACCOUNT_NUMBER { get; set; }
@@ -481,6 +481,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public int IS_SURVEYED { get; set; }
         [NotMapped]
         public string NOT_ANSWERED_REASON { get; set; }
+        public PatientSurveyNotAnswered objNotAnswered { get; set; }
     }
 
     public class PatientSurveyCall
