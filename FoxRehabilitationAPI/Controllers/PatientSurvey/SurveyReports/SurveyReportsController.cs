@@ -49,7 +49,9 @@ namespace FoxRehabilitationAPI.Controllers.PatientSurvey.SurveyReports
         [HttpPost]
         public HttpResponseMessage GetPSRDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _surveyReportsService.GetPSRDetailedReport(patientSurveySearchRequest, GetProfile()));
+            PatientSurveyNotAnswered objNotAnswered = new PatientSurveyNotAnswered();
+            objNotAnswered.NOT_ANSWERED_REASON = "";
+            return Request.CreateResponse(HttpStatusCode.OK, _surveyReportsService.GetPSRDetailedReport(patientSurveySearchRequest, GetProfile(), objNotAnswered));
         }
         [HttpPost]
         public HttpResponseMessage GetALLPSRDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest)

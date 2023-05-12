@@ -41,6 +41,31 @@ namespace FoxRehabilitationAPI.Controllers
             }
         }
 
+        [HttpPost]
+        public HttpResponseMessage AddPatientSurveyNotAnswered(FOX.DataModels.Models.PatientSurvey.PatientSurveyNotAnswered objPatientSurveyNotAnswered)
+        {
+            if (objPatientSurveyNotAnswered != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.AddPatientSurveyNotAnswered(objPatientSurveyNotAnswered, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient survey model is empty");
+            }
+        }
+
+        [HttpPost]
+        public HttpResponseMessage GetPatientSurveyNotAnswered(PatientSurveyNotAnswered objPatientSurveyNotAnswered)
+        {
+            if (objPatientSurveyNotAnswered != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetPatientSurveyNotAnswered(objPatientSurveyNotAnswered, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Admission Important Notes model is empty");
+            }
+        }
         [HttpGet]
         public HttpResponseMessage GetPatientSurveyList(long patientAccount, int isSurveyed)
         {
