@@ -136,6 +136,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public bool? IS_SMS { get; set; }
         [NotMapped]
         public bool? IS_EMAIL { get; set; }
+        [NotMapped]
         public string NOT_ANSWERED_REASON { get; set; }
     }
     [Table("FOX_TBL_SURVEY_AUTOMATION_SERVICE_LOG")]
@@ -448,7 +449,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string USER_NAME { get; set; }
     }
 
-    public class PatientSurveySearchRequest: BaseModel
+    public class PatientSurveySearchRequest : BaseModel
     {
         public long SURVEY_ID { get; set; }
         public string PATIENT_ACCOUNT_NUMBER { get; set; }
@@ -478,7 +479,9 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string SORT_BY { get; set; }
         public string SORT_ORDER { get; set; }
         public int IS_SURVEYED { get; set; }
+        [NotMapped]
         public string NOT_ANSWERED_REASON { get; set; }
+        public PatientSurveyNotAnswered objNotAnswered { get; set; }
     }
 
     public class PatientSurveyCall
@@ -540,4 +543,20 @@ namespace FOX.DataModels.Models.PatientSurvey
         public int CurrentPage { get; set; }
         public int RecordPerPage { get; set; }
     }
+    [Table("FOX_TBL_PATIENT_SURVEY_NOT_ANSWERED_REASON")]
+    public class PatientSurveyNotAnswered
+    {
+        [Key]
+        public long NOT_ANSWERD_REASON_ID { get; set; }
+        public string NOT_ANSWERED_REASON { get; set; }
+        public long SURVEY_ID { get; set; }
+        public string CREATED_BY { get; set; }
+        public System.DateTime CREATED_DATE { get; set; }
+        public string MODIFIED_BY { get; set; }
+        public System.DateTime MODIFIED_DATE { get; set; }
+        public bool DELETED { get; set; }
+        public Nullable<long> PRACTICE_CODE { get; set; }
+    }
+
+
 }
