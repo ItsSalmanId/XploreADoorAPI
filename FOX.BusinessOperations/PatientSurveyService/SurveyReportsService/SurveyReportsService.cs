@@ -121,8 +121,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
         }
         public PSDRChartData GetALLPendingPSRDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile)
         {
-            PatientSurveyNotAnswered patientSurveyNotAnswered = new PatientSurveyNotAnswered();
-            patientSurveySearchRequest.objNotAnswered = patientSurveyNotAnswered;
+            patientSurveySearchRequest.objNotAnswered = new PatientSurveyNotAnswered(); ;
             patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
             List<PatientSurvey> list = new List<PatientSurvey>();
             PSDRChartData obj = new PSDRChartData();
