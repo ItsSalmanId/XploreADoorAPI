@@ -42,15 +42,7 @@ BEGIN
  -- @SORT_BY         VARCHAR(50) = 'r',                                                                                                                  
  -- @SORT_ORDER      VARCHAR(5)  = 'Desc'                                                                                         
                                                  
-                                                             
- IF(@SORT_ORDER = '' )        
-   BEGIN                                                              
- SET @SORT_ORDER =  'DESC'                                                        
- END          
-  IF(@SORT_BY = '' )        
-   BEGIN                                                              
- SET @SORT_BY =  'r'                                                        
- END         
+                                                                    
  IF(@FLAG = '')                                                              
   BEGIN                                                              
  SET @FLAG =  NULL                                                        
