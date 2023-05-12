@@ -481,6 +481,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public int IS_SURVEYED { get; set; }
         [NotMapped]
         public string NOT_ANSWERED_REASON { get; set; }
+        [NotMapped]
         public PatientSurveyNotAnswered objNotAnswered { get; set; }
     }
 
