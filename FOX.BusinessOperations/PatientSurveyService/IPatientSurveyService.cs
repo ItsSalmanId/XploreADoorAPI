@@ -31,5 +31,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
         bool UpdatePSFormat(string format, UserProfile profile);
         PatientSurvey GetSurveyDetailedFromEmail(string surveyId, long practiceCode);
         SurveyServiceLog SurveyPerformByUser(SelectiveSurveyList objSelectiveSurveyList, long practiceCode);
+        PatientSurveyNotAnswered AddPatientSurveyNotAnswered(PatientSurveyNotAnswered objPatientSurveyNotAnswered, UserProfile profile);
+        PatientSurveyNotAnswered GetPatientSurveyNotAnswered(PatientSurveyNotAnswered objPatientSurveyNotAnswered, UserProfile profile);
     }
 }
