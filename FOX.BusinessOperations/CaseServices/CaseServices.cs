@@ -1256,7 +1256,7 @@ namespace FOX.BusinessOperations.CaseServices
                 }
                 var CaseTypeResult = _CaseTypeRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == 1011163);
                 var CaseDescplineResult = _CaseDesciplineRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == 1011163);
-                var CaseStatusResult = _CaseStatusRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == 1011163);
+                var CaseStatusResult = _CaseStatusRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
                 var CaseSuffixResult = _CaseSuffixRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == 1011163);
                 var CaseGrpIdentifierResult = _CaseGrpIdentifierRepository.GetMany(t => !t.DELETED && (t.IS_ACTIVE ?? true) && t.PRACTICE_CODE == 1011163);
                 var OrderStatusREsult = _OrderStatusRepository.GetMany(t => !t.DELETED && (t.IS_ACTIVE ?? true) && t.PRACTICE_CODE == 1011163);

@@ -19,6 +19,7 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<PatientSurveyFormatType>().Property(t => t.SURVEY_FORMAT_TYPE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<RoleToAdd>().Property(t => t.ROLE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<SurveyServiceLog>().Property(t => t.SURVEY_AUTOMATION_LOG_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<PatientSurveyNotAnswered>().Property(t => t.NOT_ANSWERD_REASON_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
         }
         public virtual DbSet<PatientSurvey> PatientSurvey { get; set; }
         public virtual DbSet<PatientSurveyHistory> PatientSurveyHistory { get; set; }
@@ -26,5 +27,6 @@ namespace FOX.DataModels.Context
         public virtual DbSet<PatientSurveyFormatType> PatientSurveyFormatType { get; set; }
         public virtual DbSet<RoleToAdd> Role { get; set; }
         public virtual DbSet<SurveyServiceLog> SurveyServiceLog { get; set; }
+        public virtual DbSet<PatientSurveyNotAnswered> PatientSurveyNotAnswered { get; set; }
     }
 }

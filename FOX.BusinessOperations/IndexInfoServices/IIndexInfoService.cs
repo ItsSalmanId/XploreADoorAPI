@@ -68,7 +68,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         bool UpdateOCRValue(long? work_id, UserProfile profile);
         ReferralPatientInfo getPatientReferralDetail(long work_id, UserProfile profile);
         ReferralSourceAndGroups getAllReferralSourceAndGroups(UserProfile profile);
-        pendingBalanceAmount GetPatientBalance(long? PATIENT_ACCOUNT);
+        pendingBalanceAmount GetPatientBalance(long? PATIENT_ACCOUNT, UserProfile profile);
         List<PatientListResponse> GetpatientsList(getPatientReq req, UserProfile Profile);
         List<DuplicateReferralInfo> GetDuplicateReferralInformation(checkDuplicateReferralRequest checkDuplicateReferral, UserProfile userProfile);
         List<WorkOrderDocs> GetWorkOrderDocs(string patientAccountStr, UserProfile userProfile);

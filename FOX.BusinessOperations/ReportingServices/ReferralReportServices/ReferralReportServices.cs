@@ -254,7 +254,7 @@ namespace FOX.BusinessOperations.ReportingServices.ReferralReportServices
                 var _sort_order = new SqlParameter { ParameterName = "sort_order", SqlDbType = SqlDbType.VarChar, Value = obj.SORT_ORDER };
 
 
-                var result = SpRepository<HighBalanceReportRes>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_PENDING_HIGH_BALANCE_DETAILED_REPORT] @PRACTICE_CODE,@search_string,@current_page,@record_per_page,@sort_by,@sort_order",
+                var result = SpRepository<HighBalanceReportRes>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_PENDING_HIGH_BALANCE_DETAILED_REPORT_NEW_LOGIC] @PRACTICE_CODE,@search_string,@current_page,@record_per_page,@sort_by,@sort_order",
                     _practiceCode, _search_string, _current_page, _record_per_page, _sort_by, _sort_order);
                 return result;
             }
