@@ -1,5 +1,6 @@
 ﻿using FOX.BusinessOperations.CommonService;
 using FOX.BusinessOperations.TaskServices;
+using FOX.DataModels.Models.CasesModel;
 using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.TasksModel;
 using NUnit.Framework;
@@ -19,6 +20,9 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
         private FOX_TBL_TASK_TYPE _foxTblTaskType;
         private GetCategoryFieldResp _getCategoryFieldResp;
         private CatFieldRes _catFieldRes;
+        private FOX_TBL_TASK _foxTblTask;
+        private InterfaceSynchModel _interfaceSynchModel;
+        private TaskDashboardSearchRequest _taskDashboardSearchRequest;
 
         [SetUp]
         public void SetUp()
@@ -31,6 +35,9 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
             _foxTblTaskType = new FOX_TBL_TASK_TYPE();
             _getCategoryFieldResp = new GetCategoryFieldResp();
             _catFieldRes = new CatFieldRes();
+            _foxTblTask = new FOX_TBL_TASK();
+            _interfaceSynchModel = new InterfaceSynchModel();
+            _taskDashboardSearchRequest = new TaskDashboardSearchRequest();
         }
         [Test]
         [TestCase("", 0)]
@@ -663,7 +670,66 @@ namespace FoxRehabilitation.UnitTest.TaskServicesUnitTest
                 Assert.IsFalse(false);
             }
         }
-        //DeleteNotification
+        [Test]
+        public void AddUpdateTask_PassModel_ReturnData()
+        {
+            //Arrange
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "N_UnitTesting";
+            _foxTblTask.PATIENT_ACCOUNT_STR = "101116354815183";
+            _foxTblTask.TASK_ID = 5485231;
+            _foxTblTask.TASK_ALL_SUB_TYPES_LIST = new List<OpenIssueViewModel>()
+            {
+                new OpenIssueViewModel
+                {
+                    TASK_ID = 5485231,
+                    TASK_SUB_TYPE_ID = 544116
+                }
+            };
+
+            //Act
+            var result = _taskServices.AddUpdateTask(_foxTblTask, _userProfile);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
+        [Test]
+        public void InsertInterfaceTeamData_PassModel_ReturnData()
+        {
+            //Arrange
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "N_UnitTesting";
+            _interfaceSynchModel.PATIENT_ACCOUNT = 101116354817932;
+
+            //Act
+            _taskServices.InsertInterfaceTeamData(_interfaceSynchModel, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        //[Test]
+        //public void GetTaskDashBoardData_PassModel_ReturnDat()
+        //{
+        //    //Arrange
+        //    _userProfile.PracticeCode = 1011163;
+        //    _userProfile.UserName = "N_UnitTesting";
+        //    _taskDashboardSearchRequest.DATE_FROM_STR = Helper.GetCurrentDate().ToString();
+        //    _taskDashboardSearchRequest.DATE_TO_STR = Helper.GetCurrentDate().ToString();
+
+        //    //Act
+        //    _taskServices.GetTaskDashBoardData(_taskDashboardSearchRequest, _userProfile);
+
+        //    //Assert
+        //    Assert.IsTrue(true);
+        //}
+        //GetTaskDashBoardData
         [TearDown]
         public void Teardown()
         {

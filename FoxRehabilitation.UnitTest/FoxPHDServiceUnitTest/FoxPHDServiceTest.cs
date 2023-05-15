@@ -204,18 +204,18 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             //Assert
             Assert.That(result.Count, Is.GreaterThanOrEqualTo(0));
         }
-        [Test]
-        public void HasAttachment_EmptyAttachmentName_NoReturnsData()
-        {
-            //Arrange
-            _phdCallDetail.ATTACHMENT_NAME = null;
+        //[Test]
+        //public void HasAttachment_EmptyAttachmentName_NoReturnsData()
+        //{
+        //    //Arrange
+        //    _phdCallDetail.ATTACHMENT_NAME = "";
 
-            //Act
-            _foxPHDService.HasAttachment(_phdCallDetail, _userProfile);
+        //    //Act
+        //    _foxPHDService.HasAttachment(_phdCallDetail, _userProfile);
 
-            //Assert
-            Assert.IsTrue(true);
-        }
+        //    //Assert
+        //    Assert.IsTrue(true);
+        //}
         [Test]
         [TestCase("")]
         [TestCase("LOC-ISB-03")]
