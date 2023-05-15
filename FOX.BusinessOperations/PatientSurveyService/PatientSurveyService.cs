@@ -28,6 +28,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
         private readonly GenericRepository<PatientSurveyFormatType> _psFormatTypeRepository;
         private readonly GenericRepository<RoleToAdd> _roleRepository;
         private readonly GenericRepository<SurveyServiceLog> _surveyServiceLogRepository;
+        private readonly GenericRepository<PatientSurveyNotAnswered> _patientSurveyNotAnswered;
         public PatientSurveyService()
         {
             _patientSurveyRepository = new GenericRepository<PatientSurvey>(_patientSurveyContext);
@@ -35,6 +36,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
             _psFormatTypeRepository = new GenericRepository<PatientSurveyFormatType>(_patientSurveyContext);
             _roleRepository = new GenericRepository<RoleToAdd>(_patientSurveyContext);
             _surveyServiceLogRepository = new GenericRepository<SurveyServiceLog>(_patientSurveyContext);
+            _patientSurveyNotAnswered = new GenericRepository<PatientSurveyNotAnswered>(_patientSurveyContext);   
         }
 
         public bool SetSurveytProgress(long patientAccount, bool progressStatus)
@@ -77,6 +79,16 @@ namespace FOX.BusinessOperations.PatientSurveyService
             var dbSurvey = _patientSurveyRepository.GetByID(patientSurvey.SURVEY_ID);
             if (dbSurvey != null) //update
             {
+                PatientSurveyNotAnswered getPatientSurveyNotAnswered = new PatientSurveyNotAnswered();
+                var surveyIdNotAnswered = patientSurvey.SURVEY_ID;
+                getPatientSurveyNotAnswered = _patientSurveyNotAnswered.GetFirst(r => r.SURVEY_ID == surveyIdNotAnswered && r.PRACTICE_CODE == AppConfiguration.GetPracticeCode && r.DELETED == false);
+                
+                if(patientSurvey.SURVEY_STATUS_CHILD != "Not Answered" && getPatientSurveyNotAnswered != null && !string.IsNullOrEmpty(getPatientSurveyNotAnswered.NOT_ANSWERED_REASON))
+                {
+                    getPatientSurveyNotAnswered.DELETED = true;
+                    _patientSurveyNotAnswered.Update(getPatientSurveyNotAnswered);
+                    _patientSurveyNotAnswered.Save();
+                }
                 long getPracticeCode = AppConfiguration.GetPracticeCode;
                 SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = getPracticeCode };
                 SqlParameter patientSurveyId = new SqlParameter { ParameterName = "@SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = patientSurvey.SURVEY_ID };
@@ -226,6 +238,15 @@ namespace FOX.BusinessOperations.PatientSurveyService
                     var isExceptional = new SqlParameter { ParameterName = "@IS_EXCEPTIONAL", SqlDbType = SqlDbType.Bit, Value = dbSurvey.IS_EXCEPTIONAL };
                     var isprotectiveEquipment = new SqlParameter { ParameterName = "@IS_PROTECTIVE_EQUIPMENT", SqlDbType = SqlDbType.Bit, Value = dbSurvey.IS_PROTECTIVE_EQUIPMENT };
                     var surveyCompletedDate = new SqlParameter { ParameterName = "@SURVEY_COMPLETED_DATE", SqlDbType = SqlDbType.DateTime, Value = dbSurvey.SURVEY_COMPLETED_DATE };
+
+                    if (dbSurvey.NOT_ANSWERED_REASON == null)
+                    {
+                        if (patientSurvey.NOT_ANSWERED_REASON == null)
+                        {
+                            patientSurvey.NOT_ANSWERED_REASON = "";
+                        }
+                    }
+                    dbSurvey.NOT_ANSWERED_REASON = patientSurvey.NOT_ANSWERED_REASON;
 
                     if (dbSurvey.PRACTICE_CODE == null)
                     {
@@ -463,7 +484,12 @@ namespace FOX.BusinessOperations.PatientSurveyService
                     {
                         surveyCompletedDate.Value = DBNull.Value;
                     }
-
+                    var notAnsweredReason = new SqlParameter { ParameterName = "@NOT_ANSWERED_REASON", SqlDbType = SqlDbType.VarChar, Value = dbSurvey.NOT_ANSWERED_REASON };
+                    if (dbSurvey.SURVEY_STATUS_CHILD != "Not Answered")
+                    {
+                        patientSurvey.NOT_ANSWERED_REASON = "";
+                        notAnsweredReason.Value = patientSurvey.NOT_ANSWERED_REASON;
+                    }
                     var PatientSurveyList = SpRepository<PatientSurvey>.GetListWithStoreProcedure(@"exec FOX_PROC_UPDTAE_PATIENT_SURVEY
                  @SURVEY_ID, @PRACTICE_CODE, @FACILITY_OR_CLIENT_ID, @PATIENT_ACCOUNT_NUMBER, @RESPONSIBLE_PARTY_LAST_NAME, @RESPONSIBLE_PARTY_FIRST_NAME, @RESPONSIBLE_PARTY_MIDDLE_INITIAL, @RESPONSIBLE_PARTY_ADDRESS,
                  @RESPONSIBLE_PARTY_CITY, @RESPONSIBLE_PARTY_STATE, @RESPONSIBLE_PARTY_ZIP_CODE, @RESPONSIBLE_PARTY_TELEPHONE, @RESPONSIBLE_PARTY_SSN, @RESPONSIBLE_PARTY_SEX, @RESPONSIBLE_PARTY_DATE_OF_BIRTH, @PATIENT_LAST_NAME, 
@@ -1091,14 +1117,16 @@ namespace FOX.BusinessOperations.PatientSurveyService
             return result;
         }
 
-        public List<PatientSurveyCallLog> GetPSCallLogList(long patientAccount, long practiceCode)
+        public List<PatientSurveyCallLog> GetPSCallLogList(SurveyCallsLogs surveyCallsLogs, long practiceCode)
         {
             var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
+            var currentPage = new SqlParameter { ParameterName = "CURRENT_PAGE", SqlDbType = SqlDbType.BigInt, Value = surveyCallsLogs.CurrentPage };
+            var recordPerpage = new SqlParameter { ParameterName = "RECORD_PER_PAGE", SqlDbType = SqlDbType.BigInt, Value = surveyCallsLogs.RecordPerPage };
             var _surveyId = new SqlParameter { ParameterName = "SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = 0 };
-            var _patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = patientAccount };
+            var _patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = surveyCallsLogs.patientAccountNumber};
 
             var result = SpRepository<PatientSurveyCallLog>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PS_CALL_LOG_LIST
-                         @PRACTICE_CODE, @SURVEY_ID, @PATIENT_ACCOUNT", PracticeCode, _surveyId, _patientAccount);
+                         @PRACTICE_CODE, @SURVEY_ID, @PATIENT_ACCOUNT,@CURRENT_PAGE,@RECORD_PER_PAGE", PracticeCode, _surveyId, _patientAccount,currentPage, recordPerpage);
             return result;
         }
         public List<string> GetPSProvidersList(long practiceCode, string provider)
@@ -1231,16 +1259,75 @@ namespace FOX.BusinessOperations.PatientSurveyService
         /// <param name="patientAccountNumber"></param>
         /// <param name="profilePracticeCode"></param>
         /// <returns></returns>
-        public List<PatientSurveyInBoundCallResponse> GetPatientSurveyInBoundCalls(long patientAccountNumber, long profilePracticeCode)
+        public List<PatientSurveyInBoundCallResponse> GetPatientSurveyInBoundCalls(SurveyCallsLogs surveyCallsLogs, long profilePracticeCode)
         {
             List<PatientSurveyInBoundCallResponse> result = new List<PatientSurveyInBoundCallResponse>();
-            if (patientAccountNumber != 0 && profilePracticeCode != 0)
+            if (surveyCallsLogs != null && profilePracticeCode != 0 && !string.IsNullOrEmpty(surveyCallsLogs.patientAccountNumber))
             {
-                var patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = patientAccountNumber };
+                var patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(surveyCallsLogs.patientAccountNumber) };
+                var currentPage = new SqlParameter { ParameterName = "CURRENT_PAGE", SqlDbType = SqlDbType.BigInt, Value = surveyCallsLogs.CurrentPage };
+                var recordPerpage = new SqlParameter { ParameterName = "RECORD_PER_PAGE", SqlDbType = SqlDbType.BigInt, Value = surveyCallsLogs.RecordPerPage };
                 var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profilePracticeCode };
-                result = SpRepository<PatientSurveyInBoundCallResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SURVEY_INBOUND_CALL_DETAILS @PATIENT_ACCOUNT, @PRACTICE_CODE", patientAccount, practiceCode);
+                result = SpRepository<PatientSurveyInBoundCallResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SURVEY_INBOUND_CALL_DETAILS @PATIENT_ACCOUNT, @PRACTICE_CODE,@CURRENT_PAGE,@RECORD_PER_PAGE", patientAccount, practiceCode, currentPage, recordPerpage);
             }
             return result;
+        }
+        public PatientSurveyNotAnswered AddPatientSurveyNotAnswered(PatientSurveyNotAnswered objPatientSurveyNotAnswered, UserProfile userProfile)
+        {
+            if (objPatientSurveyNotAnswered != null && !string.IsNullOrEmpty(objPatientSurveyNotAnswered.NOT_ANSWERED_REASON))
+            {
+                long getPracticeCode = AppConfiguration.GetPracticeCode;
+                var getPatientSurveyNotAnswered = _patientSurveyNotAnswered.GetFirst(r => r.SURVEY_ID == objPatientSurveyNotAnswered.SURVEY_ID && r.PRACTICE_CODE == userProfile.PracticeCode && r.DELETED == false);
+                if (objPatientSurveyNotAnswered.NOT_ANSWERED_REASON == null)
+                {
+                    objPatientSurveyNotAnswered.NOT_ANSWERED_REASON = "";
+                }
+                if (getPatientSurveyNotAnswered == null)
+                {
+                    long notAnsweredId = 0;
+                    notAnsweredId = Helper.getMaximumId("NOT_ANSWERD_REASON_ID");
+                    objPatientSurveyNotAnswered.NOT_ANSWERD_REASON_ID = notAnsweredId;
+                    objPatientSurveyNotAnswered.PRACTICE_CODE = userProfile.PracticeCode;
+                    objPatientSurveyNotAnswered.CREATED_BY = userProfile.UserName;
+                    objPatientSurveyNotAnswered.CREATED_DATE = Helper.GetCurrentDate();
+                    objPatientSurveyNotAnswered.MODIFIED_BY = userProfile.UserName;
+                    objPatientSurveyNotAnswered.MODIFIED_DATE = Helper.GetCurrentDate();
+                    objPatientSurveyNotAnswered.DELETED = false;
+                    _patientSurveyNotAnswered.Insert(objPatientSurveyNotAnswered);
+                    _patientSurveyNotAnswered.Save();
+                }
+                else
+                {
+                    if (objPatientSurveyNotAnswered.NOT_ANSWERED_REASON == null)
+                    {
+                        objPatientSurveyNotAnswered.NOT_ANSWERED_REASON = "";
+                    }
+                    getPatientSurveyNotAnswered.NOT_ANSWERED_REASON = objPatientSurveyNotAnswered.NOT_ANSWERED_REASON;
+                    getPatientSurveyNotAnswered.PRACTICE_CODE = userProfile.PracticeCode;
+                    getPatientSurveyNotAnswered.CREATED_BY = userProfile.UserName;
+                    getPatientSurveyNotAnswered.CREATED_DATE = Helper.GetCurrentDate();
+                    getPatientSurveyNotAnswered.MODIFIED_BY = userProfile.UserName;
+                    getPatientSurveyNotAnswered.MODIFIED_DATE = Helper.GetCurrentDate();
+                    getPatientSurveyNotAnswered.DELETED = false;
+                    _patientSurveyNotAnswered.Update(getPatientSurveyNotAnswered);
+                    _patientSurveyNotAnswered.Save();
+                }
+            }
+            return objPatientSurveyNotAnswered;
+        }
+
+        public PatientSurveyNotAnswered GetPatientSurveyNotAnswered(PatientSurveyNotAnswered objPatientSurveyNotAnswered, UserProfile userProfile)
+        {
+            PatientSurveyNotAnswered getPatientSurveyNotAnswered = new PatientSurveyNotAnswered();
+            if (objPatientSurveyNotAnswered != null)
+            {
+                getPatientSurveyNotAnswered = _patientSurveyNotAnswered.GetFirst(r => r.SURVEY_ID == objPatientSurveyNotAnswered.SURVEY_ID && r.PRACTICE_CODE == userProfile.PracticeCode && r.DELETED == false);
+            }
+            else
+            {
+                objPatientSurveyNotAnswered = null;
+            }
+            return getPatientSurveyNotAnswered;
         }
     }
 }

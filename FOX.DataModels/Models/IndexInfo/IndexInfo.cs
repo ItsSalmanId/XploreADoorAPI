@@ -1003,7 +1003,7 @@ namespace FOX.DataModels.Models.IndexInfo
     {
         public decimal? Patient_Balance { get; set; }
         public decimal? Statement_Patient_Balance { get; set; }
-        public string PROCESS_DATE { get; set; }
+        public DateTime PROCESS_DATE { get; set; }
         public int NoOfDays { get; set; }
     }
 

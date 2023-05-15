@@ -398,6 +398,7 @@ namespace FOX.DataModels.Models.CasesModel
         public string MODIFIED_BY { get; set; }
         public System.DateTime MODIFIED_DATE { get; set; }
         public bool DELETED { get; set; }
+        public long? WORK_ID { get; set; }
     }
 
     [Table("FOX_TBL_NOTES_TYPE")]
