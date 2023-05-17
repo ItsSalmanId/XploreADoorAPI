@@ -125,6 +125,7 @@ namespace FOX.BusinessOperations.PatientServices
         private readonly GenericRepository<FoxDocumentType> _foxdocumenttypeRepository;
         private readonly GenericRepository<Zip_City_State> _zipCityStateRepository;
         private readonly DbContextCommon _DbContextCommon = new DbContextCommon();
+        private readonly GenericRepository<AcquisitionPatient> _acquisitionPatient;
         public PatientService()
         {
             _NewPatientRepository = new GenericRepository<Patient>(_NewPatientContext);
@@ -192,6 +193,7 @@ namespace FOX.BusinessOperations.PatientServices
             _OriginalQueueFilesRepository = new GenericRepository<OriginalQueueFiles>(_QueueContext);
             _foxdocumenttypeRepository = new GenericRepository<FoxDocumentType>(_IndexinfoContext);
             _zipCityStateRepository = new GenericRepository<Zip_City_State>(_DbContextCommon);
+            _acquisitionPatient = new GenericRepository<AcquisitionPatient>(_PatientContext);
         }
 
         public Patient AddUpdatePatient(Patient patient, UserProfile profile)
@@ -2091,6 +2093,19 @@ namespace FOX.BusinessOperations.PatientServices
             return htmlStr;
         }
 
+        public AcquisitionPatient GetAcquisitionName(AcquisitionPatient objAcquisitionPatient, UserProfile userProfile)
+        {
+            AcquisitionPatient getAcquisitionPatient = new AcquisitionPatient();
+            if (objAcquisitionPatient != null)
+            {
+                getAcquisitionPatient = _acquisitionPatient.GetFirst(r => r.PATIENT_ACCOUNT == objAcquisitionPatient.PATIENT_ACCOUNT && r.PRACTICE_CODE == userProfile.PracticeCode && r.DELETED == false);
+            }
+            else
+            {
+                objAcquisitionPatient = null;
+            }
+            return getAcquisitionPatient;
+        }
         public Patient GetCurrentPatientDemographics(long patient_Account, UserProfile profile)
         {
             Patient patient_Details = new Patient();
