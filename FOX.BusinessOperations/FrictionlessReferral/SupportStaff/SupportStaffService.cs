@@ -1367,7 +1367,7 @@ SELECT
                             response.Gender = objeligibilityModel.PatientInfo.Gender;
                             response.PolicyNumber = objeligibilityModel.PatientInfo.PolicyNumber;
                         }
-                        response.EligibilityPeriod = objeligibilityModel.EligibilityPeriod;
+                        response.EligibilityPeriod = objeligibilityModel.PlanBegin;
                         response.EligibilityStatus = objeligibilityModel.EligibilityStatus;
                         if (objeligibilityModel.PayerDetails != null)
                         {

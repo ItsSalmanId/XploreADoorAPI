@@ -10,6 +10,7 @@ namespace FOX.DataModels.Models.EligibilityService
     {
         public string InquiryDate { get; set; }
         public string EligibilityPeriod { get; set; }
+        public string PlanBegin { get; set; }
         public string EligibilityStatus { get; set; }
         public CapLimit CapLimit { get; set; }
         public PayerDetails PayerDetails { get; set; }
