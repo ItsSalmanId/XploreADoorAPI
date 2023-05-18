@@ -10,5 +10,5 @@ CREATE PROCEDURE [dbo].[FOX_PROC_GET_ADMISSION_NOTES_DETAILS]
 )                                                                                                                
 AS                                                                                                                
 BEGIN                                                    
-select * From FOX_TBL_NOTES WITH (NOLOCK) where Work_ID = 99919126  AND PRACTICE_CODE = @PRACTICE_CODE AND ISNULL(DELETED ,0) = 0                          
+select * From FOX_TBL_NOTES WITH (NOLOCK) where Work_ID = @WORK_ID  AND PRACTICE_CODE = @PRACTICE_CODE AND ISNULL(DELETED ,0) = 0                          
 END 
