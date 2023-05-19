@@ -36,6 +36,7 @@ using System.Net.Http.Headers;
 using FOX.DataModels.Models.EligibilityService;
 using EligibilityServiceResponse = FOX.DataModels.Models.EligibilityService.EligibilityServiceResponse;
 using EligibilityServiceDetails = FOX.DataModels.Models.EligibilityService.EligibilityServiceDetails;
+using System.Text.RegularExpressions;
 
 namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
 {
@@ -1398,13 +1399,13 @@ SELECT
                                                 {
                                                     EligibilityServiceDetails Eligdetails = new EligibilityServiceDetails();
                                                     Eligdetails.ServiceType = elig.ServiceType;
-                                                    Eligdetails.CoInsurance = elig.ServiceInformation[0].CoInsurance == null ? "0" : elig.ServiceInformation[0].CoInsurance.ToString();
-                                                    Eligdetails.DeductibleBase = elig.ServiceInformation[0].DeductibleBase == null ? "0" : elig.ServiceInformation[0].DeductibleBase.ToString();
-                                                    Eligdetails.DeductibleRemaining = elig.ServiceInformation[0].DeductibleRemaining == null ? "0" : elig.ServiceInformation[0].DeductibleRemaining.ToString();
-                                                    Eligdetails.OutOfPocket = elig.ServiceInformation[0].OutOfPocket == null ? "0" : elig.ServiceInformation[0].OutOfPocket.ToString();
-                                                    Eligdetails.StartDate = elig.ServiceInformation[0].StartDate == null ? "" : string.Format("{0:MM/dd/yyyy}", elig.ServiceInformation[0].StartDate.ToString());
-                                                    Eligdetails.EndDate = elig.ServiceInformation[0].EndDate == null ? "0" : string.Format("{0:MM/dd/yyyy}", elig.ServiceInformation[0].EndDate.ToString());
-                                                    Eligdetails.OutOfPocketRemaining = elig.ServiceInformation[0].OutOfPocketRemaining == null ? "0" : elig.ServiceInformation[0].OutOfPocketRemaining.ToString();
+                                                    Eligdetails.CoInsurance = elig.ServiceInformation[0].CoInsurance == null ? "0" : RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].CoInsurance.ToString());
+                                                    Eligdetails.DeductibleBase = elig.ServiceInformation[0].DeductibleBase == null ? "0" : RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].DeductibleBase.ToString());
+                                                    Eligdetails.DeductibleRemaining = elig.ServiceInformation[0].DeductibleRemaining == null ? "0" : RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].DeductibleRemaining.ToString());
+                                                    Eligdetails.OutOfPocket = elig.ServiceInformation[0].OutOfPocket == null ? "0" : RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].OutOfPocket.ToString());
+                                                    Eligdetails.StartDate = elig.ServiceInformation[0].StartDate == null ? "" : string.Format("{0:MM/dd/yyyy}", RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].StartDate.ToString()));
+                                                    Eligdetails.EndDate = elig.ServiceInformation[0].EndDate == null ? "0" : string.Format("{0:MM/dd/yyyy}", RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].EndDate.ToString()));
+                                                    Eligdetails.OutOfPocketRemaining = elig.ServiceInformation[0].OutOfPocketRemaining == null ? "0" : RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].OutOfPocketRemaining.ToString());
                                                     Eligdetails.NetworkType = elig.ServiceInformation[0].NetworkType.ToString() == "In Network" ? "In-Network Benefits" : "Out-Network Benefits";
                                                     response.EligibilityServices.Add(Eligdetails);
                                                 }
@@ -1422,11 +1423,11 @@ SELECT
 
                                                         EligibilityServiceDetails Eligdetails = new EligibilityServiceDetails();
                                                         Eligdetails.ServiceType = elig.ServiceType;
-                                                        Eligdetails.CoInsurance = info.CoInsurance == null ? "0" : info.CoInsurance.ToString();
-                                                        Eligdetails.DeductibleBase = info.DeductibleBase == null ? "0" : info.DeductibleBase.ToString();
-                                                        Eligdetails.DeductibleRemaining = info.DeductibleRemaining == null ? "0" : info.DeductibleRemaining.ToString();
-                                                        Eligdetails.OutOfPocket = info.OutOfPocket == null ? "0" : info.OutOfPocket.ToString();
-                                                        Eligdetails.OutOfPocketRemaining = info.OutOfPocketRemaining == null ? "0" : info.OutOfPocketRemaining.ToString();
+                                                        Eligdetails.CoInsurance = info.CoInsurance == null ? "0" : RemoveHtmlTagsWithSpace(info.CoInsurance.ToString());
+                                                        Eligdetails.DeductibleBase = info.DeductibleBase == null ? "0" : RemoveHtmlTagsWithSpace(info.DeductibleBase.ToString());
+                                                        Eligdetails.DeductibleRemaining = info.DeductibleRemaining == null ? "0" : RemoveHtmlTagsWithSpace(info.DeductibleRemaining.ToString());
+                                                        Eligdetails.OutOfPocket = info.OutOfPocket == null ? "0" : RemoveHtmlTagsWithSpace(info.OutOfPocket.ToString());
+                                                        Eligdetails.OutOfPocketRemaining = info.OutOfPocketRemaining == null ? "0" : RemoveHtmlTagsWithSpace(info.OutOfPocketRemaining.ToString());
                                                         Eligdetails.NetworkType = info.NetworkType.ToString() == "In Network" ? "In-Network Benefits" : "Out-Network Benefits";
                                                         response.EligibilityServices.Add(Eligdetails);
                                                     }
@@ -1443,7 +1444,13 @@ SELECT
             }
                 return response;
         }
-
+        public static string RemoveHtmlTagsWithSpace(string input)
+        {
+            string pattern = @"<[^>]+?>"; 
+            string replacement = " "; 
+            string strippedString = Regex.Replace(input, pattern, replacement);
+            return strippedString;
+        }
         private string RemoveStyleNodeFromHtmlForMVP(string htmlStr)
         {
             HtmlDocument doc = new HtmlDocument();
