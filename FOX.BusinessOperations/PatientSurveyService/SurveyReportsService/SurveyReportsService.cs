@@ -260,6 +260,8 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
                 }
                 List<PatientSurvey> result = new List<PatientSurvey>();
                 var pathtowriteFile = exportPath + "\\" + fileName;
+                patientSurveySearchRequest.objNotAnswered = new PatientSurveyNotAnswered(); 
+                patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
                 result = GetPSRDetailedReport(patientSurveySearchRequest, profile);
                 for (int i = 0; i < result.Count; i++)
                 {
