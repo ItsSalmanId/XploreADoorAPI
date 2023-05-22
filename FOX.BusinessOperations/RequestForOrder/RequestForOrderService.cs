@@ -490,13 +490,11 @@ namespace FOX.BusinessOperations.RequestForOrder
                     HtmlNode SignatureSecNode = doc.GetElementbyId("SignatureSecNode");
                     HtmlNode SignatureThirdNode = doc.GetElementbyId("SignatureThirdNode");
                     HtmlNode SignatureForthNode = doc.GetElementbyId("SignatureForthNode");
-                   // HtmlNode SignatureFifthNode = doc.GetElementbyId("SignatureFifthNode");
                     HtmlNode DateLineFirstNode = doc.GetElementbyId("DateLineFirstNode");
                     HtmlNode DateSecNode = doc.GetElementbyId("DateSecNode");
-                    //HtmlNode DateThirdNodee = doc.GetElementbyId("DateThirdNodee");
-                    //HtmlNode DateForthNode = doc.GetElementbyId("DateForthNode");
                     HtmlNode DateFifthNode = doc.GetElementbyId("DateFifthNode");
                     HtmlNode DateSixthNode = doc.GetElementbyId("DateSixthNode");
+                    string replaceString = "<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
                     if (SignatureLineFirstNode != null)
                     {
                         SignatureFirstNode = SignatureLineFirstNode.OuterHtml;
@@ -507,56 +505,34 @@ namespace FOX.BusinessOperations.RequestForOrder
                     }
                     if (SignatureSecNode != null)
                     {
-                        //string SignatureLine1nd = SignatureSecNode.OuterHtml;
                         string replaceSignatureLine1nd =  "<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
-                        faxHtmlBody = faxHtmlBody.Replace(SignatureFirstNode, replaceSignatureLine1nd);
+                        faxHtmlBody = faxHtmlBody.Replace(SignatureFirstNode, replaceString);
                     }
                     if (SignatureThirdNode != null)
                     {
-                        //string SignatureLine2nd = SignatureThirdNode.OuterHtml;
                         string replaceSignatureLine2nd ="<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
-                        faxHtmlBody = faxHtmlBody.Replace(SignatureFirstNode, replaceSignatureLine2nd);
+                        faxHtmlBody = faxHtmlBody.Replace(SignatureFirstNode, replaceString);
                     }
                     if (SignatureForthNode != null)
                     {
-                        //string SignatureLine3rd = SignatureForthNode.OuterHtml;
                         string replaceSignatureLine3rd = "<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
-                        faxHtmlBody = faxHtmlBody.Replace(SignatureFirstNode, replaceSignatureLine3rd);
+                        faxHtmlBody = faxHtmlBody.Replace(SignatureFirstNode, replaceString);
                     }
-                    //if (SignatureFifthNode != null)
-                    //{
-                    //    //string SignatureLine4th = SignatureFifthNode.OuterHtml;
-                    //    string replaceSignatureLine4th = "<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
-                    //    faxHtmlBody = faxHtmlBody.Replace(SignatureFirstNode, replaceSignatureLine4th);
-                    //}
                     //Date 
                     if (DateSecNode != null)
                     {
-                        //string DateLine1nd = DateLine1stNode.OuterHtml;
                         string replaceSignatureLine1nd = "<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
-                        faxHtmlBody = faxHtmlBody.Replace(DateFirstNode, replaceSignatureLine1nd);
+                        faxHtmlBody = faxHtmlBody.Replace(DateFirstNode, replaceString);
                     }
-                    //if (DateThirdNodee != null)
-                    //{
-                    //    //string SignatureLine2nd = SignatureLine2ndNode.OuterHtml;
-                    //    string replaceSignatureLine2nd = "<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
-                    //    faxHtmlBody = faxHtmlBody.Replace(DateFirstNode, replaceSignatureLine2nd);
-                    //}
-                    //if (DateForthNode != null)
-                    //{
-                    //    //string SignatureLine3rd = SignatureLine3rdNode.OuterHtml;
-                    //    string replaceSignatureLine3rd = "<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
-                    //    faxHtmlBody = faxHtmlBody.Replace(DateFirstNode, replaceSignatureLine3rd);
-                    //}
                     if (DateFifthNode != null)
                     {
                         string replaceSignatureLine4th = "<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
-                        faxHtmlBody = faxHtmlBody.Replace(DateFirstNode, replaceSignatureLine4th);
+                        faxHtmlBody = faxHtmlBody.Replace(DateFirstNode, replaceString);
                     }
                     if (DateSixthNode != null)
                     {
                         string replaceSignatureLine4th = "<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
-                        faxHtmlBody = faxHtmlBody.Replace(DateFirstNode, replaceSignatureLine4th);
+                        faxHtmlBody = faxHtmlBody.Replace(DateFirstNode, replaceString);
                     }
                     //Replace Bottom Border
                     HtmlNode bottomBorderLineNode = doc.GetElementbyId("stringTopBorderLine");
