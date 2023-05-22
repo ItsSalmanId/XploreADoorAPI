@@ -2098,7 +2098,7 @@ namespace FOX.BusinessOperations.PatientServices
             AcquisitionPatient getAcquisitionPatient = new AcquisitionPatient();
             if (objAcquisitionPatient != null)
             {
-                getAcquisitionPatient = _acquisitionPatient.GetFirst(r => r.PATIENT_ACCOUNT == objAcquisitionPatient.PATIENT_ACCOUNT && r.PRACTICE_CODE == userProfile.PracticeCode && r.DELETED == false);
+              getAcquisitionPatient = _acquisitionPatient.GetFirst(r => r.PATIENT_ACCOUNT == objAcquisitionPatient.PATIENT_ACCOUNT && r.PRACTICE_CODE == userProfile.PracticeCode && r.DELETED == false);
             }
             else
             {

@@ -541,8 +541,14 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpPost]
         public HttpResponseMessage GetAcquisitionName(AcquisitionPatient objAcquisitionPatient)
         {
-            var profile = GetProfile();
-            return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetAcquisitionName(objAcquisitionPatient, GetProfile()));
+            if (objAcquisitionPatient != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetAcquisitionName(objAcquisitionPatient, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Acquisition patient model is null");
+            }
         }
     }
 }
