@@ -2093,19 +2093,6 @@ namespace FOX.BusinessOperations.PatientServices
             return htmlStr;
         }
 
-        public AcquisitionPatient GetAcquisitionName(AcquisitionPatient objAcquisitionPatient, UserProfile userProfile)
-        {
-            AcquisitionPatient getAcquisitionPatient = new AcquisitionPatient();
-            if (objAcquisitionPatient != null)
-            {
-              getAcquisitionPatient = _acquisitionPatient.GetFirst(r => r.PATIENT_ACCOUNT == objAcquisitionPatient.PATIENT_ACCOUNT && r.PRACTICE_CODE == userProfile.PracticeCode && r.DELETED == false);
-            }
-            else
-            {
-                objAcquisitionPatient = null;
-            }
-            return getAcquisitionPatient;
-        }
         public Patient GetCurrentPatientDemographics(long patient_Account, UserProfile profile)
         {
             Patient patient_Details = new Patient();
@@ -11409,5 +11396,21 @@ namespace FOX.BusinessOperations.PatientServices
             }
             return response;
         }
+
+        // Description: This function is trigger to get details of patient acquisition name
+        public AcquisitionPatient GetAcquisitionName(AcquisitionPatient objAcquisitionPatient, UserProfile userProfile)
+        {
+            AcquisitionPatient getAcquisitionPatient = new AcquisitionPatient();
+            if (objAcquisitionPatient != null)
+            {
+                getAcquisitionPatient = _acquisitionPatient.GetFirst(r => r.PATIENT_ACCOUNT == objAcquisitionPatient.PATIENT_ACCOUNT && r.PRACTICE_CODE == userProfile.PracticeCode && r.DELETED == false);
+            }
+            else
+            {
+                objAcquisitionPatient = null;
+            }
+            return getAcquisitionPatient;
+        }
     }
+
 }
