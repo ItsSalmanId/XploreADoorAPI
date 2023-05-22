@@ -90,7 +90,8 @@ namespace FOX.BusinessOperations.CommonServices
                 int counter = 0;
                 foreach (var currImgPath in imagepaths)
                 {
-                    var mappedPath = HttpContext.Current.Server.MapPath(@"~/" + currImgPath.ToString());
+                    //\\\\10.10.30.165\\FoxDocumentDirectory\\Fox\\1012714\\05-20-2023\\Images
+                    var mappedPath = @"\\10.10.30.165\" + currImgPath.ToString();
                     //var mappedPath = "\\\\it-126" + '\\' + currImgPath.ToString(); if you want to run on qa uncomment this line and commment above line
                     if (File.Exists(mappedPath))
                     {
