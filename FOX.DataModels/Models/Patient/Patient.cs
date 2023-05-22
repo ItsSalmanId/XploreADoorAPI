@@ -236,7 +236,6 @@ namespace FOX.DataModels.Models.Patient
         public string PATIENT_FINANCIAL_CLASS { get; set; }
         public bool? Address_To_Guarantor { get; set; }
         public string Address_Type { get; set; }
-
     }
 
     public class PatientExportToExcelModel
@@ -2211,5 +2210,15 @@ namespace FOX.DataModels.Models.Patient
         public string Specialization { get; set; }
         public string InsPayerDescriptionName { get; set; }
         public string insPayerID { get; set; }
+    }
+    [Table("FOX_TBL_ACQUISITION_PATIENT")]
+    public class AcquisitionPatient
+    {
+        [Key]
+        public long FOX_TBL_PATIENT_ACQUISITION_ID { get; set; }
+        public string ACQUISITION_NAME { get; set; }
+        public long PATIENT_ACCOUNT { get; set; }
+        public long PRACTICE_CODE { get; set; }
+        public bool DELETED { get; set; }
     }
 }

@@ -538,5 +538,17 @@ namespace FoxRehabilitationAPI.Controllers
             var profile = GetProfile();
             return Request.CreateResponse(HttpStatusCode.OK, _patientServices.ResetCoordinates(loc, GetProfile()));
         }
+        [HttpPost]
+        public HttpResponseMessage GetAcquisitionName(AcquisitionPatient objAcquisitionPatient)
+        {
+            if (objAcquisitionPatient != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetAcquisitionName(objAcquisitionPatient, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Acquisition patient model is null");
+            }
+        }
     }
 }
