@@ -2626,8 +2626,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             try
             {
                 PdfMetamorphosis p = new PdfMetamorphosis();
-                //p.Serial = "10262870570";//server
-                p.Serial = "10261942764";//development
+                p.Serial = "10262870570";
                 p.PageSettings.Size.A4();
                 p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
                 p.PageSettings.MarginLeft.Inch(0.1f);
