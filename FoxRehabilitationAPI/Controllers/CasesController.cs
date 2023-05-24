@@ -21,9 +21,9 @@ namespace FoxRehabilitationAPI.Controllers
         }
 
         [HttpPost]
-        public HttpResponseMessage AddEditCase(string locationName, string certifyState, FOX_TBL_CASE model)
+        public HttpResponseMessage AddEditCase(string locationName, string certifyState, string historyTime, FOX_TBL_CASE model)
         {
-            var result = _CaseServices.AddEditCase(locationName,  certifyState, model, GetProfile());
+            var result = _CaseServices.AddEditCase(historyTime, locationName,  certifyState, model, GetProfile());
             var response = Request.CreateResponse(HttpStatusCode.OK, result);
             return response;
         }
