@@ -3668,7 +3668,9 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     FOX_TBL_NOTES getFoxTblNotes = new FOX_TBL_NOTES();
                     if (WORK_QUEUE != null)
                     {
-                        getFoxTblNotes = _NoteRepository.GetFirst(r => r.WORK_ID == WORK_QUEUE.WORK_ID && r.PRACTICE_CODE == AppConfiguration.GetPracticeCode && r.DELETED == false);
+                        SqlParameter workId = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = WORK_QUEUE.WORK_ID };
+                        SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = AppConfiguration.GetPracticeCode };
+                        getFoxTblNotes = SpRepository<FOX_TBL_NOTES>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ADMISSION_NOTES_DETAILS @WORK_ID, @PRACTICE_CODE", workId, pracCode);
                     }
                     if (getFoxTblNotes != null && getFoxTblNotes.NOTES != null)
                     {
@@ -5900,16 +5902,17 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
         public FOX_TBL_NOTES GetAdmissionImportantNotes(FOX_TBL_NOTES objAdmissionImportantNotes, UserProfile userProfile)
         {
-            FOX_TBL_NOTES getFoxTblNotes = new FOX_TBL_NOTES();
             if (objAdmissionImportantNotes != null)
             {
-                getFoxTblNotes = _NoteRepository.GetFirst(r => r.WORK_ID == objAdmissionImportantNotes.WORK_ID && r.PRACTICE_CODE == userProfile.PracticeCode && r.DELETED == false);
+                SqlParameter workId = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = objAdmissionImportantNotes.WORK_ID };
+                SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = userProfile.PracticeCode };
+                objAdmissionImportantNotes = SpRepository<FOX_TBL_NOTES>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ADMISSION_NOTES_DETAILS @WORK_ID, @PRACTICE_CODE", workId, pracCode);
             }
             else
             {
                 objAdmissionImportantNotes = null;
             }
-            return getFoxTblNotes;
+            return objAdmissionImportantNotes;
         }
     }
 }
