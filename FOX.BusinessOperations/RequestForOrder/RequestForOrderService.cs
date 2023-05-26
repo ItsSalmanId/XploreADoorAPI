@@ -86,7 +86,6 @@ namespace FOX.BusinessOperations.RequestForOrder
             _financialClassRepository = new GenericRepository<FinancialClass>(_PatientContext);
             _User = new GenericRepository<User>(security);
             _SenderTypeRepository = new GenericRepository<FOX_TBL_SENDER_TYPE>(_DbContextCommon);
-
         }
         public ResponseGeneratingWorkOrder GeneratingWorkOrder(long practiceCode, string userName, string email, long userId, UserProfile Profile)
         {
@@ -113,8 +112,8 @@ namespace FOX.BusinessOperations.RequestForOrder
             //}
             //else
             //{
-                senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == practiceCode) && !t.DELETED);
-           // }
+            senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == practiceCode) && !t.DELETED);
+            // }
             if (usr != null)
             {
                 originalQueue.FOX_TBL_SENDER_TYPE_ID = usr.FOX_TBL_SENDER_TYPE_ID;
@@ -228,26 +227,25 @@ namespace FOX.BusinessOperations.RequestForOrder
                     //var encryptedWorkId = StringCipher.Encrypt(requestSendEmailModel.WorkId.ToString());
                     var encryptedWorkId = requestSendEmailModel.WorkId.ToString();
                     string link = "";
-                    if(Profile!= null && Profile.isTalkRehab)
+                    if (Profile != null && Profile.isTalkRehab)
                     {
-                        link = AppConfiguration.ClientURL + @"#/account/login?talkRehabEmail="+ Profile.PracticeCode;
+                        link = AppConfiguration.ClientURL + @"#/account/login?talkRehabEmail=" + Profile.PracticeCode;
                     }
                     else
                     {
                         link = AppConfiguration.ClientURL + @"#/VerifyWorkOrder?value=" + HttpUtility.UrlEncode(encryptedWorkId);
                         link += "&name=" + requestSendEmailModel.EmailAddress;
                     }
-                    
+
                     //if (!string.IsNullOrWhiteSpace(orderingRefSourceFullName))
                     //{
                     //    link += "&name=" + orderingRefSourceFullName;
                     //    link += "&name=" + requestSendEmailModel.EmailAddress;
                     //}
-                    
+
                     string linkMessage = @"
                                 <p>Please <a href='" + link + @"'>click here for signing</a> to confirm that you have reviewed and are an agreement of this request.   Once you click, the document will electronically be signed by you with the current date and time.  Thank you for your confidence in our practice.
                                 ";
-
                     ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestSendEmailModel.AttachmentHTML, requestSendEmailModel.FileName.Replace(' ', '_'), "email", linkMessage);
                     AddHtmlToDB(requestSendEmailModel.WorkId, requestSendEmailModel.AttachmentHTML, Profile.UserName);
                     if (responseHTMLToPDF != null && (responseHTMLToPDF?.Success ?? false))
@@ -442,17 +440,15 @@ namespace FOX.BusinessOperations.RequestForOrder
 
                         if (queueResult != null && emailStatus == true)
                         {
-                             queueResult.REFERRAL_EMAIL_SENT_TO = requestSendEmailModel.EmailAddress;
-                             _QueueRepository.Update(queueResult);
-                             _QueueRepository.Save();
-                        }                
+                            queueResult.REFERRAL_EMAIL_SENT_TO = requestSendEmailModel.EmailAddress;
+                            _QueueRepository.Update(queueResult);
+                            _QueueRepository.Save();
+                        }
                         string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
                         int numberOfPages = getNumberOfPagesOfPDF(filePath);
                         //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
                         //SavePdfToImages(filePath, imagesPath, requestSendEmailModel.WorkId, numberOfPages, "Email", requestSendEmailModel.EmailAddress, Profile.UserName);
-                       
                         SavePdfToImages(filePath, config, requestSendEmailModel.WorkId, numberOfPages, "Email", requestSendEmailModel.EmailAddress, Profile.UserName, requestSendEmailModel._isFromIndexInfo);
-
                         return new ResponseModel() { Message = "Email sent successfully, our admission team is processing your referral", ErrorMessage = "", Success = true };
                     }
                     else
@@ -484,8 +480,29 @@ namespace FOX.BusinessOperations.RequestForOrder
                     && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
                     && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
                 {
-                    ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestSendFAXModel.AttachmentHTML, requestSendFAXModel.FileName, "fax");
+                    string orininalHtml = requestSendFAXModel.AttachmentHTML;
+                    string faxHtmlBody = requestSendFAXModel.AttachmentHTML;
+                    HtmlDocument doc = new HtmlDocument();
+                    doc.LoadHtml(faxHtmlBody);
+                    //Replace Bottom Border
+                    HtmlNode bottomBorderLineNode = doc.GetElementbyId("stringTopBorderLine");
+                    string bottomBorder = bottomBorderLineNode.OuterHtml;
+                    string replaceBottomBorder = "<tr><td colspan=\"2\" style=\"width: 100%; height: 1px; border-top: 1px solid #000\" id=\"replaceStringTopBorderLine\"></td></ tr > ";
+                    faxHtmlBody = faxHtmlBody.Replace(bottomBorder, replaceBottomBorder);
+                    //Replace Space Above Date & Signature div 
+                    doc.LoadHtml(faxHtmlBody);
+                    HtmlNode spaceAboveDateNode = doc.GetElementbyId("spaceAboveDateAndSign");
+                    string spaceAboveDate = spaceAboveDateNode.OuterHtml;
+                    string spaceAboveDateReplace = "<td><br><br><br><br><br><br><br><br><br><br><br><br></td>";
+                    faxHtmlBody = faxHtmlBody.Replace(spaceAboveDate, spaceAboveDateReplace);
 
+                    //Replace Space Below Date & Signature div
+                    doc.LoadHtml(faxHtmlBody);
+                    HtmlNode spaceBelowDateNode = doc.GetElementbyId("spaceBelowDateAndSign");
+                    string belowSpace = spaceBelowDateNode.OuterHtml;
+                    string spaceBelowDateReplace = "<td><br><br></td>";
+                    faxHtmlBody = faxHtmlBody.Replace(belowSpace, spaceBelowDateReplace);
+                    ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDFSautinsoftInFax(config, faxHtmlBody, requestSendFAXModel.FileName, "fax");
                     if (responseHTMLToPDF != null && (responseHTMLToPDF?.Success ?? false))
                     {
                         //var resultfax = _IFaxService.SendFax(new string[] { requestSendFAXModel.ReceipientFaxNumber }, new string[] { "" }, null, responseHTMLToPDF.FileName, responseHTMLToPDF.FilePath, requestSendFAXModel.Subject, false, Profile);
@@ -500,25 +517,21 @@ namespace FOX.BusinessOperations.RequestForOrder
                         //}
                         //hl
                         //ResponseHTMLToPDF responseHTMLToPDF2 = HTMLToPDF2(config, htmlstring, "tempdfdelivery");
-                       
+
                         //string deliveryfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
                         string filePath = responseHTMLToPDF?.FilePath + responseHTMLToPDF?.FileName;
                         int numberOfPages = getNumberOfPagesOfPDF(filePath);
                         //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
                         //SavePdfToImages(filePath, imagesPath, requestSendFAXModel.WorkId, numberOfPages, "Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName);
-
                         SavePdfToImages(filePath, config, requestSendFAXModel.WorkId, numberOfPages, "Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
-
                         //SavePdfToImages(deliveryfilePath, config, requestSendFAXModel.WorkId, 1, "DR:Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
 
                         var commonService = new CommonServices.CommonServices();
                         AttachmentData attachmentPath = commonService.GeneratePdfForSupportedDoc(config, requestSendFAXModel.WorkId.ToString(), Profile);
-
                         if (!attachmentPath.FILE_PATH.EndsWith("\\"))
                         {
                             attachmentPath.FILE_PATH = attachmentPath.FILE_PATH + "\\";
                         }
-
                         var resultfax = _IFaxService.SendFax(new string[] { requestSendFAXModel.ReceipientFaxNumber }, new string[] { "" }, null, attachmentPath.FILE_NAME, attachmentPath.FILE_PATH, requestSendFAXModel.Subject, false, Profile);
 
 
@@ -530,10 +543,8 @@ namespace FOX.BusinessOperations.RequestForOrder
                         {
                             htmlstring = "<html><body><h2>Delivery Report</h2><p>Subject:" + requestSendFAXModel.Subject + "</p><p>From:" + requestSendFAXModel.SenderName + "</p><p>To:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Sent:" + DateTime.Now + "</p><br/><div style='padding:10px;width: 50%;'><p>Delivery report for:" + requestSendFAXModel.ReceipientFaxNumber + "</p><p>Delivered Successfully:</p><p>Message delivered to recipient. </p></div></body></html>";
                         }
-                        //hl
-                        ResponseHTMLToPDF responseHTMLToPDF2 = HTMLToPDF2(config, htmlstring, "tempdfdelivery");
-
-                        string deliveryfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
+                        ResponseHTMLToPDF responseHTMLToPDF4 = HTMLToPDFDeliverySautinsoft(config, htmlstring, "tempdfdelivery");
+                        string deliveryfilePath = responseHTMLToPDF4?.FilePath + responseHTMLToPDF4?.FileName;
 
                         SavePdfToImages(deliveryfilePath, config, requestSendFAXModel.WorkId, 1, "DR:Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
 
@@ -557,6 +568,74 @@ namespace FOX.BusinessOperations.RequestForOrder
                 return new ResponseModel() { Message = "Fax sent successfully, our admission team is processing your referral.", ErrorMessage = exception.ToString(), Success = false };
             }
         }
+        private ResponseHTMLToPDF HTMLToPDFDeliverySautinsoft(ServiceConfiguration conf, string htmlString, string fileName, string linkMessage = null)
+        {
+            PdfMetamorphosis p = new PdfMetamorphosis();
+            //p.Serial = "10262870570";//server
+            p.Serial = "10261942764";//development
+            p.PageSettings.Size.A4();
+            p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
+            p.PageSettings.MarginLeft.Inch(0.1f);
+            p.PageSettings.MarginRight.Inch(0.1f);
+            if (p != null)
+            {
+                string pdfFilePath = Path.Combine(conf.ORIGINAL_FILES_PATH_SERVER);
+                //string finalsetpath = conf.ORIGINAL_FILES_PATH_SERVER.Remove(conf.ORIGINAL_FILES_PATH_SERVER.Length - 1);
+                if (!Directory.Exists(pdfFilePath))
+                {
+                    Directory.CreateDirectory(pdfFilePath);
+                }
+                fileName += fileName + DateTime.Now.Ticks + ".pdf";
+                string pdfFilePathnew = pdfFilePath + "\\" + fileName;
+                if (p.HtmlToPdfConvertStringToFile(htmlString, pdfFilePathnew) == 0)
+                {
+                    //return pdfFilePathnew;
+                    return new ResponseHTMLToPDF() { FileName = fileName, FilePath = pdfFilePath, Success = true, ErrorMessage = "" };
+                }
+                else
+                {
+                    var ex = p.TraceSettings.ExceptionList.Count > 0 ? p.TraceSettings.ExceptionList[0] : null;
+                    var msg = ex != null ? ex.Message + Environment.NewLine + ex.StackTrace : "An error occured during converting HTML to PDF!";
+                    return new ResponseHTMLToPDF() { FileName = fileName, FilePath = pdfFilePathnew, Success = true, ErrorMessage = "" };
+                    //return "";
+                }
+            }
+            return new ResponseHTMLToPDF() { FileName = fileName, FilePath = "", Success = true, ErrorMessage = "" };
+        }
+        private ResponseHTMLToPDF HTMLToPDFSautinsoftInFax(ServiceConfiguration conf, string htmlString, string fileName, string type, string linkMessage = null)
+        {
+            PdfMetamorphosis p = new PdfMetamorphosis();
+            //p.Serial = "10262870570";//server
+            p.Serial = "10261942764";//development
+            p.PageSettings.Size.A4();
+            p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
+            p.PageSettings.MarginLeft.Inch(0.1f);
+            p.PageSettings.MarginRight.Inch(0.1f);
+            if (p != null)
+            {
+                string pdfFilePath = Path.Combine(conf.ORIGINAL_FILES_PATH_SERVER);
+                //string finalsetpath = conf.ORIGINAL_FILES_PATH_SERVER.Remove(conf.ORIGINAL_FILES_PATH_SERVER.Length - 1);
+                if (!Directory.Exists(pdfFilePath))
+                {
+                    Directory.CreateDirectory(pdfFilePath);
+                }
+                fileName = fileName + DateTime.Now.Ticks + ".pdf";
+                string pdfFilePathnew = pdfFilePath + "\\" + fileName;
+                if (p.HtmlToPdfConvertStringToFile(htmlString, pdfFilePathnew) == 0)
+                {
+                    //return pdfFilePathnew;
+                    return new ResponseHTMLToPDF() { FileName = fileName, FilePath = pdfFilePath, Success = true, ErrorMessage = "" };
+                }
+                else
+                {
+                    var ex = p.TraceSettings.ExceptionList.Count > 0 ? p.TraceSettings.ExceptionList[0] : null;
+                    var msg = ex != null ? ex.Message + Environment.NewLine + ex.StackTrace : "An error occured during converting HTML to PDF!";
+                    return new ResponseHTMLToPDF() { FileName = fileName, FilePath = pdfFilePathnew, Success = true, ErrorMessage = "" };
+                    //return "";
+                }
+            }
+            return new ResponseHTMLToPDF() { FileName = fileName, FilePath = "", Success = true, ErrorMessage = "" };
+        }
         private ResponseHTMLToPDF HTMLToPDF(ServiceConfiguration config, string htmlString, string fileName, string type, string linkMessage = null)
         {
             try
@@ -564,8 +643,6 @@ namespace FOX.BusinessOperations.RequestForOrder
                 HtmlDocument htmlDoc = new HtmlDocument();
                 htmlDoc.LoadHtml(htmlString);
                 htmlDoc.DocumentNode.SelectSingleNode("//*[contains(@id,'print-footer')]")?.Remove();
-
-
                 if (!string.IsNullOrWhiteSpace(linkMessage))
                 {
                     var htmlNode_link = htmlDoc.DocumentNode.SelectSingleNode("//*[contains(@id,'link')]");
@@ -735,15 +812,15 @@ namespace FOX.BusinessOperations.RequestForOrder
                 //        //_OriginalQueueFiles.Save();
                 //    }
                 //}
-                    long iD = Helper.getMaximumId("FOXREHAB_FILE_ID");
-                    var fileId = new SqlParameter("FILE_ID", SqlDbType.BigInt) { Value = iD };
-                    var parmWorkID = new SqlParameter("WORKID", SqlDbType.BigInt) { Value = workId };
-                    var parmFilePath = new SqlParameter("FILEPATH", SqlDbType.VarChar) { Value = filePath };
-                    var parmLogoPath = new SqlParameter("LOGOPATH", SqlDbType.VarChar) { Value = logoPath };
-                    var _isFromIndexInfo = new SqlParameter("IS_FROM_INDEX_INFO", SqlDbType.Bit) { Value = false };
+                long iD = Helper.getMaximumId("FOXREHAB_FILE_ID");
+                var fileId = new SqlParameter("FILE_ID", SqlDbType.BigInt) { Value = iD };
+                var parmWorkID = new SqlParameter("WORKID", SqlDbType.BigInt) { Value = workId };
+                var parmFilePath = new SqlParameter("FILEPATH", SqlDbType.VarChar) { Value = filePath };
+                var parmLogoPath = new SqlParameter("LOGOPATH", SqlDbType.VarChar) { Value = logoPath };
+                var _isFromIndexInfo = new SqlParameter("IS_FROM_INDEX_INFO", SqlDbType.Bit) { Value = false };
 
-                    var result = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_AD_FILES_TO_DB_FROM_RFO @FILE_ID, @WORKID, @FILEPATH, @LOGOPATH, @IS_FROM_INDEX_INFO",
-                        fileId, parmWorkID, parmFilePath, parmLogoPath, _isFromIndexInfo);
+                var result = SpRepository<OriginalQueueFiles>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_AD_FILES_TO_DB_FROM_RFO @FILE_ID, @WORKID, @FILEPATH, @LOGOPATH, @IS_FROM_INDEX_INFO",
+                    fileId, parmWorkID, parmFilePath, parmLogoPath, _isFromIndexInfo);
             }
             catch (Exception exception)
             {
@@ -796,8 +873,10 @@ namespace FOX.BusinessOperations.RequestForOrder
         private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, string sorcetype, string sorceName, string userName, bool _isFromIndexInfo)
         {
             List<int> threadCounter = new List<int>();
-            var originalQueueFilesCount = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
-            long pageCounter = originalQueueFilesCount;
+            SqlParameter uniqueid = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.VarChar, Value = workId };
+            SqlParameter praCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = AppConfiguration.GetPracticeCode };
+            var originalQueueFilesCount = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS_LIST  @WORK_ID, @PRACTICE_CODE", uniqueid, praCode);
+            long pageCounter = originalQueueFilesCount.Count;
 
             if (!Directory.Exists(config.IMAGES_PATH_SERVER))
             {
@@ -911,7 +990,11 @@ namespace FOX.BusinessOperations.RequestForOrder
                 //}
                 //else
                 //{
-                noOfPages = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
+                //noOfPages = _OriginalQueueFiles.GetMany(t => t.WORK_ID == workId && !t.deleted)?.Count() ?? 0;
+                SqlParameter id = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.VarChar, Value = workId };
+                SqlParameter practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = AppConfiguration.GetPracticeCode };
+                var noOfPage = SpRepository<OriginalQueue>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS_LIST  @WORK_ID, @PRACTICE_CODE", id, practiceCode);
+                noOfPages = noOfPage.Count;
                 AddToDatabase(PdfPath, noOfPages, workId, sorcetype, sorceName, userName, config.PRACTICE_CODE, _isFromIndexInfo);
                 //}
             }
@@ -922,7 +1005,8 @@ namespace FOX.BusinessOperations.RequestForOrder
             {
                 System.Drawing.Image img;
                 PdfFocus f = new PdfFocus();
-                f.Serial = "10261435399";
+                //f.Serial = "10261435399";
+                f.Serial = "80033727929";
                 f.OpenPdf(PdfPath);
 
                 if (f.PageCount > 0)
@@ -956,7 +1040,7 @@ namespace FOX.BusinessOperations.RequestForOrder
             iTextSharp.text.pdf.PdfReader pdfReader = new iTextSharp.text.pdf.PdfReader(PdfPath);
             return pdfReader.NumberOfPages;
         }
-        private void AddToDatabase(string filePath, int noOfPages, long workId, string sorcetype, string sorceName, string userName,long? practice_code, bool fromindexinf)
+        private void AddToDatabase(string filePath, int noOfPages, long workId, string sorcetype, string sorceName, string userName, long? practice_code, bool fromindexinf)
         {
             try
             {
@@ -1024,12 +1108,12 @@ namespace FOX.BusinessOperations.RequestForOrder
                 long workId = long.Parse(workIdStr);
                 OriginalQueue originalQueue = _QueueRepository.GetFirst(t => t.WORK_ID == workId && !t.DELETED);
                 if (originalQueue != null)
-                {           
-                        originalQueue.IS_VERIFIED_BY_RECIPIENT = true;
-                        originalQueue.MODIFIED_BY = "ExternalUser";
-                        originalQueue.MODIFIED_DATE = DateTime.Now;
-                        _QueueRepository.Update(originalQueue);
-                        _QueueRepository.Save();
+                {
+                    originalQueue.IS_VERIFIED_BY_RECIPIENT = true;
+                    originalQueue.MODIFIED_BY = "ExternalUser";
+                    originalQueue.MODIFIED_DATE = DateTime.Now;
+                    _QueueRepository.Update(originalQueue);
+                    _QueueRepository.Save();
                     return true;
                 }
                 return false;
@@ -1043,15 +1127,19 @@ namespace FOX.BusinessOperations.RequestForOrder
         {
             try
             {
-                OriginalQueue originalQueue = _QueueRepository.Get(t => t.WORK_ID == requestDeleteWorkOrder?.WorkId && !t.DELETED);
-
-                if (originalQueue != null)
+                SqlParameter uniqueId = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = requestDeleteWorkOrder?.WorkId };
+                SqlParameter practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = AppConfiguration.GetPracticeCode };
+                OriginalQueue objOriginalQueue = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS @UNIQUE_ID, @PRACTICE_CODE", uniqueId, practiceCode);
+                SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = Profile.PracticeCode };
+                SqlParameter workId = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = requestDeleteWorkOrder?.WorkId };
+                var deleteImportantNotes = SpRepository<FOX_TBL_NOTES>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_DELETE_ADMISSION_IMPORTANT_NOTES @PRACTICE_CODE, @WORK_ID", pracCode, workId);
+                if (objOriginalQueue != null)
                 {
-                    originalQueue.DELETED = true;
-                    originalQueue.MODIFIED_BY = Profile.UserName;
-                    originalQueue.MODIFIED_DATE = DateTime.Now;
+                    objOriginalQueue.DELETED = true;
+                    objOriginalQueue.MODIFIED_BY = Profile.UserName;
+                    objOriginalQueue.MODIFIED_DATE = DateTime.Now;
 
-                    _QueueRepository.Update(originalQueue);
+                    _QueueRepository.Update(objOriginalQueue);
                     _QueueRepository.Save();
                     return new ResponseModel() { Message = "Delete work order successfully.", ErrorMessage = "", Success = true };
                 }
@@ -1065,18 +1153,18 @@ namespace FOX.BusinessOperations.RequestForOrder
             }
         }
 
-public ResponseModel DownloadPdf(RequestDownloadPdfModel requestDownloadPdfModel, UserProfile Profile)
-{
-    try
-    {
-        var config = Helper.GetServiceConfiguration(Profile.PracticeCode);
-        if (config.PRACTICE_CODE != null
-            && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
-            && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
+        public ResponseModel DownloadPdf(RequestDownloadPdfModel requestDownloadPdfModel, UserProfile Profile)
         {
-            ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestDownloadPdfModel.AttachmentHTML, requestDownloadPdfModel.FileName.Replace(' ', '_'), "fax");
-            //return new ResponseModel() { Message = @"FoxDocumentDirectory\RequestForOrderPDF\" + responseHTMLToPDF.FileName, ErrorMessage = "", Success = true };
-            return new ResponseModel() { Message = config.ORIGINAL_FILES_PATH_DB + responseHTMLToPDF.FileName, ErrorMessage = "", Success = true };
+            try
+            {
+                var config = Helper.GetServiceConfiguration(Profile.PracticeCode);
+                if (config.PRACTICE_CODE != null
+                    && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
+                    && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
+                {
+                    ResponseHTMLToPDF responseHTMLToPDF = HTMLToPDF(config, requestDownloadPdfModel.AttachmentHTML, requestDownloadPdfModel.FileName.Replace(' ', '_'), "fax");
+                    //return new ResponseModel() { Message = @"FoxDocumentDirectory\RequestForOrderPDF\" + responseHTMLToPDF.FileName, ErrorMessage = "", Success = true };
+                    return new ResponseModel() { Message = config.ORIGINAL_FILES_PATH_DB + responseHTMLToPDF.FileName, ErrorMessage = "", Success = true };
 
                 }
                 else
@@ -1108,9 +1196,9 @@ public ResponseModel DownloadPdf(RequestDownloadPdfModel requestDownloadPdfModel
                         int numberOfPages = getNumberOfPagesOfPDF(filePath);
                         //string imagesPath = HttpContext.Current.Server.MapPath("~/" + ImgDirPath);
                         //SavePdfToImages(filePath, imagesPath, reqAddDocument_SignOrder.WorkId, numberOfPages, "Email", Profile.UserEmailAddress, Profile.UserName);
-                       
+
                         SavePdfToImages(filePath, config, reqAddDocument_SignOrder.WorkId, numberOfPages, "Email", Profile.UserEmailAddress, Profile.UserName, false);
-                       
+
                         return new ResponseModel() { Message = "Add document in sign order successfully.", ErrorMessage = "", Success = true };
                     }
                     else
@@ -1175,7 +1263,8 @@ public ResponseModel DownloadPdf(RequestDownloadPdfModel requestDownloadPdfModel
 
                 return refSrc;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }
@@ -1213,7 +1302,7 @@ public ResponseModel DownloadPdf(RequestDownloadPdfModel requestDownloadPdfModel
             {
                 pri_insurance = ins_name;
             }
-             var file_name = patient.Last_Name + "_" + documentType;
+            var file_name = patient.Last_Name + "_" + documentType;
             var Sender = _User.GetFirst(T => T.USER_NAME == sourceDetail.CREATED_BY);
             if (Sender == null && sourceDetail != null && !string.IsNullOrEmpty(sourceDetail.CREATED_BY) && sourceDetail.CREATED_BY.Equals("FOX TEAM"))
             {
@@ -1222,13 +1311,13 @@ public ResponseModel DownloadPdf(RequestDownloadPdfModel requestDownloadPdfModel
 
             var fcClass = new FinancialClass();
 
-            if(work_order != null && work_order.PATIENT_ACCOUNT != null && work_order.PATIENT_ACCOUNT != 0)
+            if (work_order != null && work_order.PATIENT_ACCOUNT != null && work_order.PATIENT_ACCOUNT != 0)
             {
                 var pat = _FoxTblPatientRepository.GetFirst(x => x.Patient_Account == work_order.PATIENT_ACCOUNT);
-                if(pat != null && pat.FINANCIAL_CLASS_ID != null)
+                if (pat != null && pat.FINANCIAL_CLASS_ID != null)
                 {
                     fcClass = _financialClassRepository.GetFirst(x => x.FINANCIAL_CLASS_ID == pat.FINANCIAL_CLASS_ID);
-                    if(fcClass != null && !string.IsNullOrEmpty(fcClass.NAME) && fcClass.NAME.ToLower().Contains("sa- special account"))
+                    if (fcClass != null && !string.IsNullOrEmpty(fcClass.NAME) && fcClass.NAME.ToLower().Contains("sa- special account"))
                     {
                         work_order.is_strategic_account = true;
                     }
@@ -1240,7 +1329,8 @@ public ResponseModel DownloadPdf(RequestDownloadPdfModel requestDownloadPdfModel
             {
                 if (!string.IsNullOrEmpty(sourceDetail?.DEPARTMENT_ID))
                 {
-                    if(sourceDetail.DEPARTMENT_ID.EndsWith("1")){
+                    if (sourceDetail.DEPARTMENT_ID.EndsWith("1"))
+                    {
                         sourceDetail.DEPARTMENT_ID = sourceDetail.DEPARTMENT_ID + ",";
                     }
                     if (sourceDetail.DEPARTMENT_ID.Contains("1,"))
@@ -1362,8 +1452,8 @@ public ResponseModel DownloadPdf(RequestDownloadPdfModel requestDownloadPdfModel
                 {
                     body = body.Replace("[[QRCode]]", qrCode.ENCODED_IMAGE_BYTES ?? "");
                 }
-                body = body.Replace("[[DOCUMENT_TYPE]]", documentType ?? "");               
-                if( ORS != null)
+                body = body.Replace("[[DOCUMENT_TYPE]]", documentType ?? "");
+                if (ORS != null)
                 {
                     body = body.Replace("[[ORS]]", ORS.LAST_NAME + ", " + ORS.FIRST_NAME ?? "");
                 }

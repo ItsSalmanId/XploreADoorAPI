@@ -345,7 +345,8 @@ namespace FOX.BusinessOperations.FoxPHDService
                     string deliveryReportId = "";
                     System.Drawing.Image img;
                     PdfFocus pdfFocus = new PdfFocus();
-                    pdfFocus.Serial = "10261435399";
+                   // pdfFocus.Serial = "10261435399";
+                    pdfFocus.Serial = "80033727929";
                     pdfFocus.OpenPdf(PdfPath);
                     if (pdfFocus.PageCount > 0)
                     {

@@ -2,6 +2,7 @@
 using FOX.DataModels.Models.PatientSurvey;
 using FoxRehabilitationAPI.Filters;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -30,11 +31,41 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpPost]
         public HttpResponseMessage UpdatePatientSurvey(FOX.DataModels.Models.PatientSurvey.PatientSurvey patientSurvey)
         {
-            _patientSurveyService.UpdatePatientSurvey(patientSurvey, GetProfile());
-            var response = Request.CreateResponse(HttpStatusCode.OK, "Add/Update successfull");
-            return response;
+            if (patientSurvey != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.UpdatePatientSurvey(patientSurvey, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient survey model is empty");
+            }
         }
 
+        [HttpPost]
+        public HttpResponseMessage AddPatientSurveyNotAnswered(FOX.DataModels.Models.PatientSurvey.PatientSurveyNotAnswered objPatientSurveyNotAnswered)
+        {
+            if (objPatientSurveyNotAnswered != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.AddPatientSurveyNotAnswered(objPatientSurveyNotAnswered, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient survey model is empty");
+            }
+        }
+
+        [HttpPost]
+        public HttpResponseMessage GetPatientSurveyNotAnswered(PatientSurveyNotAnswered objPatientSurveyNotAnswered)
+        {
+            if (objPatientSurveyNotAnswered != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetPatientSurveyNotAnswered(objPatientSurveyNotAnswered, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Admission Important Notes model is empty");
+            }
+        }
         [HttpGet]
         public HttpResponseMessage GetPatientSurveyList(long patientAccount, int isSurveyed)
         {
@@ -137,21 +168,28 @@ namespace FoxRehabilitationAPI.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetPSDRegionAndRecommendationWise(patientSurveySearchRequest, GetProfile()));
         }
 
-        [HttpGet]
-        public HttpResponseMessage GetPSCallLogList(string patientAccount)
+        [HttpPost]
+        public HttpResponseMessage GetPSCallLogList(SurveyCallsLogs surveyCallsLogs)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetPSCallLogList(Convert.ToInt64(patientAccount), GetProfile().PracticeCode));
-        }
-        [HttpGet]
-        public HttpResponseMessage GetPatientSurveyInboundCall(string patientAccount)
-        {
-            if (!string.IsNullOrEmpty(patientAccount))
+            if (surveyCallsLogs != null)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetPatientSurveyInBoundCalls(Convert.ToInt64(patientAccount), GetProfile().PracticeCode));
+                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetPSCallLogList(surveyCallsLogs, GetProfile().PracticeCode));
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Patient Account is missing");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Survey Calls Logs model is null");
+            }
+        }
+        [HttpPost]
+        public HttpResponseMessage GetPatientSurveyInboundCall(SurveyCallsLogs surveyCallsLogs)
+        {
+            if (surveyCallsLogs != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetPatientSurveyInBoundCalls(surveyCallsLogs, GetProfile().PracticeCode));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Survey Calls Logs model is null");
             }
         }
         [HttpGet]
@@ -182,6 +220,18 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetPSDetailsFromEmail(string surveyId)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.GetSurveyDetailedFromEmail(surveyId, GetProfile().PracticeCode));
+        }
+        [HttpPost]
+        public HttpResponseMessage SurveyPerformByUser(SelectiveSurveyList objSelectiveSurveyList)
+        {
+            if (objSelectiveSurveyList != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _patientSurveyService.SurveyPerformByUser(objSelectiveSurveyList, GetProfile().PracticeCode));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Perform survey model is empty");
+            }
         }
     }
 }

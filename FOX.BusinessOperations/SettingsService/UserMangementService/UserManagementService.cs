@@ -40,6 +40,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         private readonly DbContextSettings _settings = new DbContextSettings();
         private readonly DbContextSettings _dbContextSettings = new DbContextSettings();
         private readonly GenericRepository<User> _UserRepository;
+        private readonly GenericRepository<FOX_TBL_OTP_ENABLE_DATE> _enableOtpRepository;
         private readonly GenericRepository<FOX_TBL_PRACTICE_ROLE_RIGHTS> _RoleRightRepository;
         private readonly GenericRepository<FOX_TBL_RIGHTS_OF_ROLE> _RightsOfRoleRepository;
         private readonly GenericRepository<RoleToAdd> _RoleRepository;
@@ -71,6 +72,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         private readonly GenericRepository<ActiveIndexerHistory> _ActiveIndexerHistoryRepository;
         public UserManagementService()
         {
+
             _UserRepository = new GenericRepository<User>(security);
             _RoleRightRepository = new GenericRepository<FOX_TBL_PRACTICE_ROLE_RIGHTS>(security);
             _RoleRepository = new GenericRepository<RoleToAdd>(security);
@@ -99,6 +101,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             _ActiveIndexerRepository = new GenericRepository<ActiveIndexer>(security);
             _ActiveIndexerLogsRepository = new GenericRepository<ActiveIndexerLogs>(security);
             _ActiveIndexerHistoryRepository = new GenericRepository<ActiveIndexerHistory>(security);
+            _enableOtpRepository = new GenericRepository<FOX_TBL_OTP_ENABLE_DATE>(_dbContextSettings);
         }
         public bool CreateUser(User user, UserProfile profile)
         {
@@ -129,6 +132,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 }
                 usr.IS_ACTIVE = user.IS_ACTIVE;
                 usr.IS_ADMIN = user.IS_ADMIN;
+
                 //  usr.IS_LOCKED_OUT = user.IS_LOCKED_OUT;
                 //   usr.LAST_LOGIN_DATE = user.LAST_LOGIN_DATE;
                 usr.LAST_NAME = user.LAST_NAME?.Trim();
@@ -2522,10 +2526,13 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             //selective team member for updating pervious teams
             if (user.ROLE_ID != 0 && userToUpdate.ROLE_ID != 0 && user.ROLE_ID != userToUpdate.ROLE_ID)
             {
-                if (user.ROLE_NAME.ToString() == "SUPERVISOR")
+                if(user.ROLE_NAME != null)
                 {
-                    SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(userToUpdate.USER_ID) };
-                    SpRepository<UserTeamModel>.GetListWithStoreProcedure(@"exec FOX_PROC_UPDATE_USER_TEAM_DETAILS @USER_ID", userID);
+                    if (user.ROLE_NAME.ToString() == "SUPERVISOR")
+                    {
+                        SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(userToUpdate.USER_ID) };
+                        SpRepository<UserTeamModel>.GetListWithStoreProcedure(@"exec FOX_PROC_UPDATE_USER_TEAM_DETAILS @USER_ID", userID);
+                    }
                 }
             }
             //if (string.IsNullOrWhiteSpace(user.SecurityStamp))
@@ -2628,6 +2635,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             userToUpdate.REFERRAL_REGION_ID = user.REFERRAL_REGION_ID;
             userToUpdate.FULL_ACCESS_OVER_APP = user.FULL_ACCESS_OVER_APP;
             userToUpdate.USER_TYPE = user.USER_TYPE;
+            userToUpdate.MFA = user.MFA;
 
             if (user.ROLE_ID == 101)
             {
@@ -3403,6 +3411,68 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             {
                 throw ex;
             }
+        }
+
+        //  this function Update User OTB enable date when user click on SKIP FOR NOW on MFA screen 
+        public ResponseModel UpdateOtpEnableDate(long userId)
+        {
+            ResponseModel resp = new ResponseModel();
+            FOX_TBL_OTP_ENABLE_DATE obj = _enableOtpRepository.GetSingleOrDefault(r => r.USER_ID == userId && r.DELETED == false);
+            if (obj == null)
+            {
+                obj = new FOX_TBL_OTP_ENABLE_DATE
+                {
+                    OTP_ENABLE_DATE = Helper.GetCurrentDate(),
+                    CREATED_DATE = Helper.GetCurrentDate(),
+                    CREATED_BY = userId.ToString(),
+                    MODIFIED_DATE = Helper.GetCurrentDate(),
+                    MODIFIED_BY = userId.ToString(),
+                    USER_ID = userId,
+                    FOX_OTP_ENABLE_ID = Helper.getMaximumId("FOX_OTP_ENABLE_ID")
+                };
+                _enableOtpRepository.Insert(obj);
+                _enableOtpRepository.Save();
+                resp.Success = true;
+                resp.Message = "User status inserted successfully.";
+                resp.ErrorMessage = string.Empty;
+                resp.AU = false;
+            }
+            else
+            {
+                obj.OTP_ENABLE_DATE = Helper.GetCurrentDate();
+                obj.MODIFIED_DATE = Helper.GetCurrentDate();
+                obj.MODIFIED_BY = userId.ToString();
+                _enableOtpRepository.Update(obj);
+                _enableOtpRepository.Save();
+                resp.Success = true;
+                resp.Message = "Status updated successfully.";
+                resp.ErrorMessage = string.Empty;
+                resp.AU = false;
+            }
+            return resp;
+        }
+
+        //  this function Update User,s MFA status (true/false)
+        public ResponseModel UpdateMfaStatus(string userId)
+        {
+            if (String.IsNullOrEmpty(userId))
+            {
+                return null;
+            }
+            ResponseModel resp = new ResponseModel();
+            var userToUpdate = IsUserAlreadyExist(Convert.ToInt64(userId));
+            if (userToUpdate != null)
+            {
+                userToUpdate.MFA = true;
+                _UserRepository.Update(userToUpdate);
+                _UserRepository.Save();
+                resp.Success = true;
+                resp.Message = "MFA status update successfully.";
+                resp.ErrorMessage = string.Empty;
+                resp.AU = false;
+                resp = UpdateOtpEnableDate(Convert.ToInt64(userId));
+            }
+            return resp;
         }
     }
 }

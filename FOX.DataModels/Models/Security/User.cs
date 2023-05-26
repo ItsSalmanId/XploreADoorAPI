@@ -154,7 +154,9 @@ namespace FOX.DataModels.Models.Security
         [NotMapped]
         public bool PROFILE { get; set; }
         public int? AUTO_LOCK_TIME_SPAN { get; set; }
-
+        public bool? MFA { get; set; }
+        [NotMapped]
+        public int? showMfaEanbleScreen { get; set; }
 
     }
     public class UserRequest : BaseModel

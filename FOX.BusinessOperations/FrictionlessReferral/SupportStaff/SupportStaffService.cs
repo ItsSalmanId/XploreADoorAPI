@@ -251,7 +251,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             {
                 var providerNPI = new SqlParameter("PROVIDER_NPI", SqlDbType.VarChar) { Value = obj.ProviderNpi };
                 var practicecode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practiceCode };
-                 providerResponse = SpRepository<Provider>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PROVIDER_DETAILS_BY_NPI @PROVIDER_NPI, @PRACTICE_CODE", providerNPI, practicecode);
+                providerResponse = SpRepository<Provider>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PROVIDER_DETAILS_BY_NPI @PROVIDER_NPI, @PRACTICE_CODE", providerNPI, practicecode);
                 // Search on NPPES
                 if (providerResponse.Count == 0)
                 {
@@ -262,7 +262,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             }
             else if (practiceCode != 0 && !string.IsNullOrEmpty(obj.ProviderLastName.Trim()) && !string.IsNullOrEmpty(obj.ProviderState.Trim()))
             {
-                var firstName = new SqlParameter("FIRST_NAME", SqlDbType.VarChar) { Value = obj.ProviderFirstName ?? (object)DBNull.Value};
+                var firstName = new SqlParameter("FIRST_NAME", SqlDbType.VarChar) { Value = obj.ProviderFirstName ?? (object)DBNull.Value };
                 var lastName = new SqlParameter("LAST_NAME", SqlDbType.VarChar) { Value = obj.ProviderLastName };
                 var state = new SqlParameter("STATE", SqlDbType.VarChar) { Value = obj.ProviderState };
                 var practicecode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practiceCode };
@@ -423,7 +423,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     frictionLessReferralObj.PROVIDER_FAX = frictionLessReferralObj.PROVIDER_FAX.Replace("-", "");
                 }
                 if (!string.IsNullOrEmpty(frictionLessReferralObj.PROVIDER_PHONE_NO))
-                    {
+                {
                     frictionLessReferralObj.PROVIDER_PHONE_NO = frictionLessReferralObj.PROVIDER_PHONE_NO.Replace("-", "");
                 }
                 if (existingFrictionReferral == null)
@@ -482,7 +482,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 var date = Convert.ToDateTime(frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB);
                 frictionLessReferralResponse.FrictionLessReferralObj.PATIENT_DOB_STRING = date.ToShortDateString();
             }
-            
+
 
             return frictionLessReferralResponse;
         }
@@ -556,7 +556,8 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             {
                 System.Drawing.Image img;
                 PdfFocus f = new PdfFocus();
-                f.Serial = "10261435399";
+                // f.Serial = "10261435399";
+                f.Serial = "80033727929";
                 f.OpenPdf(PdfPath);
                 if (f.PageCount > 0)
                 {
@@ -665,13 +666,13 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                     var logoImgPathServer = "";
                     Random random = new Random();
 
-                            var randomString = random.Next();
-                            imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
-                            imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
+                    var randomString = random.Next();
+                    imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
+                    imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + i + "_" + randomString + ".jpg";
 
-                            var randomStrings = random.Next();
-                            logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + "_" + randomStrings + ".jpg";
-                            logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + "_" + randomStrings + ".jpg";
+                    var randomStrings = random.Next();
+                    logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + i + "_" + randomStrings + ".jpg";
+                    logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + i + "_" + randomStrings + ".jpg";
                     Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter, PdfPath, i, imgPathServer, logoImgPathServer));
                     myThread.Start();
                     threadsList.Add(myThread);
@@ -712,7 +713,8 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             {
                 System.Drawing.Image img;
                 PdfFocus f = new PdfFocus();
-                f.Serial = "10261435399";
+                //  f.Serial = "10261435399";
+                f.Serial = "80033727929";
                 f.OpenPdf(PdfPath);
 
                 if (f.PageCount > 0)
@@ -1073,7 +1075,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             {
                 AbsolutePath = System.Web.HttpContext.Current.Server.MapPath("~/" + AppConfiguration.QRCodeTempPath),
                 WORK_ID = FrictionLessReferralObj.WORK_ID
-             };
+            };
             var qrCode = GenerateQRCode(qr);
             string body = string.Empty;
             string templatePathOfSenderEmail = HttpContext.Current.Server.MapPath(@"~/HtmlTemplates/print-send-submit-order.html");
@@ -1137,10 +1139,10 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 if (frictionLessReferralObj.IS_SIGNED_REFERRAL)
                 {
                     int document_type = _foxdocumenttypeRepository.GetFirst(x => x.NAME == "Signed Order" && !x.DELETED && x.IS_ACTIVE == true).DOCUMENT_TYPE_ID;
-                    if(document_type != 0)
+                    if (document_type != 0)
                     {
                         workOrder.DOCUMENT_TYPE = document_type;
-                    }                
+                    }
                 }
                 else
                 {
@@ -1206,6 +1208,56 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 GenerateAndSaveImagesOfUploadedFiles(workId, frictionLessReferralObj, Profile);
             }
             return workId;
+        }
+
+        public bool CheckServiceAvailability(ServiceAvailability serviceAvailability)
+        {
+            try
+            {
+                long practiceCode = GetPracticeCode();
+                var zipCode = new SqlParameter("ZIP_CODE", SqlDbType.BigInt) { Value = !string.IsNullOrEmpty(serviceAvailability.ZIP_CODE) ? Convert.ToInt64(serviceAvailability.ZIP_CODE) : 0 };
+                var cityName = new SqlParameter("CITY_NAME", SqlDbType.VarChar) { Value = serviceAvailability.CITY_NAME ?? (object)DBNull.Value };
+                var pracCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practiceCode };
+                var result = SpRepository<ServiceAvailable>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_IS_SERVICE_AVAILABLE @ZIP_CODE,  @CITY_NAME, @PRACTICE_CODE",
+                    zipCode, cityName, pracCode);
+                return result.IsAvailable;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public ResponseModel SaveExternalUserInfo(ExternalUserInfo externalUserInfo)
+        {
+            try
+            {
+                if (externalUserInfo != null)
+                {
+                    var firID = new SqlParameter("FRICTIONLESS_UNAVAILABLE_ID", SqlDbType.BigInt) { Value = Helper.getMaximumId("FOX_FRICTIONLESS_UNAVAILABLE_ID") };
+                    var firstName = new SqlParameter("SUBMITER_FIRST_NAME", SqlDbType.VarChar) { Value = externalUserInfo.SUBMITER_FIRST_NAME };
+                    var lastName = new SqlParameter("SUBMITTER_LAST_NAME", SqlDbType.VarChar) { Value = externalUserInfo.SUBMITTER_LAST_NAME };
+                    var phoneNumber = new SqlParameter("SUBMITTER_PHONE", SqlDbType.VarChar) { Value = externalUserInfo.SUBMITTER_PHONE ?? (object)DBNull.Value };
+                    var email = new SqlParameter("SUBMITTER_EMAIL", SqlDbType.VarChar) { Value = externalUserInfo.SUBMITTER_EMAIL ?? (object)DBNull.Value };
+                    var zipCode = new SqlParameter("ZIP_CODE", SqlDbType.VarChar) { Value = externalUserInfo.ZIP_CODE };
+                    var cityName = new SqlParameter("CITY_NAME", SqlDbType.VarChar) { Value = externalUserInfo.CITY_NAME };
+                    var pracCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
+                    var result = SpRepository<ResponseModel>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_SAVE_EXTERNAL_USER_INFO @FRICTIONLESS_UNAVAILABLE_ID, @SUBMITER_FIRST_NAME, @SUBMITTER_LAST_NAME, @SUBMITTER_PHONE, @SUBMITTER_EMAIL, @ZIP_CODE, @CITY_NAME, @PRACTICE_CODE",
+                    firID, firstName, lastName, phoneNumber, email, zipCode, cityName, pracCode);
+                    return new ResponseModel()
+                    {
+                        Message = "Record Inserted Into DB."
+                    };
+                }
+                return new ResponseModel()
+                {
+                    Message = "External User Info Model is Null"
+                };
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
     #endregion

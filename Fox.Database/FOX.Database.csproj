@@ -109,15 +109,18 @@
     <Content Include="StoredProcedure\FOX_PROC_DASHBOARD_AVERAGE_TREND.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DASHBOARD_GET_NO_OF_RECORD_BY_TIME.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DASHBOARD_GET_TOTAL.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_DELETE_ADMISSION_IMPORTANT_NOTES.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DELETE_COUNTIES_REFERRAL_REGION.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DELETE_FRICTIONLESS_WORK_FILE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DELETE_NOTIFICATIONS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DELETE_REC_FROM_MTBC_CREDENTIALS.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_EXISTING_SURVEY_DETAIL.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GENERATE_INSERT_TOKEN.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GETMAXCOLUMNID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_ACTIVE_CATEGORY_DESCRIPTION_CREDENTIAL.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_ACTIVE_INDEXERS_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_ACTIVE_LOCATION_BY_LOCID_FOR_SERVICE.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_ADMISSION_NOTES_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_ADVANCED_EXPORT_REGIONS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_ADVANCED_EXPORT_REPORT.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_ADVANCE_SEARCH_INSURANCE.sql" />
@@ -141,6 +144,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_ASSOCIATED_REAGION_DATA.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_AUDITED_CALL_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_AUDITOR_NAME_LIST.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_AUTOMATED_PERFORM_SURVEY_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_AUTO_INDEXING_SERCVICE_CONFIG.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_AUTO_INDEXING_SERVICE_LAST_EXECUTION_DATE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_AUTO_PHR_PATIENT_INVITE_EMAILS_SERVICE.sql" />
@@ -223,6 +227,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_MTBC_INSURANCES_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_NEW_TASK_DATA_FOR_DASHBOARD.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_NOTES_BY_WORKID_FOR_SERVICE.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_NOTES_TYPE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_NOTIFICATIONS_OF_TASKS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_NOTIFICATIONS_OF_TASKS_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_NOT_INTERFACE_TASKED.sql" />
@@ -255,15 +260,18 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_POS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_POS_BY_PA_FOR_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_SURVEY_CALL_LOG_LIST.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_SURVEY_DETAILS_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_SURVEY_HISTORY_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_SURVEY_LAST_UPLOAD.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_SURVEY_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_SURVEY_PROVIDERS.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_SURVEY_QUESTION.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_SURVEY_REGIONS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_SURVEY_STATES.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_UPDATE_HISTORY_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PENDING_DETAILED_REPORT.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PENDING_HIGH_BALANCE_DETAILED_REPORT.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_PERFORM_SURVEY_PATIENT_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PHD_CALLERS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PHD_CALL_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PHD_CALL_HISTORY_DETAILS.sql" />
@@ -301,6 +309,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_PS_CALL_LOG_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PS_REGION_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PS_STATES_LIST.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_QADASHBOARD_SURVEY_TEAM_EMPLOYEE_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_QA_DASHBOARD_DATA.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_QA_DASHBOARD_LINE_GRAPH_DATA.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_RANDOM_PATIENT_SURVEY.sql" />
@@ -351,6 +360,8 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_SMART_STATES.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SMART_USERS_OF_REGION_VISIBLE_TO.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SMART_USERS_OF_SPECIFIC_ROLE_BY_ROLE_NAME.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_SMS_AND_EMAIL_DETAILS.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_SMS_AND_EMAIL_UNSUBSCRIPTION_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SOURCE_DETAIL.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SOURCE_OF_REFERRAL_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SPECIALITY.sql" />
@@ -364,6 +375,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_SUPERVISOR_AND_AGENTS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SUPERVISOR_WORK.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SURVEY_CALL_LIST.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_SURVEY_PATIENT_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SURVEY_SERCVICE_CONFIG.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SURVEY_SERVICE_LAST_EXECUTION_DATE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_TASK.sql" />
@@ -414,6 +426,8 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_USER_ROLE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_USER_SUPERVISOR.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_WORKQUEUE_BY_ID.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_WORK_QUEUE_DETAILS.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_WORK_QUEUE_FILE_ALL_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET__AUTH_STATUS_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET__TASK_TYPE_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_ACTIVE_INDEXER_HISTORY.sql" />
@@ -434,6 +448,7 @@
     <Content Include="StoredProcedure\FOX_PROC_INSERT_ORIGNAL_QUEUE_HISTORY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_PATIENT_SURVEY_CALL_LOG.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_PATIENT_SURVEY_HISTORY.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_INSERT_PATIENT_SURVEY_SERVICE_LOG.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_PHD_SERVICE_LOG.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_PHR_USERS_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_RECONCILIATION_EXCEL_DATA.sql" />
@@ -527,6 +542,7 @@
     <Content Include="Tables\FOX_TBL_AUTH_DOC.sql" />
     <Content Include="Tables\FOX_TBL_AUTH_STATUS.sql" />
     <Content Include="Tables\FOX_TBL_AUTH_VALUE_TYPE.sql" />
+    <Content Include="Tables\FOX_TBL_AUTOMATED_SURVEY_UNSUBSCRIPTION.sql" />
     <Content Include="Tables\FOX_TBL_AUTO_INDEXING_CONFIG.sql" />
     <Content Include="Tables\FOX_TBL_AVAYA_CALL_RECORDINGS_LOGS.sql" />
     <Content Include="Tables\FOX_TBL_BEST_TIME_TO_CALL.sql" />
@@ -684,7 +700,9 @@
     <Content Include="Tables\FOX_TBL_SPECIALITY_PROGRAM.sql" />
     <Content Include="Tables\FOX_TBL_SPLASH.sql" />
     <Content Include="Tables\FOX_TBL_SURVEY_AUDIT_SCORES.sql" />
+    <Content Include="Tables\FOX_TBL_SURVEY_AUTOMATION_SERVICE_LOG.sql" />
     <Content Include="Tables\FOX_TBL_SURVEY_DATA_EXPORT_SERVICE_CONFIG.sql" />
+    <Content Include="Tables\FOX_TBL_SURVEY_QUESTION.sql" />
     <Content Include="Tables\FOX_TBL_SURVEY_SERVICE_LOG.sql" />
     <Content Include="Tables\FOX_TBL_TALKREHAB_DISABLED_MODULES.sql" />
     <Content Include="Tables\FOX_TBL_TASK.sql" />

@@ -398,6 +398,7 @@ namespace FOX.DataModels.Models.CasesModel
         public string MODIFIED_BY { get; set; }
         public System.DateTime MODIFIED_DATE { get; set; }
         public bool DELETED { get; set; }
+        public long? WORK_ID { get; set; }
     }
 
     [Table("FOX_TBL_NOTES_TYPE")]
@@ -889,6 +890,7 @@ namespace FOX.DataModels.Models.CasesModel
         public long WORK_ID { get; set; }
         public string UNIQUE_ID { get; set; }
         public string SENDER_NAME { get; set; }
+        public long SENDER_ID { get; set; }
         public string EMAIL_ADDRESS { get; set; }
         public string RECEIVE_DATE { get; set; }
         public string DOCUMENT_TYPE { get; set; }
@@ -897,6 +899,8 @@ namespace FOX.DataModels.Models.CasesModel
         public string HEALTH_NUMBER { get; set; }
         public string CASE_NO { get; set; }
         public string RT_CASE_NO { get; set; }
+        public string POS_LOCATION { get; set; }
+        public long POS_ID { get; set; }
     }
 
     public class FOX_TBL_COMMUNICATION_CALL_TYPE

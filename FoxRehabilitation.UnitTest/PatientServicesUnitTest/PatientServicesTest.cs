@@ -44,7 +44,8 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         private FOX_TBL_TASK _fOX_TBL_TASK;
         private PatientAlias _patientAlias;
         private CheckDuplicatePatientsReq _checkDuplicatePatientsReq;
-        
+        private Subscriber _subscriber;
+
         [SetUp]
         public void SetUp()
         {
@@ -79,7 +80,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _fOX_TBL_TASK = new FOX_TBL_TASK();
             _patientAlias = new PatientAlias();
             _checkDuplicatePatientsReq = new CheckDuplicatePatientsReq();
-
+            _subscriber = new Subscriber();
         }
         [Test]
         [TestCase(1011163, true, 101116354816630)]
@@ -327,13 +328,13 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             }
         }
         [Test]
-        [TestCase(101116354816561)]
-        [TestCase(101116354610685)]
-        public void GetPatientBestTimeToCall_EmptyModel_ReturnData(long practiceCode)
+        [TestCase(101116354816561, false)]
+        [TestCase(101116354610685, true)]
+        public void GetPatientBestTimeToCall_EmptyModel_ReturnData(long practiceCode, bool isTalkRehab)
         {
             //Arrange
             //Act
-            var result = _patientService.GetPatientBestTimeToCall(practiceCode);
+            var result = _patientService.GetPatientBestTimeToCall(practiceCode, isTalkRehab);
 
             //Assert
             if (result != null)
@@ -578,13 +579,13 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             }
         }
         [Test]
-        [TestCase("1011163")]
-        [TestCase("0")]
-        public void GetFinancialClassDDValues_FinancialClassDDValuesModel_ReturnData(string practiceCode)
+        [TestCase("1011163", true)]
+        [TestCase("0", false)]
+        public void GetFinancialClassDDValues_FinancialClassDDValuesModel_ReturnData(string practiceCode, bool isTalkRehab)
         {
             //Arrange
             //Act
-            var result = _patientService.GetFinancialClassDDValues(practiceCode);
+            var result = _patientService.GetFinancialClassDDValues(practiceCode, isTalkRehab);
 
             //Assert
             if (result != null)
@@ -1486,41 +1487,22 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             }
         }
         [Test]
-        public void SavePatientContactfromInsuranceSubscriber_AddToDb_ReturnData()
+        [TestCase("B", 101271499910024, "male")]
+        [TestCase("B", 101271499910024, "female")]
+        [TestCase("C", 101271499910025, "female")]
+        [TestCase("C", 101271499910043, "female")]
+        public void SavePatientContactfromInsuranceSubscriber_AddToDb_ReturnData(string relation, long patientAccount, string gender)
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
             _userProfile.UserName = "1163testing";
-            _patientSearchRequest.Patient_Account = "";
-            _patientSearchRequest.FirstName = "";
-            _patientSearchRequest.MiddleName = "";
-            _patientSearchRequest.LastName = "";
-            _patientSearchRequest.MRN = "";
-            _patientSearchRequest.SSN = "";
-            _patientSearchRequest.CreatedBy = "";
-            _patientSearchRequest.ModifiedBy = "";
-            _patientSearchRequest.CurrentPage = 1;
-            _patientSearchRequest.RecordPerPage = 10;
-            _patientSearchRequest.SearchText = "";
-            _patientSearchRequest.SortBy = "";
-            _patientSearchRequest.SortOrder = "";
-            _patientSearchRequest.INCLUDE_ALIAS = true;
-            _userProfile.isTalkRehab = true;
-            _patientSearchRequest.DOBInString = Convert.ToString(DateTime.Today);
-            _patientSearchRequest.CreatedDateInString = Convert.ToString(DateTime.Today);
+            _subscriber.GUARANT_GENDER = gender;
 
             //Act
-            var result = _patientService.ExportPatientListToExcel(_patientSearchRequest, _userProfile);
+            _patientService.SavePatientContactfromInsuranceSubscriber(_subscriber, relation, patientAccount, _userProfile);
 
             //Assert
-            if (result != null)
-            {
-                Assert.IsTrue(true);
-            }
-            else
-            {
-                Assert.IsFalse(false);
-            }
+            Assert.IsTrue(true);
         }
         [Test]
         public void ExportPatientListToExcel_ExportExcel_ReturnData()
@@ -1739,6 +1721,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _autoPopulateModel = null;
             _suggestedMCPayer = null;
             _smartSearchCountriesReq = null;
+            _subscriber = null;
         }
     }
 }

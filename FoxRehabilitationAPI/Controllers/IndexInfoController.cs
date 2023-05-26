@@ -1,5 +1,6 @@
 ﻿using FOX.BusinessOperations.CommonServices;
 using FOX.BusinessOperations.IndexInfoServices;
+using FOX.DataModels.Models.CasesModel;
 using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.OriginalQueueModel;
 using FOX.DataModels.Models.Security;
@@ -147,6 +148,13 @@ namespace FoxRehabilitationAPI.Controllers
         {
             return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetSmartOrderingSource(obj, GetProfile()));
         }
+        
+        [HttpGet]
+        public HttpResponseMessage GetSmartOrderingSourceByID(long id)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetSmartOrderingSourceByID(id, GetProfile()));
+        }
+
         [HttpPost]
         public HttpResponseMessage GetSmartRefRegion(SmartReq obj)
         {
@@ -310,7 +318,7 @@ namespace FoxRehabilitationAPI.Controllers
         {
             if (patientAccount != null)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetPatientBalance(patientAccount));
+                return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetPatientBalance(patientAccount, GetProfile()));
             }
             else
             {
@@ -380,6 +388,30 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage MarkTaskAsComplete(long taskId)
         {
             return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.MarkTaskAsComplete(taskId, GetProfile()));
+        }
+        [HttpPost]
+        public HttpResponseMessage AddAdmissionImportantNotes(FOX_TBL_NOTES objAdmissionImportantNotes)
+        {
+            if (objAdmissionImportantNotes != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.AddAdmissionImportantNotes(objAdmissionImportantNotes, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Admission Important Notes model is empty");
+            }
+        }
+        [HttpPost]
+        public HttpResponseMessage GetAdmissionImportantNotes(FOX_TBL_NOTES objAdmissionImportantNotes)
+        {
+            if (objAdmissionImportantNotes != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _IndexInfoService.GetAdmissionImportantNotes(objAdmissionImportantNotes, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Admission Important Notes model is empty");
+            }
         }
     }
 }
