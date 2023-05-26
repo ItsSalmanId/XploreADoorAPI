@@ -480,59 +480,53 @@ namespace FOX.BusinessOperations.RequestForOrder
                     && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
                     && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
                 {
-                    string SignatureFirstNode = string.Empty;
-                    string DateFirstNode = string.Empty;
+                    string signatureFirstNode = string.Empty;
+                    string dateFirstNode = string.Empty;
                     string orininalHtml = requestSendFAXModel.AttachmentHTML;
                     string faxHtmlBody = requestSendFAXModel.AttachmentHTML;
                     HtmlDocument doc = new HtmlDocument();
                     doc.LoadHtml(faxHtmlBody);
-                    HtmlNode SignatureLineFirstNode = doc.GetElementbyId("SignatureLineFirstNode");
-                    HtmlNode SignatureSecNode = doc.GetElementbyId("SignatureSecNode");
-                    HtmlNode SignatureThirdNode = doc.GetElementbyId("SignatureThirdNode");
-                    HtmlNode SignatureForthNode = doc.GetElementbyId("SignatureForthNode");
-                    HtmlNode DateLineFirstNode = doc.GetElementbyId("DateLineFirstNode");
-                    HtmlNode DateSecNode = doc.GetElementbyId("DateSecNode");
-                    HtmlNode DateFifthNode = doc.GetElementbyId("DateFifthNode");
-                    HtmlNode DateSixthNode = doc.GetElementbyId("DateSixthNode");
+                    HtmlNode signatureLineFirstNode = doc.GetElementbyId("SignatureLineFirstNode");
+                    HtmlNode signatureSecNode = doc.GetElementbyId("SignatureSecNode");
+                    HtmlNode signatureThirdNode = doc.GetElementbyId("SignatureThirdNode");
+                    HtmlNode signatureForthNode = doc.GetElementbyId("SignatureForthNode");
+                    HtmlNode dateLineFirstNode = doc.GetElementbyId("DateLineFirstNode");
+                    HtmlNode dateSecNode = doc.GetElementbyId("DateSecNode");
+                    HtmlNode dateFifthNode = doc.GetElementbyId("DateFifthNode");
+                    HtmlNode dateSixthNode = doc.GetElementbyId("DateSixthNode");
                     string replaceString = "<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
-                    if (SignatureLineFirstNode != null)
+                    if (signatureLineFirstNode != null)
                     {
-                        SignatureFirstNode = SignatureLineFirstNode.OuterHtml;
+                        signatureFirstNode = signatureLineFirstNode.OuterHtml;
                     }
-                    if (DateLineFirstNode != null)
+                    if (dateLineFirstNode != null)
                     {
-                        DateFirstNode = DateLineFirstNode.OuterHtml;
+                        dateFirstNode = dateLineFirstNode.OuterHtml;
                     }
-                    if (SignatureSecNode != null)
+                    if (signatureSecNode != null)
                     {
-                        string replaceSignatureLine1nd =  "<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
-                        faxHtmlBody = faxHtmlBody.Replace(SignatureFirstNode, replaceString);
+                        faxHtmlBody = faxHtmlBody.Replace(signatureFirstNode, replaceString);
                     }
-                    if (SignatureThirdNode != null)
+                    if (signatureThirdNode != null)
                     {
-                        string replaceSignatureLine2nd ="<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
-                        faxHtmlBody = faxHtmlBody.Replace(SignatureFirstNode, replaceString);
+                        faxHtmlBody = faxHtmlBody.Replace(signatureFirstNode, replaceString);
                     }
-                    if (SignatureForthNode != null)
+                    if (signatureForthNode != null)
                     {
-                        string replaceSignatureLine3rd = "<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
-                        faxHtmlBody = faxHtmlBody.Replace(SignatureFirstNode, replaceString);
+                        faxHtmlBody = faxHtmlBody.Replace(signatureFirstNode, replaceString);
                     }
                     //Date 
-                    if (DateSecNode != null)
+                    if (dateSecNode != null)
                     {
-                        string replaceSignatureLine1nd = "<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
-                        faxHtmlBody = faxHtmlBody.Replace(DateFirstNode, replaceString);
+                        faxHtmlBody = faxHtmlBody.Replace(dateFirstNode, replaceString);
                     }
-                    if (DateFifthNode != null)
+                    if (dateFifthNode != null)
                     {
-                        string replaceSignatureLine4th = "<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
-                        faxHtmlBody = faxHtmlBody.Replace(DateFirstNode, replaceString);
+                        faxHtmlBody = faxHtmlBody.Replace(dateFirstNode, replaceString);
                     }
-                    if (DateSixthNode != null)
+                    if (dateSixthNode != null)
                     {
-                        string replaceSignatureLine4th = "<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
-                        faxHtmlBody = faxHtmlBody.Replace(DateFirstNode, replaceString);
+                        faxHtmlBody = faxHtmlBody.Replace(dateFirstNode, replaceString);
                     }
                     //Replace Bottom Border
                     HtmlNode bottomBorderLineNode = doc.GetElementbyId("stringTopBorderLine");
@@ -621,8 +615,7 @@ namespace FOX.BusinessOperations.RequestForOrder
         private ResponseHTMLToPDF HTMLToPDFDeliverySautinsoft(ServiceConfiguration conf, string htmlString, string fileName, string linkMessage = null)
         {
             PdfMetamorphosis p = new PdfMetamorphosis();
-            //p.Serial = "10262870570";//server
-            p.Serial = "10261942764";//development
+            p.Serial = "10262870570";//server
             p.PageSettings.Size.A4();
             p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
             p.PageSettings.MarginLeft.Inch(0.1f);
@@ -655,8 +648,7 @@ namespace FOX.BusinessOperations.RequestForOrder
         private ResponseHTMLToPDF HTMLToPDFSautinsoftInFax(ServiceConfiguration conf, string htmlString, string fileName, string type, string linkMessage = null)
         {
             PdfMetamorphosis p = new PdfMetamorphosis();
-            //p.Serial = "10262870570";//server
-            p.Serial = "10261942764";//development
+            p.Serial = "10262870570";//server
             p.PageSettings.Size.A4();
             p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
             p.PageSettings.MarginLeft.Inch(0.1f);
