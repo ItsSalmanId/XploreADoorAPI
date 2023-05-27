@@ -236,7 +236,10 @@ namespace FOX.DataModels.Models.Patient
         public string PATIENT_FINANCIAL_CLASS { get; set; }
         public bool? Address_To_Guarantor { get; set; }
         public string Address_Type { get; set; }
-
+        [NotMapped]
+        public string ACQUISITION_NAME { get; set; }
+        [NotMapped]
+        public string ACQUISITION_ALERT { get; set; }
     }
 
     public class PatientExportToExcelModel
