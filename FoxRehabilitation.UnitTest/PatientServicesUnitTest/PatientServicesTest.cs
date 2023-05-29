@@ -400,7 +400,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(2456124, "101116354816561", 1011163, false)]
         [TestCase(1201254, "101116354412338", 1011163, true)]
-        public void UpdatePrimaryPhysicianInCases(long PCP_ID, long Patient_Account, long practiceCode, bool isTalkRehab) 
+        public void UpdatePrimaryPhysicianInCases_CaseModel_NoReturnData(long PCP_ID, long Patient_Account, long practiceCode, bool isTalkRehab) 
         {
             //Arrange
 
@@ -414,7 +414,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase("1163Testing", true)]
         [TestCase("1163Testing", false)]
-        public void SaveRestOfPatientDetails(Patient patient, string username, bool isTalkRehab)
+        public void SaveRestOfPatientDetails_PatientModel_NoReturnData(string username, bool isTalkRehab)
         {
             //Arrange
             _patient.Address = "";
