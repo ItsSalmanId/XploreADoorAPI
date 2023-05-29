@@ -402,37 +402,35 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase(1201254, "101116354412338", 1011163, true)]
         public void UpdatePrimaryPhysicianInCases(long PCP_ID, long Patient_Account, long practiceCode, bool isTalkRehab) 
         {
-            try
-            {
-                _patientService.UpdatePrimaryPhysicianInCases(PCP_ID, Patient_Account, practiceCode, isTalkRehab);
-                Assert.IsTrue(true);
-            }
-            catch
-            {
-                Assert.IsFalse(false);
-            }
+            //Arrange
+
+            //Act
+            _patientService.UpdatePrimaryPhysicianInCases(PCP_ID, Patient_Account, practiceCode, isTalkRehab);
+            
+            //Assert
+            Assert.IsTrue(true);
+            
         }
         [Test]
         [TestCase("1163Testing", true)]
         [TestCase("1163Testing", false)]
         public void SaveRestOfPatientDetails(Patient patient, string username, bool isTalkRehab)
         {
-            try
-            {
-                _patient.Address = "";
-                _patient.City = "";
-                _patient.FirstName = "";
-                _patient.MIDDLE_NAME = "";
-                _patient.Last_Name= "";
-                _patient.USER_NAME = "";
+            //Arrange
+            _patient.Address = "";
+            _patient.City = "";
+            _patient.FirstName = "";
+            _patient.MIDDLE_NAME = "";
+            _patient.Last_Name= "";
+            _patient.USER_NAME = "";
 
-                _patientService.SaveRestOfPatientDetails(_patient, username, isTalkRehab);
-                Assert.IsTrue(true);
-            }
-            catch
-            {
-                Assert.IsFalse(false);
-            }
+            //Act
+            _patientService.SaveRestOfPatientDetails(_patient, username, isTalkRehab);
+
+
+            //Assert
+            Assert.IsTrue(true);
+           
         }
         [Test]
         [TestCase(1011163, "101116354816561")]
