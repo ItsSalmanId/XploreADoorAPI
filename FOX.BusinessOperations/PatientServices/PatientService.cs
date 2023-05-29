@@ -584,7 +584,7 @@ namespace FOX.BusinessOperations.PatientServices
             return patient;
         }
 
-        private void SaveRestOfPatientDetails(Patient patient, string username, bool isTalkRehab = false)
+        public void SaveRestOfPatientDetails(Patient patient, string username, bool isTalkRehab = false)
         {
             var restOfPatientData = new FOX_TBL_PATIENT();
             var data = _FoxTblPatientRepository.GetFirst(e => e.Patient_Account == patient.Patient_Account);
