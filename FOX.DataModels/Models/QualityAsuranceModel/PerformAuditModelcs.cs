@@ -121,6 +121,10 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public long? APPROPRIATE_CLOSING { get; set; }
         public long? APPROPRIATE_CLOSING_TOTAL { get; set; }
         public long? MAX_POTENTIAL_SCORE { get; set; }
+        public decimal? CLIENT_EXPERIENCE_TOTAL_PER { get; set; }
+        public decimal? SYSTEM_PROCESS_TOTAL_PER { get; set; }
+        public decimal? CALL_QUALITY_TOTAL_PER { get; set; }
+        public decimal? SYSTEM_USAGE_TOTAL_PER { get; set; }
     }
 
     //public class CallLogModel : BaseModel
