@@ -5867,7 +5867,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 long generalNotId = 0;
                 if (objAdmissionImportantNotes.NOTES_ID == 0)
                 {
-                    generalNotId = Helper.getMaximumId("NOTES_ID");
+                    generalNotId = Helper.getMaximumId("FOX_TBL_NOTES_ID");
                 }
                 if (objAdmissionImportantNotes != null && generalNotId != 0)
                 {
