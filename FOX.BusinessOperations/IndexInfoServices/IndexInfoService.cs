@@ -2626,8 +2626,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             try
             {
                 PdfMetamorphosis p = new PdfMetamorphosis();
-                //p.Serial = "10262870570";//server
-                p.Serial = "10261942764";//development
+                p.Serial = "10262870570";
                 p.PageSettings.Size.A4();
                 p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
                 p.PageSettings.MarginLeft.Inch(0.1f);
@@ -3668,7 +3667,9 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     FOX_TBL_NOTES getFoxTblNotes = new FOX_TBL_NOTES();
                     if (WORK_QUEUE != null)
                     {
-                        getFoxTblNotes = _NoteRepository.GetFirst(r => r.WORK_ID == WORK_QUEUE.WORK_ID && r.PRACTICE_CODE == AppConfiguration.GetPracticeCode && r.DELETED == false);
+                        SqlParameter workId = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = WORK_QUEUE.WORK_ID };
+                        SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = AppConfiguration.GetPracticeCode };
+                        getFoxTblNotes = SpRepository<FOX_TBL_NOTES>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ADMISSION_NOTES_DETAILS @WORK_ID, @PRACTICE_CODE", workId, pracCode);
                     }
                     if (getFoxTblNotes != null && getFoxTblNotes.NOTES != null)
                     {
@@ -5866,7 +5867,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 long generalNotId = 0;
                 if (objAdmissionImportantNotes.NOTES_ID == 0)
                 {
-                    generalNotId = Helper.getMaximumId("NOTES_ID");
+                    generalNotId = Helper.getMaximumId("FOX_TBL_NOTES_ID");
                 }
                 if (objAdmissionImportantNotes != null && generalNotId != 0)
                 {
@@ -5900,16 +5901,17 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
         public FOX_TBL_NOTES GetAdmissionImportantNotes(FOX_TBL_NOTES objAdmissionImportantNotes, UserProfile userProfile)
         {
-            FOX_TBL_NOTES getFoxTblNotes = new FOX_TBL_NOTES();
             if (objAdmissionImportantNotes != null)
             {
-                getFoxTblNotes = _NoteRepository.GetFirst(r => r.WORK_ID == objAdmissionImportantNotes.WORK_ID && r.PRACTICE_CODE == userProfile.PracticeCode && r.DELETED == false);
+                SqlParameter workId = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = objAdmissionImportantNotes.WORK_ID };
+                SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = userProfile.PracticeCode };
+                objAdmissionImportantNotes = SpRepository<FOX_TBL_NOTES>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ADMISSION_NOTES_DETAILS @WORK_ID, @PRACTICE_CODE", workId, pracCode);
             }
             else
             {
                 objAdmissionImportantNotes = null;
             }
-            return getFoxTblNotes;
+            return objAdmissionImportantNotes;
         }
     }
 }

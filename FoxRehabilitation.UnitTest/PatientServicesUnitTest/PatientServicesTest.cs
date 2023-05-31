@@ -398,6 +398,41 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             }
         }
         [Test]
+        [TestCase(2456124, "101116354816561", 1011163, false)]
+        [TestCase(1201254, "101116354412338", 1011163, true)]
+        public void UpdatePrimaryPhysicianInCases_CaseModel_NoReturnData(long PCP_ID, long Patient_Account, long practiceCode, bool isTalkRehab) 
+        {
+            //Arrange
+
+            //Act
+            _patientService.UpdatePrimaryPhysicianInCases(PCP_ID, Patient_Account, practiceCode, isTalkRehab);
+            
+            //Assert
+            Assert.IsTrue(true);
+            
+        }
+        [Test]
+        [TestCase("1163Testing", true)]
+        [TestCase("1163Testing", false)]
+        public void SaveRestOfPatientDetails_PatientModel_NoReturnData(string username, bool isTalkRehab)
+        {
+            //Arrange
+            _patient.Address = "";
+            _patient.City = "";
+            _patient.FirstName = "";
+            _patient.MIDDLE_NAME = "";
+            _patient.Last_Name= "";
+            _patient.USER_NAME = "";
+
+            //Act
+            _patientService.SaveRestOfPatientDetails(_patient, username, isTalkRehab);
+
+
+            //Assert
+            Assert.IsTrue(true);
+           
+        }
+        [Test]
         [TestCase(1011163, "101116354816561")]
         [TestCase(1011163, "101116354412338")]
         public void PatientExists_PatientExistsModel_ReturnData(long practiceCode, string patientAccount)

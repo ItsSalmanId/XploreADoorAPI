@@ -22,6 +22,7 @@ using FOX.DataModels.Models.CommonModel;
 using FOX.DataModels.Models.OriginalQueueModel;
 using FOX.DataModels.Models.IndexInfo;
 using System.Web.Configuration;
+using System.Configuration;
 
 namespace FOX.BusinessOperations.CommonService
 {
@@ -1248,12 +1249,7 @@ namespace FOX.BusinessOperations.CommonService
             //QA
             string to = "abdulsattar@carecloud.com";
             //string subject = "Exception occurred in Exception Filter";
-            List<string> cc = new List<string>();
-            cc.Add("muhammadarslan3@carecloud.com");
-            cc.Add("aftabkhan@carecloud.com");
-            cc.Add("muhammadsalman7@mtbc.com");
-            cc.Add("muhammadiqbal11@carecloud.com");
-            cc.Add("irfanullah3@carecloud.com");
+            List<string> cc = new List<string>(ConfigurationManager.AppSettings["CCExceptionEmailList"].Split(new char[] { ';' }));
             var body = "";
             body += "<body>";
             //add exception Message

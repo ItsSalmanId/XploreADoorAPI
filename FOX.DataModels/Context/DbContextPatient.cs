@@ -86,7 +86,7 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<FoxOcrStatus>().Property(t => t.OCR_STATUS_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<PracticeAddressBook>().Property(t => t.ADDRESSBOOK_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
         }
-        
+
         public virtual DbSet<Patient> Patient { get; set; }        
         public virtual DbSet<PatientAddress> PatientAddress { get; set; }
         public virtual DbSet<PatientInsurance> PatientInsurance { get; set; }

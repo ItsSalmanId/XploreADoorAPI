@@ -333,6 +333,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                 req.CREATED_DATE = Helper.GetCurrentDate();
                 req.MODIFIED_BY = profile.UserName;
                 req.MODIFIED_DATE = Helper.GetCurrentDate();
+                req.SCORING_CRITERIA = "new";
                 req.DELETED = false;
                 if (req.PATIENT_ACCOUNT_STR == "")
                 {

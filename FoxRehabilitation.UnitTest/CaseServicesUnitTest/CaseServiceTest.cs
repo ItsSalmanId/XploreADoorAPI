@@ -733,9 +733,10 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             _foxTblCase.VoidReason = "test";
             string locationName = "test";
             string certifyState = "test";
+            string historyTime = "test";
 
             //Act
-            var result = _caseServices.AddEditCase( locationName, certifyState,_foxTblCase, _userProfile);
+            var result = _caseServices.AddEditCase(historyTime, locationName, certifyState,_foxTblCase, _userProfile);
 
             //Assert
             if (result != null)

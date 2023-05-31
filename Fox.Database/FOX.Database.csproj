@@ -120,6 +120,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_ACTIVE_CATEGORY_DESCRIPTION_CREDENTIAL.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_ACTIVE_INDEXERS_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_ACTIVE_LOCATION_BY_LOCID_FOR_SERVICE.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_ADMISSION_NOTES_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_ADVANCED_EXPORT_REGIONS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_ADVANCED_EXPORT_REPORT.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_ADVANCE_SEARCH_INSURANCE.sql" />

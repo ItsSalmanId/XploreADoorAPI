@@ -123,7 +123,7 @@ namespace FOX.BusinessOperations.CaseServices
 
         }
 
-        public ResponseAddEditCase AddEditCase(string locationName, string certifyState, FOX_TBL_CASE model, UserProfile profile) //Get Case data
+        public ResponseAddEditCase AddEditCase(string historyTime, string locationName, string certifyState, FOX_TBL_CASE model, UserProfile profile) //Get Case data
         {
             InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
             ResponseAddEditCase responseAddEditCase = new ResponseAddEditCase();
@@ -374,7 +374,7 @@ namespace FOX.BusinessOperations.CaseServices
 
                     if (profile.isTalkRehab)
                     {
-                        InsertDataAdditionalInfo(locationName, certifyState, caseObj, provider_code, reffral_code,IsEditCase, profile, IsSameStatus, OldCaseStatus, model);
+                        InsertDataAdditionalInfo(locationName, certifyState, caseObj, provider_code, reffral_code,IsEditCase, profile, IsSameStatus, OldCaseStatus, model, historyTime);
                     }
 
                     //Create tasks
@@ -408,7 +408,7 @@ namespace FOX.BusinessOperations.CaseServices
             return responseAddEditCase;
         }
 
-        public void InsertDataAdditionalInfo(string locationName, string certifyState, FOX_TBL_CASE model, long? provider_code, long? reffral_code, bool isEditcase, UserProfile profile, bool IsSameStatus, string OldCaseStatus, FOX_TBL_CASE updateModel)
+        public void InsertDataAdditionalInfo(string locationName, string certifyState, FOX_TBL_CASE model, long? provider_code, long? reffral_code, bool isEditcase, UserProfile profile, bool IsSameStatus, string OldCaseStatus, FOX_TBL_CASE updateModel, string historyTime)
         {
             try
             {
@@ -476,7 +476,7 @@ namespace FOX.BusinessOperations.CaseServices
                 var case_id_Param = new SqlParameter("@Case_Id", SqlDbType.BigInt) { Value = model.CASE_ID };
                 var case_no_Param = new SqlParameter("@Case_No", SqlDbType.VarChar) { Value = model.CASE_NO };
                 var username_Param = new SqlParameter("@UserName", SqlDbType.VarChar) { Value = profile.UserName };
-                var History_Time_Param = new SqlParameter("@History_Time", SqlDbType.VarChar) { Value = DateTime.Now };
+                var History_Time_Param = new SqlParameter("@History_Time", SqlDbType.VarChar) { Value = historyTime };
                 var details_Param = new SqlParameter("@Details", SqlDbType.VarChar) { Value = reasonHistory };
                 var reason_Param = new SqlParameter("@CaseReason", SqlDbType.VarChar) { Value = changeReason == null? " " : changeReason };
                 var practice_code_Param = new SqlParameter("@Practice_Code", SqlDbType.BigInt) { Value = profile.PracticeCode };
@@ -909,7 +909,7 @@ namespace FOX.BusinessOperations.CaseServices
             //addEditNotesViewModel.NotesType = "Case Order Information Comments";
             //Case Order Information Comments
             var notesType_OrderInfoComments = _NotesTypeRepository.GetFirst(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode && t.NAME.Contains(addEditNotesViewModel.NotesType));
-            var notes = _NotesRepository.GetFirst(t => t.CASE_ID == addEditNotesViewModel.CASE_ID && t.NOTES_TYPE_ID == notesType_OrderInfoComments.NOTES_TYPE_ID);
+            var notes = notesType_OrderInfoComments != null ? _NotesRepository.GetFirst(t => t.CASE_ID == addEditNotesViewModel.CASE_ID && t.NOTES_TYPE_ID == notesType_OrderInfoComments.NOTES_TYPE_ID) : null;
             bool IsEditNotes = false;
 
             if (notes == null)
