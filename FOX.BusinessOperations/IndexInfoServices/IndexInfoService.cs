@@ -926,6 +926,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
                 if (IS_TASK_INTERFACED?.Count == 0)
                 {
+                    //pendingBalance.Statement_Patient_Balance >= 500  remove check after new logic implement
                     if (pendingBalance.Patient_Balance != null && pendingBalance.Patient_Balance >= 500 && pendingBalance.NoOfDays > 45 && (documentType.RT_CODE.ToLower() == "00001" || documentType.RT_CODE.ToLower() == "unsig" || documentType.RT_CODE.ToLower() == "forms" || documentType.RT_CODE.ToLower() == "order"))
                     {
                         tasktypeHBR = "BLOCK";
