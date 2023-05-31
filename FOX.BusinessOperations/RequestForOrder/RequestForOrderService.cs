@@ -1479,8 +1479,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                 {
                     body = body.Replace("[[PATIENT_HOME_ADDRESS]]", address.ADDRESS ?? "");
                     TextInfo ti = CultureInfo.CurrentCulture.TextInfo;
-                    body = body.Replace("[[PATIENT_HOME_ADDRESS_2]]", ti.ToTitleCase(address.CITY) + ", " + address.STATE + " " + address.ZIP);
-
+                    body = body.Replace("[[PATIENT_HOME_ADDRESS_2]]", !string.IsNullOrEmpty(address.CITY) ? ti.ToTitleCase(address.CITY) + ", " + address.STATE + " " + address.ZIP : "" + address.STATE + " " + address.ZIP);
                 }
                 else
                 {
