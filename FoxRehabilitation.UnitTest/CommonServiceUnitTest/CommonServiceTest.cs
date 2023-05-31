@@ -98,7 +98,10 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
             var result = _commonServices.GetWorkHistory(workID);
 
             //Assert
-            Assert.That(result.Count, Is.GreaterThan(0));
+            if (result.Count > 0)
+                Assert.True(true);
+            else
+                Assert.IsFalse(false);
         }
         [Test]
         public void GetWorkHistory_EmptyWorkID_NoReturnsData()

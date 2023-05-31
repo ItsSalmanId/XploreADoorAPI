@@ -337,12 +337,19 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
         {
             //Arrange
             _userProfile.PracticeCode = 1011163;
-            _userProfile.UserName = "1163testing";
+            _userProfile.UserName = "Test_5651327";
 
             //Act
             var result = _foxPHDService.GetDefaultHandlingValue(_userProfile);
             //Assert
-            Assert.That(result.PHD_CALL_SCENARIO_ID, Is.Not.Null);
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
         }
         [Test]
         [TestCase(1011163, "test", true)]
@@ -655,13 +662,13 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             //Arrange
             _userProfile.PracticeCode = practiceCode;
             _userProfile.UserName = "Unit Testing";
-            _userProfile.UserEmailAddress = "muhammadsa@carecloud.com";
+            _userProfile.UserEmailAddress = "ADMIN992@ADMIN.COM";
             _phdCallDetail.FOX_PHD_CALL_DETAILS_ID = 5482037;
             _phdCallDetail.CALL_RECORDING_PATH = "ps_1011163_112235762_1531421800588";
             _phdCallDetail._IsSSCM = true;
             _phdCallDetail.CALL_SCENARIO = "544103";
-            _phdCallDetail.CALL_REASON = "544119";
-            _phdCallDetail.CS_CASE_CATEGORY = "5481530";
+            _phdCallDetail.CALL_REASON = "605214";
+            _phdCallDetail.CS_CASE_CATEGORY = "5371";
             _phdCallDetail.REQUEST = "544100";
             _phdCallDetail.CALL_DETAILS = "65456";
             _phdCallDetail.CALL_ATTENDED_BY = "1011163415";

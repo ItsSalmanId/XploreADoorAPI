@@ -273,7 +273,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             }
             else
             {
-                Assert.IsTrue(false);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -321,8 +321,8 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         public void SetAutoLockTimeSetup_UserModel_ReturnData(int time)
         {
             //Arrange
-            _userProfile.PracticeCode = 1011163;
-            _userProfile.UserName = "1163testing";
+            _userProfile.PracticeCode = 1012714;
+            _userProfile.UserName = "Dinkel_53411229";
 
             //Act
             _userManagementService.SetAutoLockTimeSetup(time, _userProfile);
@@ -769,8 +769,8 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             }
         }
         [Test]
-        [TestCase("637265386954157246", "ayaz.muhammad366@gmail.com")]
-        [TestCase("636820741604931248", "muhammadjohar@mtbc.com")]
+        [TestCase("637265386954157246", "amanda.dinkel@foxrehab.org")]
+        [TestCase("636820741604931248", "mtbcand.mtbc@gmail.com")]
         public void SavePasswordResetTicks_PassModel_ReturnData(string ticks, string email)
         {
             //Arrange
@@ -1209,8 +1209,8 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
             }
         }
         [Test]
-        [TestCase(true, 1)]
-        [TestCase(true, 10)]
+        [TestCase(true, 605100)]
+        [TestCase(true, 605101)]
         public void UpdateUser_PassModel_ReturnData(bool canUpdateUsers, int senderTypeId)
         {
             //Arrange

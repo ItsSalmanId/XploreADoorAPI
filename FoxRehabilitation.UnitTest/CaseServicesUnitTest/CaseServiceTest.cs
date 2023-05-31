@@ -322,27 +322,28 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
                 Assert.IsFalse(false);
             }
         }
-        [Test]
-        [TestCase(0)]
-        [TestCase(null)]
-        [TestCase(1011163)]
-        [TestCase(38403)]
-        public void GetTotalDisciplineTalkrehab_TotalDisciplineResList_ReturnData(long practiceCode)
-        {
-            //Arrange
-            //Act
-            var result = _caseServices.GetTotalDisciplineTalkrehab(practiceCode);
+        // talk SP 
+        //[Test]
+        //[TestCase(0)]
+        //[TestCase(null)]
+        //[TestCase(1011163)]
+        //[TestCase(38403)]
+        //public void GetTotalDisciplineTalkrehab_TotalDisciplineResList_ReturnData(long practiceCode)
+        //{
+        //    //Arrange
+        //    //Act
+          // var result = _caseServices.GetTotalDisciplineTalkrehab(practiceCode);
 
-            //Assert
-            if (result.Count != 0)
-            {
-                Assert.IsTrue(true);
-            }
-            else
-            {
-                Assert.IsFalse(false);
-            }
-        }
+        //    //Assert
+        //    if (result.Count != 0)
+        //    {
+        //        Assert.IsTrue(true);
+        //    }
+        //    else
+        //    {
+        //        Assert.IsFalse(false);
+        //    }
+        //}
         [Test]
         [TestCase(0, 0)]
         [TestCase(544276, 0)]

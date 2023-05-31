@@ -3231,9 +3231,9 @@ namespace FOX.BusinessOperations.PatientServices
         public PatientContact GetPatientContactDetails(long contactid)
         {
             PatientContact contact = new PatientContact();
-            contact = _PatientContactRepository.GetSingle(e => e.Contact_ID == contactid);
+            contact = _PatientContactRepository.GetFirst(e => e.Contact_ID == contactid);
 
-            if (contact.Country != null)
+            if (contact != null && contact.Country != null)
             {
                 var countryres = _CountryRepository.GetFirst(c => c.FOX_TBL_COUNTRY_ID.ToString() == contact.Country && !c.DELETED && (c.IS_ACTIVE ?? false));
                 if (countryres != null)

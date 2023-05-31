@@ -424,7 +424,7 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
         }
         [Test]
         [TestCase(1011163, 548110)]
-        [TestCase(1012714, 548111)]
+        [TestCase(1011163, 548111)]
         public void DeleteAlert_PassModel_ReturnData(long practiceCode, long alertId)
         {
             //Arrange
@@ -433,11 +433,13 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
             _noteAlert.PATIENT_ACCOUNT_str = "101116354812545";
 
             //Act
-            _generalNotesServices.DeleteAlert(alertId, _userProfile);
+            var result = _generalNotesServices.DeleteAlert(alertId, _userProfile);
 
             //Assert
-
-            Assert.IsTrue(true);
+            if (result != null)
+                Assert.IsTrue(true);
+            else
+                Assert.IsFalse(false);
         }
         [Test]
         [TestCase(1011163, 548110)]

@@ -81,20 +81,23 @@ namespace FOX.BusinessOperations.CommonServices
             }
             else
             {
-                var localPath = practiceDocumentDirectory + "/" + queue.UNIQUE_ID + ".pdf";
-                var pathForPDF = Path.Combine(HttpContext.Current.Server.MapPath(@"~/" + practiceDocumentDirectory), queue.UNIQUE_ID + ".pdf");
-                ImageHandler imgHandler = new ImageHandler();
-                var imges = _OriginalQueueFilesRepository.GetMany(x => x.WORK_ID == WorkId);
-                if (imges != null && imges.Count > 0)
+                if (queue != null)
                 {
-                    var imgPaths = (from x in imges select x.FILE_PATH1).ToArray();
-                    imgHandler.ImagesToPdf(imgPaths, pathForPDF);
+                    var localPath = practiceDocumentDirectory + "/" + queue.UNIQUE_ID + ".pdf";
+                    var pathForPDF = Path.Combine(HttpContext.Current.Server.MapPath(@"~/" + practiceDocumentDirectory), queue.UNIQUE_ID + ".pdf");
+                    ImageHandler imgHandler = new ImageHandler();
+                    var imges = _OriginalQueueFilesRepository.GetMany(x => x.WORK_ID == WorkId);
+                    if (imges != null && imges.Count > 0)
+                    {
+                        var imgPaths = (from x in imges select x.FILE_PATH1).ToArray();
+                        imgHandler.ImagesToPdf(imgPaths, pathForPDF);
 
-                    //update path in queue so that it can be available for next time
-                    queue.FILE_PATH = localPath;
-                    _QueueRepository.Update(queue);
-                    _QueueRepository.Save();
-                    return localPath;
+                        //update path in queue so that it can be available for next time
+                        queue.FILE_PATH = localPath;
+                        _QueueRepository.Update(queue);
+                        _QueueRepository.Save();
+                        return localPath;
+                    }
                 }
                 return "";
             }

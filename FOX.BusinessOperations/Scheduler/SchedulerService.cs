@@ -625,7 +625,7 @@ namespace FOX.BusinessOperations.Scheduler
 
             //Check if new date is not overlapping with Provider's vocations
             var temp3 = _appointmentRepository.GetFirst(x => x.APPOINTMENT_ID == req.APPOINTMENT_ID);
-            SqlParameter _provider = new SqlParameter { ParameterName = "PROVIDER", SqlDbType = SqlDbType.Int, Value = temp3.PROVIDER_ID };
+            SqlParameter _provider = new SqlParameter { ParameterName = "PROVIDER", SqlDbType = SqlDbType.Int, Value = (temp3?.PROVIDER_ID == null ? 0 : temp3.PROVIDER_ID)};
             SqlParameter _date = Helper.getDBNullOrValue("APPOINMENT_DATE", req.APPOINTMENT_DATE.ToString());
             SqlParameter _practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", Value = profile.PracticeCode };
 
@@ -666,6 +666,8 @@ namespace FOX.BusinessOperations.Scheduler
                 {
                     var response = _appointmentStatusRepository.GetFirst(x => !(x.DELETED ?? false) && x.DESCRIPTION == "Pending");
                     var toUpdate = _appointmentRepository.GetFirst(x => x.APPOINTMENT_ID == req.APPOINTMENT_ID);
+                    if(toUpdate != null)
+                    {
                     toUpdate.NOTES = "";
                     toUpdate.APPOINTMENT_DATE = req.APPOINTMENT_DATE;
                     toUpdate.VISIT_TYPE_ID = req.VISIT_TYPE_ID;
@@ -677,6 +679,7 @@ namespace FOX.BusinessOperations.Scheduler
                     _appointmentRepository.Update(toUpdate);
                     _appointmentRepository.Save();
                     InsertInterfaceTeamData(toUpdate, profile);
+                    }
                     return 4;
                 }
             }

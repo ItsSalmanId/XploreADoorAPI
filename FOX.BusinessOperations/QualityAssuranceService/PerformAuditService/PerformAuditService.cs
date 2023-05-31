@@ -340,6 +340,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                 }
                 else
                 {
+                    if(!string.IsNullOrEmpty(req.PATIENT_ACCOUNT_STR))
                     req.PATIENT_ACCOUNT = long.Parse(req.PATIENT_ACCOUNT_STR);
                 }
                 if (req.PHD_CALL_ID == 0)
@@ -468,13 +469,15 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
 
         public string getGrade(decimal? result)
         {
-            if (result >= GradingCriteria[0].OVERALL_MIN)
-                return "A";
-            if (result <= GradingCriteria[1].OVERALL_MAX && result >= GradingCriteria[1].OVERALL_MIN)
-                return "B";
-            if (result <= GradingCriteria[2].OVERALL_MAX)
-                return "U";
-
+            if (GradingCriteria != null && GradingCriteria.Count > 0 && GradingCriteria[0] != null && GradingCriteria[1] != null && GradingCriteria[2] != null)
+            {
+                if (result >= (GradingCriteria[0].OVERALL_MIN == null ? 0 : GradingCriteria[0].OVERALL_MIN))
+                    return "A";
+                if (result <= (GradingCriteria[1].OVERALL_MAX == null ? 0 : GradingCriteria[1].OVERALL_MAX) && result >= (GradingCriteria[1].OVERALL_MIN == null ? 0 : GradingCriteria[1].OVERALL_MIN))
+                    return "B";
+                if (result <= (GradingCriteria[2].OVERALL_MAX == null ? 0 : GradingCriteria[2].OVERALL_MAX))
+                    return "U";
+            }
             return "";
         }
         public List<GradingSetup> GetListOfGradingCriteria(long practiceCode, SurveyAuditScores req)
