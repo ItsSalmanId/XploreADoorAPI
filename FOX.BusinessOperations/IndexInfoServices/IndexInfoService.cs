@@ -926,7 +926,8 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
                 if (IS_TASK_INTERFACED?.Count == 0)
                 {
-                    if (pendingBalance.Patient_Balance != null && pendingBalance.Patient_Balance >= 500 && pendingBalance.Statement_Patient_Balance >= 500 && pendingBalance.NoOfDays > 45 && (documentType.RT_CODE.ToLower() == "00001" || documentType.RT_CODE.ToLower() == "unsig" || documentType.RT_CODE.ToLower() == "forms" || documentType.RT_CODE.ToLower() == "order"))
+                    //pendingBalance.Statement_Patient_Balance >= 500  remove check after new logic implement
+                    if (pendingBalance.Patient_Balance != null && pendingBalance.Patient_Balance >= 500 && pendingBalance.NoOfDays > 45 && (documentType.RT_CODE.ToLower() == "00001" || documentType.RT_CODE.ToLower() == "unsig" || documentType.RT_CODE.ToLower() == "forms" || documentType.RT_CODE.ToLower() == "order"))
                     {
                         tasktypeHBR = "BLOCK";
                         var interfaceTaskHBR = setTaskData(profile, pat_account, tasktypeHBR, obj.CURRENT_DATE_STR);
@@ -1004,7 +1005,8 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 }
                 else
                 {
-                    if (IS_TASK_INTERFACED.Count >= 2 && pendingBalance.Patient_Balance != null && pendingBalance.Patient_Balance >= 500 && pendingBalance.Statement_Patient_Balance >= 500 && pendingBalance.NoOfDays > 45)
+                    //pendingBalance.Statement_Patient_Balance >= 500  remove check after new logic implement
+                    if (IS_TASK_INTERFACED.Count >= 2 && pendingBalance.Patient_Balance != null && pendingBalance.Patient_Balance >= 500 && pendingBalance.NoOfDays > 45)
                     {
                         interfaceSynch.TASK_ID = IS_TASK_INTERFACED[0].TASK_ID;
                         InsertInterfaceTeamData(interfaceSynch, profile);
@@ -4062,7 +4064,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                             var amount = getPendingHighBalance(task.PATIENT_ACCOUNT, profile);
                             //taskLoglist.Add(new TaskLog() { ACTION = "Due Amount ", ACTION_DETAIL = "Due Amount: " + " $ " + Math.Round(Convert.ToDecimal(amount.Patient_Balance), 2) });
                             //porta_logs.Add("Due Amount: " + " $ " + Math.Round(Convert.ToDecimal(amount.Patient_Balance), 2) );
-                            porta_logs.Add("Due Amount: " + " $ " + Math.Round(Convert.ToDecimal(amount.Statement_Patient_Balance), 2));
+                            porta_logs.Add("Due Amount: " + " $ " + Math.Round(Convert.ToDecimal(amount.Patient_Balance), 2));
 
                         }
 
