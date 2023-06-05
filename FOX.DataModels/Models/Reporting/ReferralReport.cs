@@ -25,7 +25,7 @@ namespace FOX.DataModels.Models.Reporting
         public string Received_Date_Str { get; set; }
         public string ROLE_NAME { get; set; }
         public string ASSIGNED_TO { get; set; }
-        public string Ordering_Referral_Source { get; set; }
+        public string ORDERING_REFERRAL_SOURCE { get; set; }
         public string WORK_STATUS { get; set; }
         public string COMPLETED_BY { get; set; }
         public DateTime? COMPLETED_DATE { get; set; }
