@@ -172,30 +172,54 @@ namespace FoxRehabilitation.UnitTest
                 Assert.IsFalse(false);
             }
         }
-        //[Test]
-        //[TestCase(true, 1012714)]
-        //[TestCase(false, 1011163)]  
-        //public void MakeReferralAsValidOrTrashed_PassModel_ReturnData(bool isTrash, long practiceCode)
-        //{
-        //    //Arrange
-        //    _userProfile.UserName = "1163testing";
-        //    _userProfile.PracticeCode = practiceCode;
-        //    _markReferralValidOrTrashed.Work_Id = 5487172;
-        //    _markReferralValidOrTrashed.Is_Trash = isTrash;
+        [Test]
+        [TestCase(true, 1011163)]
+        [TestCase(false, 1011163)]
+        public void MakeReferralAsValidOrTrashed_PassModel_ReturnData(bool isTrash, long practiceCode)
+        {
+            //Arrange
+            _userProfile.UserName = "1163testing";
+            _userProfile.PracticeCode = practiceCode;
+            _markReferralValidOrTrashed.Work_Id = 552103;
+            _markReferralValidOrTrashed.Is_Trash = isTrash;
 
-        //    //Act
-        //    var result = _assignedQueueServices.MakeReferralAsValidOrTrashed(_markReferralValidOrTrashed, _userProfile);
+            //Act
+            var result = _assignedQueueServices.MakeReferralAsValidOrTrashed(_markReferralValidOrTrashed, _userProfile);
 
-        //    //Assert
-        //    if (result != null)
-        //    {
-        //        Assert.IsTrue(true);
-        //    }
-        //    else
-        //    {
-        //        Assert.IsFalse(false);
-        //    }
-        //}
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
+        [Test]
+        [TestCase("", true)]
+        [TestCase("test", true)]
+        [TestCase("test", false)]
+        public void AddUpdateSourceAsBlackOrWhiteList_PassModel_ReturnData(string sourcename, bool isBlackList)
+        {
+            //Arrange
+            _userProfile.UserName = "1163testing";
+            string sourcetype = Helper.getMaximumId("Test_Counter").ToString(); 
+            _userProfile.PracticeCode = 1011163;
+
+            //Act
+            var result = _assignedQueueServices.AddUpdateSourceAsBlackOrWhiteList(sourcetype, sourcename, isBlackList, _userProfile);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
         //AddUpdateSourceAsBlackOrWhiteList
         [TearDown]
         public void Teardown()

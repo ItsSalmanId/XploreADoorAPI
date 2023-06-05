@@ -1,7 +1,12 @@
-﻿using FOX.BusinessOperations.FrictionlessReferral.SupportStaff;
+﻿using FOX.BusinessOperations.CommonServices;
+using FOX.BusinessOperations.FrictionlessReferral.SupportStaff;
+using FOX.DataModels.Models.CommonModel;
 using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
 using FOX.DataModels.Models.RequestForOrder;
+using FOX.DataModels.Models.Security;
+using FOX.DataModels.Models.ServiceConfiguration;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUnitTest
 {
@@ -15,6 +20,9 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
         private ProviderReferralSourceRequest _providerReferralSourceRequest;
         private ServiceAvailability _serviceAvailability;
         private ExternalUserInfo _externalUserInfo;
+        private SubmitReferralModel _submitReferralModel;
+        private RequestUploadFilesModel _requestUploadFilesModel;
+        private UserProfile _userProfile;
 
         [SetUp]
         public void Setup()
@@ -26,6 +34,9 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
             _providerReferralSourceRequest = new ProviderReferralSourceRequest();
             _serviceAvailability = new ServiceAvailability();
             _externalUserInfo = new ExternalUserInfo();
+            _submitReferralModel = new SubmitReferralModel();
+            _requestUploadFilesModel = new RequestUploadFilesModel();
+            _userProfile = new UserProfile();
         }
         [Test]
         public void GetPracticeCode_HasPracticeCode_ReturnData()
@@ -63,28 +74,29 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
                 Assert.IsFalse(false);
         }
         // Failed Due to EmaIL Template 
-        //[Test]
-        //[TestCase("Taseer", "iqbal", "muhammadiqbal11@carecloud.com", "2064512559")]
-        //public void SendInviteToPatientPortal_PatientDetailModel_ReturnData(string firstName, string lastName, string email, string phoneNumber)
-        //{
-        //    //Arrange
-        //    _patientDetail.FirstName = firstName;
-        //    _patientDetail.LastName = lastName;
-        //    _patientDetail.EmailAddress = email;
-        //    _patientDetail.MobilePhone = phoneNumber;
+        [Test]
+        [TestCase("Taseer", "iqbal", "muhammadiqbal11@carecloud.com", "2064512559")]
+        public void SendInviteToPatientPortal_PatientDetailModel_ReturnData(string firstName, string lastName, string email, string phoneNumber)
+        {
+            //Arrange
+            _patientDetail.FirstName = firstName;
+            _patientDetail.LastName = lastName;
+            _patientDetail.EmailAddress = email;
+            _patientDetail.MobilePhone = phoneNumber;
 
-        //    //Act
-        //    var result = _supportStaffService.SendInviteToPatientPortal(_patientDetail);
+            //Act
+            var result = _supportStaffService.SendInviteToPatientPortal(_patientDetail);
 
-        //    //Assert
-        //    if (result != null)
-        //        Assert.True(true);
-        //    else
-        //        Assert.IsFalse(false);
-        //}
+            //Assert
+            if (result != null)
+                Assert.True(true);
+            else
+                Assert.IsFalse(false);
+        }
         [Test]
         [TestCase("", "", "", "")]
         [TestCase("1679785950", "", "", "")]
+        [TestCase("", "test", "test", "test")]
         [TestCase("1023489119", "james", "smith", "ny")]
         public void GetProviderReferralSources_ProviderReferralSourceModel_ReturnData(string npi, string firstName, string lastName, string state)
         {
@@ -102,6 +114,66 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
                 Assert.True(true);
             else
                 Assert.IsFalse(false);
+        }
+        [Test]
+        public void NewThreadImplementaion_HasParameter_NoReturnData()
+        {
+            //Arrange
+            string PdfPath = @"\\10.10.30.165\FoxDocumentDirectory\Fox\1012714\05-26-2023\OriginalFiles\tempcoversletter638206868960541491.pdf";
+            ServiceConfiguration config = new ServiceConfiguration();
+            List<int> threadCounter = new List<int>();
+            long workId = 12345;
+            int pageCounter = 1;
+            int i = 1;
+
+            //Act
+            _supportStaffService.newThreadImplementaion(ref threadCounter, PdfPath, i,config, workId, pageCounter);
+
+            //Assert
+            Assert.True(true);
+        }
+        [Test]
+        public void NewThreadImplementaion_HasParameters_NoReturnData()
+        {
+            //Arrange
+            string PdfPath = @"\\10.10.30.165\FoxDocumentDirectory\Fox\1012714\05-26-2023\OriginalFiles\tempcoversletter638206868960541491.pdf";
+            string imgPath = @"\\10.10.30.165\FoxDocumentDirectory\Fox\1012714\05-26-2023\Images\53432042_0.jpg";
+            string logoImgPath = @"\\10.10.30.165\FoxDocumentDirectory\Fox\1012714\05-26-2023\Images\53432042_0.jpg";
+            ServiceConfiguration config = new ServiceConfiguration();
+            List<int> threadCounter = new List<int>();
+            int i = 1;
+
+            //Act
+            _supportStaffService.newThreadImplementaion(ref threadCounter, PdfPath, i, imgPath, logoImgPath);
+
+            //Assert
+            Assert.True(true);
+        }
+        [Test]
+        public void SubmitReferral_HasParameters_NoReturnData()
+        {
+            //Arrange
+            _submitReferralModel.WorkId = 54820725;
+
+            //Act
+            _supportStaffService.SubmitReferral(_submitReferralModel);
+
+            //Assert
+            Assert.True(true);
+        }
+        [Test]
+        [TestCase(54820725)]
+        public void AddFrictionlessFilesToDatabase_HasParameters_NoReturnData(long workId)
+        {
+            //Arrange
+            string filePath = @"\\10.10.30.165\FoxDocumentDirectory\Fox\1012714\05-26-2023\OriginalFiles\tempcoversletter638206868960541491.pdf";
+            string logoPath = @"\\10.10.30.165\FoxDocumentDirectory\Fox\1012714\05-26-2023\Images\53432042_0.jpg";
+
+            //Act
+            _supportStaffService.AddFrictionlessFilesToDatabase(filePath, workId, logoPath);
+
+            //Assert
+            Assert.True(true);
         }
         [Test]
         [TestCase(54820838)]

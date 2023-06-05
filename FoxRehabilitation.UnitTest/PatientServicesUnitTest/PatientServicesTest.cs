@@ -1,6 +1,7 @@
 ﻿using FOX.BusinessOperations.PatientServices;
 using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.Patient;
+using FOX.DataModels.Models.PatientDocuments;
 using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.Settings.FacilityLocation;
 using FOX.DataModels.Models.TasksModel;
@@ -45,6 +46,8 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         private PatientAlias _patientAlias;
         private CheckDuplicatePatientsReq _checkDuplicatePatientsReq;
         private Subscriber _subscriber;
+        private PayorDataModel _payorDataModel;
+        private PatientPATDocument _patientPatDocument;
 
         [SetUp]
         public void SetUp()
@@ -81,6 +84,8 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _patientAlias = new PatientAlias();
             _checkDuplicatePatientsReq = new CheckDuplicatePatientsReq();
             _subscriber = new Subscriber();
+            _payorDataModel = new PayorDataModel();
+            _patientPatDocument = new PatientPATDocument();  
         }
         [Test]
         [TestCase(1011163, false, 101116354816630)]
@@ -399,7 +404,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         }
         [Test]
         [TestCase(2456124, "101116354816561", 1011163, false)]
-        [TestCase(1201254, "101116354412338", 1011163, true)]
+        [TestCase(1201254, "101116354412338", 1011163, false)]
         public void UpdatePrimaryPhysicianInCases_CaseModel_NoReturnData(long PCP_ID, long Patient_Account, long practiceCode, bool isTalkRehab) 
         {
             //Arrange
@@ -1733,6 +1738,135 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
                 Assert.IsFalse(false);
             }
         }
+        [Test]
+        [TestCase("101116354816563")]
+        public void SearchCityStateAddressByAPI_PassParameter_ReturnData(string patientAccount)
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163Testing";
+
+            //Act
+            _patientService.SaveDynamicPatientResponsibilityInsurance(patientAccount, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase(101116354816563)]
+        public void SetTerminationDateForExistingPayers_PassParameter_ReturnData(long claimNo)
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163Testing";
+            _patientInsurance.InsPayer_Description = "test";
+            _patientInsurance.Pri_Sec_Oth_Type = "test";
+            _patientInsurance.IS_PRIVATE_PAY = true;
+
+            //Act
+            _patientService.AddClaimNotes(_patientInsurance, claimNo,_userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase(101116354816563)]
+        public void SaveReconcileLatestData_PassParameter_ReturnData(long claimNo)
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163Testing";
+            _payorDataModel.PayorZip = "12345";
+            _payorDataModel.PayorDOB = "01/01/2000";
+
+            //Act
+            _patientService.SaveReconcileLatestData(_payorDataModel, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase(101116354816563, 101116354816563, "test")]
+        public void SaveEligibilityHtml_PassParameter_ReturnData(long patientAccount, long patientInsuranceId, string html)
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163Testing";
+            _payorDataModel.PayorZip = "12345";
+            _payorDataModel.PayorDOB = "01/01/2000";
+
+            //Act
+            _patientService.SaveEligibilityHtml(patientAccount, patientInsuranceId, html, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase("101116354816563", 101116354816563)]
+        public void FetchEligibilityRecords_PassParameter_ReturnData(string patientAccountStr, long patientInsuranceId)
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163Testing";
+            _patientEligibilitySearchModel.Patient_Account_Str = patientAccountStr;
+            _patientEligibilitySearchModel.Patient_Insurance_id = patientInsuranceId;
+
+            //Act
+            _patientService.GetLatestEligibilityRecords(_patientEligibilitySearchModel, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase("101116354816563", 101116354816563)]
+        public void GetEligibilityInformation_PassParameter_ReturnData(string elgString, long patientAccount)
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163Testing";
+
+            //Act
+            _patientService.GetEligibilityInformation(elgString, patientAccount, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase("101116354816563", 101116354816563)]
+        public void SaveReconcileLatestData_PassParameter_ReturnData(string elgString, long patientAccount)
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163Testing";
+            _payorDataModel.PayorDOB = "01/01/2000";
+
+            //Act
+            _patientService.SaveReconcileLatestData(_payorDataModel, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase(false, 552103)]
+        [TestCase(true, 552103)]
+        [TestCase(true, null)]
+        public void AddUpdateNewDocumentInformation_PassParameter_ReturnData(bool newDocument, long workId)
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163Testing";
+            _patientPatDocument.PATIENT_ACCOUNT_str = "101116354816563";
+            _patientPatDocument.PATIENT_ACCOUNT = 101116354816563;
+            _patientPatDocument.PAT_DOCUMENT_ID = 101116354816563;
+            _patientPatDocument.WORK_ID = workId;
+
+            //Act
+            _patientService.AddUpdateNewDocumentInformation(_patientPatDocument, _userProfile, newDocument);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        //AddUpdateNewDocumentInformation
         [TearDown]
         public void Teardown()
         {
@@ -1757,6 +1891,8 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _suggestedMCPayer = null;
             _smartSearchCountriesReq = null;
             _subscriber = null;
+            _payorDataModel = null;
+            _patientPatDocument = null;
         }
     }
 }

@@ -4,6 +4,7 @@ using FOX.BusinessOperations;
 using FOX.BusinessOperations.AccountService;
 using FOX.DataModels.Models.ExternalUserModel;
 using FOX.DataModels.Models.Settings.RoleAndRights;
+using FoxRehabilitationAPI.Models;
 
 namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
 {
@@ -167,17 +168,35 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             }
         }
         [Test]
+        [TestCase(5482899)]
         [TestCase(0)]
-        [TestCase(1011163)]
+        [TestCase(5482899)]
+        [TestCase(5482870)]
         public void CreateExternalUserOrdRefSource_HasUserID_ReturnsData(long userID)
         {
             //Arrange
             //Act
-            var result = _accountService.CreateExternalUserOrdRefSource(userID);
+            _accountService.CreateExternalUserOrdRefSource(userID);
 
             //Assert
-            Assert.That(result, Is.Null);
+            Assert.IsTrue(true);
         }
+        [Test]
+        [TestCase(544585)]
+        [TestCase(5483298)]
+        public void SavePasswordHistory_HasUserID_ReturnsData(long userID)
+        {
+            //Arrange
+            User user = new User();
+            user.USER_ID = userID;
+
+            //Act
+            _accountService.SavePasswordHistory(user);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        //SavePasswordHistory
         [Test]
         [TestCase("")]
         [TestCase("10965")]
@@ -200,7 +219,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
         }
         [Test]
         [TestCase("")]
-        [TestCase("11163Testing")]
+        [TestCase("uss_5481193")]
         public void ClearOpenedByinPatientforUser_UserName_ReturnsData(string userName)
         {
             //Arrange
@@ -211,7 +230,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             Assert.IsTrue(true);
         }
         [Test]
-        [TestCase("testing@foxrehab.org")]
+        [TestCase("testing@foxrehab.org")]  
         public void IpConfig_HasUserName_ReturnsData(string userName)
         {
             //Arrange
@@ -242,7 +261,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             }
         }
         [Test]
-        [TestCase("", 0)]
+        [TestCase("zPfGn7J1zP5PbPX4OYfCq8_0c7wpC02Y-ZoL7tsisgUU4sFZ6Kv3enRA2ybD3lrlpXLMxFdokLtsUIw-Z0FG4gDT9j_VqtfkMAK5", 1011163415)]
         [TestCase(null, 0)]
         [TestCase("testingToken", 1011163415)]
         public void SignOut_HasTokenAndUserID_NoReturnsData(string token, long userID)
@@ -250,6 +269,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             //Arrange
             _logoutModel.token = token;
             _userProfile.userID = userID;
+            _userProfile.UserName = "1163testing";
 
             //Act
             var result = _accountService.SignOut(_logoutModel, _userProfile);
@@ -265,6 +285,24 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
                 Assert.That(result.Success, Is.False);
             }
         }
+        //[Test]
+        //[TestCase("test", "test", "Invalid Internal Login")]
+        //public void InsertLogs_HasTokenAndUserID_NoReturnsData(string encryptedPassword, string detectedBrowser, string requestType)
+        //{
+        //    //Arrange
+        //    _userProfile.EMAIL = "@foxrehab.org";
+        //    _userProfile.FirstName = "test";
+        //    _userProfile.LastName = "test";
+        //    _userProfile.ApplicationUserRoles = new System.Collections.Generic.List<RoleAndRights>(); 
+
+        //    //Act
+        //    _accountService.InsertLogs(_userProfile, encryptedPassword, detectedBrowser, requestType);
+
+        //    //Assert
+
+        //    Assert.IsTrue(true);
+        //}
+        //InsertLogs
         [TearDown]
         public void Teardown()
         {

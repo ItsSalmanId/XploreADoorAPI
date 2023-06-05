@@ -187,36 +187,36 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
             }
         }
         // Exception
-        //[Test]
-        //[TestCase(1011163)]
-        //[TestCase(1012714)]
-        //public void GetGeneralNotes_PassModel_ReturnData(long practiceCode)
-        //{
-        //    //Arrange
-        //    _userProfile.PracticeCode = practiceCode;
-        //    _userProfile.UserName = "NUnit-testing";
-        //    _generalNotesSearchRequest.CurrentPage = 1;
-        //    _generalNotesSearchRequest.RecordPerPage = 10;
-        //    _generalNotesSearchRequest.SearchText = "";
-        //    _generalNotesSearchRequest.PATIENT_ACCOUNT = 101116354815887;
-        //    _generalNotesSearchRequest.Sort_By = "";
-        //    _generalNotesSearchRequest.Sort_Order = "";
-        //    _generalNotesSearchRequest.SearchText = "";
-        //    _generalNotesSearchRequest.SearchText = "";
+        [Test]
+        [TestCase(1011163)]
+        [TestCase(1012714)]
+        public void GetGeneralNotes_PassModel_ReturnData(long practiceCode)
+        {
+            //Arrange
+            _userProfile.PracticeCode = practiceCode;
+            _userProfile.UserName = "NUnit-testing";
+            _generalNotesSearchRequest.CurrentPage = 1;
+            _generalNotesSearchRequest.RecordPerPage = 10;
+            _generalNotesSearchRequest.SearchText = "";
+            _generalNotesSearchRequest.PATIENT_ACCOUNT = 101116354815887;
+            _generalNotesSearchRequest.Sort_By = "";
+            _generalNotesSearchRequest.Sort_Order = "";
+            _generalNotesSearchRequest.SearchText = "";
+            _generalNotesSearchRequest.SearchText = "";
 
-        //    //Act
-        //    var result = _generalNotesServices.GetGeneralNotes(_userProfile, _generalNotesSearchRequest);
+            //Act
+            var result = _generalNotesServices.GetGeneralNotes(_userProfile, _generalNotesSearchRequest);
 
-        //    //Assert
-        //    if (result != null)
-        //    {
-        //        Assert.IsTrue(true);
-        //    }
-        //    else
-        //    {
-        //        Assert.IsTrue(true);
-        //    }
-        //}
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsTrue(true);
+            }
+        }
         [Test]
         [TestCase(1011163, true)]
         [TestCase(1011163, false)]
@@ -275,9 +275,10 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
             }
         }
         [Test]
-        [TestCase(1011163)]
-        [TestCase(1012714)]
-        public void CreateUpdateNote_PassModel_ReturnData(long practiceCode)
+        [TestCase(1011163, 544582, 101116354444402804)]
+        [TestCase(1011163, 544511, 101116354815887)]
+        [TestCase(1012714, 544596, 101116354444402807)]
+        public void CreateUpdateNote_PassModel_ReturnData(long practiceCode, long noteId, long patientAccount)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -287,8 +288,8 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
 
             _generalNoteCreateUpdateRequest.GENERAL_NOTE = new FOX_TBL_GENERAL_NOTE()
             {
-                PATIENT_ACCOUNT_AS_STRING = "101116354815887",
-                GENERAL_NOTE_ID = 544566,
+                PATIENT_ACCOUNT_AS_STRING = patientAccount.ToString(),
+                GENERAL_NOTE_ID = noteId,
                 CASE_ID = 544311
             };
             _generalNoteCreateUpdateRequest.GENERAL_NOTE_HISTORY = new FOX_TBL_GENERAL_NOTE()
