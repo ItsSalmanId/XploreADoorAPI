@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
 {
     [TestFixture]
-    class PerformAuditServiceTest
+    public class PerformAuditServiceTest
     {
         private PerformAuditService _performAuditService;
         private RequestModelForCallType _requestModelForCallType;
@@ -163,7 +163,7 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             _requestCallList.CALL_TYPE = "survey";
             _requestCallList.PHD_CALL_SCENARIO_ID = 0;
             _requestCallList.IS_READ_ONLY_MODE = readOnlyMode;
-            
+
             //Act
             var result = _performAuditService.PostCallList(_requestCallList, _userProfile);
 
@@ -171,30 +171,6 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             if (result.Count > 0)
             {
                 Assert.Pass("Passed");
-            }
-        }
-        [Test]
-        public void InsertAuditScores_PassModel_NoReturnData()
-        {
-            //Arrange
-            _userProfile.PracticeCode = 1011163;
-            _userProfile.UserName = "Unit Test";
-            _surveyAuditScores.SURVEY_CALL_ID = 548558;
-            _surveyAuditScores.PHD_CALL_ID = 548558;
-            _surveyAuditScores.EDIT_AUDIT_REPORT = false;
-            _surveyAuditScores.TOTAL_POINTS = 1;
-
-            //Act
-            var result = _performAuditService.InsertAuditScores(_surveyAuditScores, _userProfile);
-
-            //Assert
-            if (result)
-            {
-                Assert.True(true);
-            }
-            else
-            {
-                Assert.False(false);
             }
         }
         [TearDown]

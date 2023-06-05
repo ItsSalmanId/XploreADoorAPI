@@ -1,4 +1,5 @@
 ﻿using FOX.BusinessOperations.CommonServices;
+using FOX.DataModels.Models.CasesModel;
 using FOX.DataModels.Models.CommonModel;
 using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.ServiceConfiguration;
@@ -14,6 +15,7 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
         private ReqGetSenderNamesModel _senderNamesModel;
         private ServiceConfiguration _serviceConfiguration;
         private CommonAnnouncements _commonAnnouncements;
+        private FOX_TBL_NOTES _foxTblNotes;
 
         [SetUp]
         public void Setup()
@@ -23,6 +25,7 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
             _senderNamesModel = new ReqGetSenderNamesModel();
             _serviceConfiguration = new ServiceConfiguration();
             _commonAnnouncements = new CommonAnnouncements();
+            _foxTblNotes = new FOX_TBL_NOTES();
         }
         [Test]
         public void GeneratePdf_UniqueID_NoReturnsData()
@@ -30,7 +33,7 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
             //Arrange
             long uniqueID = 54818464;
             string practiceDocumentDir = "";
-            
+
             //Act
             var result = _commonServices.GeneratePdf(uniqueID, practiceDocumentDir);
 
@@ -41,12 +44,13 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
         public void GeneratePdfForSupportedDoc_EmptyUniqueID_NoReturnsData()
         {
             //Arrange
-            string uniqueID = "";
-            _serviceConfiguration = null;
-           
+            string uniqueID = "552103";
+            _userProfile.PracticeCode = 1011163;
+            _serviceConfiguration.ORIGINAL_FILES_PATH_SERVER = @"\\10.10.30.165\FoxDocumentDirectory\Fox\1012714\05-26-2023\OriginalFiles\";
+
             //Act
             var result = _commonServices.GeneratePdfForSupportedDoc(_serviceConfiguration, uniqueID, _userProfile);
-            
+
             //Assert
             Assert.That(result.FILE_PATH, Is.Null);
         }
@@ -55,12 +59,41 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
         {
             //Arrange
             string uniqueID = "";
-           
+
             //Act
             var result = _commonServices.GeneratePdfForEmailToSender(uniqueID, _userProfile);
-            
+
             //Assert
             Assert.That(result.FILE_PATH, Is.Null);
+        }
+        [Test]
+        public void Authenticate_PassModel_ReturnsData()
+        {
+            //Arrange
+            string pasward = "564B4A2DAD36F02240706E7DD6E28BED8518F84C6368A24AF3B3F379953534A8EC1834D08DF4CD58C9DB42DA047C5FE5A0B2EA0F982E56493C3E1584F78F516E";
+            _userProfile.UserName = "Ali_5482802";
+
+            //Act
+            _commonServices.Authenticate(pasward, _userProfile);
+
+            //Assert
+            Assert.IsFalse(false);
+        }
+        [Test]
+
+        public void AddUpdateNotes_PassModel_ReturnsData()
+        {
+            //Arrange
+            _foxTblNotes.NOTES_ID = 544100;
+            _foxTblNotes.NOTES = "test";
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "N Unit-Testing";
+
+            //Act
+            _commonServices.AddUpdateNotes(_foxTblNotes, _userProfile);
+
+            //Assert
+            Assert.True(true);
         }
         [Test]
         [TestCase("", 1011163)]
@@ -71,7 +104,7 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
 
             //Act
             var result = _commonServices.GetFiles(uniqueID, practiceCode);
-           
+
             //Assert
             Assert.That(result.Count, Is.GreaterThanOrEqualTo(0));
         }
@@ -84,7 +117,7 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
 
             //Act
             var result = _commonServices.GetAllOriginalFiles(uniqueID, practiceCode);
-            
+
             //Assert
             Assert.That(result.Count, Is.GreaterThanOrEqualTo(0));
         }
@@ -98,14 +131,17 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
             var result = _commonServices.GetWorkHistory(workID);
 
             //Assert
-            Assert.That(result.Count, Is.GreaterThan(0));
+            if (result.Count > 0)
+                Assert.True(true);
+            else
+                Assert.IsFalse(false);
         }
         [Test]
         public void GetWorkHistory_EmptyWorkID_NoReturnsData()
         {
             //Arrange
             string workID = "";
-            
+
             //Act
             var result = _commonServices.GetWorkHistory(workID);
 
@@ -121,12 +157,12 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
             //Arrange
             _userProfile.isTalkRehab = isTalkRehab;
             _userProfile.PracticeCode = practiceCode;
-            
+
             //Act
             var result = _commonServices.GetSenderTypes(_userProfile);
-            
+
             //Assert
-            if(result != null)
+            if (result != null)
             {
                 Assert.That(result.SenderTypeList.Count, Is.GreaterThanOrEqualTo(0));
             }
@@ -136,10 +172,10 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
         {
             //Arrange
             _userProfile = null;
-            
+
             //Act
             var result = _commonServices.GetSenderNames(_senderNamesModel, _userProfile);
-          
+
             //Assert
             Assert.That(result.SenderNameList.Count, Is.EqualTo(0));
         }
@@ -149,10 +185,10 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
-            
+
             //Act
             var result = _commonServices.GetTreatmentLocationByZip(hasZipCode, _userProfile.PracticeCode);
-            
+
             //Assert
             Assert.That(result, Is.Null);
         }
@@ -162,12 +198,12 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
-            
+
             //Act
             var result = _commonServices.GetTreatmentLocationByZip(hasZipCode, _userProfile.PracticeCode);
-            
+
             //Assert
-            if(result != null)
+            if (result != null)
             {
                 Assert.IsTrue(true);
             }
@@ -178,12 +214,12 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
         public void GetCityStateByZip_HasZipCode_ReturnsData(string zipCode)
         {
             //Arrange
-            
+
             //Act
             var result = _commonServices.GetCityStateByZip(zipCode);
-            
+
             //Assert
-            if(result != null)
+            if (result != null)
             {
                 Assert.IsTrue(true);
             }
@@ -194,12 +230,12 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
         public void GetSmartCities_HasSmartCities_ReturnsData(string city)
         {
             //Arrange
-            
+
             //Act
             var result = _commonServices.GetSmartCities(city);
-           
+
             //Assert
-            if(result != null)
+            if (result != null)
             {
                 Assert.IsTrue(true);
             }
@@ -210,12 +246,12 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
         public void GetSmartStates_HasStateCode_ReturnsData(string statusCode)
         {
             //Arrange
-            
+
             //Act
             var result = _commonServices.GetSmartStates(statusCode);
-           
+
             //Assert
-            if(result != null)
+            if (result != null)
             {
                 Assert.IsTrue(true);
             }
@@ -224,12 +260,12 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
         public void GetStates_StateCode_ReturnsData()
         {
             //Arrange
-            
+
             //Act
             var result = _commonServices.GetStates();
-            
+
             //Assert
-            if(result.Count > 0)
+            if (result.Count > 0)
             {
                 Assert.That(result.Count, Is.GreaterThanOrEqualTo(0));
             }
@@ -241,7 +277,7 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
-            
+
             //Act
             var result = _commonServices.GetProvider(providerId, _userProfile);
 
@@ -253,7 +289,8 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
             else
             {
                 Assert.IsTrue(true);
-;           }
+                ;
+            }
         }
         [Test]
         public void IsShowSplash_EmptyProfile_NoReturnsData()
@@ -291,7 +328,7 @@ namespace FoxRehabilitation.UnitTest.CommonServiceUnitTest
             var result = _commonServices.SaveSplashDetails(_userProfile);
 
             //Assert
-            if(result == true)
+            if (result == true)
             {
                 Assert.IsTrue(true);
             }

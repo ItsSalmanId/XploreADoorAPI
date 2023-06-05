@@ -2067,7 +2067,6 @@ namespace FOX.BusinessOperations.CaseServices
                 throw ex;
             }
         }
-
         public ResponseAddEditCase DeleteTask(OpenIssueListToDelete model, UserProfile profile) //Delete subtypes and task
         {
             ResponseAddEditCase responseAddEditCase = new ResponseAddEditCase();
@@ -2226,9 +2225,9 @@ namespace FOX.BusinessOperations.CaseServices
             var _caseAndOpenIssues = new CaseAndOpenIssues();
             var _openIssueRequest = new GetOpenIssueListReq();
             _caseAndOpenIssues.CaseDetail = _vwCaseRepository.GetByID(caseId);
-            _openIssueRequest.CASE_ID = _caseAndOpenIssues.CaseDetail.CASE_ID;
-            _openIssueRequest.CASE_STATUS_ID = _caseAndOpenIssues.CaseDetail.CASE_STATUS_ID.Value;
-            _openIssueRequest.PATIENT_ACCOUNT_STR = _caseAndOpenIssues.CaseDetail.PATIENT_ACCOUNT.ToString();
+            _openIssueRequest.CASE_ID = _caseAndOpenIssues.CaseDetail?.CASE_ID == null ? 0 : _caseAndOpenIssues.CaseDetail.CASE_ID;
+            _openIssueRequest.CASE_STATUS_ID = _caseAndOpenIssues.CaseDetail?.CASE_STATUS_ID.Value == null ? 0 : _caseAndOpenIssues.CaseDetail.CASE_STATUS_ID.Value;
+            _openIssueRequest.PATIENT_ACCOUNT_STR = _caseAndOpenIssues.CaseDetail?.PATIENT_ACCOUNT.ToString() == null ? "" : _caseAndOpenIssues.CaseDetail.PATIENT_ACCOUNT.ToString();
             _caseAndOpenIssues.OpenIssues = GetOpenIssueList(_openIssueRequest, profile);
             return _caseAndOpenIssues;
         }
@@ -2240,7 +2239,7 @@ namespace FOX.BusinessOperations.CaseServices
             {
                 dbPatientFOX = new FOX_TBL_PATIENT();
                 dbPatientFOX.FOX_TBL_PATIENT_ID = Helper.getMaximumId("FOX_TBL_PATIENT");
-                dbPatientFOX.Patient_Account = dbPatient.Patient_Account;
+                dbPatientFOX.Patient_Account = dbPatient?.Patient_Account == null ? 0 : dbPatient.Patient_Account;
                 dbPatientFOX.Created_By = username;
                 dbPatientFOX.Created_Date = Helper.GetCurrentDate();
                 dbPatientFOX.DELETED = false;
@@ -2262,7 +2261,7 @@ namespace FOX.BusinessOperations.CaseServices
                     _FoxTblPatientRepository.Update(dbPatientFOX);
                 }
             }
-            if (dbPatient.PCP != null && dbPatient.PCP != 0)
+            if (dbPatient != null && dbPatient.PCP != null && dbPatient.PCP != 0)
             {
                 var pcp = _OrderingRefSourceRepository.GetByID(dbPatient.PCP);
                 if (pcp != null)
@@ -2310,28 +2309,28 @@ namespace FOX.BusinessOperations.CaseServices
             {
                 case "OT":
                     var facility = _FacilityLocationRepository.GetFirst(e => e.LOC_ID == obj.POS_ID);
-                    if (facility.OT != null)
+                    if (facility != null && facility.OT != null)
                     {
                         PROVIDER_CODE = facility.OT;
                     }
                     break;
                 case "PT":
                     facility = _FacilityLocationRepository.GetFirst(e => e.LOC_ID == obj.POS_ID);
-                    if (facility.PT != null)
+                    if (facility != null && facility.PT != null)
                     {
                         PROVIDER_CODE = facility.PT;
                     }
                     break;
                 case "ST":
                     facility = _FacilityLocationRepository.GetFirst(e => e.LOC_ID == obj.POS_ID);
-                    if (facility.ST != null)
+                    if (facility != null && facility.ST != null)
                     {
                         PROVIDER_CODE = facility.ST;
                     }
                     break;
                 case "EP":
                     facility = _FacilityLocationRepository.GetFirst(e => e.LOC_ID == obj.POS_ID);
-                    if (facility.EP != null)
+                    if (facility != null && facility.EP != null)
                     {
                         PROVIDER_CODE = facility.EP;
                     }
