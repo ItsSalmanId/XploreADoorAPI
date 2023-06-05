@@ -169,7 +169,7 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             {
                 Assert.IsTrue(true);
             }
-            else 
+            else
             {
                 Assert.IsTrue(true);
             }

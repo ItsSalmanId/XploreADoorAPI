@@ -3,11 +3,6 @@ using FOX.BusinessOperations.GroupServices;
 using FOX.DataModels.Models.GroupsModel;
 using FOX.DataModels.Models.Security;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.GroupServiceUnitTest
 {
@@ -75,18 +70,18 @@ namespace FoxRehabilitation.UnitTest.GroupServiceUnitTest
             }
         }
         [Test]
-        [TestCase(0,0)]
-        [TestCase(548169,0)]
-        [TestCase(0,1011163)]
-        [TestCase(548169,1011163)]
-        [TestCase(38403,38403)]
-        public void GetGroupUsersByGroupId_PassParameters_ReturnData(long groupId,long practiceCode)
+        [TestCase(0, 0)]
+        [TestCase(548169, 0)]
+        [TestCase(0, 1011163)]
+        [TestCase(548169, 1011163)]
+        [TestCase(38403, 38403)]
+        public void GetGroupUsersByGroupId_PassParameters_ReturnData(long groupId, long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
 
             //Act
-            var result = _groupService.GetGroupUsersByGroupId(groupId,_userProfile);
+            var result = _groupService.GetGroupUsersByGroupId(groupId, _userProfile);
 
             //Assert
             if (result != null)
@@ -108,7 +103,7 @@ namespace FoxRehabilitation.UnitTest.GroupServiceUnitTest
             //Arrange
             _userProfile.PracticeCode = practiceCode;
             _userProfile.UserName = "N-Unit Testing";
-            if(add)
+            if (add)
             {
                 _group.GROUP_ID = Helper.getMaximumId("GROUP_ID");
             }
@@ -119,6 +114,7 @@ namespace FoxRehabilitation.UnitTest.GroupServiceUnitTest
             _group.GROUP_NAME = "test";
             _group.CREATED_BY = "N-Unit Testing";
             _group.CREATED_DATE = Helper.GetCurrentDate();
+
             //Act
             var result = _groupService.AddUpdateGroup(_group, _userProfile);
 
@@ -178,7 +174,7 @@ namespace FoxRehabilitation.UnitTest.GroupServiceUnitTest
             _userProfile.UserName = "N-Unit Testing";
             _groupUsersCreateViewModel.USERS = null;
             _groupUsersCreateViewModel.USERS = new UserWithRoles[] { };
-            _groupUsersCreateViewModel.USERS = new UserWithRoles[] 
+            _groupUsersCreateViewModel.USERS = new UserWithRoles[]
             {
                 new UserWithRoles()
                 {
@@ -187,9 +183,6 @@ namespace FoxRehabilitation.UnitTest.GroupServiceUnitTest
                     GROUP_ID = groupId
                 }
             };
-
-            // GROUP_USER_ID = 12234,
-            //USER_NAME =
 
             //Act
             var result = _groupService.AddUsersInGroup(_groupUsersCreateViewModel, _userProfile);
@@ -204,12 +197,12 @@ namespace FoxRehabilitation.UnitTest.GroupServiceUnitTest
                 Assert.IsTrue(true);
             }
         }
-        //AddUsersInGroup
         public void Teardown()
         {
             _userProfile = new UserProfile();
             _groupService = new GroupService();
             _group = null;
+            _groupUsersCreateViewModel = null;
         }
     }
 }

@@ -3,11 +3,6 @@ using FOX.BusinessOperations.CompleteQueueService;
 using FOX.DataModels.Models.CompleteQueueModel;
 using FOX.DataModels.Models.Security;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.CompleteQueueServiceUnitTest
 {
@@ -29,7 +24,7 @@ namespace FoxRehabilitation.UnitTest.CompleteQueueServiceUnitTest
         [TestCase(1011163, true)]
         [TestCase(1011163, false)]
         [TestCase(1012714, true)]
-        public void GetCasesDDL_ResponseGetCasesDDLModel_ReturnData(long practiceCode, bool dateTo)
+        public void GetCasesDdl_ResponseGetCasesDdlModel_ReturnData(long practiceCode, bool dateTo)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;

@@ -38,7 +38,6 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         private PatientEligibilitySearchModel _patientEligibilitySearchModel;
         private PatientInsuranceInformation _patientInsuranceInformation;
         private PatientInsurance _patientInsurance;
-        private PatientInsuranceEligibilityDetail _patientInsuranceEligibilityDetail;
         private MedicareLimit _medicareLimit;
         private MedicareLimitHistorySearchReq _medicareLimitHistorySearchReq;
         private PHR _phr;
@@ -76,7 +75,6 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _patientEligibilitySearchModel = new PatientEligibilitySearchModel();
             _patientInsuranceInformation = new PatientInsuranceInformation();
             _patientInsurance = new PatientInsurance();
-            _patientInsuranceEligibilityDetail = new PatientInsuranceEligibilityDetail();
             _medicareLimit = new MedicareLimit();
             _medicareLimitHistorySearchReq = new MedicareLimitHistorySearchReq();
             _phr = new PHR();
@@ -85,7 +83,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _checkDuplicatePatientsReq = new CheckDuplicatePatientsReq();
             _subscriber = new Subscriber();
             _payorDataModel = new PayorDataModel();
-            _patientPatDocument = new PatientPATDocument();  
+            _patientPatDocument = new PatientPATDocument();
         }
         [Test]
         [TestCase(1011163, false, 101116354816630)]
@@ -186,7 +184,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         }
         [Test]
         [TestCase("Alaska")]
-        [TestCase("Atlantic")] 
+        [TestCase("Atlantic")]
         [TestCase("Eastern")]
         [TestCase("Chamorro")]
         [TestCase("Marshall")]
@@ -217,7 +215,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _userProfile.PracticeCode = practiceCode;
 
             //Act
-            var result = _patientService.GetRegionByZip(zipCode,_userProfile);
+            var result = _patientService.GetRegionByZip(zipCode, _userProfile);
 
             //Assert
             if (result != null)
@@ -258,7 +256,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
                 Assert.IsTrue(true);
             }
         }
-        
+
         [Test]
         [TestCase(101116354813049)]
         [TestCase(101116354610685)]
@@ -348,7 +346,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             }
         }
         [Test]
-        [TestCase(1011163,true)]
+        [TestCase(1011163, true)]
         [TestCase(1011163, false)]
         [TestCase(102, false)]
         public void GetAllPatientContactTypes_AllPatientContactTypesModel_ReturnData(long practiceCode, bool isTalkRehab)
@@ -390,7 +388,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _ssnExist.Patient_Account = patientAccount;
 
             //Act
-            var result = _patientService.SSNExists(_ssnExist,_userProfile);
+            var result = _patientService.SSNExists(_ssnExist, _userProfile);
 
             //Assert
             if (result == true)
@@ -405,16 +403,16 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(2456124, "101116354816561", 1011163, false)]
         [TestCase(1201254, "101116354412338", 1011163, false)]
-        public void UpdatePrimaryPhysicianInCases_CaseModel_NoReturnData(long PCP_ID, long Patient_Account, long practiceCode, bool isTalkRehab) 
+        public void UpdatePrimaryPhysicianInCases_CaseModel_NoReturnData(long PCP_ID, long Patient_Account, long practiceCode, bool isTalkRehab)
         {
             //Arrange
 
             //Act
             _patientService.UpdatePrimaryPhysicianInCases(PCP_ID, Patient_Account, practiceCode, isTalkRehab);
-            
+
             //Assert
             Assert.IsTrue(true);
-            
+
         }
         [Test]
         [TestCase("1163Testing", true)]
@@ -426,7 +424,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _patient.City = "";
             _patient.FirstName = "";
             _patient.MIDDLE_NAME = "";
-            _patient.Last_Name= "";
+            _patient.Last_Name = "";
             _patient.USER_NAME = "";
 
             //Act
@@ -435,7 +433,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
 
             //Assert
             Assert.IsTrue(true);
-           
+
         }
         [Test]
         [TestCase(1011163, "101116354816561")]
@@ -534,7 +532,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         }
         [Test]
         [TestCase(1011163, "")]
-        [TestCase(1011163,"test")]
+        [TestCase(1011163, "test")]
         public void GetSubscribers_SubscribersModel_ReturnData(long practiceCode, string searchValue)
         {
             //Arrange
@@ -542,7 +540,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _subscriberSearchReq.SEARCHVALUE = searchValue;
 
             //Act
-            var result = _patientService.GetSubscribers(_subscriberSearchReq,_userProfile);
+            var result = _patientService.GetSubscribers(_subscriberSearchReq, _userProfile);
 
             //Assert
             if (result != null)
@@ -599,7 +597,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             }
         }
         [Test]
-        [TestCase("P",true)]
+        [TestCase("P", true)]
         [TestCase("S", true)]
         [TestCase("T", true)]
         [TestCase("Q", true)]
@@ -637,7 +635,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase(1011163, "Connecticut Claims", "Indianapolis", "IN", "462066185")]
         [TestCase(1011163, "", "", "", "")]
         [TestCase(1011163, "PO Box 3030", "Mechanicsburg", "PA", "170551802")]
-        public void GetFinancialClassDDValues_InsurancePayersForAdvanceSearchModel_ReturnData(long practiceCode,string insuranceAddress, string insuranceCity, string insuranceState, string insuranceZip)
+        public void GetFinancialClassDDValues_InsurancePayersForAdvanceSearchModel_ReturnData(long practiceCode, string insuranceAddress, string insuranceCity, string insuranceState, string insuranceZip)
         {
             //Arrange
             _advanceInsuranceSearch.Practice_Code = practiceCode;
@@ -703,7 +701,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             }
         }
         [Test]
-        [TestCase(1011163,"")]
+        [TestCase(1011163, "")]
         [TestCase(1011163, "Test")]
         public void GetSmartPatient_SmartPatientModel_ReturnData(long practiceCode, string searchText)
         {
@@ -771,8 +769,8 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         public void GetDefaultPrimaryInsurance_EmptyModel_ReturnData(long practiceCode, string zip, string state)
         {
             //Arrange
-            _defaultInsuranceParameters.ZIP = zip; 
-            _defaultInsuranceParameters.State = state; 
+            _defaultInsuranceParameters.ZIP = zip;
+            _defaultInsuranceParameters.State = state;
             _defaultInsuranceParameters.patientAccount = 101116354816561;
 
             //Act
@@ -833,7 +831,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             }
         }
         [Test]
-        [TestCase( 1011163)]
+        [TestCase(1011163)]
         public void GetAutoPopulateInsurance_GetAutoPopulateInsuranceModel_ReturnData(long practiceCode)
         {
             //Arrange
@@ -842,7 +840,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _autoPopulateModel.CASE_ID = 544107;
             _autoPopulateModel.patientAccount = "0";
             _autoPopulateModel.Pri_Sec_Oth_Type = "0";
-            
+
 
             //Act
             var result = _patientService.GetAutoPopulateInsurance(_autoPopulateModel, _userProfile);
@@ -881,13 +879,13 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase(1011163, "99503", "AK")]
         [TestCase(1011163, "10968", "NY")]
         [TestCase(1011163, "85339", "AZ")]
-        public void GetSuggestedMCPayer_SuggestedMCPayerModel_ReturnData(long practiceCode, string zip,string state)
+        public void GetSuggestedMCPayer_SuggestedMCPayerModel_ReturnData(long practiceCode, string zip, string state)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
             _suggestedMCPayer.Zip = zip;
             _suggestedMCPayer.State = state;
-   
+
             //Act
             var result = _patientService.GetSuggestedMCPayer(_suggestedMCPayer, _userProfile);
 
@@ -901,28 +899,6 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
                 Assert.IsFalse(false);
             }
         }
-        //[Test]
-        //[TestCase(1011163, "101116354816561")]
-        //[TestCase(1011163, "101116354412309")]
-        //[TestCase(1011163, "10111635441309")]
-        //public void GetPatientInsurancesInIndexInfo_PatientInsurancesInIndexInfoModel_ReturnData(long practiceCode, string patientAccountStr)
-        //{
-        //    //Arrange
-        //    _userProfile.PracticeCode = practiceCode;
-
-        //    //Act
-        //    var result = _patientService.GetPatientInsurancesInIndexInfo(patientAccountStr, _userProfile);
-
-        //    //Assert
-        //    if (result != null)
-        //    {
-        //        Assert.IsTrue(true);
-        //    }
-        //    else
-        //    {
-        //        Assert.IsFalse(false);
-        //    }
-        //}
         [Test]
         [TestCase(1011163, "101116354816561")]
         [TestCase(1011163, "101116354412309")]
@@ -1121,7 +1097,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             //Arrange
             _userProfile.PracticeCode = 1011163;
             _userProfile.UserName = "1163testing";
-            
+
             //Act
             var result = _patientService.GetPatientInsurance(patientAccount, _userProfile);
 
@@ -1163,7 +1139,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             //Arrange
             _patientEligibilitySearchModel.Patient_Account_Str = patientAccount;
             _patientEligibilitySearchModel.Patient_Insurance_id = patientInsuranceId;
-            
+
             //Act
             var result = _patientService.CheckNecessaryDataForLoadEligibility(_patientEligibilitySearchModel);
 
@@ -1221,7 +1197,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         public void GetCoordinates_Coordinates_ReturnData(long locId)
         {
             //Arrange
-            _userProfile.PracticeCode=1011163;
+            _userProfile.PracticeCode = 1011163;
             _userProfile.UserName = "1163testing";
             _facilityLocation.LOC_ID = locId;
 
@@ -1240,7 +1216,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         }
         [Test]
         [TestCase(123456)]
-        [TestCase(544101)]        
+        [TestCase(544101)]
         public void SaveContact_Contact_ReturnData(long contactID)
         {
             //Arrange
@@ -1305,7 +1281,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         }
         [Test]
         [TestCase(101116354412336)]
-        [TestCase(101116354816561)]   
+        [TestCase(101116354816561)]
         public void GetCurrentPatientInsurances_CurrentPatientInsurancesModel_ReturnData(long patientAccount)
         {
             //Arrange
@@ -1352,59 +1328,6 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
                 Assert.IsFalse(false);
             }
         }
-        //[Test]
-        //[TestCase(true, 548101, "101116351010069")]
-        //[TestCase(true, 548101, "101116351010069")]
-        //[TestCase(true, 548101, "101116354816562")]
-        //public void SaveInsuranceAndEligibilityDetails_SaveModel_ReturnData(bool fromIndexInfo, long patientInsuranceId, string patientAccountStr)
-        //{
-        //    //Arrange
-        //    _userProfile.PracticeCode = 1011163;
-        //    _userProfile.UserName = "1163testing";
-        //    _patientInsuranceEligibilityDetail = new PatientInsuranceEligibilityDetail()
-        //    {
-        //        InsuranceToCreateUpdate = new PatientInsurance()
-        //        {
-        //            Patient_Insurance_Id = patientInsuranceId,
-        //            Pri_Sec_Oth_Type = "",
-        //            Effective_Date_In_String = Convert.ToString(DateTime.Today),
-        //            Termination_Date_In_String = Convert.ToString(DateTime.Today),
-        //            SUPRESS_BILLING_UNTIL_DATE_IN_STRING = "8/12/2020",
-        //            DED_AMT_VERIFIED_ON_DATE_IN_STRING = "8/12/2020",
-        //            DED_MET_AS_OF_IN_STRING = "8/12/2020",
-        //            BENEFIT_AMT_VERIFIED_ON_DATE_IN_STRING = "8/12/2020",
-        //            Deceased_Date_In_String = "8/12/2020",
-        //            Policy_Number = "123456789",
-        //            Plan_Name  = "Test",
-        //            Relationship   = "Brother",
-
-        //            SUBSCRIBER_DETAILS = new Subscriber()
-        //            {
-        //                IS_NEW_SUBSCRIBER = true,
-        //                GUARANT_DOB_IN_STRING = "8/12/2020",
-        //                GUARANT_DOB = DateTime.Today
-        //            }
-        //        },
-        //        Employer_Details = new Employer()
-        //        {
-        //            Employer_Code = 54896825423992
-        //        },
-        //    };
-        //    _patientInsuranceEligibilityDetail.Patient_Account_Str = patientAccountStr;
-
-        //    //Act
-        //    var result = _patientService.SaveInsuranceAndEligibilityDetails(_patientInsuranceEligibilityDetail, _userProfile, fromIndexInfo);
-
-        //    //Assert
-        //    if (result != null)
-        //    {
-        //        Assert.IsTrue(true);
-        //    }
-        //    else
-        //    {
-        //        Assert.IsFalse(false);
-        //    }
-        //}
         [Test]
         [TestCase(123456, "ABN")]
         [TestCase(123456, "Hospice")]
@@ -1437,12 +1360,12 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase(544100, "ABN")]
         [TestCase(544100, "Hospice")]
         [TestCase(544100, "")]
-        public void ABN_MedicareLimitDataChanged_DataChanged_ReturnData(long? newCaseId , string medicareLimitTypeName)
+        public void ABN_MedicareLimitDataChanged_DataChanged_ReturnData(long? newCaseId, string medicareLimitTypeName)
         {
             //Arrange
 
             _medicareLimit.MEDICARE_LIMIT_TYPE_NAME = medicareLimitTypeName;
-            _medicareLimit.CASE_ID = 544100 ;
+            _medicareLimit.CASE_ID = 544100;
             _medicareLimit.EFFECTIVE_DATE = DateTime.Today;
             _medicareLimit.END_DATE = DateTime.Today;
             _medicareLimit.ABN_EST_WK_COST = 0;
@@ -1461,7 +1384,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             {
                 Assert.IsFalse(false);
             }
-        }       
+        }
         [Test]
         public void FetchEligibilityRecords_FetchRecords_ReturnData()
         {
@@ -1471,7 +1394,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _userProfile.PracticeCode = 1011163;
 
             //Act
-            var result = _patientService.GetMedicareLimitHistory(_medicareLimitHistorySearchReq , _userProfile);
+            var result = _patientService.GetMedicareLimitHistory(_medicareLimitHistorySearchReq, _userProfile);
 
             //Assert
             if (result != null)
@@ -1485,7 +1408,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         }
         [Test]
         [TestCase(548350)]
-        [TestCase(544139)] 
+        [TestCase(544139)]
         public void Getsplitauthorizations_splitauthorization_ReturnData(long parentid)
         {
             //Arrange 
@@ -1553,7 +1476,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _userProfile.PracticeCode = 1011163;
 
             //Act
-            var result = _patientService.GetInvitedPatient(_phr , _userProfile);
+            var result = _patientService.GetInvitedPatient(_phr, _userProfile);
 
             //Assert
             if (result != null)
@@ -1651,11 +1574,11 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _userProfile.PracticeCode = 1011163;
             _userProfile.UserName = "1163testing";
             _fOX_TBL_TASK.PATIENT_ACCOUNT_STR = "1012714";
-            _fOX_TBL_TASK.PATIENT_ACCOUNT = 1012714 ;
+            _fOX_TBL_TASK.PATIENT_ACCOUNT = 1012714;
             _fOX_TBL_TASK.TASK_ID = 123456;
- 
+
             //Act
-            var result = _patientService.AddUpdateTask(_fOX_TBL_TASK , _userProfile , eligibilityMspData);
+            var result = _patientService.AddUpdateTask(_fOX_TBL_TASK, _userProfile, eligibilityMspData);
 
             //Assert
             if (result != null)
@@ -1740,7 +1663,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         }
         [Test]
         [TestCase("101116354816563")]
-        public void SearchCityStateAddressByAPI_PassParameter_ReturnData(string patientAccount)
+        public void SearchCityStateAddressByApi_PassParameter_ReturnData(string patientAccount)
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
@@ -1764,7 +1687,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _patientInsurance.IS_PRIVATE_PAY = true;
 
             //Act
-            _patientService.AddClaimNotes(_patientInsurance, claimNo,_userProfile);
+            _patientService.AddClaimNotes(_patientInsurance, claimNo, _userProfile);
 
             //Assert
             Assert.IsTrue(true);
@@ -1866,7 +1789,6 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             //Assert
             Assert.IsTrue(true);
         }
-        //AddUpdateNewDocumentInformation
         [TearDown]
         public void Teardown()
         {

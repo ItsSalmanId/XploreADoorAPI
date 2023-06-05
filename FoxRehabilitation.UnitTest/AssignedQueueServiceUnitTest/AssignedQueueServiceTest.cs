@@ -14,6 +14,7 @@ namespace FoxRehabilitation.UnitTest
         private AssignedQueueRequest _assignedQueueRequest;
         private BlacklistWhiteListSourceModel _blacklistWhiteListSourceModel;
         private MarkReferralValidOrTrashedModel _markReferralValidOrTrashed;
+
         [SetUp]
         public void SetUp()
         {
@@ -204,7 +205,7 @@ namespace FoxRehabilitation.UnitTest
         {
             //Arrange
             _userProfile.UserName = "1163testing";
-            string sourcetype = Helper.getMaximumId("Test_Counter").ToString(); 
+            string sourcetype = Helper.getMaximumId("Test_Counter").ToString();
             _userProfile.PracticeCode = 1011163;
 
             //Act

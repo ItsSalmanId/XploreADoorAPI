@@ -204,18 +204,6 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             //Assert
             Assert.That(result.Count, Is.GreaterThanOrEqualTo(0));
         }
-        //[Test]
-        //public void HasAttachment_EmptyAttachmentName_NoReturnsData()
-        //{
-        //    //Arrange
-        //    _phdCallDetail.ATTACHMENT_NAME = "";
-
-        //    //Act
-        //    _foxPHDService.HasAttachment(_phdCallDetail, _userProfile);
-
-        //    //Assert
-        //    Assert.IsTrue(true);
-        //}
         [Test]
         [TestCase("")]
         [TestCase("LOC-ISB-03")]
@@ -341,6 +329,7 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
 
             //Act
             var result = _foxPHDService.GetDefaultHandlingValue(_userProfile);
+
             //Assert
             if (result != null)
             {
@@ -492,7 +481,7 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             _patientPATDocument.MODIFIED_DATE = DateTime.Now;
             _patientPATDocument.DELETED = false;
 
-            _patientPATDocument.DOCUMENT_PATH_LIST  = new List<PatientDocumentFiles>();
+            _patientPATDocument.DOCUMENT_PATH_LIST = new List<PatientDocumentFiles>();
             {
                 PatientDocumentFiles patientDocumentFile = new PatientDocumentFiles
                 {
@@ -505,7 +494,7 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             var result = _foxPHDService.AddDocument(_patientPATDocument, _userProfile, true);
 
             //Assert
-            Assert.That(result, Is.GreaterThanOrEqualTo(0));   
+            Assert.That(result, Is.GreaterThanOrEqualTo(0));
         }
         [Test]
         [TestCase(1011163, 0, 0)]
@@ -553,7 +542,7 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             _phdCallDetail.CALL_SCENARIO = "544103";
             _phdCallDetail.CALL_REASON = "544119";
             _phdCallDetail.CS_CASE_CATEGORY = "5481530";
-            if(isNull)
+            if (isNull)
             {
                 _phdCallDetail.REQUEST = "";
             }
@@ -563,7 +552,7 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             }
             _phdCallDetail.CALL_DETAILS = "65456";
             _phdCallDetail.CALL_ATTENDED_BY = "1011163415";
-            if(condition)
+            if (condition)
             {
                 _phdCallDetail._IsSSCM = true;
                 _phdCallDetail.IsNewPatient = true;
@@ -592,7 +581,6 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
                 Assert.IsFalse(false);
             }
         }
-        //AddUpdateRecordingName
         [Test]
         public void AddUpdateRecordingName_PassModel_ReturnData()
         {
@@ -602,17 +590,10 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             _userProfile.UserName = "Test";
 
             //Act
-            var result = _foxPHDService.AddUpdateRecordingName(_phdCallDetail, _userProfile);
+            _foxPHDService.AddUpdateRecordingName(_phdCallDetail, _userProfile);
 
             //Assert
-            if (result != null)
-            {
-                Assert.IsTrue(true);
-            }
-            else
-            {
-                Assert.IsFalse(false);
-            }
+            Assert.IsTrue(true);
         }
         [Test]
         public void GenerateCaseNumber_GenerateCase_ReturnCaseNumber()
@@ -656,11 +637,11 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             long userId = 0;
             if (condition)
             {
-               userId = 5482573;
+                userId = 5482573;
             }
             else
             {
-                userId = Helper.getMaximumId("DAEAULT_HANDLING_ID"); 
+                userId = Helper.getMaximumId("DAEAULT_HANDLING_ID");
             }
             _callDetailsSearchRequest.CALL_REASON = "";
             List<DefaultVauesForPhdUsers> defaultVauesForPhdUsers = new List<DefaultVauesForPhdUsers>()
@@ -694,7 +675,7 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             _phdPatientVerification.PATIENT_ACCOUNT_STR = "101116354817724";
             _phdPatientVerification.LAST_VERIFIED_DATE_STR = "2018-12-12 01:25:30.277";
             _phdPatientVerification.IS_PATIENT_EMAIL_ADDRESS_VERIFIED = true;
-            if(addCase)
+            if (addCase)
             {
                 _phdPatientVerification.FOX_PHD_CALL_PATIENT_VERIFICATION_ID = Helper.getMaximumId("FOX_PHD_CALL_PATIENT_VERIFICATION_ID");
             }
@@ -703,7 +684,7 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
                 _phdPatientVerification.FOX_PHD_CALL_PATIENT_VERIFICATION_ID = 548140;
                 _phdPatientVerification.PATIENT_ACCOUNT_STR = "1010782513100085";
             }
-           
+
             //Act
             _foxPHDService.AddUpdateVerificationInformation(_phdPatientVerification, _userProfile);
 
@@ -762,7 +743,6 @@ namespace FoxRehabilitation.UnitTest.FoxPHDServiceUnitTest
             //Assert
             Assert.IsTrue(true);
         }
-        //HasAttachment
         [TearDown]
         public void Teardown()
         {

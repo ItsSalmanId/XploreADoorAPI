@@ -55,7 +55,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
         [TestCase(1011163)]
         [TestCase(0)]
         [TestCase(1012714)]
-        public void GetCasesDDL_ResponseGetCasesDDLModel_ReturnData(long practiceCode)
+        public void GetCasesDdl_ResponseGetCasesDdlModel_ReturnData(long practiceCode)
         {
             //Arrange
             string patientAccount = (Convert.ToInt64(practiceCode.ToString() + (Helper.getMaximumId("Patient_Account") - 20).ToString())).ToString();
@@ -77,7 +77,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
         [TestCase(1011163)]
         [TestCase(0)]
         [TestCase(1012714)]
-        public void GetCasesDDLTalRehab_ResponseGetCasesDDLModel_ReturnData(long practiceCode)
+        public void GetCasesDdlTalRehab_ResponseGetCasesDdlModel_ReturnData(long practiceCode)
         {
             //Arrange
             string patientAccount = (Convert.ToInt64(practiceCode.ToString() + (Helper.getMaximumId("Patient_Account") - 20).ToString())).ToString();
@@ -168,47 +168,46 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
                 Assert.IsFalse(false);
             }
         }
-        //[Test]
-        //public void getReffralCode(FOX_TBL_CASE model)
-        //{
-         
-        //    //Act
-        //    var result = _caseServices.getReffralCode(model);
-
-        //    //Assert
-        //    if (result != null)
-        //    {
-        //        Assert.IsTrue(true);
-        //    }
-        //    else
-        //    {
-        //        Assert.IsFalse(false);
-        //    }
-        //}
-        //[Test]
-        //public void getProviderCode()
-        //{
-        //    //FOX_TBL_CASE model = new FOX_TBL_CASE();
-        //    _foxTblCase.TREATING_PROVIDER_ID = 1571;
-
-        //    //Act
-        //    var result = _caseServices.getProviderCode(_foxTblCase);
-
-        //    //Assert
-        //    if (result != null)
-        //    {
-        //        Assert.IsTrue(true);
-        //    }
-        //    else
-        //    {
-        //        Assert.IsFalse(false);
-        //    }
-        //}
         [Test]
-        [TestCase(0,false)]
-        [TestCase(null,false)]
-        [TestCase(1011163,true)]
-        [TestCase(38403,false)]
+        public void GetReffralCode_PassModel_ReturnData()
+        {
+            _foxTblCase.CERTIFYING_REF_SOURCE_ID = 544102;
+            //Act
+            var result = _caseServices.getReffralCode(_foxTblCase);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
+        [Test]
+        public void getProviderCode_PassModel_ReturnData()
+        {
+            _foxTblCase.TREATING_PROVIDER_ID = 544100;
+
+            //Act
+            var result = _caseServices.getProviderCode(_foxTblCase);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
+        [Test]
+        [TestCase(0, false)]
+        [TestCase(null, false)]
+        [TestCase(1011163, true)]
+        [TestCase(38403, false)]
         public void GetSourceofReferral_SourceofReferralList_ReturnData(long practiceCode, bool isTalkRehab)
         {
             //Arrange
@@ -322,28 +321,6 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
                 Assert.IsFalse(false);
             }
         }
-        // talk SP 
-        //[Test]
-        //[TestCase(0)]
-        //[TestCase(null)]
-        //[TestCase(1011163)]
-        //[TestCase(38403)]
-        //public void GetTotalDisciplineTalkrehab_TotalDisciplineResList_ReturnData(long practiceCode)
-        //{
-        //    //Arrange
-        //    //Act
-          // var result = _caseServices.GetTotalDisciplineTalkrehab(practiceCode);
-
-        //    //Assert
-        //    if (result.Count != 0)
-        //    {
-        //        Assert.IsTrue(true);
-        //    }
-        //    else
-        //    {
-        //        Assert.IsFalse(false);
-        //    }
-        //}
         [Test]
         [TestCase(0, 0)]
         [TestCase(544276, 0)]
@@ -736,7 +713,7 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             string historyTime = "test";
 
             //Act
-            var result = _caseServices.AddEditCase(historyTime, locationName, certifyState,_foxTblCase, _userProfile);
+            var result = _caseServices.AddEditCase(historyTime, locationName, certifyState, _foxTblCase, _userProfile);
 
             //Assert
             if (result != null)
@@ -783,7 +760,6 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             _userProfile.userID = 1011163415;
             _getOpenIssueListReq.CASE_ID = 1011163415;
             _getOpenIssueListReq.CASE_STATUS_ID = 544104;
-            //_getOpenIssueListReq.PATIENT_ACCOUNT = ;
 
             //Act
 
@@ -884,9 +860,9 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
         }
         [Test]
         [TestCase(1011163, 0, "OT")]
-        [TestCase(1011163, 123,"PT")]
-        [TestCase(1011163, 007,"ST")]
-        public void UpdatePCPInPatientDemographics_PassModel_ReturnData(long practiceCode, long primaryPhysician, string userName)
+        [TestCase(1011163, 123, "PT")]
+        [TestCase(1011163, 007, "ST")]
+        public void UpdatePcpInPatientDemographics_PassModel_ReturnData(long practiceCode, long primaryPhysician, string userName)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -916,7 +892,6 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             //Assert
             Assert.IsTrue(true);
         }
-        //UpdatePrimaryPhysicianInActiveandOpenCases
         [Test]
         [TestCase(5441645)]
         [TestCase(544113)]
@@ -954,20 +929,12 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             _interfaceSynchModel.PATIENT_ACCOUNT = patientAccount;
             _interfaceSynchModel.TASK_ID = 54100;
             _interfaceSynchModel.CASE_ID = 54100;
-            
+
             //Act
             _caseServices.InsertInterfaceTeamData(_interfaceSynchModel, _userProfile);
 
             //Assert
             Assert.IsTrue(true);
-            //if (result != null)
-            //{
-            //    Assert.IsTrue(true);
-            //}
-            //else
-            //{
-            //    Assert.IsFalse(false);
-            //}
         }
         [TearDown]
         public void Teardown()
@@ -987,6 +954,8 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
             _openIssueListToDelete = null;
             _getTreatingProviderReq = null;
             _casesSearchRequest = null;
+            _smartSearchCasesRequest = null;
+            _interfaceSynchModel = null;
         }
     }
 }

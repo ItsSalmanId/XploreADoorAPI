@@ -1385,7 +1385,7 @@ namespace FoxRehabilitation.UnitTest.UserManagementServiceUnitTest
         [TestCase(-1)]
         public void UpdateOtpEnableDate_NullAndInvalidData(long userId)
         {
-         
+
             //Act
             var result = _userManagementService.UpdateOtpEnableDate(userId);
             //Assert

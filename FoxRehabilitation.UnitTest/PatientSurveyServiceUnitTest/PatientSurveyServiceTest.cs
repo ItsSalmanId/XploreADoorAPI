@@ -3,10 +3,6 @@ using FOX.DataModels.Models.PatientSurvey;
 using FOX.DataModels.Models.Security;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
 {
@@ -35,7 +31,7 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
         [Test]
         [TestCase("101116354860045", 1011163)]
         [TestCase("101116354860048", 1011163)]
-        public void GetPSRDetailedReport_SurveyDetailedFromEmailModel_ReturnData(string surveyId, long practiceCode)
+        public void GetPsrDetailedReport_SurveyDetailedFromEmailModel_ReturnData(string surveyId, long practiceCode)
         {
             //Arrange
             //Act
@@ -67,21 +63,9 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
         [TestCase(1011163, 3)]
         [TestCase(1011163, 4)]
         [TestCase(1011164, 4)]
-
-        public void GetPSDResults_PSDResultsModel_ReturnData(long practiceCode, int TIME_FRAME)
+        public void GetPsdResults_PsdResultsModel_ReturnData(long practiceCode, int TIME_FRAME)
         {
             //Arrange
-            //_userProfile.PracticeCode = practiceCode;
-            //_patientSurveySearchRequest.PROVIDER = "";
-            //_patientSurveySearchRequest.TIME_FRAME = TIME_FRAME;
-            //_patientSurveySearchRequest.REGION = "";
-            //_patientSurveySearchRequest.STATE = "";
-            //_patientSurveySearchRequest.FLAG = "";
-            //_patientSurveySearchRequest.FORMAT = "";
-            //_patientSurveySearchRequest.SURVEYED_BY = "";
-            //_patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "";
-            //_patientSurveySearchRequest.CURRENT_PAGE = 1;
-            //_patientSurveySearchRequest.DISCIPLINE = "";
             _userProfile.PracticeCode = practiceCode;
             _patientSurveySearchRequest.REGION = "";
             _patientSurveySearchRequest.STATE = "";
@@ -111,7 +95,7 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
         [Test]
         [TestCase("", 1011163)]
         [TestCase("Test", 1011163)]
-        public void GetPSRegionList_PSRegionListModel_ReturnData(string searchText, long practiceCode)
+        public void GetPsRegionList_PsRegionListModel_ReturnData(string searchText, long practiceCode)
         {
             //Arrange
             //Act
@@ -128,10 +112,9 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
             }
         }
         [Test]
-        public void GetPSStateList_GetPSStateListModel_ReturnData()
+        public void GetPsStateList_GetPsStateListModel_ReturnData()
         {
             //Arrange
-
             //Act
             var result = _patientSurveyService.GetPSStateList();
             //Assert
@@ -200,7 +183,7 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
         }
         [Test]
         [TestCase(1011163)]
-        public void GetPSSearchData_PSSearchDataModel_ReturnData(long practiceCode)
+        public void GetPsSearchData_PsSearchDataModel_ReturnData(long practiceCode)
         {
             //Arrange 
             //Act
@@ -218,7 +201,7 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
         }
         [Test]
         [TestCase(1011163)]
-        public void GetPSInitialData_GetPSInitialDataModel_ReturnData(long practiceCode)
+        public void GetPsInitialData_GetPsInitialDataModel_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -238,7 +221,7 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
         }
         [Test]
         [TestCase(1011163)]
-        public void GetPSDStateAndRecommendationWise_PSDStateAndRecommendationWiseModel_ReturnData(long practiceCode)
+        public void GetPsDStateAndRecommendationWise_PsDStateAndRecommendationWiseModel_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -262,7 +245,7 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
         [TestCase(1011163, 3)]
         [TestCase(1011163, 4)]
         [TestCase(1011164, 4)]
-        public void GetPSDRegionAndRecommendationWise_PSDRegionAndRecommendationWiseModel_ReturnData(long practiceCode, int TIME_FRAME)
+        public void GetPsdRegionAndRecommendationWise_PsdRegionAndRecommendationWiseModel_ReturnData(long practiceCode, int TIME_FRAME)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -292,28 +275,9 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
             }
         }
         [Test]
-        [TestCase(112233859, 1011163)]
-        [TestCase(346354, 1011163)]
-        public void GetPSCallLogList_PSCallLogListModel_ReturnData(long patientAccount, long practiceCode)
-        {
-            //Arrange
-            //Act
-            //var result = _patientSurveyService.GetPSCallLogList(patientAccount, practiceCode);
-
-            ////Assert
-            //if (result != null && result.Count > 0)
-            //{
-            //    Assert.IsTrue(true);
-            //}
-            //else
-            //{
-            //    Assert.IsFalse(false);
-            //}
-        }
-        [Test]
         [TestCase(1011163, "")]
         [TestCase(1011163, "William Delanzo")]
-        public void GetPSProvidersList_PSProvidersListModel_ReturnData(long practiceCode, string provider)
+        public void GetPsProvidersList_PsProvidersListModel_ReturnData(long practiceCode, string provider)
         {
             //Arrange
             //Act
@@ -332,7 +296,7 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
         [Test]
         [TestCase(1011163, "")]
         [TestCase(1011163, "NJNE1 NJ Northeast 1")]
-        public void GetPSStatesList_PSStatesListModel_ReturnData(long practiceCode, string region)
+        public void GetPsStatesList_PsStatesListModel_ReturnData(long practiceCode, string region)
         {
             //Arrange
             //Act
@@ -351,7 +315,7 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
         [Test]
         [TestCase(1011163, "PA")]
         [TestCase(1011163, "")]
-        public void GetPSRegionsList_PSRegionsListModel_ReturnData(long practiceCode, string state)
+        public void GetPsRegionsList_PsRegionsListModel_ReturnData(long practiceCode, string state)
         {
             //Arrange
             //Act
@@ -370,7 +334,7 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
         [Test]
         [TestCase(1011163)]
         [TestCase(1011165)]
-        public void GetPSFormat_PSFormatModel_ReturnData(long practiceCode)
+        public void GetPsFormat_PsFormatModel_ReturnData(long practiceCode)
         {
             //Arrange
             //Act
@@ -392,17 +356,10 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
         {
             //Arrange
             //Act
-            var result = _patientSurveyService.SetSurveytProgress(patientAccount, progressStatus);
+            _patientSurveyService.SetSurveytProgress(patientAccount, progressStatus);
 
             //Assert
-            if (result != null)
-            {
-                Assert.IsTrue(true);
-            }
-            else
-            {
-                Assert.IsFalse(false);
-            }
+            Assert.IsTrue(true);
         }
         [Test]
         [TestCase(1011163)]
@@ -563,10 +520,10 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
             _patientSurveyCall.FileName = "";
 
             //Act
-             _patientSurveyService.MakeSurveyCall(_patientSurveyCall);
+            _patientSurveyService.MakeSurveyCall(_patientSurveyCall);
 
             //Assert
-                Assert.IsTrue(true);
+            Assert.IsTrue(true);
         }
         [Test]
         [TestCase(1011163)]
@@ -577,7 +534,7 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
             _userProfile.PracticeCode = practiceCode;
             _userProfile.UserName = "1163Testing";
             _patientSurveyCallLog.SURVEY_CALL_ID = 0;
-            _patientSurveyCallLog.SURVEY_ID_Str = "548581";;
+            _patientSurveyCallLog.SURVEY_ID_Str = "548581"; ;
 
             //Act
             _patientSurveyService.AddUpdateSurveyCall(_patientSurveyCallLog, _userProfile);

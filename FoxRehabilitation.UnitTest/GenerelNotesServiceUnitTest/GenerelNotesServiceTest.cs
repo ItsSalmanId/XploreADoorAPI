@@ -4,17 +4,11 @@ using FOX.DataModels.Models.CasesModel;
 using FOX.DataModels.Models.GeneralNotesModel;
 using FOX.DataModels.Models.Security;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
 {
     class GenerelNotesServiceTest
     {
-
         private UserProfile _userProfile;
         private GeneralNotesServices _generalNotesServices;
         private GeneralNoteRequestModel _generalNoteRequestModel;
@@ -26,7 +20,6 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
         private AlertSearchRequest _alertSearchRequest;
         private NoteAlert _noteAlert;
         private InterfaceLogSearchRequest _interfaceLogSearchRequest;
-        private InterfaceLogSearchRequest InterfaceLogSearchRequest;
 
         [SetUp]
         public void SetUp()
@@ -57,7 +50,6 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
 
             //Act
             var result = _generalNotesServices.GetAlertGeneralNotes(_userProfile, patientAccount);
-
 
             //Assert
             if (result.Count != 0)
@@ -144,7 +136,7 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
         [TestCase(0, 1011163)]
         [TestCase(101116354813733, 1011163)]
         [TestCase(38403, 38403)]
-        public void GetPatientCasesList_PatientCasesForDDList_ReturnData(long patientAccount, long practiceCode)
+        public void GetPatientCasesList_PatientCasesForDdList_ReturnData(long patientAccount, long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -227,7 +219,7 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
             //Arrange
             _userProfile.PracticeCode = practiceCode;
             _userProfile.UserName = "1163testing";
-            if(condition)
+            if (condition)
             {
                 _generalNoteRequestModel.GENERAL_NOTE_ID = Helper.getMaximumId("GENERAL_NOTE_ID") - 101;
             }
@@ -294,7 +286,7 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
             };
             _generalNoteCreateUpdateRequest.GENERAL_NOTE_HISTORY = new FOX_TBL_GENERAL_NOTE()
             {
-                NOTE_DESCRIPTION = "<html>                              <body>Testing from app<br>Pye, Jody - Clinician</body> </html>",
+                NOTE_DESCRIPTION = "<html><body>Testing from app<br>Pye, Jody - Clinician</body> </html>",
             };
 
             //Act
@@ -326,7 +318,7 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
             };
             _generalNoteCreateUpdateRequest.GENERAL_NOTE_HISTORY = new FOX_TBL_GENERAL_NOTE()
             {
-                NOTE_DESCRIPTION = "<html>                              <body>Testing from app<br>Pye, Jody - Clinician</body> </html>",
+                NOTE_DESCRIPTION = "<html><body>Testing from app<br>Pye, Jody - Clinician</body> </html>",
             };
 
             //Act
@@ -369,7 +361,7 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
         [Test]
         [TestCase(1011163)]
         [TestCase(1012714)]
-        public void InsertInterfaceTeamData2_PassModel_ReturnData(long practiceCode)
+        public void InsertInterfaceTeamData_PassModel_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -381,7 +373,6 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
             _generalNotesServices.InsertInterfaceTeamData2(_interfaceSynchModel, _userProfile);
 
             //Assert
-
             Assert.IsTrue(true);
         }
         [Test]
@@ -488,13 +479,23 @@ namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
 
             Assert.IsTrue(true);
         }
-        //RetryInterfacing
         [TearDown]
         public void Teardown()
         {
-            _userProfile = new UserProfile();
-            _generalNotesServices = new GeneralNotesServices();
-            _generalNoteRequestModel = new GeneralNoteRequestModel();
+            _userProfile = null;
+            _generalNotesServices = null;
+            _generalNoteRequestModel = null;
+            _userProfile = null; ;
+            _generalNotesServices = null; ;
+            _generalNoteRequestModel = null; ;
+            _generalNotesSearchRequest = null; ;
+            _generalNoteDeleteRequestModel = null; ;
+            _generalNoteCreateUpdateRequest = null; ;
+            _generalNoteHistoryRequestModel = null; ;
+            _interfaceSynchModel = null; ;
+            _alertSearchRequest = null; ;
+            _noteAlert = null; ;
+            _interfaceLogSearchRequest = null; ;
         }
     }
 }

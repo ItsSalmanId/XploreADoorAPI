@@ -1,10 +1,8 @@
-﻿using FOX.DataModels.Models.Security;
-using NUnit.Framework;
-using FOX.BusinessOperations;
-using FOX.BusinessOperations.AccountService;
+﻿using FOX.BusinessOperations.AccountService;
 using FOX.DataModels.Models.ExternalUserModel;
+using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.Settings.RoleAndRights;
-using FoxRehabilitationAPI.Models;
+using NUnit.Framework;
 
 namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
 {
@@ -16,7 +14,6 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
         private CityDetailByZipCodeRequestModel _cityDetailByZipCode;
         private EmailExist _emailExist;
         private SmartSearchRequest _smartSearchRequest;
-        private User _user;
         private GetUserIP _getUserIP;
         private LogoutModal _logoutModel;
         private UserProfile _userProfile;
@@ -29,7 +26,6 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             _cityDetailByZipCode = new CityDetailByZipCodeRequestModel();
             _emailExist = new EmailExist();
             _smartSearchRequest = new SmartSearchRequest();
-            _user = new User();
             _getUserIP = new GetUserIP();
             _logoutModel = new LogoutModal();
             _userProfile = new UserProfile();
@@ -54,7 +50,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             var result = _accountService.getUserDetailByNPI(_npiRequestModel);
 
             //Assert
-            if(result != null)
+            if (result != null)
             {
                 Assert.IsTrue(true);
             }
@@ -71,7 +67,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             var result = _accountService.getCityDetailByZipCode(_cityDetailByZipCode);
 
             //Assert
-            if(result != null && result.zip_city_state != null && result.zip_city_state.Count > 0)
+            if (result != null && result.zip_city_state != null && result.zip_city_state.Count > 0)
             {
                 Assert.That(result.zip_city_state.Count, Is.GreaterThanOrEqualTo(0));
             }
@@ -92,7 +88,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             var result = _accountService.CheckIfEmailAlreadyInUse(_emailExist);
 
             //Assert
-            if(result == true)
+            if (result == true)
             {
                 Assert.IsTrue(true);
             }
@@ -114,7 +110,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             var result = _accountService.getPractices(_smartSearchRequest);
 
             //Assert
-            if(result != null && result.fox_tbl_practice_organization != null && result.fox_tbl_practice_organization.Count > 0)
+            if (result != null && result.fox_tbl_practice_organization != null && result.fox_tbl_practice_organization.Count > 0)
             {
                 Assert.That(result.fox_tbl_practice_organization.Count, Is.GreaterThanOrEqualTo(0));
             }
@@ -136,7 +132,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             var result = _accountService.getSmartIdentifier(_smartSearchRequest);
 
             //Assert
-            if(result != null)
+            if (result != null)
             {
                 Assert.That(result.Count, Is.GreaterThanOrEqualTo(0));
             }
@@ -156,9 +152,9 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
 
             //Act
             var result = _accountService.getSmartSpecialities(_smartSearchRequest);
-            
+
             //Assert
-            if(result != null && result.specialities != null)
+            if (result != null && result.specialities != null)
             {
                 Assert.That(result.specialities.Count, Is.GreaterThanOrEqualTo(0));
             }
@@ -230,12 +226,12 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             Assert.IsTrue(true);
         }
         [Test]
-        [TestCase("testing@foxrehab.org")]  
+        [TestCase("testing@foxrehab.org")]
         public void IpConfig_HasUserName_ReturnsData(string userName)
         {
             //Arrange
             _getUserIP.userName = userName;
-            
+
             //Act
             var result = _accountService.IpConfig(_getUserIP);
 
@@ -276,7 +272,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
 
             //Assert
 
-            if(result != null && result.Success == true)
+            if (result != null && result.Success == true)
             {
                 Assert.That(result.Success, Is.True);
             }
@@ -285,24 +281,6 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
                 Assert.That(result.Success, Is.False);
             }
         }
-        //[Test]
-        //[TestCase("test", "test", "Invalid Internal Login")]
-        //public void InsertLogs_HasTokenAndUserID_NoReturnsData(string encryptedPassword, string detectedBrowser, string requestType)
-        //{
-        //    //Arrange
-        //    _userProfile.EMAIL = "@foxrehab.org";
-        //    _userProfile.FirstName = "test";
-        //    _userProfile.LastName = "test";
-        //    _userProfile.ApplicationUserRoles = new System.Collections.Generic.List<RoleAndRights>(); 
-
-        //    //Act
-        //    _accountService.InsertLogs(_userProfile, encryptedPassword, detectedBrowser, requestType);
-
-        //    //Assert
-
-        //    Assert.IsTrue(true);
-        //}
-        //InsertLogs
         [TearDown]
         public void Teardown()
         {
@@ -312,7 +290,6 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             _cityDetailByZipCode = null;
             _emailExist = null;
             _smartSearchRequest = null;
-            _user = null;
             _getUserIP = null;
             _logoutModel = null;
             _userProfile = null;

@@ -1,9 +1,6 @@
-﻿using FOX.BusinessOperations.CommonServices;
-using FOX.BusinessOperations.FrictionlessReferral.SupportStaff;
-using FOX.DataModels.Models.CommonModel;
+﻿using FOX.BusinessOperations.FrictionlessReferral.SupportStaff;
 using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
 using FOX.DataModels.Models.RequestForOrder;
-using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.ServiceConfiguration;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -21,8 +18,6 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
         private ServiceAvailability _serviceAvailability;
         private ExternalUserInfo _externalUserInfo;
         private SubmitReferralModel _submitReferralModel;
-        private RequestUploadFilesModel _requestUploadFilesModel;
-        private UserProfile _userProfile;
 
         [SetUp]
         public void Setup()
@@ -35,8 +30,6 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
             _serviceAvailability = new ServiceAvailability();
             _externalUserInfo = new ExternalUserInfo();
             _submitReferralModel = new SubmitReferralModel();
-            _requestUploadFilesModel = new RequestUploadFilesModel();
-            _userProfile = new UserProfile();
         }
         [Test]
         public void GetPracticeCode_HasPracticeCode_ReturnData()
@@ -127,7 +120,7 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
             int i = 1;
 
             //Act
-            _supportStaffService.newThreadImplementaion(ref threadCounter, PdfPath, i,config, workId, pageCounter);
+            _supportStaffService.newThreadImplementaion(ref threadCounter, PdfPath, i, config, workId, pageCounter);
 
             //Assert
             Assert.True(true);
@@ -208,7 +201,7 @@ namespace FoxRehabilitation.UnitTest.FrictionlessReferralUnitTest.SupportStaffUn
             _frictionLessReferral.USER_TYPE = userType;
             _frictionLessReferral.PROVIDER_FAX = providerFax;
             _frictionLessReferral.SUBMITTER_LAST_NAME = "Unit testing";
-            
+
             //Act
             var result = _supportStaffService.SaveFrictionLessReferralDetails(_frictionLessReferral);
 
