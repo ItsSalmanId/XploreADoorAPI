@@ -7,7 +7,7 @@ using System;
 namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
 {
     [TestFixture]
-    class PatientSurveyServiceTest
+    public class PatientSurveyServiceTest
     {
         private PatientSurveyService _patientSurveyService;
         private PatientSurveySearchRequest _patientSurveySearchRequest;

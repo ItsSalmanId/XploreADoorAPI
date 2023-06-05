@@ -7,7 +7,8 @@ using System.Collections.Generic;
 
 namespace FoxRehabilitation.UnitTest
 {
-    class AssignedQueueServiceTestCases
+    [TestFixture]
+    public class AssignedQueueServiceTestCases
     {
         private AssignedQueueServices _assignedQueueServices;
         private UserProfile _userProfile;

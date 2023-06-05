@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
 {
     [TestFixture]
-    class AccountServiceTest
+    public class AccountServiceTest
     {
         private AccountServices _accountService;
         private UserDetailsByNPIRequestModel _npiRequestModel;

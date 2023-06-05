@@ -6,7 +6,8 @@ using NUnit.Framework;
 
 namespace FoxRehabilitation.UnitTest.GroupServiceUnitTest
 {
-    class GroupServiceTest
+    [TestFixture]
+    public class GroupServiceTest
     {
 
         private UserProfile _userProfile;

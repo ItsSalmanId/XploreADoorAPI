@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace FoxRehabilitation.UnitTest.CompleteQueueServiceUnitTest
 {
     [TestFixture]
-    class CompleteQueueServiceTest
+    public class CompleteQueueServiceTest
     {
         private CompleteQueueService _completeQueueService;
         private SearchRequestCompletedQueue _searchRequestCompletedQueue;

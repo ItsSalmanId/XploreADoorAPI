@@ -12,7 +12,7 @@ using System.Collections.Generic;
 namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
 {
     [TestFixture]
-    class PatientServicesTest
+    public class PatientServicesTest
     {
         private PatientService _patientService;
         private UserProfile _userProfile;

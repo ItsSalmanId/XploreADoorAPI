@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
 {
     [TestFixture]
-    class PerformAuditServiceTest
+    public class PerformAuditServiceTest
     {
         private PerformAuditService _performAuditService;
         private RequestModelForCallType _requestModelForCallType;

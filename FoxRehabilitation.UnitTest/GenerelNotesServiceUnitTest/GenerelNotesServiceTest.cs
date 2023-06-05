@@ -7,7 +7,8 @@ using NUnit.Framework;
 
 namespace FoxRehabilitation.UnitTest.GenerelNotesServiceUnitTest
 {
-    class GenerelNotesServiceTest
+    [TestFixture]
+    public class GenerelNotesServiceTest
     {
         private UserProfile _userProfile;
         private GeneralNotesServices _generalNotesServices;
