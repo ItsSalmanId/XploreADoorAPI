@@ -14,8 +14,6 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
 {
@@ -102,9 +100,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
         }
         public List<CallLogModel> PostCallList(RequestCallList request, UserProfile profile)
         {
-            List<CallLogModel> lst = new List<CallLogModel>();
-            List<SurveyAuditScores> List = new List<SurveyAuditScores>();
-            List<SurveyAuditScores> noAssociatedList = new List<SurveyAuditScores>();
+            List<CallLogModel> callLogList = new List<CallLogModel>();
             request.DATE_TO = Helper.GetCurrentDate();
             switch (request.TIME_FRAME)
             {
@@ -136,101 +132,14 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             var dateFrom = Helper.getDBNullOrValue("DATE_FROM", request.DATE_FROM.ToString());
             var dateTo = Helper.getDBNullOrValue("@DATE_TO", request.DATE_TO.ToString());
             var callScanario = new SqlParameter { ParameterName = "PHD_CALL_SCENARIO_ID", SqlDbType = SqlDbType.VarChar, Value = request.PHD_CALL_SCENARIO_ID };
-            //var result = SpRepository<CallLogModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SURVEY_CALL_LIST
-            //             @PRACTICE_CODE, @SURVEY_BY, @DATE_FROM, @DATE_TO", PracticeCode, _surveyBy, dateFrom, dateTo);
+            var readOnlyMode = new SqlParameter { ParameterName = "IS_READ_ONLY_MODE", SqlDbType = SqlDbType.Bit, Value = request.IS_READ_ONLY_MODE };
 
-            var result = SpRepository<CallLogModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_CALL_LIST_FOR_AUDIT
-                         @PRACTICE_CODE, @CALL_BY, @CALL_TYPE, @DATE_FROM, @DATE_TO, @PHD_CALL_SCENARIO_ID", PracticeCode, _callBy, _callType, dateFrom, dateTo, callScanario);
-            lst = result;
-
-            // var List = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.AUDITOR_NAME == profile.UserName).Select(x => x.SURVEY_CALL_ID).ToList();
-
-
-            if (request.IS_READ_ONLY_MODE)
-            {
-                noAssociatedList = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode /* && x.AUDITOR_NAME == profile.UserName*/ &&
-               x.PHD_CALL_ID.ToString().EndsWith("0000") &&/* x.PATIENT_ACCOUNT != null &&*/
-               (request.PHD_CALL_SCENARIO_ID != 0 ? (x.PHD_CALL_SCENARIO_ID == request.PHD_CALL_SCENARIO_ID) : true));
-
-                List = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.CALL_TYPE == request.CALL_TYPE/* && x.AUDITOR_NAME == profile.UserName*/).Select(x => new SurveyAuditScores() { SURVEY_CALL_ID = x.SURVEY_CALL_ID, PHD_CALL_ID = x.PHD_CALL_ID }).ToList();
-            }
-            else
-            {
-                noAssociatedList = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.AUDITOR_NAME == profile.UserName &&
-               x.PHD_CALL_ID.ToString().EndsWith("0000") &&/* x.PATIENT_ACCOUNT != null &&*/
-               (request.PHD_CALL_SCENARIO_ID != 0 ? (x.PHD_CALL_SCENARIO_ID == request.PHD_CALL_SCENARIO_ID) : true));
-
-                List = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.CALL_TYPE == request.CALL_TYPE /* && x.AUDITOR_NAME == profile.UserName*/).Select(x => new SurveyAuditScores() { SURVEY_CALL_ID = x.SURVEY_CALL_ID, PHD_CALL_ID = x.PHD_CALL_ID }).ToList();
-            }
-
-            if (lst.Count > 0)
-            {
-                for (int i = 0; i < lst.Count; i++)
-                {
-                    for (int j = 0; j < List.Count; j++)
-                    {
-                        if (lst[i].ID == List[j].PHD_CALL_ID || lst[i].ID == List[j].SURVEY_CALL_ID)
-                        {
-                            lst[i].IS_AUDITED = true;
-                        }
-                    }
-                }
-                if(request.IS_READ_ONLY_MODE && noAssociatedList.Count >0)
-                {
-                    foreach (SurveyAuditScores list in noAssociatedList)
-                    {
-                        if(list.AGENT_NAME == request.SURVEY_BY)
-                        {
-                            CallLogModel notAssociatedCall = new CallLogModel();
-                            //notAssociatedCall.ID = list.PHD_CALL_ID.GetValueOrDefault() + list.SURVEY_AUDIT_SCORES_ID;
-                            notAssociatedCall.ID = list.PHD_CALL_ID.GetValueOrDefault();
-                            notAssociatedCall.CREATED_BY = list.AGENT_NAME;
-                            notAssociatedCall.CREATED_DATE = list.CREATED_DATE;
-                            notAssociatedCall.LOGS = "Not Associated Call | Patient Helpdesk";
-                            notAssociatedCall.IS_AUDITED = true;
-                            var patient = _PatientRepository.GetFirst(x => x.Patient_Account == list.PATIENT_ACCOUNT && x.Practice_Code == profile.PracticeCode && (x.DELETED ?? false) == false);
-                            if (patient != null)
-                            {
-                                notAssociatedCall.MRN = patient.Chart_Id == null ? "" : patient.Chart_Id;
-                                notAssociatedCall.FIRST_NAME = patient.First_Name == null ? "" : patient.First_Name;
-                                notAssociatedCall.LAST_NAME = patient.Last_Name == null ? "" : patient.Last_Name;
-                            }
-                            lst.Add(notAssociatedCall);
-
-                        }
-                    }
-
-                }
-                return lst;
-            }
-            if(noAssociatedList.Count > 0 && lst.Count == 0 && request.IS_READ_ONLY_MODE)
-            {
-                foreach (SurveyAuditScores list in noAssociatedList)
-                {
-                    if (list.AGENT_NAME == request.SURVEY_BY )
-                    {
-                        CallLogModel notAssociatedCall = new CallLogModel();
-                        notAssociatedCall.ID = list.PHD_CALL_ID.GetValueOrDefault();
-                        notAssociatedCall.CREATED_BY = list.AGENT_NAME;
-                        notAssociatedCall.CREATED_DATE = list.CREATED_DATE;
-                        notAssociatedCall.LOGS = "Not Associated Call | Patient Helpdesk";
-                        var patient = _PatientRepository.GetFirst(x => x.Patient_Account == list.PATIENT_ACCOUNT && x.Practice_Code == profile.PracticeCode && (x.DELETED ?? false) == false);
-                        if (patient != null)
-                        {
-                            notAssociatedCall.MRN = patient.Chart_Id == null ? "" : patient.Chart_Id;
-                            notAssociatedCall.FIRST_NAME = patient.First_Name == null ? "" : patient.First_Name;
-                            notAssociatedCall.LAST_NAME = patient.Last_Name == null ? "" : patient.Last_Name;
-                        }
-                        lst.Add(notAssociatedCall);
-                    }
-                }
-                return lst;
-            }
-            else
-            {
-                return new List<CallLogModel>();
-            }
+            var result = SpRepository<CallLogModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_CALL_LIST_FOR_AUDIT_tempA
+                         @PRACTICE_CODE, @CALL_BY, @CALL_TYPE, @DATE_FROM, @DATE_TO, @PHD_CALL_SCENARIO_ID, @IS_READ_ONLY_MODE ", PracticeCode, _callBy, _callType, dateFrom, dateTo, callScanario, readOnlyMode);
+            callLogList = result;
+            return callLogList;
         }
+
         public bool InsertAuditScores(SurveyAuditScores req, UserProfile profile)
         {
             GradingCriteria = GetListOfGradingCriteria(profile.PracticeCode, req);
@@ -240,7 +149,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             DateTime? createdDate = new DateTime();
             long survey_score_id = 0;
             long? patientAccount = 0;
-            
+
             if ((req.SURVEY_CALL_ID != 0 && req.SURVEY_CALL_ID != null)) // in case of patient survey
             {
                 Obj = _auditScoresRepository.GetMany(x => !x.DELETED && x.PRACTICE_CODE == profile.PracticeCode && x.SURVEY_CALL_ID == req.SURVEY_CALL_ID /* && x.AUDITOR_NAME == profile.UserName*/);
@@ -283,7 +192,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                 existingScores.PRACTICE_CODE = profile.PracticeCode;
                 existingScores.AUDITOR_NAME = profile.UserName;
                 existingScores.GRADE = getGrade(req.TOTAL_POINTS);
-                existingScores.SCORING_CRITERIA = "new";              
+                existingScores.SCORING_CRITERIA = "new";
                 existingScores.CREATED_BY = createdBy;
                 existingScores.CREATED_DATE = createdDate;
                 existingScores.MODIFIED_BY = profile.UserName;
@@ -341,13 +250,13 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                 }
                 else
                 {
-                    if(!string.IsNullOrEmpty(req.PATIENT_ACCOUNT_STR))
-                    req.PATIENT_ACCOUNT = long.Parse(req.PATIENT_ACCOUNT_STR);
+                    if (!string.IsNullOrEmpty(req.PATIENT_ACCOUNT_STR))
+                        req.PATIENT_ACCOUNT = long.Parse(req.PATIENT_ACCOUNT_STR);
                 }
                 if (req.PHD_CALL_ID == 0)
                 {
                     var date = DateTime.Now.ToString("yyyyMMddHHmmss");
-                    date =date + "0000";
+                    date = date + "0000";
                     req.PHD_CALL_ID = long.Parse(date);
                 }
                 _auditScoresRepository.Insert(req);
@@ -388,9 +297,9 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
                     callDate = temp.CREATED_DATE;
                 }
             }
-                //callDate = req.CREATED_DATE;
-                req.AUDITOR_NAME = profile.FirstName + ' ' + profile.LastName;
-                req.AGENT_EMAIL = req.AGENT_EMAIL;
+            //callDate = req.CREATED_DATE;
+            req.AUDITOR_NAME = profile.FirstName + ' ' + profile.LastName;
+            req.AGENT_EMAIL = req.AGENT_EMAIL;
 
             if (req.EDIT_AUDIT_REPORT && AppConfiguration.ClientURL.Contains("https://fox.mtbc.com/") && profile.PracticeCode == 1012714)
             {
@@ -402,30 +311,30 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             }
             else
             {
-                    cc = new List<string>(ConfigurationManager.AppSettings["CClistForEditAuditEmailTest"].Split(new char[] { ';' }));
-                }
-                _body += "<div style='font-family:Calibri'>A helpdesk record has been audited with following specifics:<br/><br/>";
-                var link = AppConfiguration.ClientURL + @"#/PlayRecording?value=" + req.CALL_RECORDING_URL;
-                link += "&name=" + profile.UserEmailAddress;
-                _body += "<b>Date of Call: " + callDate.Value.ToString("MM/dd/yyyy") + "<a href = " + link + ">" + " Click here to listen audio call</a></b>" + "</br>";
-                _body += "<b>Auditor: </b> " + req.AUDITOR_NAME + "</br>";
-                _body += "<b>Audited on: </b> " + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt") + "</br>";
-                if (req.MRN != null && req.CALL_TYPE == "survey")
-                {
-                    _body += "<b>MRN: </b> " + req.MRN + "</br></br>";
-                }
-                if(req.MRN != null && req.CALL_TYPE == "phd")
-                {
-                    _body += "<b>MRN: </b> " + req.MRN + "</br>";
-                }
-                if (req.CALL_SCANARIO != null)
-                {
-                    _body += "<b>Call handling: </b> " + req.CALL_SCANARIO + "</br></br>";
-                }
-                _body += "<b>Evaluation details: </b></br></br></br></div>";
-                _body += req.HTML_TEMPLETE;
-                _subject = req.CALL_TYPE.ToUpper() + " audit summary-" + (string.IsNullOrEmpty(req.AUDITOR_NAME) ? "" : req.AUDITOR_NAME + ".") + (string.IsNullOrEmpty(req.CALL_SCANARIO) ? "" : req.CALL_SCANARIO);
-                Helper.Email(req.AGENT_EMAIL, _subject, _body, profile, null, null, cc, null);
+                cc = new List<string>(ConfigurationManager.AppSettings["CClistForEditAuditEmailTest"].Split(new char[] { ';' }));
+            }
+            _body += "<div style='font-family:Calibri'>A helpdesk record has been audited with following specifics:<br/><br/>";
+            var link = AppConfiguration.ClientURL + @"#/PlayRecording?value=" + req.CALL_RECORDING_URL;
+            link += "&name=" + profile.UserEmailAddress;
+            _body += "<b>Date of Call: " + callDate.Value.ToString("MM/dd/yyyy") + "<a href = " + link + ">" + " Click here to listen audio call</a></b>" + "</br>";
+            _body += "<b>Auditor: </b> " + req.AUDITOR_NAME + "</br>";
+            _body += "<b>Audited on: </b> " + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt") + "</br>";
+            if (req.MRN != null && req.CALL_TYPE == "survey")
+            {
+                _body += "<b>MRN: </b> " + req.MRN + "</br></br>";
+            }
+            if (req.MRN != null && req.CALL_TYPE == "phd")
+            {
+                _body += "<b>MRN: </b> " + req.MRN + "</br>";
+            }
+            if (req.CALL_SCANARIO != null)
+            {
+                _body += "<b>Call handling: </b> " + req.CALL_SCANARIO + "</br></br>";
+            }
+            _body += "<b>Evaluation details: </b></br></br></br></div>";
+            _body += req.HTML_TEMPLETE;
+            _subject = req.CALL_TYPE.ToUpper() + " audit summary-" + (string.IsNullOrEmpty(req.AUDITOR_NAME) ? "" : req.AUDITOR_NAME + ".") + (string.IsNullOrEmpty(req.CALL_SCANARIO) ? "" : req.CALL_SCANARIO);
+            Helper.Email(req.AGENT_EMAIL, _subject, _body, profile, null, null, cc, null);
         }
         public List<SurveyAuditScores> ListAuditedCalls(RequestCallFromQA req, UserProfile profile)
         {
@@ -464,7 +373,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
 
             var Result = SpRepository<SurveyAuditScores>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_AUDITED_CALL_LIST
                              @PATIENT_ACCOUNT, @PRACTICE_CODE, @AGENT_NAME, @AUDITOR_NAME, @DATE_FROM, @DATE_TO ,@CALL_TYPE",
-                             _patientAcount, _practiceCode,_agentName, _auditorName, _dateFrom, _dateTos, _calltype);
+                             _patientAcount, _practiceCode, _agentName, _auditorName, _dateFrom, _dateTos, _calltype);
             return Result;
         }
 
