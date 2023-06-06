@@ -171,7 +171,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
             obj.CALL_BACK = list.Count;
 
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
-            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "MailBox Full,VM Left,Wrong PH#,Line Busy";
+            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
             list = new List<PatientSurvey>();
             list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
             obj.NOT_ANSWERED = list.Count;
