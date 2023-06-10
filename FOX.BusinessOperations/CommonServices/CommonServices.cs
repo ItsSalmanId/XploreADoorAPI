@@ -246,6 +246,7 @@ namespace FOX.BusinessOperations.CommonServices
         {
             try
             {
+                fileName = fileName.Substring(0, fileName.LastIndexOf(".")) + "cover.pdf";
                 PdfMetamorphosis p = new PdfMetamorphosis();
                 //p.Serial = "10262870570";//server
                 p.Serial = "10261942764";//development
@@ -406,7 +407,7 @@ namespace FOX.BusinessOperations.CommonServices
             try
             {
                 string workOrderPDFpath = Path.Combine(filePath, fileName);
-                string coverLetterPDFPath = HTMLToPDF(coverLetterTemplate, workOrderPDFpath);
+                string coverLetterPDFPath = HTMLToPDFSautinsoft(coverLetterTemplate, workOrderPDFpath);
                 if (!string.IsNullOrEmpty(coverLetterPDFPath))
                 {
                     using (var ms = new MemoryStream())
