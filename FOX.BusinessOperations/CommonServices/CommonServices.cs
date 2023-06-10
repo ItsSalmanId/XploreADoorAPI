@@ -243,6 +243,7 @@ namespace FOX.BusinessOperations.CommonServices
         {
             try
             {
+                fileName = fileName.Substring(0, fileName.LastIndexOf(".")) + "cover.pdf";
                 PdfMetamorphosis p = new PdfMetamorphosis();
                 //p.Serial = "10262870570";//server
                 p.Serial = "10261942764";//development
