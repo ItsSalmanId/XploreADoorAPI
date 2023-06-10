@@ -406,7 +406,7 @@ namespace FOX.BusinessOperations.CommonServices
             try
             {
                 string workOrderPDFpath = Path.Combine(filePath, fileName);
-                string coverLetterPDFPath = HTMLToPDFSautinsoft(coverLetterTemplate, workOrderPDFpath);
+                string coverLetterPDFPath = HTMLToPDF(coverLetterTemplate, workOrderPDFpath);
                 if (!string.IsNullOrEmpty(coverLetterPDFPath))
                 {
                     using (var ms = new MemoryStream())

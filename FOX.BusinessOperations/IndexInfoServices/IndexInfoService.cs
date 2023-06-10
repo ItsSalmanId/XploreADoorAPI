@@ -2954,8 +2954,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     string coverLetterTemplate = GetEmailOrFaxToSenderTemplate(data);
 
                     var config = Helper.GetServiceConfiguration(profile.PracticeCode);
-                    var coverFilePath = HTMLToPDFSautinsoft(config, coverLetterTemplate, "tempcoversletter");
-                    SavePdfToImages(coverFilePath, config, data.UNIQUE_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
+                    //var coverFilePath = HTMLToPDFSautinsoft(config, coverLetterTemplate, "tempcoversletter");
+                    //SavePdfToImages(coverFilePath, config, data.UNIQUE_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
+                    ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, coverLetterTemplate, "tempcoversletter");
+                    string coverfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
+                    SavePdfToImages(coverfilePath, config, data.UNIQUE_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
                     string newFileName = commonService.AddCoverPageForFax(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME, coverLetterTemplate);
 
                     if (!attachmentPath.FILE_PATH.EndsWith("\\"))
