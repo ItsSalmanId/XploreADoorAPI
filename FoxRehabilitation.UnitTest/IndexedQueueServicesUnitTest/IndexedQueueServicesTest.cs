@@ -87,10 +87,6 @@ namespace FoxRehabilitation.UnitTest.IndexedQueueServicesUnitTest
             }
         }
         [Test]
-        [TestCase(0)]
-        [TestCase(null)]
-        [TestCase(5447924)]
-        [TestCase(38403)]
         public void GetIndexedQueue_PassParameters_ReturnData()
         {
             //Arrange
