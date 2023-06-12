@@ -1009,6 +1009,7 @@ namespace FOX.DataModels.Models.IndexInfo
         public decimal? Statement_Patient_Balance { get; set; }
         public DateTime PROCESS_DATE { get; set; }
         public int NoOfDays { get; set; }
+        public string CALCULATED_DIFF { get; set; }
     }
 
     public class PreviousEmailInfo
