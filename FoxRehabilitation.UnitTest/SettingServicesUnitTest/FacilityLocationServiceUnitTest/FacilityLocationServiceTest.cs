@@ -80,7 +80,7 @@ namespace FoxRehabilitation.UnitTest.SettingsServiceUnitTest.FacilityLocationSer
         [Test]
         [TestCase(552100)]
         [TestCase(552101)]
-        public void AddUpdateFacilityLocation_GetFacilityLocationListModel_NoReturnData(long facilityTypeId)
+        public void AddUpdateFacilityLocation_PassParameters_NoReturnData(long facilityTypeId)
         {
             //Arrange
             _userProfile.userID = 1011163415;
@@ -103,9 +103,7 @@ namespace FoxRehabilitation.UnitTest.SettingsServiceUnitTest.FacilityLocationSer
             }
         }
         [Test]
-        [TestCase(552100)]
-        [TestCase(552101)]
-        public void GetAlertTypeList_GetFacilityLocationListModel_NoReturnData(long facilityTypeId)
+        public void GetAlertTypeList_PassParameters_NoReturnData()
         {
             //Arrange
             _userProfile.userID = 1011163415;
@@ -133,10 +131,9 @@ namespace FoxRehabilitation.UnitTest.SettingsServiceUnitTest.FacilityLocationSer
             }
         }
         [Test]
-        public void GetDocumentTypeList_GetFacilityLocationListModel_NoReturnData()
+        public void GetDocumentTypeList_PassParameters_NoReturnData()
         {
             //Arrange
-            
             _documentTypeSearch.searchString = "";
             _documentTypeSearch.sortBy = "";
             _documentTypeSearch.sortOrder = "";
@@ -159,7 +156,7 @@ namespace FoxRehabilitation.UnitTest.SettingsServiceUnitTest.FacilityLocationSer
             }
         }
         [Test]
-        public void GetPatientContactTypeList_GetFacilityLocationListModel_NoReturnData()
+        public void GetPatientContactTypeList_PassParameters_NoReturnData()
         {
             //Arrange
             long practiceCode = 1011163;
@@ -476,6 +473,9 @@ namespace FoxRehabilitation.UnitTest.SettingsServiceUnitTest.FacilityLocationSer
             _authStatusSearch = null;
             _taskTpyeSearch = null;
             _orderStatusSearch = null;
+            _alertTypeSearch = null;
+            _documentTypeSearch = null;
+            _patientContactTypeSearch = null;
         }
     }
 }

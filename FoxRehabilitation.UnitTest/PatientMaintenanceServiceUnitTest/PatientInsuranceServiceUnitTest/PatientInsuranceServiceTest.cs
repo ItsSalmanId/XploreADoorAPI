@@ -2,15 +2,12 @@
 using FOX.DataModels.Models.Patient;
 using FOX.DataModels.Models.Security;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.PatientMaintenanceServiceUnitTest.PatientInsuranceServiceUnitTest
 {
-    class PatientInsuranceServiceTest
+    [TestFixture]
+    public class PatientInsuranceServiceTest
     {
         private PatientInsuranceService _patientInsuranceService;
         private UserProfile _userProfile;
@@ -48,7 +45,7 @@ namespace FoxRehabilitation.UnitTest.PatientMaintenanceServiceUnitTest.PatientIn
             }
             else if (result > 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -75,9 +72,9 @@ namespace FoxRehabilitation.UnitTest.PatientMaintenanceServiceUnitTest.PatientIn
             {
                 Assert.IsTrue(true);
             }
-            else 
+            else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -94,7 +91,7 @@ namespace FoxRehabilitation.UnitTest.PatientMaintenanceServiceUnitTest.PatientIn
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -128,7 +125,7 @@ namespace FoxRehabilitation.UnitTest.PatientMaintenanceServiceUnitTest.PatientIn
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -153,15 +150,11 @@ namespace FoxRehabilitation.UnitTest.PatientMaintenanceServiceUnitTest.PatientIn
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
-        [TestCase(6002576)]
-        [TestCase(6002575)]
-        [TestCase(6002574)]
-        [TestCase(null)]
-        public void GetUnpaidClaimsForInsurance_PassParameters_ReturnData(long insuranceId)
+        public void GetUnpaidClaimsForInsurance_PassParameters_ReturnData()
         {
             //Arrange
             _userProfile.PracticeCode = 1011163;
@@ -185,15 +178,20 @@ namespace FoxRehabilitation.UnitTest.PatientMaintenanceServiceUnitTest.PatientIn
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
-        //GetUnpaidClaimsForInsurance
         [TearDown]
         public void Teardown()
         {
-            _patientInsuranceService = new PatientInsuranceService();
-            _userProfile = new UserProfile();
+            // Optionally dispose or cleanup objects
+            _patientInsuranceService = null;
+            _patientInsuranceService = null;
+            _userProfile = null;
+            _unmappedInsuranceRequest = null;
+            _mtbcInsurancesRequest = null;
+            _foxInsurancePayers = null;
+            _claimInsuranceSearchReq = null;
         }
     }
 }

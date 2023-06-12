@@ -11,7 +11,6 @@ using FOX.DataModels.Models.TasksModel;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 
 namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
 {
@@ -1210,9 +1209,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(101116354818050)]
         [TestCase(101116354817999)]
-        //[TestCase(101116354412309)]
-        //[TestCase(101116354815798)]
-        public void GetCurrentPatientDemographics_UpdatePayerNameInHTML_ReturnData(long patientAccount)
+        public void GetCurrentPatientDemographics_PassParameters_ReturnData(long patientAccount)
         {
             //Arrange
             _userProfile.PracticeCode = 1011163;
@@ -1232,12 +1229,9 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             }
         }
         [Test]
-       // [TestCase(101116354818050, "home")]
         [TestCase(101116354818050, "private home")]
-       
-        //[TestCase(101116354817999, "home")]
         [TestCase(101116354817999, "private home")]
-        public void UpdateCoordinates_UpdatePayerNameInHTML_ReturnData(long patientAccount, string name)
+        public void UpdateCoordinates_PassParameters_ReturnData(long patientAccount, string name)
         {
             //Arrange
             _userProfile.PracticeCode = 1011163;
@@ -1269,18 +1263,18 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         }
         [Test]
         [TestCase(5483977, 101116354817999, 1011163548953)]
-        public void UpdateDefaultLocations_UpdatePayerNameInHTML_ReturnData(long defaultLocId, long patAcc, long posId)
+        public void UpdateDefaultLocations_PassParameters_ReturnData(long defaultLocId, long patAcc, long posId)
         {
             //Arrange
             //Act
-             _patientService.UpdateDefaultLocations(defaultLocId, patAcc, posId);
+            _patientService.UpdateDefaultLocations(defaultLocId, patAcc, posId);
 
             //Assert
             Assert.IsTrue(true);
         }
         [Test]
         [TestCase("101116354817999")]
-        public void CheckAndUpdatePRSubscriber_UpdatePayerNameInHTML_ReturnData(string patientAccount)
+        public void CheckAndUpdatePrSubscriber_UpdatePayerNameInHTML_ReturnData(string patientAccount)
         {
             //Arrange
             //Act
@@ -1289,7 +1283,6 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             //Assert
             Assert.IsTrue(true);
         }
-        //CheckAndUpdatePRSubscriber
         [Test]
         [TestCase(112562)]
         [TestCase(600102)]
@@ -1737,7 +1730,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         }
         [Test]
         [TestCase("101116354814877")]
-        [TestCase("101116354816563")]     
+        [TestCase("101116354816563")]
         public void CheckDuplicatePatients_CheckDuplicate_ReturnData(string patientAccount)
         {
             //Arrange 
@@ -1892,7 +1885,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         }
         [Test]
         [TestCase(544100, true)]
-        public void AbnMedicareLimitDataChanged_PassParameter_ReturnData(long abnId, out bool abnInfoChanged)
+        public void AbnMedicareLimitDataChanged_PassParameters_ReturnData(long abnId, out bool abnInfoChanged)
         {
             //Arrange 
             List<MedicareLimit> medicareLimits = new List<MedicareLimit>()
@@ -1911,7 +1904,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         }
         [Test]
         [TestCase(544100, true)]
-        public void HosMedicareLimitDataChanged_PassParameter_ReturnData(long hosId, out bool abnInfoChanged)
+        public void HosMedicareLimitDataChanged_PassParameters_ReturnData(long hosId, out bool abnInfoChanged)
         {
             //Arrange 
             List<MedicareLimit> medicareLimits = new List<MedicareLimit>()
@@ -1930,7 +1923,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         }
         [Test]
         [TestCase(544100, true)]
-        public void HhMedicareLimitDataChanged_PassParameter_ReturnData(long hosId, out bool abnInfoChanged)
+        public void HhMedicareLimitDataChanged_PassParameters_ReturnData(long hosId, out bool abnInfoChanged)
         {
             //Arrange 
             List<MedicareLimit> medicareLimits = new List<MedicareLimit>()
@@ -1948,14 +1941,13 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             Assert.IsTrue(true);
         }
         [Test]
-        [TestCase(544100)]
-        public void FetchEligibilityRecord_PassParameter_ReturnData(long hosId)
+        public void FetchEligibilityRecord_PassParameters_ReturnData()
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
             _userProfile.UserName = "1163testing";
             _patientInsuranceDetail.Patient_Insurance_Id = 123456;
-            _patientInsuranceDetail.MTBC_Patient_Insurance_Id = 54863328635107; 
+            _patientInsuranceDetail.MTBC_Patient_Insurance_Id = 54863328635107;
 
             //Act
             _patientService.DeleteInsuranceInformation(_patientInsuranceDetail, _userProfile);
@@ -2010,7 +2002,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase(101116354813306)]
         [TestCase(101116354412334)]
         [TestCase(101116354813584)]
-        public void SaveAuthDetails_PassParameter_ReturnData(long patientAccount)
+        public void SaveAuthDetails_PassParameters_ReturnData(long patientAccount)
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
@@ -2041,7 +2033,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [Test]
         [TestCase(544105)]
         [TestCase(544106)]
-        public void SaveAuthAppointments_PassParameter_ReturnData(long authId)
+        public void SaveAuthAppointments_PassParameters_ReturnData(long authId)
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
@@ -2064,7 +2056,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase(544106, true)]
         [TestCase(544106, false)]
         [TestCase(12345, false)]
-        public void SaveAuthCharges_PassParameter_ReturnData(long authId, bool isSimpleAuth)
+        public void SaveAuthCharges_PassParameters_ReturnData(long authId, bool isSimpleAuth)
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
@@ -2089,12 +2081,12 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase(544105)]
         [TestCase(544106)]
         [TestCase(12345)]
-        public void SaveAuthComments_PassParameter_ReturnData(long authId)
+        public void SaveAuthComments_PassParameters_ReturnData(long authId)
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
             _userProfile.UserName = "1163testing";
-            _patientInsuranceAuthDetails.AuthToCreateUpdate  = new FOX_TBL_AUTH()
+            _patientInsuranceAuthDetails.AuthToCreateUpdate = new FOX_TBL_AUTH()
             {
                 AUTH_ID = authId,
                 AuthComments = "test"
@@ -2107,10 +2099,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             Assert.IsTrue(true);
         }
         [Test]
-        [TestCase(544105)]
-        [TestCase(544106)]
-        [TestCase(12345)]
-        public void ChargeObjHasData_PassParameter_ReturnData(long authId)
+        public void ChargeObjHasData_PassParameters_ReturnData()
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
@@ -2127,10 +2116,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             Assert.IsTrue(true);
         }
         [Test]
-        [TestCase(544105)]
-        [TestCase(544106)]
-        [TestCase(12345)]
-        public void InsertInterfaceTeamData_PassParameter_ReturnData(long authId)
+        public void InsertInterfaceTeamData_PassParameters_ReturnData()
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
@@ -2149,7 +2135,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase("544105")]
         [TestCase("544107")]
         [TestCase("5441056")]
-        public void GetPatientInsurancesInIndexInfo_PassParameter_ReturnData(string patientAccountStr)
+        public void GetPatientInsurancesInIndexInfo_PassParameters_ReturnData(string patientAccountStr)
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
@@ -2165,7 +2151,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         [TestCase("544105")]
         [TestCase("544107")]
         [TestCase("5441056")]
-        public void GetWorkOrderInfo_PassParameter_ReturnData(string patientAccountStr)
+        public void GetWorkOrderInfo_PassParameters_ReturnData(string patientAccountStr)
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
@@ -2179,10 +2165,10 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             Assert.IsTrue(true);
         }
         [Test]
-        public void PrepareLogExport_PassParameter_ReturnData()
+        public void PrepareLogExport_PassParameters_ReturnData()
         {
             //Arrange 
-             List<PatientExportToExcelModel> recordToExport = new List<PatientExportToExcelModel>();
+            List<PatientExportToExcelModel> recordToExport = new List<PatientExportToExcelModel>();
             _userProfile.PracticeCode = 1011163;
             _userProfile.UserName = "1163testing";
             List<Patient> obj = new List<Patient>()
@@ -2190,9 +2176,9 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
                 new Patient
                 {
                     Patient_Account = 1010624506101096,
-                }    
+                }
             };
-             
+
             //Act
             _patientService.PrepareLogExport(obj, out recordToExport);
 
@@ -2207,7 +2193,7 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _userProfile.UserName = "1163testing";
             _patientInsurance.Patient_Account = 101116354816450;
             _patientInsurance.Pri_Sec_Oth_Type = "P";
-            
+
             //Act
             _patientService.EligibilityAlreadyLoadedInThisMonth(_patientInsurance);
 
@@ -2230,7 +2216,6 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             //Assert
             Assert.IsTrue(true);
         }
-        //ResetCoordinates
         [TearDown]
         public void Teardown()
         {
@@ -2257,6 +2242,12 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _subscriber = null;
             _payorDataModel = null;
             _patientPatDocument = null;
+            _serviceConfiguration = null;
+            _patientInsuranceAuthDetails = null;
+            _foxTblAuthCharge = null;
+            _interfaceSynchModel = null;
+            _workOrderInfoReq = null;
+            _patientInsuranceDetail = null;
         }
     }
 }

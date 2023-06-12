@@ -1,12 +1,6 @@
 ﻿using FOX.BusinessOperations.PatientDocumentsService;
 using FOX.DataModels.Models.Security;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace FoxRehabilitation.UnitTest.PatientDocumentsUnitTest
 {
     class PatientDocumentsTest
@@ -26,7 +20,7 @@ namespace FoxRehabilitation.UnitTest.PatientDocumentsUnitTest
         [TestCase("", 1011163)]
         [TestCase("101116354813969", 1011163)]
         [TestCase("38403", 38403)]
-        public void GetDocumentTypes_DocumenttypeAndpatientcasesModel_ReturnData(string patientAccount, long practiceCode)
+        public void GetDocumentTypes_PassParameters_ReturnData(string patientAccount, long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -41,7 +35,7 @@ namespace FoxRehabilitation.UnitTest.PatientDocumentsUnitTest
             }
             else if (result.DocumentTypes.Count > 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -49,7 +43,7 @@ namespace FoxRehabilitation.UnitTest.PatientDocumentsUnitTest
         [TestCase(null)]
         [TestCase(1011163)]
         [TestCase(38403)]
-        public void GetAllDocumentTypes_FoxDocumentTypelist_ReturnData(long practiceCode)
+        public void GetAllDocumentTypes_PassParameters_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -64,7 +58,7 @@ namespace FoxRehabilitation.UnitTest.PatientDocumentsUnitTest
             }
             else if (result.Count > 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -72,7 +66,7 @@ namespace FoxRehabilitation.UnitTest.PatientDocumentsUnitTest
         [TestCase(null)]
         [TestCase(1011163)]
         [TestCase(38403)]
-        public void GetAllSpecialityProgram_FoxSpecialityProgramList_ReturnData(long practiceCode)
+        public void GetAllSpecialityProgram_PassParameters_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -87,7 +81,7 @@ namespace FoxRehabilitation.UnitTest.PatientDocumentsUnitTest
             }
             else if (result.Count > 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -95,7 +89,7 @@ namespace FoxRehabilitation.UnitTest.PatientDocumentsUnitTest
         [TestCase(null)]
         [TestCase(1011163)]
         [TestCase(38403)]
-        public void GetAllDocumentTypeswithInactive_FoxDocumentTypeList_ReturnData(long practiceCode)
+        public void GetAllDocumentTypeswithInactive_PassParameters_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -110,12 +104,13 @@ namespace FoxRehabilitation.UnitTest.PatientDocumentsUnitTest
             }
             else if (result.Count > 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [TearDown]
         public void Teardown()
         {
+            // Optionally dispose or cleanup objectsss
             _patientDocumentsService = new PatientDocumentsService();
             _userProfile = new UserProfile();
         }

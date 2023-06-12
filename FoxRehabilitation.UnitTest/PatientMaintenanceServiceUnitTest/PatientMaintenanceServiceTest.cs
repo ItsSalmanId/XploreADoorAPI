@@ -1,14 +1,10 @@
 ﻿using FOX.BusinessOperations.PatientMaintenanceService;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.PatientMaintenanceServiceUnitTest
 {
-    class PatientMaintenanceServiceTest
+    [TestFixture]
+    public class PatientMaintenanceServiceTest
     {
         private PatientMaintenanceService _patientMaintenanceService;
 
@@ -22,7 +18,7 @@ namespace FoxRehabilitation.UnitTest.PatientMaintenanceServiceUnitTest
         [TestCase(null)]
         [TestCase(101116354813969)]
         [TestCase(38403)]
-        public void GetDocumentTypes_Patientlist_ReturnData(long patientAccount)
+        public void GetDocumentTypes_PassParameters_ReturnData(long patientAccount)
         {
             //Arrange
             //Act
@@ -35,13 +31,14 @@ namespace FoxRehabilitation.UnitTest.PatientMaintenanceServiceUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [TearDown]
         public void Teardown()
         {
-            _patientMaintenanceService = new PatientMaintenanceService();
+            // Optionally dispose or cleanup objects
+            _patientMaintenanceService = null;
         }
     }
 }

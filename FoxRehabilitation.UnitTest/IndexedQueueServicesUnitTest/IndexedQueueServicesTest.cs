@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.IndexedQueueServicesUnitTest
 {
-    class IndexedQueueServicesTest
+    [TestFixture]
+    public class IndexedQueueServicesTest
     {
         private IndexedQueueServices _indexedQueueServices;
         private IndexedQueueFileRequest _indexedQueueFileRequest;
@@ -32,7 +33,7 @@ namespace FoxRehabilitation.UnitTest.IndexedQueueServicesUnitTest
         [TestCase(null)]
         [TestCase(5447924)]
         [TestCase(38403)]
-        public void GetFilePages_FilePagesList_ReturnData(long workId)
+        public void GetFilePages_PassParameters_ReturnData(long workId)
         {
             //Arrange
             _indexedQueueFileRequest.WORK_ID = workId;
@@ -47,7 +48,7 @@ namespace FoxRehabilitation.UnitTest.IndexedQueueServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -55,7 +56,7 @@ namespace FoxRehabilitation.UnitTest.IndexedQueueServicesUnitTest
         [TestCase(null)]
         [TestCase(5447924)]
         [TestCase(38403)]
-        public void SetSplitPages_FilePagesList_ReturnData(long workId)
+        public void SetSplitPages_PassParameters_ReturnData(long workId)
         {
             //Arrange
             _userProfile.PracticeCode = 1011163;
@@ -82,7 +83,7 @@ namespace FoxRehabilitation.UnitTest.IndexedQueueServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -90,7 +91,7 @@ namespace FoxRehabilitation.UnitTest.IndexedQueueServicesUnitTest
         [TestCase(null)]
         [TestCase(5447924)]
         [TestCase(38403)]
-        public void GetIndexedQueue_PassParameters_ReturnData(long workId)
+        public void GetIndexedQueue_PassParameters_ReturnData()
         {
             //Arrange
             _userProfile.PracticeCode = 1011163;
@@ -105,8 +106,8 @@ namespace FoxRehabilitation.UnitTest.IndexedQueueServicesUnitTest
             _indexedQueueRequest.IndexedBy = "test";
             _indexedQueueRequest.SortOrder = "test";
 
-             //Act
-             var result = _indexedQueueServices.GetIndexedQueue(_indexedQueueRequest, _userProfile);
+            //Act
+            var result = _indexedQueueServices.GetIndexedQueue(_indexedQueueRequest, _userProfile);
 
             //Assert
             if (result != null)
@@ -115,39 +116,11 @@ namespace FoxRehabilitation.UnitTest.IndexedQueueServicesUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
-        //[Test]
-        //[TestCase(0)]
-        //[TestCase(null)]
-        //[TestCase(1011163)]
-        //[TestCase(38403)]
-        //public void GetAgentsForDropdown_PassParameters_ReturnData(long workId)
-        //{
-        //    //Arrange
-        //    _userProfile.PracticeCode = 1011163;
-        //    _userProfile.UserName = "Test";
-
-        //    //Act
-        //    var result = _indexedQueueServices.GetAgentsForDropdown(_userProfile);
-
-        //    //Assert
-        //    if (result != null)
-        //    {
-        //        Assert.IsTrue(true);
-        //    }
-        //    else
-        //    {
-        //        Assert.IsTrue(true);
-        //    }
-        //}
         [Test]
-        [TestCase(0)]
-        [TestCase(null)]
-        [TestCase(1011163)]
-        [TestCase(38403)]
-        public void ReAssignedMultiple_PassParameters_ReturnData(long workId)
+        public void ReAssignedMultiple_PassParameters_ReturnData()
         {
             //Arrange
             _userProfile.PracticeCode = 1011163;
@@ -165,14 +138,10 @@ namespace FoxRehabilitation.UnitTest.IndexedQueueServicesUnitTest
             _indexedQueueServices.ReAssignedMultiple(_userProfile, indexedQueuesList);
 
             //Assert
-                Assert.IsTrue(true);
+            Assert.IsTrue(true);
         }
         [Test]
-        [TestCase(0)]
-        [TestCase(null)]
-        [TestCase(1011163)]
-        [TestCase(38403)]
-        public void InsertAssignmentData_PassParameters_ReturnData(long workId)
+        public void InsertAssignmentData_PassParameters_ReturnData()
         {
             //Arrange
             _userProfile.PracticeCode = 1011163;
@@ -190,11 +159,7 @@ namespace FoxRehabilitation.UnitTest.IndexedQueueServicesUnitTest
             Assert.IsTrue(true);
         }
         [Test]
-        [TestCase(0)]
-        [TestCase(null)]
-        [TestCase(1011163)]
-        [TestCase(38403)]
-        public void AddUpdateWorkTransfer_PassParameters_ReturnData(long workId)
+        public void AddUpdateWorkTransfer_PassParameters_ReturnData()
         {
             //Arrange
             _userProfile.PracticeCode = 1011163;
@@ -206,15 +171,14 @@ namespace FoxRehabilitation.UnitTest.IndexedQueueServicesUnitTest
             //Assert
             Assert.IsTrue(true);
         }
-        //AddUpdateWorkTransfer
         [Test]
-        [TestCase(0,0, "")]
-        [TestCase(102,0, "")]
-        [TestCase(0,1011163, "")]
-        [TestCase(0,0, "1163testing")]
-        [TestCase(102,1011163, "1163testing")]
-        [TestCase(38403,38403, "test")]
-        public void GetAgentsAndSupervisorsForDropdown_UsersForDropdownList_ReturnData(long RoleId, long practiceCode, string userName)
+        [TestCase(0, 0, "")]
+        [TestCase(102, 0, "")]
+        [TestCase(0, 1011163, "")]
+        [TestCase(0, 0, "1163testing")]
+        [TestCase(102, 1011163, "1163testing")]
+        [TestCase(38403, 38403, "test")]
+        public void GetAgentsAndSupervisorsForDropdown_PassParameters_ReturnData(long RoleId, long practiceCode, string userName)
         {
             //Arrange
             //Act
@@ -227,15 +191,17 @@ namespace FoxRehabilitation.UnitTest.IndexedQueueServicesUnitTest
             }
             else if (result.Count > 0)
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [TearDown]
         public void Teardown()
         {
-            _indexedQueueServices = new IndexedQueueServices();
-            _indexedQueueFileRequest = new IndexedQueueFileRequest();
-            _userProfile = new UserProfile();
+            _indexedQueueServices = null;
+            _indexedQueueFileRequest = null;
+            _userProfile = null;
+            _indexedQueueRequest = null;
+            _workTransfer = null;
         }
     }
 }

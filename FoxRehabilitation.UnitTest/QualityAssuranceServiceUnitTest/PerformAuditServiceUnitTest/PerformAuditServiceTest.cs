@@ -184,6 +184,7 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             _requestModelForCallType = null;
             _surveyAuditScores = null;
             _userProfile = null;
+            _requestCallList = null;
         }
     }
 }

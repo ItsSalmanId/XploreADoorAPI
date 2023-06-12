@@ -4,11 +4,6 @@ using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.RequestForOrder;
 using FOX.DataModels.Models.Security;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.RequestForOrderServiceUnitTest
 {
@@ -73,14 +68,14 @@ namespace FoxRehabilitation.UnitTest.RequestForOrderServiceUnitTest
         [Test]
         [TestCase(5483160)]
         [TestCase(5483329)]
-        public void GeneratingWorkOrder_CheckEmail_ResponseFalse(long userId)
+        public void GeneratingWorkOrder_PassParameters_ResponseFalse(long userId)
         {
             //Arrange
             _userProfile.PracticeCode = 5110459;
             long practiceCode = 1011163;
             string email = "test";
             string userName = "test";
-            
+
             //Act
             _requestForOrderService.GeneratingWorkOrder(practiceCode, userName, email, userId, _userProfile);
 
@@ -147,14 +142,14 @@ namespace FoxRehabilitation.UnitTest.RequestForOrderServiceUnitTest
             Assert.AreEqual(false, _result.Success);
         }
         [Test]
-        public void GenerateQRCode_PassParameters_ResponseFalse()
+        public void GenerateQrCode_PassParameters_ResponseFalse()
         {
             //Arrange
             _userProfile.PracticeCode = 1011163;
             _userProfile.UserName = "1163testing";
             _qrCodeModel.WORK_ID = 552103;
             _qrCodeModel.AbsolutePath = "test";
-           // _qrCodeModel.FileName = "test";
+            // _qrCodeModel.FileName = "test";
 
             //Act
             _requestForOrderService.GenerateQRCode(_qrCodeModel);
@@ -171,6 +166,10 @@ namespace FoxRehabilitation.UnitTest.RequestForOrderServiceUnitTest
             _userProfile = null;
             _requestSendEmailModel = null;
             _result = null;
+            _requestDeleteWorkOrder = null;
+            _requestDownloadPdfModel = null;
+            _reqAddDocumentSign = null;
+            _qrCodeModel = null;
         }
     }
 }

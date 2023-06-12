@@ -2,21 +2,16 @@
 using FOX.DataModels.Models.HrAutoEmail;
 using FOX.DataModels.Models.Security;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.HrAutoEmailServiceUnitTest
 {
     [TestFixture]
     public class HrAutoEmailServiceTest
     {
-
         private HrAutoEmailService _hrAutoEmailService;
         private UserProfile _userProfile;
-        private HrAutoEmailConfigure _hrAutoEmailConfigure; 
+        private HrAutoEmailConfigure _hrAutoEmailConfigure;
 
         [SetUp]
         public void SetUp()
@@ -30,7 +25,7 @@ namespace FoxRehabilitation.UnitTest.HrAutoEmailServiceUnitTest
         [TestCase(null)]
         [TestCase(1011163)]
         [TestCase(38403)]
-        public void GetHrAutoEmailConfigureRecords_HrAutoEmailConfigureList_ReturnData(long practiceCode)
+        public void GetHrAutoEmailConfigureRecords_PassParameters_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -45,7 +40,7 @@ namespace FoxRehabilitation.UnitTest.HrAutoEmailServiceUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -54,7 +49,7 @@ namespace FoxRehabilitation.UnitTest.HrAutoEmailServiceUnitTest
         [TestCase(0, 1011163)]
         [TestCase(548356, 1011163)]
         [TestCase(38403, 38403)]
-        public void GetHrAutoEmalById_HrEmailDocumentFileAllList_ReturnData(int hrAutoEmail, long practiceCode)
+        public void GetHrAutoEmalById_PassParameters_ReturnData(int hrAutoEmail, long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -69,14 +64,14 @@ namespace FoxRehabilitation.UnitTest.HrAutoEmailServiceUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
         [TestCase(0)]
         [TestCase(null)]
         [TestCase(38403)]
-        public void GetMTBCDocumentFileDetails_GetDocumentFileDetailsList_ReturnData(long practiceCode)
+        public void GetMtbcDocumentFileDetails_PassParameters_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -91,7 +86,7 @@ namespace FoxRehabilitation.UnitTest.HrAutoEmailServiceUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -99,7 +94,7 @@ namespace FoxRehabilitation.UnitTest.HrAutoEmailServiceUnitTest
         [TestCase(null)]
         [TestCase(1011163)]
         [TestCase(38403)]
-        public void GetMTBCUnMappedCategory_StringList_ReturnData(long practiceCode)
+        public void GetMtbcUnMappedCategory_PassParameters_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -114,7 +109,7 @@ namespace FoxRehabilitation.UnitTest.HrAutoEmailServiceUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -122,7 +117,7 @@ namespace FoxRehabilitation.UnitTest.HrAutoEmailServiceUnitTest
         [TestCase(null)]
         [TestCase(1011163)]
         [TestCase(38403)]
-        public void AddHrAutoEmailConfigure_PassParameter_ReturnData(long practiceCode)
+        public void AddHrAutoEmailConfigure_PassParameters_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -138,7 +133,7 @@ namespace FoxRehabilitation.UnitTest.HrAutoEmailServiceUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -164,7 +159,7 @@ namespace FoxRehabilitation.UnitTest.HrAutoEmailServiceUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -180,7 +175,6 @@ namespace FoxRehabilitation.UnitTest.HrAutoEmailServiceUnitTest
             _hrAutoEmailConfigure.NAME = "Student Placement Mentor";
             _hrAutoEmailConfigure.HR_CONFIGURE_ID = 548381;
 
-
             //Act
             var result = _hrAutoEmailService.EnableHrAutoEmailCertificate(_hrAutoEmailConfigure, _userProfile);
 
@@ -191,7 +185,7 @@ namespace FoxRehabilitation.UnitTest.HrAutoEmailServiceUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -199,7 +193,7 @@ namespace FoxRehabilitation.UnitTest.HrAutoEmailServiceUnitTest
         [TestCase(null)]
         [TestCase(1011163)]
         [TestCase(38403)]
-        public void UpdateHrAutoEmailConfigure_PassParameter_ReturnData(long practiceCode)
+        public void UpdateHrAutoEmailConfigure_PassParameters_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -216,7 +210,7 @@ namespace FoxRehabilitation.UnitTest.HrAutoEmailServiceUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -224,7 +218,7 @@ namespace FoxRehabilitation.UnitTest.HrAutoEmailServiceUnitTest
         [TestCase(null)]
         [TestCase(1011163)]
         [TestCase(38403)]
-        public void SaveHrMTBCEMailDocumentFiles_PassParameter_ReturnData(long practiceCode)
+        public void SaveHrMtbcEMailDocumentFiles_PassParameters_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -251,7 +245,7 @@ namespace FoxRehabilitation.UnitTest.HrAutoEmailServiceUnitTest
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [TearDown]

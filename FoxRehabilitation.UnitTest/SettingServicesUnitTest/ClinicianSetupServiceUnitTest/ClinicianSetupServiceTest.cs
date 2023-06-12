@@ -2,16 +2,11 @@
 using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.Settings.ClinicianSetup;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.ClinicianSetupServiceUnitTest
 {
     [TestFixture]
-    public  class ClinicianSetupServiceTest
+    public class ClinicianSetupServiceTest
     {
         private ClinicianSetupService _clinicianSetupService;
         private FoxProviderClass _foxProviderClass;
@@ -32,7 +27,7 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.ClinicianSetupServi
         }
         [Test]
         [TestCase(1011163)]
-        public void GetHrAutoEmailConfigureRecords_HrAutoEmailConfigureList_ReturnData(long practiceCode)
+        public void GetHrAutoEmailConfigureRecords_PassParameters_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -49,7 +44,7 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.ClinicianSetupServi
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -57,7 +52,7 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.ClinicianSetupServi
         [TestCase(0)]
         [TestCase(null)]
         [TestCase(38403)]
-        public void GetVisitQoutaPerWeek_PassParamters_ReturnData(long practiceCode)
+        public void GetVisitQoutaPerWeek_PassParameters_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -74,7 +69,7 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.ClinicianSetupServi
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -99,7 +94,7 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.ClinicianSetupServi
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -124,7 +119,7 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.ClinicianSetupServi
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -132,7 +127,7 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.ClinicianSetupServi
         [TestCase(0)]
         [TestCase(null)]
         [TestCase(38403)]
-        public void GetClinician_PassParamters_ReturnData(long practiceCode)
+        public void GetClinician_PassParameters_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -151,7 +146,7 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.ClinicianSetupServi
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -159,7 +154,7 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.ClinicianSetupServi
         [TestCase(0)]
         [TestCase(null)]
         [TestCase(38403)]
-        public void CheckNPI_PassParamters_ReturnData(long practiceCode)
+        public void CheckNPI_PassParameters_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -170,17 +165,10 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.ClinicianSetupServi
             string npi = "test";
 
             //Act
-            var result = _clinicianSetupService.CheckNPI(npi, _userProfile);
+            _clinicianSetupService.CheckNPI(npi, _userProfile);
 
             //Assert
-            if (result != null)
-            {
-                Assert.IsTrue(true);
-            }
-            else
-            {
-                Assert.IsTrue(true);
-            }
+            Assert.IsTrue(true);
         }
         [Test]
         [TestCase(1011163)]
@@ -198,24 +186,18 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.ClinicianSetupServi
             string ssn = "test";
 
             //Act
-            var result = _clinicianSetupService.CheckSSN(ssn, _userProfile);
+            _clinicianSetupService.CheckSSN(ssn, _userProfile);
 
             //Assert
-            if (result != null)
-            {
-                Assert.IsTrue(true);
-            }
-            else
-            {
-                Assert.IsTrue(true);
-            }
+
+            Assert.IsTrue(true);
         }
         [Test]
         [TestCase(1011163)]
         [TestCase(0)]
         [TestCase(null)]
         [TestCase(38403)]
-        public void GetSpecficProviderLocation_PassParamters_ReturnData(long practiceCode)
+        public void GetSpecficProviderLocation_PassParameters_ReturnData(long practiceCode)
         {
             //Arrange
             _userProfile.PracticeCode = practiceCode;
@@ -233,7 +215,7 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.ClinicianSetupServi
             }
             else
             {
-                Assert.IsTrue(true);
+                Assert.IsFalse(false);
             }
         }
         [Test]
@@ -241,60 +223,49 @@ namespace FoxRehabilitation.UnitTest.SettingServicesUnitTest.ClinicianSetupServi
         [TestCase(0)]
         [TestCase(null)]
         [TestCase(38403)]
-        public void UpdateProviderCLR_PassParamters_ReturnData(long practiceCode)
+        public void UpdateProviderCLR_PassParameters_ReturnData(long practiceCode)
         {
             //Arrange
             _foxProviderClass.FOX_PROVIDER_CODE = "5481922";
-          
+
             //Act
-            var result = _clinicianSetupService.UpdateProviderCLR(_foxProviderClass, practiceCode);
+            _clinicianSetupService.UpdateProviderCLR(_foxProviderClass, practiceCode);
 
             //Assert
-            if (result != null)
-            {
-                Assert.IsTrue(true);
-            }
-            else
-            {
-                Assert.IsTrue(true);
-            }
+            Assert.IsTrue(true);
         }
         [Test]
         [TestCase(1011163)]
         [TestCase(0)]
         [TestCase(null)]
         [TestCase(38403)]
-        public void DeleteClinician_PassParamters_ReturnData(long practiceCode)
+        public void DeleteClinician_PassParameters_ReturnData(long practiceCode)
         {
             //Arrange
             _foxProviderClass.FOX_PROVIDER_CODE = "5481922";
             _deleteClinicianModel.user = new FoxProviderClass()
             {
-              FOX_PROVIDER_ID =12345
+                FOX_PROVIDER_ID = 12345
             };
             _userProfile.PracticeCode = practiceCode;
             _userProfile.UserName = "N-Unit Testing";
 
             //Act
-            var result = _clinicianSetupService.DeleteClinician(_deleteClinicianModel, _userProfile);
+            _clinicianSetupService.DeleteClinician(_deleteClinicianModel, _userProfile);
 
             //Assert
-            if (result != null)
-            {
-                Assert.IsTrue(true);
-            }
-            else
-            {
-                Assert.IsTrue(true);
-            }
+            Assert.IsTrue(true);
         }
-        //DeleteClinician
         [TearDown]
         public void Teardown()
         {
+            // Optionally dispose or cleanup objects
             _clinicianSetupService = null;
             _foxProviderClass = null;
             _userProfile = null;
+            _getClinicanReq = null;
+            _providerLocationReq = null;
+            _deleteClinicianModel = null;
         }
     }
 }
