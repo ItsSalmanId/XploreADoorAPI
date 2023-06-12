@@ -48,6 +48,7 @@ namespace FOX.BusinessOperations.SettingsService.ClinicianSetupService
 
                 obj.FOX_PROVIDER_ID = Helper.getMaximumId("FOX_PROVIDER_ID");
                 obj.CREATED_BY = profile.UserName;
+                obj.MODIFIED_BY = profile.UserName;
                 obj.CREATED_DATE = DateTime.Now;
                 obj.PRACTICE_CODE = profile.PracticeCode;
                 obj.DELETED = false;

@@ -182,7 +182,7 @@ namespace FoxRehabilitation.UnitTest
             //Arrange
             _userProfile.UserName = "1163testing";
             _userProfile.PracticeCode = practiceCode;
-            _markReferralValidOrTrashed.Work_Id = 552103;
+            _markReferralValidOrTrashed.Work_Id = 5487240;
             _markReferralValidOrTrashed.Is_Trash = isTrash;
 
             //Act
