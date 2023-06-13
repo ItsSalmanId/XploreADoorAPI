@@ -3,7 +3,8 @@ using FOX.DataModels.Models.Security;
 using NUnit.Framework;
 namespace FoxRehabilitation.UnitTest.PatientDocumentsUnitTest
 {
-    class PatientDocumentsTest
+    [TestFixture]
+    public class PatientDocumentsTest
     {
         private PatientDocumentsService _patientDocumentsService;
         private UserProfile _userProfile;
