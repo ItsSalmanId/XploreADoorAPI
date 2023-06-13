@@ -150,17 +150,21 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             }
         }
         [Test]
-        [TestCase(false, 1)]
-        [TestCase(false, 2)]
-        [TestCase(true, 4)]
-        [TestCase(false, 3)]
-        public void PostCallList_PassModel_NoReturnData(bool readOnlyMode, int timeFrame)
+        [TestCase(true, 4, "1163TESTING", "survey")]
+        [TestCase(false, 4, "Admin_5651352", "phd")]
+        [TestCase(true, 1, "1163TESTING", "survey")]
+        [TestCase(false, 1, "Admin_5651352", "phd")]
+        [TestCase(true, 2, "1163TESTING", "survey")]
+        [TestCase(false, 2, "Admin_5651352", "phd")]
+        [TestCase(true, 3, "1163TESTING", "survey")]
+        [TestCase(false, 3, "Admin_5651352", "phd")]
+        public void PostCallList_PassModel_NoReturnData(bool readOnlyMode, int timeFrame, string surveyBy, string callType)
         {
             //Arrange
             _userProfile.PracticeCode = 1011163;
             _requestCallList.TIME_FRAME = timeFrame;
-            _requestCallList.SURVEY_BY = "Admin_5651352";
-            _requestCallList.CALL_TYPE = "survey";
+            _requestCallList.SURVEY_BY = surveyBy;
+            _requestCallList.CALL_TYPE = callType;
             _requestCallList.PHD_CALL_SCENARIO_ID = 0;
             _requestCallList.IS_READ_ONLY_MODE = readOnlyMode;
 
@@ -180,6 +184,7 @@ namespace FoxRehabilitation.UnitTest.QualityAssuranceServiceUnitTest
             _requestModelForCallType = null;
             _surveyAuditScores = null;
             _userProfile = null;
+            _requestCallList = null;
         }
     }
 }

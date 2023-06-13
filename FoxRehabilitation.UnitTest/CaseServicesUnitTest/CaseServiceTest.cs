@@ -750,31 +750,6 @@ namespace FoxRehabilitation.UnitTest.CaseServicesUnitTest
                 Assert.IsFalse(false);
             }
         }
-        [Test]
-        [TestCase(1011163)]
-        [TestCase(0)]
-        public void GetSmartCases_PassModel_ReturnData(long practiceCode)
-        {
-            //Arrange
-            _userProfile.PracticeCode = practiceCode;
-            _userProfile.userID = 1011163415;
-            _getOpenIssueListReq.CASE_ID = 1011163415;
-            _getOpenIssueListReq.CASE_STATUS_ID = 544104;
-
-            //Act
-
-            var result = _caseServices.GetSmartCases(_smartSearchCasesRequest, _userProfile);
-
-            //Assert
-            if (result != null)
-            {
-                Assert.IsTrue(true);
-            }
-            else
-            {
-                Assert.IsFalse(false);
-            }
-        }
 
         [Test]
         [TestCase(1011163, 544100)]

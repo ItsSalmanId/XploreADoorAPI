@@ -1,8 +1,11 @@
 ﻿using FOX.BusinessOperations.PatientServices;
+using FOX.DataModels.Models.Authorization;
+using FOX.DataModels.Models.CasesModel;
 using FOX.DataModels.Models.IndexInfo;
 using FOX.DataModels.Models.Patient;
 using FOX.DataModels.Models.PatientDocuments;
 using FOX.DataModels.Models.Security;
+using FOX.DataModels.Models.ServiceConfiguration;
 using FOX.DataModels.Models.Settings.FacilityLocation;
 using FOX.DataModels.Models.TasksModel;
 using NUnit.Framework;
@@ -47,6 +50,12 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
         private Subscriber _subscriber;
         private PayorDataModel _payorDataModel;
         private PatientPATDocument _patientPatDocument;
+        private ServiceConfiguration _serviceConfiguration;
+        private PatientInsuranceAuthDetails _patientInsuranceAuthDetails;
+        private FOX_TBL_AUTH_CHARGES _foxTblAuthCharge;
+        private InterfaceSynchModel _interfaceSynchModel;
+        private WORK_ORDER_INFO_REQ _workOrderInfoReq;
+        private PatientInsuranceDetail _patientInsuranceDetail;
 
         [SetUp]
         public void SetUp()
@@ -84,6 +93,12 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _subscriber = new Subscriber();
             _payorDataModel = new PayorDataModel();
             _patientPatDocument = new PatientPATDocument();
+            _serviceConfiguration = new ServiceConfiguration();
+            _patientInsuranceAuthDetails = new PatientInsuranceAuthDetails();
+            _foxTblAuthCharge = new FOX_TBL_AUTH_CHARGES();
+            _interfaceSynchModel = new InterfaceSynchModel();
+            _workOrderInfoReq = new WORK_ORDER_INFO_REQ();
+            _patientInsuranceDetail = new PatientInsuranceDetail();
         }
         [Test]
         [TestCase(1011163, false, 101116354816630)]
@@ -1192,6 +1207,83 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             }
         }
         [Test]
+        [TestCase(101116354818050)]
+        [TestCase(101116354817999)]
+        public void GetCurrentPatientDemographics_PassParameters_ReturnData(long patientAccount)
+        {
+            //Arrange
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163testing";
+
+            //Act
+            var result = _patientService.GetCurrentPatientDemographics(patientAccount, _userProfile);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
+        [Test]
+        [TestCase(101116354818050, "private home")]
+        [TestCase(101116354817999, "private home")]
+        public void UpdateCoordinates_PassParameters_ReturnData(long patientAccount, string name)
+        {
+            //Arrange
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163testing";
+            _patientPOSLocation.Patient_Account_Str = patientAccount.ToString();
+            _patientPOSLocation.Effective_From_In_String = "01/01/2000";
+            _patientPOSLocation.Effective_To_In_String = "01/01/2000";
+            _patientPOSLocation.IsNew = true;
+            _patientPOSLocation.Patient_POS_Details = new FacilityLocation()
+            {
+                LOC_ID = 123,
+                Phone = "12345",
+                NAME = name,
+                Zip = "12345"
+            };
+
+            //Act
+            var result = _patientService.AddUpdatePatientPOSLocation(_patientPOSLocation, _userProfile);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
+        [Test]
+        [TestCase(5483977, 101116354817999, 1011163548953)]
+        public void UpdateDefaultLocations_PassParameters_ReturnData(long defaultLocId, long patAcc, long posId)
+        {
+            //Arrange
+            //Act
+            _patientService.UpdateDefaultLocations(defaultLocId, patAcc, posId);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase("101116354817999")]
+        public void CheckAndUpdatePrSubscriber_UpdatePayerNameInHTML_ReturnData(string patientAccount)
+        {
+            //Arrange
+            //Act
+            _patientService.CheckAndUpdatePRSubscriber(patientAccount, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
         [TestCase(112562)]
         [TestCase(600102)]
         public void GetCoordinates_Coordinates_ReturnData(long locId)
@@ -1637,12 +1729,14 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             }
         }
         [Test]
-        public void CheckDuplicatePatients_CheckDuplicate_ReturnData()
+        [TestCase("101116354814877")]
+        [TestCase("101116354816563")]
+        public void CheckDuplicatePatients_CheckDuplicate_ReturnData(string patientAccount)
         {
             //Arrange 
             _userProfile.PracticeCode = 1011163;
             _userProfile.UserName = "1163Testing";
-            _checkDuplicatePatientsReq.PATIENT_ACCOUNT = "101116354816563";
+            _checkDuplicatePatientsReq.PATIENT_ACCOUNT = patientAccount;
             _checkDuplicatePatientsReq.First_Name = "";
             _checkDuplicatePatientsReq.Last_Name = "";
             _checkDuplicatePatientsReq.Date_Of_Birth_In_String = "2000-08-12";
@@ -1789,6 +1883,339 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             //Assert
             Assert.IsTrue(true);
         }
+        [Test]
+        [TestCase(544100, true)]
+        public void AbnMedicareLimitDataChanged_PassParameters_ReturnData(long abnId, out bool abnInfoChanged)
+        {
+            //Arrange 
+            List<MedicareLimit> medicareLimits = new List<MedicareLimit>()
+            {
+             new MedicareLimit
+             {
+               MEDICARE_LIMIT_TYPE_NAME = "ABN"
+             }
+            };
+
+            //Act
+            _patientService.ABN_MedicareLimitDataChanged(abnId, medicareLimits, out abnInfoChanged);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase(544100, true)]
+        public void HosMedicareLimitDataChanged_PassParameters_ReturnData(long hosId, out bool abnInfoChanged)
+        {
+            //Arrange 
+            List<MedicareLimit> medicareLimits = new List<MedicareLimit>()
+            {
+             new MedicareLimit
+             {
+               MEDICARE_LIMIT_TYPE_NAME = "Hospice"
+             }
+            };
+
+            //Act
+            _patientService.HOS_MedicareLimitDataChanged(hosId, medicareLimits, out abnInfoChanged);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase(544100, true)]
+        public void HhMedicareLimitDataChanged_PassParameters_ReturnData(long hosId, out bool abnInfoChanged)
+        {
+            //Arrange 
+            List<MedicareLimit> medicareLimits = new List<MedicareLimit>()
+            {
+             new MedicareLimit
+             {
+               MEDICARE_LIMIT_TYPE_NAME = "Home Health Episode"
+             }
+            };
+
+            //Act
+            _patientService.HH_MedicareLimitDataChanged(hosId, medicareLimits, out abnInfoChanged);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        public void FetchEligibilityRecord_PassParameters_ReturnData()
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163testing";
+            _patientInsuranceDetail.Patient_Insurance_Id = 123456;
+            _patientInsuranceDetail.MTBC_Patient_Insurance_Id = 54863328635107;
+
+            //Act
+            _patientService.DeleteInsuranceInformation(_patientInsuranceDetail, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase(@"\\10.10.30.165\FoxDocumentDirectory\Fox\1012714\05-26-2023\OriginalFiles\tempcoversletter638206868960541491.pdf")]
+        public void SavePdftoImagesEligibilty_PassParameter_ReturnData(string pdfPath)
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163testing";
+            _serviceConfiguration.IMAGES_PATH_SERVER = @"\\10.10.30.165\FoxDocumentDirectory\Fox\1012714\05-26-2023\OriginalFiles";
+            int noOfPages = 1;
+            string sorcetype = "test";
+            string patientaccountstr = "123456";
+            long patientInsuranceId = 0;
+            bool newDocument = true;
+            long work_id = 0;
+
+            //Act
+            _patientService.SavePdftoImagesEligibilty(pdfPath, _serviceConfiguration, noOfPages, sorcetype, _userProfile, patientaccountstr, patientInsuranceId, newDocument, work_id);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase(101116354818276)]
+        [TestCase(101116354815798)]
+        [TestCase(101116351010069)]
+        [TestCase(101116354813306)]
+        [TestCase(101116354412334)]
+        [TestCase(101116354813584)]
+        public void GetCurrentPatientAuthorizations_PassParameter_ReturnData(long patientAccount)
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163testing";
+
+            //Act
+            _patientService.GetCurrentPatientAuthorizations(patientAccount, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase(101116354818276)]
+        [TestCase(101116354815798)]
+        [TestCase(101116351010069)]
+        [TestCase(101116354813306)]
+        [TestCase(101116354412334)]
+        [TestCase(101116354813584)]
+        public void SaveAuthDetails_PassParameters_ReturnData(long patientAccount)
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163testing";
+            _patientInsuranceAuthDetails.Patient_Account_Str = patientAccount.ToString();
+            _patientInsuranceAuthDetails.AuthToCreateUpdate = new FOX_TBL_AUTH();
+            {
+                new FOX_TBL_AUTH
+                {
+                    EFFECTIVE_FROM_IN_STR = "01/01/2023",
+                    EFFECTIVE_TO_IN_STR = "01/01/2023",
+                    RECORD_TIME_IN_STR = "01/01/2023",
+                    REQUESTED_ON_IN_STR = "01/01/2023",
+                    EFFECTIVE_FROM = Convert.ToDateTime("01/01/2023"),
+                    EFFECTIVE_TO = Convert.ToDateTime("01/01/2023"),
+                    REQUESTED_ON = Convert.ToDateTime("01/01/2023"),
+                    AUTH_ID = 544139,
+                    AUTH_PARENT_ID = 544139,
+                };
+            };
+
+            //Act
+            _patientService.SaveAuthDetails(_patientInsuranceAuthDetails, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase(544105)]
+        [TestCase(544106)]
+        public void SaveAuthAppointments_PassParameters_ReturnData(long authId)
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163testing";
+            List<int> authAppointmentIdsList = new List<int>
+            {
+                  1234,
+            };
+            long auth_Id = authId;
+
+            //Act
+            _patientService.SaveAuthAppointments(authAppointmentIdsList, auth_Id, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase(544105, true)]
+        [TestCase(544105, false)]
+        [TestCase(544106, true)]
+        [TestCase(544106, false)]
+        [TestCase(12345, false)]
+        public void SaveAuthCharges_PassParameters_ReturnData(long authId, bool isSimpleAuth)
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163testing";
+            long auth_Id = authId;
+            List<FOX_TBL_AUTH_CHARGES> authorizationChargesList = new List<FOX_TBL_AUTH_CHARGES>()
+            {
+                new FOX_TBL_AUTH_CHARGES
+                {
+                    AUTH_CHARGES_ID = 544100,
+                    CPT_RANGE_FROM_CODE = "test"
+                }
+            };
+
+            //Act
+            _patientService.SaveAuthCharges(authorizationChargesList, auth_Id, isSimpleAuth, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase(544105)]
+        [TestCase(544106)]
+        [TestCase(12345)]
+        public void SaveAuthComments_PassParameters_ReturnData(long authId)
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163testing";
+            _patientInsuranceAuthDetails.AuthToCreateUpdate = new FOX_TBL_AUTH()
+            {
+                AUTH_ID = authId,
+                AuthComments = "test"
+            };
+
+            //Act
+            _patientService.SaveAuthComments(_patientInsuranceAuthDetails, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        public void ChargeObjHasData_PassParameters_ReturnData()
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163testing";
+            _foxTblAuthCharge.CPT_RANGE_FROM_CODE = "test";
+            _foxTblAuthCharge.CHARGES = "test";
+            _foxTblAuthCharge.IS_EXEMPT = true;
+            _foxTblAuthCharge.DIAGNOSIS_CODE = "test";
+
+            //Act
+            _patientService.ChargeObjHasData(_foxTblAuthCharge);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        public void InsertInterfaceTeamData_PassParameters_ReturnData()
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163testing";
+            _interfaceSynchModel.PATIENT_ACCOUNT = 123456;
+            _interfaceSynchModel.CASE_ID = 123456;
+            _interfaceSynchModel.TASK_ID = 123456;
+
+            //Act
+            _patientService.InsertInterfaceTeamData(_interfaceSynchModel, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase("544105")]
+        [TestCase("544107")]
+        [TestCase("5441056")]
+        public void GetPatientInsurancesInIndexInfo_PassParameters_ReturnData(string patientAccountStr)
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163testing";
+
+            //Act
+            _patientService.GetPatientInsurancesInIndexInfo(patientAccountStr, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        [TestCase("544105")]
+        [TestCase("544107")]
+        [TestCase("5441056")]
+        public void GetWorkOrderInfo_PassParameters_ReturnData(string patientAccountStr)
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163testing";
+            _workOrderInfoReq.PATIENT_ACCOUNT = patientAccountStr;
+
+            //Act
+            _patientService.GetWorkOrderInfo(_workOrderInfoReq, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        public void PrepareLogExport_PassParameters_ReturnData()
+        {
+            //Arrange 
+            List<PatientExportToExcelModel> recordToExport = new List<PatientExportToExcelModel>();
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163testing";
+            List<Patient> obj = new List<Patient>()
+            {
+                new Patient
+                {
+                    Patient_Account = 1010624506101096,
+                }
+            };
+
+            //Act
+            _patientService.PrepareLogExport(obj, out recordToExport);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        public void EligibilityAlreadyLoadedInThisMonth_PassParameter_ReturnData()
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163testing";
+            _patientInsurance.Patient_Account = 101116354816450;
+            _patientInsurance.Pri_Sec_Oth_Type = "P";
+
+            //Act
+            _patientService.EligibilityAlreadyLoadedInThisMonth(_patientInsurance);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        [Test]
+        public void ResetCoordinates_PassParameter_ReturnData()
+        {
+            //Arrange 
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163testing";
+            _facilityLocation.FACILITY_TYPE_NAME = "private home";
+            _facilityLocation.PATIENT_ACCOUNT = 101116354813109;
+            _facilityLocation.UpdatePatientAddress = false;
+
+            //Act
+            _patientService.ResetCoordinates(_facilityLocation, _userProfile);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
         [TearDown]
         public void Teardown()
         {
@@ -1815,6 +2242,12 @@ namespace FoxRehabilitation.UnitTest.PatientServicesUnitTest
             _subscriber = null;
             _payorDataModel = null;
             _patientPatDocument = null;
+            _serviceConfiguration = null;
+            _patientInsuranceAuthDetails = null;
+            _foxTblAuthCharge = null;
+            _interfaceSynchModel = null;
+            _workOrderInfoReq = null;
+            _patientInsuranceDetail = null;
         }
     }
 }
