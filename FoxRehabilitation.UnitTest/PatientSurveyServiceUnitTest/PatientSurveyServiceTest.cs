@@ -398,17 +398,10 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
             _userProfile.PracticeCode = 1011163;
             _userProfile.UserName = "1163Testing";
             //Act
-            var result = _patientSurveyService.UpdatePSFormat(format, _userProfile);
+             _patientSurveyService.UpdatePSFormat(format, _userProfile);
 
             //Assert
-            if (result != null)
-            {
-                Assert.IsTrue(true);
-            }
-            else
-            {
-                Assert.IsFalse(false);
-            }
+            Assert.IsTrue(true);
         }
         [Test]
         [TestCase("64543", 1011163)]
