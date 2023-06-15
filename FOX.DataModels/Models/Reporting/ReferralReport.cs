@@ -104,6 +104,7 @@ namespace FOX.DataModels.Models.Reporting
         [NotMapped]
         public int ROW { get; set; }
         public long WORK_ID { get; set; }
+        public DateTime? RECEIVE_DATE { get; set; }
         public long Patient_Account { get; set; }
         public string PATIENT_NAME { get; set; }
         public string PHONE { get; set; }
