@@ -1220,58 +1220,17 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
 
         public EligibilityServiceResponse GetInsuranceEligibility(EligibilityDetailRequest eligibilityDetailRequest)
          {
+
             EligibilityModel objeligibilityModel = new EligibilityModel();
             EligibilityServiceResponse response = new EligibilityServiceResponse();
-            //var taskList = _eligibilityDetails.ExecuteCommand("select * from fox_tbl_task where CASE_ID= {0} and PRACTICE_CODE= {1} AND GENERAL_NOTE_ID IS NULL", req.CASE_ID, profile.PracticeCode);
-           // var list = _eligibilityDetails.ExecuteCommand("SELECT INSURANCE_ID FROM FOX_TBL_INSURANCE WHERE INSURANCE_PAYERS_ID= {0} and PRACTICE_CODE= {1} AND DELETED = {2}", eligibilityDetailRequest.InsurancePayerID, GetPracticeCode(), false);
-            var listReturn = @"
-DECLARE @GET_INSURANCE_ID BIGINT;    
-    
- SET @GET_INSURANCE_ID = (SELECT INSURANCE_ID FROM FOX_TBL_INSURANCE WHERE INSURANCE_PAYERS_ID = '" + eligibilityDetailRequest.InsurancePayerID + @"' AND PRACTICE_CODE = 1012714 AND ISNULL(DELETED, 0) = 0)    
-SELECT     
- I.INSURANCE_ID,
- IP.INSPAYER_ID,
- EP.PAYER_NAME,
- EP.INSPAYER_ELIGIBILITY_ID,
- PRC.PRAC_TYPE,
- PRC.PRAC_TAX_ID AS PRACTICE_TAX_ID,
- PRC.PRAC_NAME AS PRACTICE_NAME
- FROM FOX_TBL_INSURANCE I
- INNER JOIN PRACTICES PRC  WITH(NOLOCK) ON PRC.PRACTICE_CODE = I.PRACTICE_CODE
- INNER JOIN INSURANCES INS  WITH(NOLOCK) ON INS.INSURANCE_ID = I.INSURANCE_ID
- INNER JOIN INSURANCE_PAYERS IP  WITH(NOLOCK) ON IP.INSPAYER_ID = INS.INSPAYER_ID
- INNER JOIN ELIGIBILITY_PAYER_INFORMATION EP WITH(NOLOCK) ON EP.INSPAYER_ELIGIBILITY_ID = IP.INSPAYER_ELIGIBILITY_ID
- WHERE ISNULL(I.DELETED, 0) = 0 AND I.PRACTICE_CODE = 1012714 AND ISNULL(PRC.DELETED, 0) = 0 AND ISNULL(INS.DELETED, 0) = 0 AND ISNULL(IP.DELETED, 0) = 0 AND ISNULL(EP.DELETED, 0) = 0
- AND I.INSURANCE_ID = @GET_INSURANCE_ID  ";
-            SqlDataAdapter result1 = SpRepository<object>.getSpSqlDataAdapter(listReturn);
-            DataTable dt = new DataTable();
-            result1.Fill(dt);
-            List<EligibilityDetails> studentList = new List<EligibilityDetails>();
-            for (int i = 0; i < dt.Rows.Count; i++)
-            {
-                EligibilityDetails student = new EligibilityDetails();
-                student.INSURANCE_ID = Convert.ToInt64(dt.Rows[i]["INSURANCE_ID"]);
-                student.INSPAYER_ID = Convert.ToInt32(dt.Rows[i]["INSPAYER_ID"]);
-                student.PAYER_NAME = dt.Rows[i]["PAYER_NAME"].ToString();
-                student.INSPAYER_ELIGIBILITY_ID = (dt.Rows[i]["INSPAYER_ELIGIBILITY_ID"]).ToString();
-                student.PRAC_TYPE = (dt.Rows[i]["PRAC_TYPE"]).ToString();
-                student.PRACTICE_TAX_ID = (dt.Rows[i]["PRACTICE_TAX_ID"]).ToString();
-                student.PRACTICE_NAME = (dt.Rows[i]["PRACTICE_NAME"]).ToString();
-                //student. = dt.Rows[i]["WEEKSTART"].ToString();
-                studentList.Add(student);
-            }
-
-
             String htmlStr = string.Empty;
             var insuranceID = new SqlParameter { ParameterName = "@INSURANCE_PAYER_ID", Value = eligibilityDetailRequest.InsurancePayerID };
             var practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", Value = GetPracticeCode() };
-            //var eligibilityReponse = SpRepository<EligibilityDetails>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_INSURANCE_ELIGIBILITY_DETAILS @INSURANCE_PAYER_ID, @PRACTICE_CODE", insuranceID, practiceCode);
-
+            var eligibilityReponse = SpRepository<EligibilityDetails>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_INSURANCE_ELIGIBILITY_DETAILS @INSURANCE_PAYER_ID, @PRACTICE_CODE", insuranceID, practiceCode);
             #region New Implementation to check Eligiblity with RestFull API
-            if (studentList != null)
+            if (eligibilityReponse != null)
             {
                 EligibilityServiceResponse objEligibilityServiceResponse = new EligibilityServiceResponse();
-                //To See Detailed Documentation Please have the documents path  : FoxRehabilitationAPI\About Project\Eligibity-documents\
                 EligibilityModelNew objEligibilityNew = new EligibilityModelNew();
                 //*********************************** MTBCData ***************************************
                 objEligibilityNew.ViewType = "json_v1";
@@ -1279,66 +1238,54 @@ SELECT
                 objEligibilityNew.ClientType = "PATIENT";
                 objEligibilityNew.ServerName = "10.10.30.76";
                 objEligibilityNew.UserID = "999999";
-                objEligibilityNew.InsuranceID = studentList[0].INSURANCE_ID.ToString() ?? ""; 
-                //objEligibilityNew.InsuranceID = "550401167";
-                objEligibilityNew.insPayerID = studentList[0].INSPAYER_ID.ToString() ?? ""; //"550400661";
+                objEligibilityNew.InsuranceID = eligibilityReponse.INSURANCE_ID.ToString() ?? ""; 
+                objEligibilityNew.insPayerID = eligibilityReponse.INSPAYER_ID.ToString() ?? ""; 
                 objEligibilityNew.PayerType = "P";
                 objEligibilityNew.PatientAccount = "9999999999";
                 objEligibilityNew.ClaimNo = string.Empty;
                 objEligibilityNew.AppointmentID = string.Empty;
-                //objEligibilityNew.InsPayerDescriptionName = eligibilityModel.Inspayer_Description;
                 //*********************************** Payer Information ***************************************
-                //objEligibilityNew.PayerName = "CMS";
-                objEligibilityNew.PayerName = studentList[0].PAYER_NAME;
-                //objEligibilityNew.PayerID = "CMS";
-                objEligibilityNew.PayerID = studentList[0].INSPAYER_ELIGIBILITY_ID;
+                objEligibilityNew.PayerName = eligibilityReponse.PAYER_NAME;
+                objEligibilityNew.PayerID = eligibilityReponse.INSPAYER_ELIGIBILITY_ID;
                 //************************************ Practice Information ************************************
-                //objEligibilityNew.Address = "550  John Scott Rd";// string.Empty;
                 objEligibilityNew.Address =  string.Empty;
-                objEligibilityNew.City = string.Empty; //"AIKEN";
+                objEligibilityNew.City = string.Empty;
                 objEligibilityNew.DateOfService = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(DateTime.Now));
-                //objElig.InquiryDate;    //  Required value
-                //objEligibilityNew.ProviderFirstName = "Jeffrey";
-                objEligibilityNew.ProviderFirstName = "";// eligibilityDetailRequest.ProviderFirstName;
-                //objEligibilityNew.ProviderLastName = "Singer";// eligibilityDetailRequest.ProviderLastName;
-                objEligibilityNew.ProviderLastName = "";// eligibilityDetailRequest.ProviderLastName;
-                objEligibilityNew.ProviderNPI = "1326092503";  // Table name providers
+                objEligibilityNew.ProviderFirstName = "";
+                objEligibilityNew.ProviderLastName = "";
+                objEligibilityNew.ProviderNPI = "1326092503";  
                 objEligibilityNew.ProviderSSN = string.Empty;
                 objEligibilityNew.Relationship = "S";
-                //objEligibilityNew.SubscriberMemberID = "3TN2EV8WR01";
-                objEligibilityNew.SubscriberMemberID = eligibilityDetailRequest.PolicyNumber; //  Required value
-                //objEligibilityNew.Zip = "298036898"; //string.Empty;
+                objEligibilityNew.SubscriberMemberID = eligibilityDetailRequest.PolicyNumber; 
                 objEligibilityNew.Zip = string.Empty;
-                //objEligibilityNew.State = "SC";
                 objEligibilityNew.State =  string.Empty;
                 if (objEligibilityNew.Relationship.Contains("S"))
                 {
                     objEligibilityNew.SubscriberDateOfBirth = Helper.DateFormateForInsuranceEligibility(Convert.ToDateTime(eligibilityDetailRequest.DateOfBirth.ToString()));//"19520923";
-                    objEligibilityNew.SubscriberFirstName = eligibilityDetailRequest.PatientFirstName; //"Mark"; 
-                   // objEligibilityNew.SubscriberGender = "Male";// eligibilityDetailRequest.PatientGender;
+                    objEligibilityNew.SubscriberFirstName = eligibilityDetailRequest.PatientFirstName; 
                     objEligibilityNew.SubscriberGroupNumber = string.Empty;
-                    objEligibilityNew.SubscriberLastName =  eligibilityDetailRequest.PatientLastName; //"Burch";
-                    objEligibilityNew.SubscriberSSN = string.Empty;    //from patient table                                              
-                                                                       //*********************************** Dependent Level *****************************************
+                    objEligibilityNew.SubscriberLastName =  eligibilityDetailRequest.PatientLastName; 
+                    objEligibilityNew.SubscriberSSN = string.Empty;                                          
+                    //*********************************** Dependent Level *****************************************
                     objEligibilityNew.DependentDOB = string.Empty;
                     objEligibilityNew.DependentFirstName = string.Empty;
                     objEligibilityNew.DependentGender = string.Empty;
                     objEligibilityNew.DependentLastName = string.Empty;
                 }
-                if (studentList[0].PRAC_TYPE == "G")
+                if (eligibilityReponse.PRAC_TYPE != null && eligibilityReponse.PRAC_TYPE == "G")
                 {
-                    objEligibilityNew.OrganizationType = "2";  //Required value(if "I" then send 1 and if "G" then send 2 )
-                    objEligibilityNew.ProviderNPI = string.Empty; //if OrganizationType is "I" then you assign individual_npi
-                    objEligibilityNew.OrganizationNPI = "1326092503";  //if OrganizationType is "G" then you assign group_npi            
+                    objEligibilityNew.OrganizationType = "2";  
+                    objEligibilityNew.ProviderNPI = string.Empty; 
+                    objEligibilityNew.OrganizationNPI = "1326092503";            
                 }
                 else
                 {
-                    objEligibilityNew.OrganizationType = "1";     // Required value(if "I" then send 1 and if "G" then send 2 )
-                    objEligibilityNew.OrganizationNPI = string.Empty; //if OrganizationType is "G" then you assign group_npi            
-                    objEligibilityNew.ProviderNPI = ""; //if OrganizationType is "I" then you assign individual_npi
+                    objEligibilityNew.OrganizationType = "1";     
+                    objEligibilityNew.OrganizationNPI = string.Empty;          
+                    objEligibilityNew.ProviderNPI = ""; 
                 }
-                objEligibilityNew.TaxID = studentList[0].PRACTICE_TAX_ID;// "202225666";   //  Required value
-                objEligibilityNew.OrganizationName = studentList[0].PRACTICE_NAME;
+                objEligibilityNew.TaxID = eligibilityReponse.PRACTICE_TAX_ID ?? "";
+                objEligibilityNew.OrganizationName = eligibilityReponse.PRACTICE_NAME ?? "";
                 objEligibilityNew.SubscriberMemberID =  eligibilityDetailRequest.PolicyNumber; //"3TN2EV8WR01";//  Required value
                                                                                                              //********************************** Service Level Type **************************************
                 objEligibilityNew.ServiceType = "30";
