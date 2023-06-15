@@ -578,13 +578,13 @@ namespace FOX.BusinessOperations.PatientServices
                     }
                 }
 
-                SaveRestOfPatientDetails(patient, profile.UserName);
+                SaveRestOfPatientDetails(patient, profile.UserName, profile.isTalkRehab);
             }
 
             return patient;
         }
 
-        private void SaveRestOfPatientDetails(Patient patient, string username)
+        public void SaveRestOfPatientDetails(Patient patient, string username, bool isTalkRehab = false)
         {
             var restOfPatientData = new FOX_TBL_PATIENT();
             var data = _FoxTblPatientRepository.GetFirst(e => e.Patient_Account == patient.Patient_Account);
@@ -612,7 +612,7 @@ namespace FOX.BusinessOperations.PatientServices
             restOfPatientData.PCP = patient.PCP;
             if (restOfPatientData.PCP != null && restOfPatientData.PCP != 0)
             {
-                UpdatePrimaryPhysicianInCases(restOfPatientData.PCP, patient.Patient_Account, patient.Practice_Code);
+                UpdatePrimaryPhysicianInCases(restOfPatientData.PCP, patient.Patient_Account, patient.Practice_Code, isTalkRehab);
             }
             restOfPatientData.Employment_Status = patient.Employment_Status;
             restOfPatientData.Patient_Status = patient.Patient_Status;
@@ -806,7 +806,10 @@ namespace FOX.BusinessOperations.PatientServices
                                 }
                                 UpdateDefaultLocations(loc.Loc_ID, patientAccount, loc.Patient_POS_ID);
                                 //if (facilityType.NAME?.ToLower())
-                                SaveGuarantorForPatientFromPOS(loc, profile);
+                                if(!profile.isTalkRehab)
+                                {
+                                    SaveGuarantorForPatientFromPOS(loc, profile);
+                                }
                             }
                             if (index == 0 && (loc.Patient_POS_Details.CODE.ToLower().Contains("hom"))) // update
                             {
@@ -836,7 +839,10 @@ namespace FOX.BusinessOperations.PatientServices
                                 }
                                 loc.Patient_Account = patientAccount;
                                 UpdateDefaultLocations(loc.Loc_ID, patientAccount, posT.Patient_POS_ID);
-                                SaveGuarantorForPatientFromPOS(loc, profile);
+                                if (!profile.isTalkRehab)
+                                {
+                                    SaveGuarantorForPatientFromPOS(loc, profile);
+                                }
                             }
                         }
                     }
@@ -2090,7 +2096,7 @@ namespace FOX.BusinessOperations.PatientServices
             Patient patient_Details = new Patient();
             var restOfPatientData = new FOX_TBL_PATIENT();
             patient_Details = _PatientRepository.GetSingleOrDefault(e => e.Patient_Account == patient_Account);
-            var restOfDetails = _FoxTblPatientRepository.GetFirst(e => e.Patient_Account == patient_Details.Patient_Account);
+            var restOfDetails = _FoxTblPatientRepository.GetSingleOrDefault(e => e.Patient_Account == patient_Details.Patient_Account);
             var activecases = _vwPatientCaseRepository.GetMany(c => c.PATIENT_ACCOUNT == patient_Account && (c.CASE_STATUS_NAME.ToUpper() == "ACT" || c.CASE_STATUS_NAME.ToUpper() == "HOLD") && c.DELETED == false);
             if (patient_Details != null)// if patient is not null, get rest of the info
             {
@@ -2112,7 +2118,7 @@ namespace FOX.BusinessOperations.PatientServices
                         }
                     }
                 }
-                patient_Details.FinancialClassList = GetFinancialClassDDValues(profile.PracticeCode.ToString());
+                patient_Details.FinancialClassList = GetFinancialClassDDValues(profile.PracticeCode.ToString(), profile.isTalkRehab);
                 GetRestOfPatientData(patient_Details);
                 if (patient_Details.PCP != null && patient_Details.PCP != 0)
                 {
@@ -2625,7 +2631,10 @@ namespace FOX.BusinessOperations.PatientServices
                             loc.Deleted = false;
                             _PatientPOSLocationRepository.Insert(loc);
                             _PatientPOSLocationRepository.Save();
-                            SaveGuarantorForPatientFromPOS(loc, profile);
+                            if (!profile.isTalkRehab)
+                            {
+                                SaveGuarantorForPatientFromPOS(loc, profile);
+                            }
                             //Task 149402:Dev Task: FOX-RT 105. Disabling editing of patient info. from RFO
                             //InsertInterfaceTeamData(interfaceSynch, profile);
                         }
@@ -2753,7 +2762,10 @@ namespace FOX.BusinessOperations.PatientServices
 
                     //this commented temporarygiving error in this method 03/06/2019
                     UpdateCoordinates(loc.Patient_POS_Details, profile);
-                    SaveGuarantorForPatientFromPOS(loc, profile);
+                    if (!profile.isTalkRehab)
+                    {
+                        SaveGuarantorForPatientFromPOS(loc, profile);
+                    }
                     //Task 149402:Dev Task: FOX-RT 105. Disabling editing of patient info. from RFO
                     //InsertInterfaceTeamData(interfaceSynch, profile);
                 }
@@ -2796,7 +2808,10 @@ namespace FOX.BusinessOperations.PatientServices
                         _PatientPOSLocationRepository.Save();
                         //this commented temporarygiving error in this method 03/06/2019
                         UpdateCoordinates(loc.Patient_POS_Details, profile);
-                        SaveGuarantorForPatientFromPOS(loc, profile);
+                        if (!profile.isTalkRehab)
+                        {
+                            SaveGuarantorForPatientFromPOS(loc, profile);
+                        }
                         //Task 149402:Dev Task: FOX-RT 105. Disabling editing of patient info. from RFO
                         //InsertInterfaceTeamData(interfaceSynch, profile);
 
@@ -3175,11 +3190,21 @@ namespace FOX.BusinessOperations.PatientServices
             var conTypes = SpRepository<ContactTypesForDropdown>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_Contact_Types @PRACTICE_CODE", parmPracticeCode);
             return conTypes;
         }
-        public List<BestTimeToCallForDropdown> GetPatientBestTimeToCall(long practiceCode)
+        public List<BestTimeToCallForDropdown> GetPatientBestTimeToCall(long practiceCode, bool isTalkRehab)
         {
-            var parmPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practiceCode };
-            var bestTimes = SpRepository<BestTimeToCallForDropdown>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_BEST_TIME_TO_CALL] @PRACTICE_CODE", parmPracticeCode);
-            return bestTimes;
+            if (isTalkRehab)
+            {
+                var parmPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = 1011163 };
+                var bestTimes = SpRepository<BestTimeToCallForDropdown>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_BEST_TIME_TO_CALL] @PRACTICE_CODE", parmPracticeCode);
+                return bestTimes;
+            }
+            else
+            {
+                var parmPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practiceCode };
+                var bestTimes = SpRepository<BestTimeToCallForDropdown>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_BEST_TIME_TO_CALL] @PRACTICE_CODE", parmPracticeCode);
+                return bestTimes;
+            }
+            
         }
 
         public List<ContactType> GetAllPatientContactTypes(UserProfile profile)
@@ -3206,9 +3231,9 @@ namespace FOX.BusinessOperations.PatientServices
         public PatientContact GetPatientContactDetails(long contactid)
         {
             PatientContact contact = new PatientContact();
-            contact = _PatientContactRepository.GetSingle(e => e.Contact_ID == contactid);
+            contact = _PatientContactRepository.GetFirst(e => e.Contact_ID == contactid);
 
-            if (contact.Country != null)
+            if (contact != null && contact.Country != null)
             {
                 var countryres = _CountryRepository.GetFirst(c => c.FOX_TBL_COUNTRY_ID.ToString() == contact.Country && !c.DELETED && (c.IS_ACTIVE ?? false));
                 if (countryres != null)
@@ -4504,7 +4529,7 @@ namespace FOX.BusinessOperations.PatientServices
 
                 //fetch cases for dropdown
                 patient_Ins_Elig_Details.PatientCasesList = GetPatientCasesForDD(patient_Account);
-                var fcList = GetFinancialClassDDValues(profile.PracticeCode.ToString());
+                var fcList = GetFinancialClassDDValues(profile.PracticeCode.ToString(), profile.isTalkRehab);
                 if (fcList != null && fcList.Count > 0)
                 {
                     patient_Ins_Elig_Details.FinancialClassList = fcList.Where(e => e.SHOW_FOR_INSURANCE).ToList();
@@ -4938,8 +4963,18 @@ namespace FOX.BusinessOperations.PatientServices
                     {
                         var datetimeUtc = Convert.ToDateTime(details.InsuranceToCreateUpdate.DED_MET_AS_OF_IN_STRING);
                         var easternZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-                        var estDate = TimeZoneInfo.ConvertTimeFromUtc(datetimeUtc, easternZone);
-                        details.InsuranceToCreateUpdate.DED_AMT_VERIFIED_ON = Convert.ToDateTime(estDate);
+                        var estDates = TimeZoneInfo.ConvertTimeFromUtc(datetimeUtc, easternZone);
+                        if (estDates < DateTime.Today)
+                        {
+                            var estDate = estDates.AddDays(1);
+                            details.InsuranceToCreateUpdate.DED_AMT_VERIFIED_ON = Convert.ToDateTime(estDate);
+                        }
+                        else
+                        {
+                            var estDate = estDates;
+                            details.InsuranceToCreateUpdate.DED_AMT_VERIFIED_ON = Convert.ToDateTime(estDate);
+
+                        }
                     }
                     //DED_MET_AS_OF Date
                     if (!string.IsNullOrEmpty(details.InsuranceToCreateUpdate.DED_MET_AS_OF_IN_STRING))
@@ -8487,8 +8522,10 @@ namespace FOX.BusinessOperations.PatientServices
                             {
                                 var caseObj = _vwPatientCaseRepository.GetByID(auth.CASE_ID);
                                 if (caseObj != null)
-                                    auth.CASE_NO = caseObj.CASE_NO;
-                                auth.RT_CASE_NO = caseObj.RT_CASE_NO;
+                                {
+                                    auth.CASE_NO = caseObj.CASE_NO ?? "";
+                                    auth.RT_CASE_NO = caseObj.RT_CASE_NO ?? "";
+                                }
                             }
 
                             //Billing Provider Name
@@ -9257,7 +9294,10 @@ namespace FOX.BusinessOperations.PatientServices
                         posdata.Patient_Account = obj.Patient_Account;
                         posdata.Loc_ID = loc.LOC_ID;
                         posdata.Patient_POS_Details = loc;
-                        SaveGuarantorForPatientFromPOS(posdata, profile);
+                        if (!profile.isTalkRehab) 
+                        {
+                            SaveGuarantorForPatientFromPOS(posdata, profile);
+                        }
                     }
                     else
                     {
@@ -9439,7 +9479,7 @@ namespace FOX.BusinessOperations.PatientServices
             //}
         }
 
-        public List<FinancialClass> GetFinancialClassDDValues(string practiceCode)
+        public List<FinancialClass> GetFinancialClassDDValues(string practiceCode, bool isTalkRehab)
         {
             if (practiceCode == "0")
             {
@@ -9447,8 +9487,16 @@ namespace FOX.BusinessOperations.PatientServices
             }
             else
             {
-                var PracticeCode = Convert.ToInt64(practiceCode);
-                return _financialClassRepository.GetMany(e => e.PRACTICE_CODE == PracticeCode && !e.DELETED);
+                if (isTalkRehab)
+                {
+                    return _financialClassRepository.GetMany(e => e.PRACTICE_CODE == 1011163 && !e.DELETED);
+                }
+                else
+                {
+                    var PracticeCode = Convert.ToInt64(practiceCode);
+                    return _financialClassRepository.GetMany(e => e.PRACTICE_CODE == PracticeCode && !e.DELETED);
+                }
+
             }
         }
 
@@ -9915,7 +9963,7 @@ namespace FOX.BusinessOperations.PatientServices
                 var pathToWriteFile = exportPath + "\\" + fileName;
                 DataTable dt = ExportToExcel.ListToDataTable(objToExport);
                 dt.TableName = "Patient_List";
-                exported = ExportToExcel.CreateExcelDocument(dt, pathToWriteFile);
+                exported = ExportToExcel.CreateExcelDocument(dt, pathToWriteFile, profile.isTalkRehab);
                 if (exported)
                 {
                     response.Success = true;
@@ -10303,12 +10351,20 @@ namespace FOX.BusinessOperations.PatientServices
             return resp;
         }
 
-        public void UpdatePrimaryPhysicianInCases(long? PCP_ID, long Patient_Account, long practiceCode)
+        public void UpdatePrimaryPhysicianInCases(long? PCP_ID, long Patient_Account, long practiceCode, bool isTalkRehab = false)
         {
             var caseStatusList = _caseStatusRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
-            caseStatusList = caseStatusList.FindAll(e => e.NAME.ToLower() == "act" || e.NAME.ToLower() == "open");
+            var CASE_STATUS_ID_OPEN = new long();
+            if (isTalkRehab == true) {
+                caseStatusList = caseStatusList.FindAll(e => e.NAME.ToLower() == "act" || e.NAME.ToLower() == "pending");
+                CASE_STATUS_ID_OPEN = caseStatusList.Find(e => e.NAME.ToLower() == "pending").CASE_STATUS_ID;
+            }
+            else
+            {
+                caseStatusList = caseStatusList.FindAll(e => e.NAME.ToLower() == "act" || e.NAME.ToLower() == "open");
+                CASE_STATUS_ID_OPEN = caseStatusList.Find(e => e.NAME.ToLower() == "open").CASE_STATUS_ID;
+            }
             var CASE_STATUS_ID_ACTIVE = caseStatusList.Find(e => e.NAME.ToLower() == "act").CASE_STATUS_ID;
-            var CASE_STATUS_ID_OPEN = caseStatusList.Find(e => e.NAME.ToLower() == "open").CASE_STATUS_ID;
             var casesList = _caseRepository.GetMany(e => (e.PATIENT_ACCOUNT == Patient_Account));
             casesList = casesList.FindAll(e => e.CASE_STATUS_ID == CASE_STATUS_ID_ACTIVE || e.CASE_STATUS_ID == CASE_STATUS_ID_OPEN);
             if (casesList != null)
@@ -11347,4 +11403,5 @@ namespace FOX.BusinessOperations.PatientServices
             return response;
         }
     }
+
 }

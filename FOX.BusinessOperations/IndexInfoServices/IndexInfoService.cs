@@ -47,6 +47,8 @@ using System.Threading.Tasks;
 using FOX.BusinessOperations.GroupServices;
 using FOX.DataModels;
 using FOX.DataModels.Models.FrictionlessReferral.SupportStaff;
+using System.Net.Mail;
+using System.Web.Configuration;
 
 namespace FOX.BusinessOperations.IndexInfoServices
 {
@@ -117,13 +119,16 @@ namespace FOX.BusinessOperations.IndexInfoServices
         private readonly GenericRepository<RegionCoverLetter> _RegionCoverLetterRepository;
         private readonly GenericRepository<TaskWorkInterfaceMapping> _TaskWorkInterfaceMapping;
         private static List<Thread> threadsList = new List<Thread>();
+        private static List<Thread> threadsListForEmail = new List<Thread>();
         private readonly GroupService _groupService;
         private long talkRehabWorkID = 0;
         private long talkRehabInterfaceID = 0;
         private long talkRehabTaskID = 0;
         private long retrycatch = 0;
+        private readonly GenericRepository<FOX_TBL_NOTES> _NoteRepository;
         public IndexInfoService()
         {
+            _NoteRepository = new GenericRepository<FOX_TBL_NOTES>(_DbContextCommon);
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
             _OriginalQueueFiles = new GenericRepository<OriginalQueueFiles>(_QueueContext);
             _QueueRepository = new GenericRepository<OriginalQueue>(_QueueContext);
@@ -908,7 +913,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 //                        && t.Work_ID == obj.WORK_ID
                 //                        && t.TASK_ID != null);
                 string tasktypeHBR = "";
-                var pendingBalance = getPendingHighBalance(pat_account);
+                var pendingBalance = getPendingHighBalance(pat_account, profile);
                 FoxDocumentType documentType = GetDocumentType(obj);
                 //var documentType = _foxdocumenttypeRepository.GetFirst(t => t.DOCUMENT_TYPE_ID == obj.DOCUMENT_TYPE && t.DELETED == false);
 
@@ -1649,7 +1654,15 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 //var result = SpRepository<IndexPatRes>.GetListWithStoreProcedure(@"exec Fox_Get_Patient_Info_Index_Info
                 //             @Last_Name, @First_Name, @Middle_Name, @SSN, @Gender, @Date_Of_Birth, @Chart_Id, @PRACTICE_CODE, @PRACTICE_ORGANIZATION_ID,@WORK_ID, @Patient_Alias, @CURRENT_PAGE, @RECORD_PER_PAGE, @SORT_BY, @SORT_ORDER",
                 //             last_Name, first_Name, middle_Name, sSN, gender, date_Of_Birth, chart_Id, Practice_Code, _PRACTICE_ORGANIZATION_ID, work_id, Patient_Alias, _currentPage, _recordPerPage, _sortBy, _sortOrder);
-                var result = SpRepository<IndexPatRes>.GetSingleObjectWithStoreProcedure(@"exec Fox_Get_Patient_Info_Index_Info_single_record @PATIENT_ACCOUNT,@PRACTICE_CODE,@PRACTICE_ORGANIZATION_ID,@WORK_ID", _patientAccount, Practice_Code, _PRACTICE_ORGANIZATION_ID, work_id);
+                var result = new IndexPatRes();
+                if (Profile.isTalkRehab)
+                {
+                    result = SpRepository<IndexPatRes>.GetSingleObjectWithStoreProcedure(@"exec CCR_Get_Patient_Info_Index_Info_single_record @PATIENT_ACCOUNT,@PRACTICE_CODE,@PRACTICE_ORGANIZATION_ID,@WORK_ID", _patientAccount, Practice_Code, _PRACTICE_ORGANIZATION_ID, work_id);
+                }
+                else
+                {
+                    result = SpRepository<IndexPatRes>.GetSingleObjectWithStoreProcedure(@"exec Fox_Get_Patient_Info_Index_Info_single_record @PATIENT_ACCOUNT,@PRACTICE_CODE,@PRACTICE_ORGANIZATION_ID,@WORK_ID", _patientAccount, Practice_Code, _PRACTICE_ORGANIZATION_ID, work_id);
+                }
                 var res = getPatientsLastORS(req.Patient_Account, req.Practice_Code);
 
                 if (res != null)
@@ -1979,11 +1992,27 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 var result = new List<SmartOrderSource>();
                 if (!obj.Is_From_RFO)
                 {
-                    result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    if (Profile.isTalkRehab)
+                    {
+                        result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [CCR_GET_SMART_ORDERING_SOURCE] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    }
+                    else
+                    {
+                        result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    }
+                    
                 }
                 else
                 {
-                    result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE_RFO] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    if (Profile.isTalkRehab)
+                    {
+                        result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [CCR_GET_SMART_ORDERING_SOURCE_RFO] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    }
+                    else
+                    {
+                        result = SpRepository<SmartOrderSource>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_ORDERING_SOURCE_RFO] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
+                    }
+                    
                 }
 
                 if (result.Any())
@@ -1998,6 +2027,22 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 throw ex;
             }
         }
+        
+        public SmartOrderSource GetSmartOrderingSourceByID(long Source_ID, UserProfile Profile)
+        {
+            try
+            {
+                var parmPracticeCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
+                var id = new SqlParameter("@SOURCE_ID", SqlDbType.BigInt) { Value = Source_ID };
+                var result = SpRepository<SmartOrderSource>.GetSingleObjectWithStoreProcedure(@"exec [CCR_GET_SMART_ORDERING_SOURCE_BY_ID] @PRACTICE_CODE, @SOURCE_ID", parmPracticeCode, id);
+                return result; 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public List<SmartRefRegion> GetSmartRefRegion(SmartReq obj, UserProfile Profile)
         {
             try
@@ -2075,9 +2120,9 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     //}
                     //else
                     //{
-                    senderType = _SenderTypeRepository.GetFirst(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == usr.PRACTICE_CODE) && !t.DELETED);
+                    senderType = _SenderTypeRepository.GetSingleOrDefault(t => t.FOX_TBL_SENDER_TYPE_ID == usr.FOX_TBL_SENDER_TYPE_ID && (t.PRACTICE_CODE == usr.PRACTICE_CODE) && !t.DELETED) ?? null;
                     // }
-                    result.SENDER_TYPE = senderType != null ? !string.IsNullOrWhiteSpace(senderType.SENDER_TYPE_NAME) ? senderType.SENDER_TYPE_NAME : "" : "";
+                    result.SENDER_TYPE = senderType != null ? !string.IsNullOrWhiteSpace(senderType.SENDER_TYPE_NAME ?? "") ? senderType.SENDER_TYPE_NAME : "" : "";
                     return result;
 
                 }
@@ -2527,6 +2572,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
         {
             try
             {
+                int threadCounters = 0;
                 AttachmentData attachmentPath = new CommonServices.CommonServices().GeneratePdfForEmailToSender(data.UNIQUE_ID.ToString(), profile);
                 if (!string.IsNullOrEmpty(attachmentPath.FILE_PATH) && !string.IsNullOrEmpty(attachmentPath.FILE_NAME))
                 {
@@ -2545,15 +2591,21 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     }
                     else
                     {
-                        sent = Helper.Email(sendTo, subject, body, profile, data.work_id, null, null, new List<string> { Path.Combine(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME) });
+                        List<int> threadCounterForEmail = new List<int>();
+                        Thread Thread = new Thread(() => this.newThreadImplementaionForEmail(threadCounters, ref threadCounterForEmail, sendTo, subject, body, profile, data.work_id, null, null, new List<string> { Path.Combine(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME) }));
+                        Thread.Start();
+                        threadsListForEmail.Add(Thread);
+                        sent = true;
                     }
 
                     if (sent)
                     {
-                        ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, body, "tempcoversletter");
-                        string coverfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
-
-                        SavePdfToImages(coverfilePath, config, WORK_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
+                        var coverFilePath = HTMLToPDFSautinsoft(config, body, "tempcoversletter");
+                        SavePdfToImages(coverFilePath, config, WORK_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
+                        foreach (var thread in threadsList)
+                        {
+                            thread.Abort();
+                        }
                     }
 
                     return sent;
@@ -2567,6 +2619,95 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 //Helper.LogException(ex, profile);
                 throw;
+            }
+        }
+        private string HTMLToPDFSautinsoft(ServiceConfiguration conf, string htmlString, string fileName, string linkMessage = null)
+        {
+            try
+            {
+                PdfMetamorphosis p = new PdfMetamorphosis();
+                p.Serial = "10262870570";
+                p.PageSettings.Size.A4();
+                p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
+                p.PageSettings.MarginLeft.Inch(0.1f);
+                p.PageSettings.MarginRight.Inch(0.1f);
+                if (p != null)
+                {
+                    string pdfFilePath = Path.Combine(conf.ORIGINAL_FILES_PATH_SERVER);
+                    //string finalsetpath = conf.ORIGINAL_FILES_PATH_SERVER.Remove(conf.ORIGINAL_FILES_PATH_SERVER.Length - 1);
+                    if (!Directory.Exists(pdfFilePath))
+                    {
+                        Directory.CreateDirectory(pdfFilePath);
+                    }
+                    fileName = fileName + DateTime.Now.Ticks + ".pdf";
+                    string pdfFilePathnew = pdfFilePath + "\\" + fileName;
+                    if (p.HtmlToPdfConvertStringToFile(htmlString, pdfFilePathnew) == 0)
+                    {
+                        return pdfFilePathnew;
+                    }
+                    else
+                    {
+                        var ex = p.TraceSettings.ExceptionList.Count > 0 ? p.TraceSettings.ExceptionList[0] : null;
+                        var msg = ex != null ? ex.Message + Environment.NewLine + ex.StackTrace : "An error occured during converting HTML to PDF!";
+                        return "";
+                    }
+                }
+                return "";
+            }
+            catch (Exception)
+            {
+                return "";
+            }
+        }
+        public void newThreadImplementaionForEmail(int counter, ref List<int> threadCounterForEmail, string to, string subject, string body, UserProfile profile = null, long? WORK_ID = null, List<string> CC = null, List<string> BCC = null, List<string> AttachmentFilePaths = null, string from = "foxrehab@carecloud.com")
+        {
+            try
+            {
+                //bool IsMailSent = false;
+                using (SmtpClient smtp = new SmtpClient())
+                {
+                    using (MailMessage mail = new MailMessage())
+                    {
+                        mail.From = new MailAddress(from);
+                        mail.To.Add(new MailAddress(to));
+                        mail.Subject = subject;
+                        mail.Body = body;
+                        mail.IsBodyHtml = true;
+                        mail.SubjectEncoding = Encoding.UTF8;
+                        if (CC != null && CC.Count > 0)
+                        {
+                            foreach (var item in CC) { mail.CC.Add(item); }
+                        }
+                        if (BCC != null && BCC.Count > 0)
+                        {
+                            foreach (var item in BCC) { mail.Bcc.Add(item); }
+                        }
+                        if (AttachmentFilePaths != null && AttachmentFilePaths.Count > 0)
+                        {
+                            foreach (string filePth in AttachmentFilePaths)
+                            {
+                                if (File.Exists(filePth)) { mail.Attachments.Add(new Attachment(filePth)); }
+                            }
+                        }
+                        if (profile != null && profile.isTalkRehab)
+                        {
+                            smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["NoReplyUserName"], WebConfigurationManager.AppSettings["NoReplyPassword"]);
+                        }
+                        else
+                        {
+                            smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["FoxRehabUserName"], WebConfigurationManager.AppSettings["FoxRehabPassword"]);
+                        }
+                        smtp.Send(mail);
+                        //IsMailSent = true;
+                    }
+                }
+                counter = 1;
+                threadCounterForEmail.Add(1);
+                //return IsMailSent;
+            }
+            catch (Exception)
+            {
+                threadCounterForEmail.Add(1);
             }
         }
         //New Thread Implementation
@@ -2657,7 +2798,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 {
                     //loop untill record complete
                 }
-
                 foreach (var thread in threadsList)
                 {
                     thread.Abort();
@@ -2809,18 +2949,13 @@ namespace FOX.BusinessOperations.IndexInfoServices
             AttachmentData attachmentPath = commonService.GeneratePdfForEmailToSender(data.UNIQUE_ID.ToString(), profile);
             try
             {
-
-
                 if (!string.IsNullOrEmpty(attachmentPath.FILE_PATH) && !string.IsNullOrEmpty(attachmentPath.FILE_NAME))
                 {
                     string coverLetterTemplate = GetEmailOrFaxToSenderTemplate(data);
 
                     var config = Helper.GetServiceConfiguration(profile.PracticeCode);
-
-                    ResponseHTMLToPDF responseHTMLToPDF2 = RequestForOrder.RequestForOrderService.HTMLToPDF2(config, coverLetterTemplate, "tempcoversletter");
-
-                    string coverfilePath = responseHTMLToPDF2?.FilePath + responseHTMLToPDF2?.FileName;
-                    SavePdfToImages(coverfilePath, config, data.UNIQUE_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
+                    var coverFilePath = HTMLToPDFSautinsoft(config, coverLetterTemplate, "tempcoversletter");
+                    SavePdfToImages(coverFilePath, config, data.UNIQUE_ID, data.work_id, 1, "DR:Fax", "", profile.UserName, true);
                     string newFileName = commonService.AddCoverPageForFax(attachmentPath.FILE_PATH, attachmentPath.FILE_NAME, coverLetterTemplate);
 
                     if (!attachmentPath.FILE_PATH.EndsWith("\\"))
@@ -3392,7 +3527,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     ORS = GetOrderingRefrralSource(sourceDetail.SENDER_ID ?? 0);
                 }
                 //var ORS = _InsertUpdateOrderingSourceRepository.GetFirst(t => t.SOURCE_ID == sourceDetail.SENDER_ID);
-                var Indexer = GetIndexer(sourceDetail.COMPLETED_BY, profile.PracticeCode);
+                var Indexer = new User();
+                if (sourceDetail != null)
+                {
+                    Indexer = GetIndexer(sourceDetail.COMPLETED_BY, profile.PracticeCode);
+                }
                 //var Indexer = _User.GetFirst(T => T.USER_NAME == sourceDetail.COMPLETED_BY);
                 var notes = GetNotes_History(obj, profile);
                 var app_user = new User();
@@ -3525,9 +3664,37 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     //taskLoglist.Add(new TaskLog() { ACTION = "indexer :", ACTION_DETAIL = "Indexer >" });
 
                     porta_logs.Add("Completed Date & Time :" + sourceDetail.COMPLETED_DATE);
+                    FOX_TBL_NOTES getFoxTblNotes = new FOX_TBL_NOTES();
+                    if (WORK_QUEUE != null)
+                    {
+                        SqlParameter workId = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = WORK_QUEUE.WORK_ID };
+                        SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = AppConfiguration.GetPracticeCode };
+                        getFoxTblNotes = SpRepository<FOX_TBL_NOTES>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ADMISSION_NOTES_DETAILS @WORK_ID, @PRACTICE_CODE", workId, pracCode);
+                    }
+                    if (getFoxTblNotes != null && getFoxTblNotes.NOTES != null)
+                    {
+                        porta_logs.Add("Important Notes for Admission: " + getFoxTblNotes.NOTES);
+                    }
                     if (Indexer != null)
                     {
-                        porta_logs.Add("Username : " + Indexer.LAST_NAME + ", " + Indexer.FIRST_NAME);
+                        string str = "";
+                        if (String.IsNullOrEmpty(Indexer.FIRST_NAME) && String.IsNullOrEmpty(Indexer.FIRST_NAME))
+                        {
+                            str = "Username : ";
+                        }
+                        else if (!String.IsNullOrEmpty(Indexer.FIRST_NAME) && !String.IsNullOrEmpty(Indexer.FIRST_NAME))
+                        {
+                            str = "Username : " + Indexer.LAST_NAME + "," + Indexer.FIRST_NAME;
+                        }
+                        else if (String.IsNullOrEmpty(Indexer.LAST_NAME))
+                        {
+                            str = "Username :" + Indexer.FIRST_NAME;
+                        }
+                        else if (String.IsNullOrEmpty(Indexer.FIRST_NAME))
+                        {
+                            str = "Username :" + Indexer.LAST_NAME;
+                        }
+                        porta_logs.Add(str);
                     }
                     porta_logs.Add("Indexer >");
 
@@ -3891,7 +4058,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                                     }
                                 }
                             }
-                            var amount = getPendingHighBalance(task.PATIENT_ACCOUNT);
+                            var amount = getPendingHighBalance(task.PATIENT_ACCOUNT, profile);
                             //taskLoglist.Add(new TaskLog() { ACTION = "Due Amount ", ACTION_DETAIL = "Due Amount: " + " $ " + Math.Round(Convert.ToDecimal(amount.Patient_Balance), 2) });
                             //porta_logs.Add("Due Amount: " + " $ " + Math.Round(Convert.ToDecimal(amount.Patient_Balance), 2) );
                             porta_logs.Add("Due Amount: " + " $ " + Math.Round(Convert.ToDecimal(amount.Statement_Patient_Balance), 2));
@@ -3966,16 +4133,19 @@ namespace FOX.BusinessOperations.IndexInfoServices
             //}
             //_TaskContext.SaveChanges();
         }
-        public pendingBalanceAmount getPendingHighBalance(long? PATIENT_ACCOUNT)
+        public pendingBalanceAmount getPendingHighBalance(long? PATIENT_ACCOUNT, UserProfile profile)
         {
             try
             {
+                var _practiceCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = profile.PracticeCode };
                 var _patientAccount = new SqlParameter("PATIENT_ACCOUNT", SqlDbType.BigInt) { Value = PATIENT_ACCOUNT };
+
+
                 //if (PATIENT_ACCOUNT == null)
                 //{
                 //    _patientAccount.Value = DBNull.Value;
                 //}
-                var result = SpRepository<pendingBalanceAmount>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_PENDING_BALANCE @PATIENT_ACCOUNT", _patientAccount);
+                var result = SpRepository<pendingBalanceAmount>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_PENDING_BALANCE_NEW_LOGIC @PRACTICE_CODE, @PATIENT_ACCOUNT", _practiceCode, _patientAccount);
                 if (result == null)
                 {
                     return new pendingBalanceAmount();
@@ -4252,7 +4422,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             var file_name = "";
             if (frictionLessReferralData != null)
             {
-                 file_name = frictionLessReferralData.PATIENT_LAST_NAME + "_" + documentType;
+                file_name = frictionLessReferralData.PATIENT_LAST_NAME + "_" + documentType;
             }
             else
             {
@@ -4368,8 +4538,8 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     URGENT.Remove();
                 }
                 body = htmldoc.DocumentNode.OuterHtml;
-            
-                if(frictionLessReferralData != null)
+
+                if (frictionLessReferralData != null)
                 {
                     patient = new Patient();
                     body = body.Replace("[[PATIENT_NAME]]", frictionLessReferralData.PATIENT_LAST_NAME + ", " + frictionLessReferralData.PATIENT_FIRST_NAME);
@@ -4502,7 +4672,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 }
                 else
                 {
-                    if(frictionLessReferralData != null)
+                    if (frictionLessReferralData != null)
                     {
                         body = body.Replace("[[provider_name]]", frictionLessReferralData.PROVIDER_LAST_NAME + ", " + frictionLessReferralData.PROVIDER_FIRST_NAME + " " + frictionLessReferralData.PROVIDER_REGION);
                         body = body.Replace("[[provider_NPI]]", frictionLessReferralData.PROVIDER_NPI ?? "");
@@ -4523,14 +4693,15 @@ namespace FOX.BusinessOperations.IndexInfoServices
                             body = body.Replace("[[provider_fax]]", "");
                         }
                     }
-                    else {
+                    else
+                    {
                         body = body.Replace("[[provider_name]]", "");
                         body = body.Replace("[[provider_NPI]]", "");
                         body = body.Replace("[[provider_phone]]", "");
                         body = body.Replace("[[provider_fax]]", "");
                         body = body.Replace("[[provider_date]]", "");
                     }
-                }          
+                }
                 if (obj._approval)
                 {
                     body = body.Replace("[[Signature]]", obj.base64textString ?? "");
@@ -5375,9 +5546,9 @@ namespace FOX.BusinessOperations.IndexInfoServices
             return response;
         }
 
-        public pendingBalanceAmount GetPatientBalance(long? patientAccount)
+        public pendingBalanceAmount GetPatientBalance(long? patientAccount, UserProfile profile)
         {
-            return getPendingHighBalance(patientAccount);
+            return getPendingHighBalance(patientAccount, profile);
         }
         public List<PatientListResponse> GetpatientsList(getPatientReq req, UserProfile Profile)
         {
@@ -5405,7 +5576,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
             var first_Name = new SqlParameter("@First_Name", SqlDbType.VarChar) { Value = req.First_Name };
             var last_Name = new SqlParameter("@Last_Name", SqlDbType.VarChar) { Value = req.Last_Name };
             var middle_Name = new SqlParameter("@Middle_Name", SqlDbType.VarChar) { Value = req.Middle_Name };
-            var chart_Id = new SqlParameter("@Chart_Id", SqlDbType.VarChar) { Value = req.Chart_Id };
             var SSN = new SqlParameter("@SSN", SqlDbType.VarChar) { Value = req.SSN };
             var gender = new SqlParameter("@Gender", SqlDbType.VarChar) { Value = req.Gender };
             var Practice_Code = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
@@ -5414,9 +5584,21 @@ namespace FOX.BusinessOperations.IndexInfoServices
             var date_Of_Birth = new SqlParameter { ParameterName = "@Date_Of_Birth", SqlDbType = SqlDbType.VarChar, Value = req.Date_Of_Birth == null ? "" : req.Date_Of_Birth?.ToString("MM/dd/yyyy") };
             var Patient_Alias = new SqlParameter { ParameterName = "@Patient_Alias", SqlDbType = SqlDbType.Bit, Value = req.INCLUDE_ALIAS };
             var _PRACTICE_ORGANIZATION_ID = new SqlParameter("@PRACTICE_ORGANIZATION_ID", SqlDbType.BigInt) { Value = Profile.PRACTICE_ORGANIZATION_ID ?? 0 };
-            var result = SpRepository<PatientListResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_FOR_INDEX_INFO
+            var result = new List<PatientListResponse>();
+            if (Profile.isTalkRehab)
+            {
+                var chart_Id = new SqlParameter("@Chart_Id", SqlDbType.VarChar) { Value = req.Patient_Account };
+                result = SpRepository<PatientListResponse>.GetListWithStoreProcedure(@"exec CCR_PROC_GET_PATIENT_FOR_INDEX_INFO
                              @First_Name,@Last_Name,@Middle_Name,@Chart_Id,@SSN,@Gender,@PRACTICE_CODE,@CURRENT_PAGE,@RECORD_PER_PAGE,@PRACTICE_ORGANIZATION_ID,@Date_Of_Birth,@Patient_Alias",
                              first_Name, last_Name, middle_Name, chart_Id, SSN, gender, Practice_Code, _currentPage, _recordPerPage, _PRACTICE_ORGANIZATION_ID, date_Of_Birth, Patient_Alias);
+            }
+            else
+            {
+                var chart_Id = new SqlParameter("@Chart_Id", SqlDbType.VarChar) { Value = req.Chart_Id };
+                result = SpRepository<PatientListResponse>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PATIENT_FOR_INDEX_INFO
+                             @First_Name,@Last_Name,@Middle_Name,@Chart_Id,@SSN,@Gender,@PRACTICE_CODE,@CURRENT_PAGE,@RECORD_PER_PAGE,@PRACTICE_ORGANIZATION_ID,@Date_Of_Birth,@Patient_Alias",
+                             first_Name, last_Name, middle_Name, chart_Id, SSN, gender, Practice_Code, _currentPage, _recordPerPage, _PRACTICE_ORGANIZATION_ID, date_Of_Birth, Patient_Alias);
+            }
             if (result.Any())
             {
                 var dob = string.IsNullOrEmpty(req.Date_Of_Birth_In_String) ? new DateTime() : Convert.ToDateTime(req.Date_Of_Birth_In_String);
@@ -5676,6 +5858,60 @@ namespace FOX.BusinessOperations.IndexInfoServices
             {
                 throw ex;
             }
+        }
+
+        public FOX_TBL_NOTES AddAdmissionImportantNotes(FOX_TBL_NOTES objAdmissionImportantNotes, UserProfile userProfile)
+        {
+            if (!string.IsNullOrEmpty(objAdmissionImportantNotes.NOTES))
+            {
+                long generalNotId = 0;
+                if (objAdmissionImportantNotes.NOTES_ID == 0)
+                {
+                    generalNotId = Helper.getMaximumId("FOX_TBL_NOTES_ID");
+                }
+                if (objAdmissionImportantNotes != null && generalNotId != 0)
+                {
+                    long getPracticeCode = AppConfiguration.GetPracticeCode;
+                    SqlParameter notesName = new SqlParameter { ParameterName = "@Name", SqlDbType = SqlDbType.VarChar, Value = "Admission Importent Notes" };
+                    SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = getPracticeCode };
+                    var getNotesTypeId = SpRepository<FOX_TBL_NOTES_TYPE>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_NOTES_TYPE @Name, @PRACTICE_CODE", notesName, pracCode);
+                    objAdmissionImportantNotes.NOTES_ID = generalNotId;
+                    objAdmissionImportantNotes.PRACTICE_CODE = userProfile.PracticeCode;
+                    objAdmissionImportantNotes.CREATED_BY = userProfile.UserName;
+                    objAdmissionImportantNotes.CREATED_DATE = Helper.GetCurrentDate();
+                    objAdmissionImportantNotes.MODIFIED_BY = userProfile.UserName;
+                    objAdmissionImportantNotes.MODIFIED_DATE = Helper.GetCurrentDate();
+                    objAdmissionImportantNotes.NOTES_TYPE_ID = getNotesTypeId.NOTES_TYPE_ID;
+                    objAdmissionImportantNotes.DELETED = false;
+                    _NoteRepository.Insert(objAdmissionImportantNotes);
+                    _NoteRepository.Save();
+                }
+                else
+                {
+                    objAdmissionImportantNotes.PRACTICE_CODE = userProfile.PracticeCode;
+                    objAdmissionImportantNotes.MODIFIED_BY = userProfile.UserName;
+                    objAdmissionImportantNotes.MODIFIED_DATE = Helper.GetCurrentDate();
+                    objAdmissionImportantNotes.DELETED = false;
+                    _NoteRepository.Update(objAdmissionImportantNotes);
+                    _NoteRepository.Save();
+                }
+            }
+            return objAdmissionImportantNotes;
+        }
+
+        public FOX_TBL_NOTES GetAdmissionImportantNotes(FOX_TBL_NOTES objAdmissionImportantNotes, UserProfile userProfile)
+        {
+            if (objAdmissionImportantNotes != null)
+            {
+                SqlParameter workId = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = objAdmissionImportantNotes.WORK_ID };
+                SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = userProfile.PracticeCode };
+                objAdmissionImportantNotes = SpRepository<FOX_TBL_NOTES>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_ADMISSION_NOTES_DETAILS @WORK_ID, @PRACTICE_CODE", workId, pracCode);
+            }
+            else
+            {
+                objAdmissionImportantNotes = null;
+            }
+            return objAdmissionImportantNotes;
         }
     }
 }

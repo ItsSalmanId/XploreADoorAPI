@@ -1938,7 +1938,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         }
         public string GetEmailByTick(string ticks)
         {
-            var user = _UserRepository.Get(x => x.PASSWORD_RESET_TICKS == ticks);
+            var user = _UserRepository.GetFirst(x => x.PASSWORD_RESET_TICKS == ticks);
             if (user != null)
                 return user.EMAIL;
             return null;
@@ -2005,11 +2005,13 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         public void AddUpdateUserExtension(long userId, string extension, bool? isActive)
         {
             var dbUsr = _UserRepository.GetByID(userId);
-            dbUsr.EXTENSION = extension;
-            dbUsr.IS_ACTIVE_EXTENSION = isActive;
-            _UserRepository.Update(dbUsr);
-            _UserRepository.Save();
-
+            if (dbUsr != null)
+            {
+                dbUsr.EXTENSION = extension;
+                dbUsr.IS_ACTIVE_EXTENSION = isActive;
+                _UserRepository.Update(dbUsr);
+                _UserRepository.Save();
+            }
         }
         public UserProfile UpdateProfile(string uSER_NAME)
         {
@@ -2526,10 +2528,13 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             //selective team member for updating pervious teams
             if (user.ROLE_ID != 0 && userToUpdate.ROLE_ID != 0 && user.ROLE_ID != userToUpdate.ROLE_ID)
             {
-                if (user.ROLE_NAME.ToString() == "SUPERVISOR")
+                if(user.ROLE_NAME != null)
                 {
-                    SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(userToUpdate.USER_ID) };
-                    SpRepository<UserTeamModel>.GetListWithStoreProcedure(@"exec FOX_PROC_UPDATE_USER_TEAM_DETAILS @USER_ID", userID);
+                    if (user.ROLE_NAME.ToString() == "SUPERVISOR")
+                    {
+                        SqlParameter userID = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = Convert.ToInt64(userToUpdate.USER_ID) };
+                        SpRepository<UserTeamModel>.GetListWithStoreProcedure(@"exec FOX_PROC_UPDATE_USER_TEAM_DETAILS @USER_ID", userID);
+                    }
                 }
             }
             //if (string.IsNullOrWhiteSpace(user.SecurityStamp))

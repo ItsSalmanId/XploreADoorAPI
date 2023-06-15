@@ -160,5 +160,26 @@ namespace FOX.DataModels.Models.FrictionlessReferral.SupportStaff
         public string DateOfBirth { get; set; }
         public string PatientDisciplineId { get; set; }
     }
+
+    public class ServiceAvailability : BaseModel
+    {
+        public string CITY_NAME { get; set; }
+        public string ZIP_CODE { get; set; }
+    }
+
+    public class ExternalUserInfo : BaseModel
+    {
+        public string SUBMITER_FIRST_NAME { get; set; }
+        public string SUBMITTER_LAST_NAME { get; set; }
+        public string SUBMITTER_PHONE { get; set; }
+        public string SUBMITTER_EMAIL { get; set; }
+        public string ZIP_CODE { get; set; }
+        public string CITY_NAME { get; set; }
+    }
+
+    public class ServiceAvailable : BaseModel
+    {
+        public bool IsAvailable { get; set; }
+    }
     #endregion
 }

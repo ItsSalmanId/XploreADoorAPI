@@ -21,9 +21,9 @@ namespace FoxRehabilitationAPI.Controllers
         }
 
         [HttpPost]
-        public HttpResponseMessage AddEditCase(FOX_TBL_CASE model)
+        public HttpResponseMessage AddEditCase(string locationName, string certifyState, string historyTime, FOX_TBL_CASE model)
         {
-            var result = _CaseServices.AddEditCase(model, GetProfile());
+            var result = _CaseServices.AddEditCase(historyTime, locationName,  certifyState, model, GetProfile());
             var response = Request.CreateResponse(HttpStatusCode.OK, result);
             return response;
         }
@@ -88,7 +88,7 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage GetSourceofReferral()
         {
             var profile = GetProfile();
-            var result = _CaseServices.GetSourceofReferral(profile.PracticeCode);
+            var result = _CaseServices.GetSourceofReferral(profile.PracticeCode, profile.isTalkRehab);
             var response = Request.CreateResponse(HttpStatusCode.OK, result);
             return response;
         }

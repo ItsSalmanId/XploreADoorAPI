@@ -1090,14 +1090,19 @@ namespace FOX.BusinessOperations.FoxPHDService
             PHDUnmappedCalls callToDelete = new PHDUnmappedCalls();
             callToDelete = _PHDUnmappedCallsRepository.GetFirst(x => x.CALL_RECORDING_PATH == ObjPHDCallDetailRequest.CALL_RECORDING_PATH
              && x.PRACTICE_CODE == profile.PracticeCode && x.DELETED == false);
-
-            callToDelete.DELETED = true;
-            callToDelete.MODIFIED_BY = profile.UserName;
-            callToDelete.MODIFIED_DATE = Helper.GetCurrentDate();
-            _PHDUnmappedCallsRepository.Update(callToDelete);
-            _PHDUnmappedCallsRepository.Save();
-
-            return true;
+            if (callToDelete != null)
+            {
+                callToDelete.DELETED = true;
+                callToDelete.MODIFIED_BY = profile.UserName;
+                callToDelete.MODIFIED_DATE = Helper.GetCurrentDate();
+                _PHDUnmappedCallsRepository.Update(callToDelete);
+                _PHDUnmappedCallsRepository.Save();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private List<FoxApplicationUsersViewModel> GetPHDCallerDropDownValue(UserProfile profile)
@@ -1685,7 +1690,7 @@ namespace FOX.BusinessOperations.FoxPHDService
         public DefaultVauesForPhdUsers GetDefaultHandlingValue(UserProfile profile)
         {
             var user = _userRepository.GetFirst(x => x.USER_NAME == profile.UserName && !x.DELETED);
-            var phdSanarios = _DefaultVauesForPhdUsersRepository.GetFirst(x => x.USER_ID == user.USER_ID && x.PRACTICE_CODE == user.PRACTICE_CODE && !x.DELETED);
+            var phdSanarios = _DefaultVauesForPhdUsersRepository.GetSingleOrDefault(x => x.USER_ID == user.USER_ID && x.PRACTICE_CODE == user.PRACTICE_CODE && !x.DELETED);
             return phdSanarios;
 
         }

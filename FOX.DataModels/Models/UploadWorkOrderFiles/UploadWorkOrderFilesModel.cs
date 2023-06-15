@@ -23,5 +23,6 @@ namespace FOX.DataModels.Models.UploadWorkOrderFiles
         public long WORK_ID { get; set; }
         public List<FilePath> FilePaths { get; set; }
         public decimal fileSize { get; set; }
+        public string zipFilePath { get; set; }
     }
 }

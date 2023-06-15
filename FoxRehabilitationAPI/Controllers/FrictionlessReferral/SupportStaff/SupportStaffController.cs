@@ -141,6 +141,34 @@ namespace FoxRehabilitationAPI.Controllers.FrictionlessReferral.SupportStaff
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Request is Empty");
             }
         }
+        [HttpPost]
+        public HttpResponseMessage CheckServiceAvailability(ServiceAvailability serviceAvailability)
+        {
+            if(serviceAvailability != null)
+            {
+                var responseModel = _supportStaffService.CheckServiceAvailability(serviceAvailability);
+                var response = Request.CreateResponse(HttpStatusCode.OK, responseModel);
+                return response;
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Frictionless Referral Model is Empty");
+            }
+        }
+        [HttpPost]
+        public HttpResponseMessage SaveExternalUserInfo(ExternalUserInfo externalUserInfo)
+       {
+            if (externalUserInfo != null)
+             {
+                var responseModel = _supportStaffService.SaveExternalUserInfo(externalUserInfo);
+                var response = Request.CreateResponse(HttpStatusCode.OK, responseModel);
+                return response;
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Frictionless Referral Model is Empty");
+            }
+        }
         #endregion
     }
 }

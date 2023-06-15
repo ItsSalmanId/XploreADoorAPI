@@ -14,7 +14,7 @@ namespace FOX.BusinessOperations.CommonServices
     public static class ExportToExcel
     {
 
-        private static void RemoveExtraColumns(DataTable dt, string CalledFrom)
+        private static void RemoveExtraColumns(DataTable dt, string CalledFrom, bool isTalkRehab = false)
         {
             DataColumnCollection dc = dt.Columns;
             if (dt.TableName == "Advanced_region")
@@ -2849,6 +2849,13 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("WORK_ID");
                 }
+                if(isTalkRehab == true)
+                {
+                    if (dc.Contains("MRN"))
+                    {
+                        dc.Remove("MRN");
+                    }
+                }                
                 if (dc.Contains("PRACTICE_CODE"))
                 {
                     dc.Remove("PRACTICE_CODE");
@@ -2920,6 +2927,13 @@ namespace FOX.BusinessOperations.CommonServices
             }
             if (CalledFrom.Equals("Assigned_Queue"))
             {
+                if (isTalkRehab == true)
+                {
+                    if (dc.Contains("MRN"))
+                    {
+                        dc.Remove("MRN");
+                    }
+                }
                 if (dc.Contains("WORK_ID"))
                 {
                     dc.Remove("WORK_ID");
@@ -3078,6 +3092,13 @@ namespace FOX.BusinessOperations.CommonServices
             }
             if (CalledFrom.Equals("Completed_Queue"))
             {
+                if(isTalkRehab == true)
+                {
+                    if (dc.Contains("MEDICAL_RECORD_NUMBER"))
+                    {
+                        dc.Remove("MEDICAL_RECORD_NUMBER");
+                    }
+                }
                 if (dc.Contains("WORK_ID"))
                 {
                     dc.Remove("WORK_ID");
@@ -3280,6 +3301,13 @@ namespace FOX.BusinessOperations.CommonServices
             }
             if (CalledFrom.Equals("Search_Order"))
             {
+                if(isTalkRehab == true)
+                {
+                    if (dc.Contains("MRN"))
+                    {
+                        dc.Remove("MRN");
+                    }
+                }
                 if (dc.Contains("WORK_ID"))
                 {
                     dc.Remove("WORK_ID");
@@ -5477,14 +5505,28 @@ namespace FOX.BusinessOperations.CommonServices
 
 
         }
-        private static void SetHeaders(DataTable dt)
+        private static void SetHeaders(DataTable dt, bool isTalkRehab = false)
         {
             DataColumnCollection dtcol = dt.Columns;
             if (dt.TableName == "Patient_List")
             {
-                if (dtcol.Contains("Patient_Account"))
+                if(isTalkRehab == false)
                 {
-                    dtcol["Patient_Account"].ColumnName = "Account #";
+                    if (dtcol.Contains("Patient_Account"))
+                    {
+                        dtcol["Patient_Account"].ColumnName = "Account #";
+                    }
+                }
+                else
+                {
+                    if (dtcol.Contains("Patient_Account"))
+                    {
+                        dtcol["Patient_Account"].ColumnName = "MRN #";
+                    }
+                    if (dtcol.Contains("MRN"))
+                    {
+                        dtcol.Remove("MRN");
+                    }
                 }
                 if (dtcol.Contains("ROW"))
                 {
@@ -6934,6 +6976,20 @@ namespace FOX.BusinessOperations.CommonServices
             }
             else if (dt.TableName == "Search_Order")
             {
+                if (isTalkRehab == false)
+                {
+                    if (dtcol.Contains("Patient_Account"))
+                    {
+                        dtcol["Patient_Account"].ColumnName = "Account #";
+                    }
+                }
+                else
+                {
+                    if (dtcol.Contains("Patient_Account"))
+                    {
+                        dtcol["Patient_Account"].ColumnName = "MRN #";
+                    }
+                }
                 if (dtcol.Contains("ROW"))
                 {
                     dtcol["ROW"].ColumnName = "Sr. #";
@@ -7040,6 +7096,10 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dtcol.Contains("ASSIGNED_TO"))
                 {
                     dtcol["ASSIGNED_TO"].ColumnName = "Assigned Person Name";
+                }
+                if (dtcol.Contains("ORDERING_REFERRAL_SOURCE"))
+                {
+                    dtcol["ORDERING_REFERRAL_SOURCE"].ColumnName = "Ordering Referral Source";
                 }
                 if (dtcol.Contains("WORK_STATUS"))
                 {
@@ -8070,15 +8130,15 @@ namespace FOX.BusinessOperations.CommonServices
 
 
         #region Do not change functions of this region
-        public static bool CreateExcelDocument<T>(List<T> list, string xlsxFilePath, string widgetName)
+        public static bool CreateExcelDocument<T>(List<T> list, string xlsxFilePath, string widgetName, bool isTalkRehab = false)
         {
             try
             {
                 DataTable dt = ListToDataTable(list);
                 dt.TableName = widgetName;
-                RemoveExtraColumns(dt, widgetName);
+                RemoveExtraColumns(dt, widgetName, isTalkRehab);
                 SetAmounts(dt);
-                SetHeaders(dt);
+                SetHeaders(dt, isTalkRehab);
                 return CreateExcelDocument(dt, xlsxFilePath);
             }
             catch (Exception ex)
@@ -8130,7 +8190,7 @@ namespace FOX.BusinessOperations.CommonServices
         }
         #endregion
 
-        public static bool CreateExcelDocument(DataTable dt, string excelFilename)
+        public static bool CreateExcelDocument(DataTable dt, string excelFilename, bool isTalkRehab = false)
         {
             try
             {
@@ -8154,7 +8214,7 @@ namespace FOX.BusinessOperations.CommonServices
                     }
                     else if (dt.TableName == "Patient_List")
                     {
-                        SetHeaders(dt);
+                        SetHeaders(dt, isTalkRehab);
                     }
                     //else if (dt.TableName == "Users_Reports")
                     //{

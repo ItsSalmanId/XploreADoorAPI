@@ -21,6 +21,8 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
         QRCodeModel GenerateQRCode(QRCodeModel obj);
         ResponseUploadFilesModel UploadFiles(RequestUploadFilesModel requestUploadFilesAPIModel);
         EligibilityServiceResponse GetInsuranceEligibility(EligibilityDetailRequest eligibilityDetailRequest);
+        bool CheckServiceAvailability(ServiceAvailability serviceAvailability);
+        ResponseModel SaveExternalUserInfo(ExternalUserInfo externalUserInfo);
         #endregion
     }
 }
