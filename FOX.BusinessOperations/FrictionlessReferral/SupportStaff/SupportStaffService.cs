@@ -1341,17 +1341,17 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                                             {
                                                 if ((elig.ServiceInformation[0].NetworkType.ToString() == "In Network" || elig.ServiceInformation[0].NetworkType.ToString() == "Out of Network"))
                                                 {
-                                                    EligibilityServiceDetails Eligdetails = new EligibilityServiceDetails();
-                                                    Eligdetails.ServiceType = elig.ServiceType;
-                                                    Eligdetails.CoInsurance = elig.ServiceInformation[0].CoInsurance == null ? "0" : RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].CoInsurance.ToString());
-                                                    Eligdetails.DeductibleBase = elig.ServiceInformation[0].DeductibleBase == null ? "0" : RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].DeductibleBase.ToString());
-                                                    Eligdetails.DeductibleRemaining = elig.ServiceInformation[0].DeductibleRemaining == null ? "0" : RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].DeductibleRemaining.ToString());
-                                                    Eligdetails.OutOfPocket = elig.ServiceInformation[0].OutOfPocket == null ? "0" : RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].OutOfPocket.ToString());
-                                                    Eligdetails.StartDate = elig.ServiceInformation[0].StartDate == null ? "" : string.Format("{0:MM/dd/yyyy}", RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].StartDate.ToString()));
-                                                    Eligdetails.EndDate = elig.ServiceInformation[0].EndDate == null ? "0" : string.Format("{0:MM/dd/yyyy}", RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].EndDate.ToString()));
-                                                    Eligdetails.OutOfPocketRemaining = elig.ServiceInformation[0].OutOfPocketRemaining == null ? "0" : RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].OutOfPocketRemaining.ToString());
-                                                    Eligdetails.NetworkType = elig.ServiceInformation[0].NetworkType.ToString() == "In Network" ? "In-Network Benefits" : "Out-Network Benefits";
-                                                    response.EligibilityServices.Add(Eligdetails);
+                                                    EligibilityServiceDetails objEligibilityService = new EligibilityServiceDetails();
+                                                    objEligibilityService.ServiceType = elig.ServiceType;
+                                                    objEligibilityService.CoInsurance = elig.ServiceInformation[0].CoInsurance == null ? "0" : RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].CoInsurance.ToString());
+                                                    objEligibilityService.DeductibleBase = elig.ServiceInformation[0].DeductibleBase == null ? "0" : RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].DeductibleBase.ToString());
+                                                    objEligibilityService.DeductibleRemaining = elig.ServiceInformation[0].DeductibleRemaining == null ? "0" : RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].DeductibleRemaining.ToString());
+                                                    objEligibilityService.OutOfPocket = elig.ServiceInformation[0].OutOfPocket == null ? "0" : RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].OutOfPocket.ToString());
+                                                    objEligibilityService.StartDate = elig.ServiceInformation[0].StartDate == null ? "" : string.Format("{0:MM/dd/yyyy}", RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].StartDate.ToString()));
+                                                    objEligibilityService.EndDate = elig.ServiceInformation[0].EndDate == null ? "0" : string.Format("{0:MM/dd/yyyy}", RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].EndDate.ToString()));
+                                                    objEligibilityService.OutOfPocketRemaining = elig.ServiceInformation[0].OutOfPocketRemaining == null ? "0" : RemoveHtmlTagsWithSpace(elig.ServiceInformation[0].OutOfPocketRemaining.ToString());
+                                                    objEligibilityService.NetworkType = elig.ServiceInformation[0].NetworkType.ToString() == "In Network" ? "In-Network Benefits" : "Out-Network Benefits";
+                                                    response.EligibilityServices.Add(objEligibilityService);
                                                 }
                                             }
                                         }
@@ -1364,15 +1364,15 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                                                 {
                                                     if (info.NetworkType.ToString() == "In Network" || info.NetworkType.ToString() == "Out of Network")
                                                     {
-                                                        EligibilityServiceDetails Eligdetails = new EligibilityServiceDetails();
-                                                        Eligdetails.ServiceType = elig.ServiceType;
-                                                        Eligdetails.CoInsurance = info.CoInsurance == null ? "0" : RemoveHtmlTagsWithSpace(info.CoInsurance.ToString());
-                                                        Eligdetails.DeductibleBase = info.DeductibleBase == null ? "0" : RemoveHtmlTagsWithSpace(info.DeductibleBase.ToString());
-                                                        Eligdetails.DeductibleRemaining = info.DeductibleRemaining == null ? "0" : RemoveHtmlTagsWithSpace(info.DeductibleRemaining.ToString());
-                                                        Eligdetails.OutOfPocket = info.OutOfPocket == null ? "0" : RemoveHtmlTagsWithSpace(info.OutOfPocket.ToString());
-                                                        Eligdetails.OutOfPocketRemaining = info.OutOfPocketRemaining == null ? "0" : RemoveHtmlTagsWithSpace(info.OutOfPocketRemaining.ToString());
-                                                        Eligdetails.NetworkType = info.NetworkType.ToString() == "In Network" ? "In-Network Benefits" : "Out-Network Benefits";
-                                                        response.EligibilityServices.Add(Eligdetails);
+                                                        EligibilityServiceDetails objEligibilityService = new EligibilityServiceDetails();
+                                                        objEligibilityService.ServiceType = elig.ServiceType;
+                                                        objEligibilityService.CoInsurance = info.CoInsurance == null ? "0" : RemoveHtmlTagsWithSpace(info.CoInsurance.ToString());
+                                                        objEligibilityService.DeductibleBase = info.DeductibleBase == null ? "0" : RemoveHtmlTagsWithSpace(info.DeductibleBase.ToString());
+                                                        objEligibilityService.DeductibleRemaining = info.DeductibleRemaining == null ? "0" : RemoveHtmlTagsWithSpace(info.DeductibleRemaining.ToString());
+                                                        objEligibilityService.OutOfPocket = info.OutOfPocket == null ? "0" : RemoveHtmlTagsWithSpace(info.OutOfPocket.ToString());
+                                                        objEligibilityService.OutOfPocketRemaining = info.OutOfPocketRemaining == null ? "0" : RemoveHtmlTagsWithSpace(info.OutOfPocketRemaining.ToString());
+                                                        objEligibilityService.NetworkType = info.NetworkType.ToString() == "In Network" ? "In-Network Benefits" : "Out-Network Benefits";
+                                                        response.EligibilityServices.Add(objEligibilityService);
                                                     }
                                                 }
                                             }
