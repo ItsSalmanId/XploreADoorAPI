@@ -109,6 +109,7 @@
     <Compile Include="Models\CommonModel\Common.cs" />
     <Compile Include="Models\CompleteQueueModel\CompleteQueue.cs" />
     <Compile Include="Models\DashboardModel\Dashboard.cs" />
+    <Compile Include="Models\EligibilityService\EligibilityModel.cs" />
     <Compile Include="Models\Exceptions\BusinessException.cs" />
     <Compile Include="Models\Exceptions\ExceptionModel.cs" />
     <Compile Include="Models\ExportToExcel\ExportToExcel.cs" />
