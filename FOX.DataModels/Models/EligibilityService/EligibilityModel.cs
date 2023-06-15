@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FOX.DataModels.Models.EligibilityService
 {
-     public class EligibilityModel
+    public class EligibilityModel
     {
         public string InquiryDate { get; set; }
         public string EligibilityPeriod { get; set; }

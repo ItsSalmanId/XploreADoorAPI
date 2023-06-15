@@ -226,7 +226,6 @@
     <Compile Include="FaxServices\IFaxService.cs" />
     <Compile Include="FoxPHDService\FoxPHDService.cs" />
     <Compile Include="FoxPHDService\IFoxPHDService.cs" />
-    <Compile Include="FrictionlessReferral\SupportStaff\EligibilityMoedel.cs" />
     <Compile Include="FrictionlessReferral\SupportStaff\ISupportStaffService.cs" />
     <Compile Include="FrictionlessReferral\SupportStaff\SupportStaffService.cs" />
     <Compile Include="GeneralNotesService\GeneralNotesServices.cs" />

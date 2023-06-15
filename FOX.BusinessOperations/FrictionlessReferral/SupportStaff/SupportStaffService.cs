@@ -1220,7 +1220,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
 
         public EligibilityServiceResponse GetInsuranceEligibility(EligibilityDetailRequest eligibilityDetailRequest)
          {
-
             EligibilityModel objeligibilityModel = new EligibilityModel();
             EligibilityServiceResponse response = new EligibilityServiceResponse();
             String htmlStr = string.Empty;
@@ -1286,8 +1285,8 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 }
                 objEligibilityNew.TaxID = eligibilityReponse.PRACTICE_TAX_ID ?? "";
                 objEligibilityNew.OrganizationName = eligibilityReponse.PRACTICE_NAME ?? "";
-                objEligibilityNew.SubscriberMemberID =  eligibilityDetailRequest.PolicyNumber; //"3TN2EV8WR01";//  Required value
-                                                                                                             //********************************** Service Level Type **************************************
+                objEligibilityNew.SubscriberMemberID =  eligibilityDetailRequest.PolicyNumber;
+                //********************************** Service Level Type **************************************
                 objEligibilityNew.ServiceType = "30";
 
                 var result = "";
@@ -1322,8 +1321,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                             response.PlanName = objeligibilityModel.PayerDetails.Payer_Name;
                             response.PlanType = objeligibilityModel.PayerDetails.Payer_ID;
                         }
-                        
-                        //DateTime date = DateTime.ParseExact(String.Format("{0}/{1}/{2}",m.Groups["month"].Value,m.Groups["day"].Value,m.Groups["year"].Value), "MM/dd/yyyy", null);
                         if (objeligibilityModel.EligibilityBenefit != null)
                         {
                             var eligibilityBenifits = objeligibilityModel.EligibilityBenefit.FindAll(x => !string.IsNullOrEmpty(x.ServiceType)
@@ -1367,7 +1364,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                                                 {
                                                     if (info.NetworkType.ToString() == "In Network" || info.NetworkType.ToString() == "Out of Network")
                                                     {
-
                                                         EligibilityServiceDetails Eligdetails = new EligibilityServiceDetails();
                                                         Eligdetails.ServiceType = elig.ServiceType;
                                                         Eligdetails.CoInsurance = info.CoInsurance == null ? "0" : RemoveHtmlTagsWithSpace(info.CoInsurance.ToString());
@@ -1398,16 +1394,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             string strippedString = Regex.Replace(input, pattern, replacement);
             return strippedString;
         }
-        private string RemoveStyleNodeFromHtmlForMVP(string htmlStr)
-        {
-            HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(htmlStr);
-            var eligiblitycont = doc.DocumentNode.SelectSingleNode("*//div[contains(@class,'container')]");
-            if (eligiblitycont != null)
-                htmlStr = eligiblitycont.OuterHtml;
-            return htmlStr;
-        }
-
         public bool CheckServiceAvailability(ServiceAvailability serviceAvailability)
         {
             try
