@@ -1169,28 +1169,21 @@ namespace FOX.BusinessOperations.RequestForOrder
         {
             try
             {
-                SqlParameter uniqueId = new SqlParameter { ParameterName = "@UNIQUE_ID", SqlDbType = SqlDbType.VarChar, Value = requestDeleteWorkOrder?.WorkId };
-                SqlParameter practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = AppConfiguration.GetPracticeCode };
-                OriginalQueue objOriginalQueue = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS @UNIQUE_ID, @PRACTICE_CODE", uniqueId, practiceCode);
-                SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = Profile.PracticeCode };
-                SqlParameter workId = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = requestDeleteWorkOrder?.WorkId };
-                var deleteImportantNotes = SpRepository<FOX_TBL_NOTES>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_DELETE_ADMISSION_IMPORTANT_NOTES @PRACTICE_CODE, @WORK_ID", pracCode, workId);
-                if (objOriginalQueue != null)
+                if(requestDeleteWorkOrder.WorkId != 0)
                 {
-                    objOriginalQueue.DELETED = true;
-                    objOriginalQueue.MODIFIED_BY = Profile.UserName;
-                    objOriginalQueue.MODIFIED_DATE = DateTime.Now;
-
-                    _QueueRepository.Update(objOriginalQueue);
-                    _QueueRepository.Save();
+                    SqlParameter workId = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = requestDeleteWorkOrder?.WorkId };
+                    SqlParameter userName = new SqlParameter { ParameterName = "@USER_NAME", SqlDbType = SqlDbType.VarChar, Value = Profile?.UserName };
+                    SqlParameter practiceCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = AppConfiguration.GetPracticeCode };
+                    var objOriginalQueue = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_DELETE_WORK_QUEUE_DETAILS @WORK_ID, @PRACTICE_CODE, @USER_NAME", workId, practiceCode, userName);
                     return new ResponseModel() { Message = "Delete work order successfully.", ErrorMessage = "", Success = true };
                 }
                 else
-                    return new ResponseModel() { Message = "Work order not found.", ErrorMessage = "", Success = true };
+                {
+                    return new ResponseModel() { Message = "Delete work order successfully.", ErrorMessage = "", Success = true };
+                }
             }
             catch (Exception exception)
             {
-                //throw exception;
                 return new ResponseModel() { Message = "We encountered an error while processing your request.", ErrorMessage = exception.ToString(), Success = false };
             }
         }
