@@ -480,10 +480,54 @@ namespace FOX.BusinessOperations.RequestForOrder
                     && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_DB) && !string.IsNullOrWhiteSpace(config.ORIGINAL_FILES_PATH_SERVER)
                     && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_DB) && !string.IsNullOrWhiteSpace(config.IMAGES_PATH_SERVER))
                 {
+                    string signatureFirstNode = string.Empty;
+                    string dateFirstNode = string.Empty;
                     string orininalHtml = requestSendFAXModel.AttachmentHTML;
                     string faxHtmlBody = requestSendFAXModel.AttachmentHTML;
                     HtmlDocument doc = new HtmlDocument();
                     doc.LoadHtml(faxHtmlBody);
+                    HtmlNode signatureLineFirstNode = doc.GetElementbyId("SignatureLineFirstNode");
+                    HtmlNode signatureSecNode = doc.GetElementbyId("SignatureSecNode");
+                    HtmlNode signatureThirdNode = doc.GetElementbyId("SignatureThirdNode");
+                    HtmlNode signatureForthNode = doc.GetElementbyId("SignatureForthNode");
+                    HtmlNode dateLineFirstNode = doc.GetElementbyId("DateLineFirstNode");
+                    HtmlNode dateSecNode = doc.GetElementbyId("DateSecNode");
+                    HtmlNode dateFifthNode = doc.GetElementbyId("DateFifthNode");
+                    HtmlNode dateSixthNode = doc.GetElementbyId("DateSixthNode");
+                    string replaceString = "<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
+                    if (signatureLineFirstNode != null)
+                    {
+                        signatureFirstNode = signatureLineFirstNode.OuterHtml;
+                    }
+                    if (dateLineFirstNode != null)
+                    {
+                        dateFirstNode = dateLineFirstNode.OuterHtml;
+                    }
+                    if (signatureSecNode != null)
+                    {
+                        faxHtmlBody = faxHtmlBody.Replace(signatureFirstNode, replaceString);
+                    }
+                    if (signatureThirdNode != null)
+                    {
+                        faxHtmlBody = faxHtmlBody.Replace(signatureFirstNode, replaceString);
+                    }
+                    if (signatureForthNode != null)
+                    {
+                        faxHtmlBody = faxHtmlBody.Replace(signatureFirstNode, replaceString);
+                    }
+                    //Date 
+                    if (dateSecNode != null)
+                    {
+                        faxHtmlBody = faxHtmlBody.Replace(dateFirstNode, replaceString);
+                    }
+                    if (dateFifthNode != null)
+                    {
+                        faxHtmlBody = faxHtmlBody.Replace(dateFirstNode, replaceString);
+                    }
+                    if (dateSixthNode != null)
+                    {
+                        faxHtmlBody = faxHtmlBody.Replace(dateFirstNode, replaceString);
+                    }
                     //Replace Bottom Border
                     HtmlNode bottomBorderLineNode = doc.GetElementbyId("stringTopBorderLine");
                     string bottomBorder = bottomBorderLineNode.OuterHtml;
@@ -571,8 +615,7 @@ namespace FOX.BusinessOperations.RequestForOrder
         private ResponseHTMLToPDF HTMLToPDFDeliverySautinsoft(ServiceConfiguration conf, string htmlString, string fileName, string linkMessage = null)
         {
             PdfMetamorphosis p = new PdfMetamorphosis();
-            //p.Serial = "10262870570";//server
-            p.Serial = "10261942764";//development
+            p.Serial = "10262870570";//server
             p.PageSettings.Size.A4();
             p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
             p.PageSettings.MarginLeft.Inch(0.1f);
@@ -605,8 +648,7 @@ namespace FOX.BusinessOperations.RequestForOrder
         private ResponseHTMLToPDF HTMLToPDFSautinsoftInFax(ServiceConfiguration conf, string htmlString, string fileName, string type, string linkMessage = null)
         {
             PdfMetamorphosis p = new PdfMetamorphosis();
-            //p.Serial = "10262870570";//server
-            p.Serial = "10261942764";//development
+            p.Serial = "10262870570";//server
             p.PageSettings.Size.A4();
             p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
             p.PageSettings.MarginLeft.Inch(0.1f);

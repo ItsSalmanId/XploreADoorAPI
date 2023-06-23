@@ -518,6 +518,8 @@ namespace FOX.DataModels.Models.IndexInfo
         public bool? IS_OCR { get; set; }
         [NotMapped]
         public bool? IS_ACQUISITION { get; set; }
+        public string ACQUISITION_NAME { get; set; }
+        public string ACQUISITION_ALERT { get; set; }
     }
 
     public class Index_infoReq : BaseModel
@@ -573,6 +575,8 @@ namespace FOX.DataModels.Models.IndexInfo
         public long? PRACTICE_ORGANIZATION_ID { get; set; }
         public double TOTAL_RECORD_PAGES { get; set; }
         public int? TOTAL_RECORDS { get; set; }
+        public string ACQUISITION_NAME { get; set; }
+        public string ACQUISITION_ALERT { get; set; }
     }
     public class Documents
     {
@@ -1005,6 +1009,7 @@ namespace FOX.DataModels.Models.IndexInfo
         public decimal? Statement_Patient_Balance { get; set; }
         public DateTime PROCESS_DATE { get; set; }
         public int NoOfDays { get; set; }
+        public int CALCULATED_DIFF { get; set; }
     }
 
     public class PreviousEmailInfo
