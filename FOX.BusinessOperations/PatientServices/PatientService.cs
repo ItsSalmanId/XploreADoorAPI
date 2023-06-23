@@ -578,13 +578,13 @@ namespace FOX.BusinessOperations.PatientServices
                     }
                 }
 
-                SaveRestOfPatientDetails(patient, profile.UserName);
+                SaveRestOfPatientDetails(patient, profile.UserName, profile.isTalkRehab);
             }
 
             return patient;
         }
 
-        private void SaveRestOfPatientDetails(Patient patient, string username)
+        public void SaveRestOfPatientDetails(Patient patient, string username, bool isTalkRehab = false)
         {
             var restOfPatientData = new FOX_TBL_PATIENT();
             var data = _FoxTblPatientRepository.GetFirst(e => e.Patient_Account == patient.Patient_Account);
@@ -612,7 +612,7 @@ namespace FOX.BusinessOperations.PatientServices
             restOfPatientData.PCP = patient.PCP;
             if (restOfPatientData.PCP != null && restOfPatientData.PCP != 0)
             {
-                UpdatePrimaryPhysicianInCases(restOfPatientData.PCP, patient.Patient_Account, patient.Practice_Code);
+                UpdatePrimaryPhysicianInCases(restOfPatientData.PCP, patient.Patient_Account, patient.Practice_Code, isTalkRehab);
             }
             restOfPatientData.Employment_Status = patient.Employment_Status;
             restOfPatientData.Patient_Status = patient.Patient_Status;
@@ -3231,9 +3231,9 @@ namespace FOX.BusinessOperations.PatientServices
         public PatientContact GetPatientContactDetails(long contactid)
         {
             PatientContact contact = new PatientContact();
-            contact = _PatientContactRepository.GetSingle(e => e.Contact_ID == contactid);
+            contact = _PatientContactRepository.GetFirst(e => e.Contact_ID == contactid);
 
-            if (contact.Country != null)
+            if (contact != null && contact.Country != null)
             {
                 var countryres = _CountryRepository.GetFirst(c => c.FOX_TBL_COUNTRY_ID.ToString() == contact.Country && !c.DELETED && (c.IS_ACTIVE ?? false));
                 if (countryres != null)
@@ -10351,12 +10351,20 @@ namespace FOX.BusinessOperations.PatientServices
             return resp;
         }
 
-        public void UpdatePrimaryPhysicianInCases(long? PCP_ID, long Patient_Account, long practiceCode)
+        public void UpdatePrimaryPhysicianInCases(long? PCP_ID, long Patient_Account, long practiceCode, bool isTalkRehab = false)
         {
             var caseStatusList = _caseStatusRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
-            caseStatusList = caseStatusList.FindAll(e => e.NAME.ToLower() == "act" || e.NAME.ToLower() == "open");
+            var CASE_STATUS_ID_OPEN = new long();
+            if (isTalkRehab == true) {
+                caseStatusList = caseStatusList.FindAll(e => e.NAME.ToLower() == "act" || e.NAME.ToLower() == "pending");
+                CASE_STATUS_ID_OPEN = caseStatusList.Find(e => e.NAME.ToLower() == "pending").CASE_STATUS_ID;
+            }
+            else
+            {
+                caseStatusList = caseStatusList.FindAll(e => e.NAME.ToLower() == "act" || e.NAME.ToLower() == "open");
+                CASE_STATUS_ID_OPEN = caseStatusList.Find(e => e.NAME.ToLower() == "open").CASE_STATUS_ID;
+            }
             var CASE_STATUS_ID_ACTIVE = caseStatusList.Find(e => e.NAME.ToLower() == "act").CASE_STATUS_ID;
-            var CASE_STATUS_ID_OPEN = caseStatusList.Find(e => e.NAME.ToLower() == "open").CASE_STATUS_ID;
             var casesList = _caseRepository.GetMany(e => (e.PATIENT_ACCOUNT == Patient_Account));
             casesList = casesList.FindAll(e => e.CASE_STATUS_ID == CASE_STATUS_ID_ACTIVE || e.CASE_STATUS_ID == CASE_STATUS_ID_OPEN);
             if (casesList != null)

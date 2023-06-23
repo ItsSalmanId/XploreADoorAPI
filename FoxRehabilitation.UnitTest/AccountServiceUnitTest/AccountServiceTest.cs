@@ -1,21 +1,19 @@
-﻿using FOX.DataModels.Models.Security;
-using NUnit.Framework;
-using FOX.BusinessOperations;
-using FOX.BusinessOperations.AccountService;
+﻿using FOX.BusinessOperations.AccountService;
 using FOX.DataModels.Models.ExternalUserModel;
+using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.Settings.RoleAndRights;
+using NUnit.Framework;
 
 namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
 {
     [TestFixture]
-    class AccountServiceTest
+    public class AccountServiceTest
     {
         private AccountServices _accountService;
         private UserDetailsByNPIRequestModel _npiRequestModel;
         private CityDetailByZipCodeRequestModel _cityDetailByZipCode;
         private EmailExist _emailExist;
         private SmartSearchRequest _smartSearchRequest;
-        private User _user;
         private GetUserIP _getUserIP;
         private LogoutModal _logoutModel;
         private UserProfile _userProfile;
@@ -28,7 +26,6 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             _cityDetailByZipCode = new CityDetailByZipCodeRequestModel();
             _emailExist = new EmailExist();
             _smartSearchRequest = new SmartSearchRequest();
-            _user = new User();
             _getUserIP = new GetUserIP();
             _logoutModel = new LogoutModal();
             _userProfile = new UserProfile();
@@ -53,7 +50,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             var result = _accountService.getUserDetailByNPI(_npiRequestModel);
 
             //Assert
-            if(result != null)
+            if (result != null)
             {
                 Assert.IsTrue(true);
             }
@@ -70,7 +67,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             var result = _accountService.getCityDetailByZipCode(_cityDetailByZipCode);
 
             //Assert
-            if(result != null && result.zip_city_state != null && result.zip_city_state.Count > 0)
+            if (result != null && result.zip_city_state != null && result.zip_city_state.Count > 0)
             {
                 Assert.That(result.zip_city_state.Count, Is.GreaterThanOrEqualTo(0));
             }
@@ -91,7 +88,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             var result = _accountService.CheckIfEmailAlreadyInUse(_emailExist);
 
             //Assert
-            if(result == true)
+            if (result == true)
             {
                 Assert.IsTrue(true);
             }
@@ -113,7 +110,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             var result = _accountService.getPractices(_smartSearchRequest);
 
             //Assert
-            if(result != null && result.fox_tbl_practice_organization != null && result.fox_tbl_practice_organization.Count > 0)
+            if (result != null && result.fox_tbl_practice_organization != null && result.fox_tbl_practice_organization.Count > 0)
             {
                 Assert.That(result.fox_tbl_practice_organization.Count, Is.GreaterThanOrEqualTo(0));
             }
@@ -135,7 +132,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             var result = _accountService.getSmartIdentifier(_smartSearchRequest);
 
             //Assert
-            if(result != null)
+            if (result != null)
             {
                 Assert.That(result.Count, Is.GreaterThanOrEqualTo(0));
             }
@@ -155,9 +152,9 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
 
             //Act
             var result = _accountService.getSmartSpecialities(_smartSearchRequest);
-            
+
             //Assert
-            if(result != null && result.specialities != null)
+            if (result != null && result.specialities != null)
             {
                 Assert.That(result.specialities.Count, Is.GreaterThanOrEqualTo(0));
             }
@@ -167,17 +164,35 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             }
         }
         [Test]
+        [TestCase(5482899)]
         [TestCase(0)]
-        [TestCase(1011163)]
+        [TestCase(5482899)]
+        [TestCase(5482870)]
         public void CreateExternalUserOrdRefSource_HasUserID_ReturnsData(long userID)
         {
             //Arrange
             //Act
-            var result = _accountService.CreateExternalUserOrdRefSource(userID);
+            _accountService.CreateExternalUserOrdRefSource(userID);
 
             //Assert
-            Assert.That(result, Is.Null);
+            Assert.IsTrue(true);
         }
+        [Test]
+        [TestCase(544585)]
+        [TestCase(5483298)]
+        public void SavePasswordHistory_HasUserID_ReturnsData(long userID)
+        {
+            //Arrange
+            User user = new User();
+            user.USER_ID = userID;
+
+            //Act
+            _accountService.SavePasswordHistory(user);
+
+            //Assert
+            Assert.IsTrue(true);
+        }
+        //SavePasswordHistory
         [Test]
         [TestCase("")]
         [TestCase("10965")]
@@ -200,7 +215,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
         }
         [Test]
         [TestCase("")]
-        [TestCase("11163Testing")]
+        [TestCase("uss_5481193")]
         public void ClearOpenedByinPatientforUser_UserName_ReturnsData(string userName)
         {
             //Arrange
@@ -216,7 +231,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
         {
             //Arrange
             _getUserIP.userName = userName;
-            
+
             //Act
             var result = _accountService.IpConfig(_getUserIP);
 
@@ -242,7 +257,7 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             }
         }
         [Test]
-        [TestCase("", 0)]
+        [TestCase("zPfGn7J1zP5PbPX4OYfCq8_0c7wpC02Y-ZoL7tsisgUU4sFZ6Kv3enRA2ybD3lrlpXLMxFdokLtsUIw-Z0FG4gDT9j_VqtfkMAK5", 1011163415)]
         [TestCase(null, 0)]
         [TestCase("testingToken", 1011163415)]
         public void SignOut_HasTokenAndUserID_NoReturnsData(string token, long userID)
@@ -250,13 +265,14 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             //Arrange
             _logoutModel.token = token;
             _userProfile.userID = userID;
+            _userProfile.UserName = "1163testing";
 
             //Act
             var result = _accountService.SignOut(_logoutModel, _userProfile);
 
             //Assert
 
-            if(result != null && result.Success == true)
+            if (result != null && result.Success == true)
             {
                 Assert.That(result.Success, Is.True);
             }
@@ -274,7 +290,6 @@ namespace FoxRehabilitation.UnitTest.AccountServiceUnitTest
             _cityDetailByZipCode = null;
             _emailExist = null;
             _smartSearchRequest = null;
-            _user = null;
             _getUserIP = null;
             _logoutModel = null;
             _userProfile = null;

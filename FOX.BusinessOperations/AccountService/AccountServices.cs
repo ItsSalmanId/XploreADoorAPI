@@ -575,7 +575,7 @@ namespace FOX.BusinessOperations.AccountService
                     dbReferralSource.CREATED_DATE = Helper.GetCurrentDate();
                     dbReferralSource.MODIFIED_BY = "CareCloud Remote";
                     dbReferralSource.MODIFIED_DATE = Helper.GetCurrentDate();
-                    _fox_tbl_ordering_ref_source.Insert(dbReferralSource);
+                    _fox_tbl_ordering_ref_source.Update(dbReferralSource);
                     _fox_tbl_ordering_ref_source.Save();
 
                     return dbReferralSource;

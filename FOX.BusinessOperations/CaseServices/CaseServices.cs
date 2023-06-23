@@ -121,7 +121,7 @@ namespace FOX.BusinessOperations.CaseServices
 
         }
 
-        public ResponseAddEditCase AddEditCase(string locationName, string certifyState, FOX_TBL_CASE model, UserProfile profile) //Get Case data
+        public ResponseAddEditCase AddEditCase(string historyTime, string locationName, string certifyState, FOX_TBL_CASE model, UserProfile profile) //Get Case data
         {
             InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
             ResponseAddEditCase responseAddEditCase = new ResponseAddEditCase();
@@ -372,7 +372,7 @@ namespace FOX.BusinessOperations.CaseServices
 
                     if (profile.isTalkRehab)
                     {
-                        InsertDataAdditionalInfo(locationName, certifyState, caseObj, provider_code, reffral_code,IsEditCase, profile, IsSameStatus, OldCaseStatus, model);
+                        InsertDataAdditionalInfo(locationName, certifyState, caseObj, provider_code, reffral_code,IsEditCase, profile, IsSameStatus, OldCaseStatus, model, historyTime);
                     }
 
                     //Create tasks
@@ -406,7 +406,7 @@ namespace FOX.BusinessOperations.CaseServices
             return responseAddEditCase;
         }
 
-        public void InsertDataAdditionalInfo(string locationName, string certifyState, FOX_TBL_CASE model, long? provider_code, long? reffral_code, bool isEditcase, UserProfile profile, bool IsSameStatus, string OldCaseStatus, FOX_TBL_CASE updateModel)
+        public void InsertDataAdditionalInfo(string locationName, string certifyState, FOX_TBL_CASE model, long? provider_code, long? reffral_code, bool isEditcase, UserProfile profile, bool IsSameStatus, string OldCaseStatus, FOX_TBL_CASE updateModel, string historyTime)
         {
             try
             {
@@ -474,7 +474,7 @@ namespace FOX.BusinessOperations.CaseServices
                 var case_id_Param = new SqlParameter("@Case_Id", SqlDbType.BigInt) { Value = model.CASE_ID };
                 var case_no_Param = new SqlParameter("@Case_No", SqlDbType.VarChar) { Value = model.CASE_NO };
                 var username_Param = new SqlParameter("@UserName", SqlDbType.VarChar) { Value = profile.UserName };
-                var History_Time_Param = new SqlParameter("@History_Time", SqlDbType.VarChar) { Value = DateTime.Now };
+                var History_Time_Param = new SqlParameter("@History_Time", SqlDbType.VarChar) { Value = historyTime };
                 var details_Param = new SqlParameter("@Details", SqlDbType.VarChar) { Value = reasonHistory };
                 var reason_Param = new SqlParameter("@CaseReason", SqlDbType.VarChar) { Value = changeReason == null? " " : changeReason };
                 var practice_code_Param = new SqlParameter("@Practice_Code", SqlDbType.BigInt) { Value = profile.PracticeCode };
@@ -907,7 +907,7 @@ namespace FOX.BusinessOperations.CaseServices
             //addEditNotesViewModel.NotesType = "Case Order Information Comments";
             //Case Order Information Comments
             var notesType_OrderInfoComments = _NotesTypeRepository.GetFirst(t => !t.DELETED && t.PRACTICE_CODE == profile.PracticeCode && t.NAME.Contains(addEditNotesViewModel.NotesType));
-            var notes = _NotesRepository.GetFirst(t => t.CASE_ID == addEditNotesViewModel.CASE_ID && t.NOTES_TYPE_ID == notesType_OrderInfoComments.NOTES_TYPE_ID);
+            var notes = notesType_OrderInfoComments != null ? _NotesRepository.GetFirst(t => t.CASE_ID == addEditNotesViewModel.CASE_ID && t.NOTES_TYPE_ID == notesType_OrderInfoComments.NOTES_TYPE_ID) : null;
             bool IsEditNotes = false;
 
             if (notes == null)
@@ -2067,7 +2067,6 @@ namespace FOX.BusinessOperations.CaseServices
                 throw ex;
             }
         }
-
         public ResponseAddEditCase DeleteTask(OpenIssueListToDelete model, UserProfile profile) //Delete subtypes and task
         {
             ResponseAddEditCase responseAddEditCase = new ResponseAddEditCase();
@@ -2226,9 +2225,9 @@ namespace FOX.BusinessOperations.CaseServices
             var _caseAndOpenIssues = new CaseAndOpenIssues();
             var _openIssueRequest = new GetOpenIssueListReq();
             _caseAndOpenIssues.CaseDetail = _vwCaseRepository.GetByID(caseId);
-            _openIssueRequest.CASE_ID = _caseAndOpenIssues.CaseDetail.CASE_ID;
-            _openIssueRequest.CASE_STATUS_ID = _caseAndOpenIssues.CaseDetail.CASE_STATUS_ID.Value;
-            _openIssueRequest.PATIENT_ACCOUNT_STR = _caseAndOpenIssues.CaseDetail.PATIENT_ACCOUNT.ToString();
+            _openIssueRequest.CASE_ID = _caseAndOpenIssues.CaseDetail?.CASE_ID == null ? 0 : _caseAndOpenIssues.CaseDetail.CASE_ID;
+            _openIssueRequest.CASE_STATUS_ID = _caseAndOpenIssues.CaseDetail?.CASE_STATUS_ID.Value == null ? 0 : _caseAndOpenIssues.CaseDetail.CASE_STATUS_ID.Value;
+            _openIssueRequest.PATIENT_ACCOUNT_STR = _caseAndOpenIssues.CaseDetail?.PATIENT_ACCOUNT.ToString() == null ? "" : _caseAndOpenIssues.CaseDetail.PATIENT_ACCOUNT.ToString();
             _caseAndOpenIssues.OpenIssues = GetOpenIssueList(_openIssueRequest, profile);
             return _caseAndOpenIssues;
         }
@@ -2240,7 +2239,7 @@ namespace FOX.BusinessOperations.CaseServices
             {
                 dbPatientFOX = new FOX_TBL_PATIENT();
                 dbPatientFOX.FOX_TBL_PATIENT_ID = Helper.getMaximumId("FOX_TBL_PATIENT");
-                dbPatientFOX.Patient_Account = dbPatient.Patient_Account;
+                dbPatientFOX.Patient_Account = dbPatient?.Patient_Account == null ? 0 : dbPatient.Patient_Account;
                 dbPatientFOX.Created_By = username;
                 dbPatientFOX.Created_Date = Helper.GetCurrentDate();
                 dbPatientFOX.DELETED = false;
@@ -2262,7 +2261,7 @@ namespace FOX.BusinessOperations.CaseServices
                     _FoxTblPatientRepository.Update(dbPatientFOX);
                 }
             }
-            if (dbPatient.PCP != null && dbPatient.PCP != 0)
+            if (dbPatient != null && dbPatient.PCP != null && dbPatient.PCP != 0)
             {
                 var pcp = _OrderingRefSourceRepository.GetByID(dbPatient.PCP);
                 if (pcp != null)
@@ -2310,28 +2309,28 @@ namespace FOX.BusinessOperations.CaseServices
             {
                 case "OT":
                     var facility = _FacilityLocationRepository.GetFirst(e => e.LOC_ID == obj.POS_ID);
-                    if (facility.OT != null)
+                    if (facility != null && facility.OT != null)
                     {
                         PROVIDER_CODE = facility.OT;
                     }
                     break;
                 case "PT":
                     facility = _FacilityLocationRepository.GetFirst(e => e.LOC_ID == obj.POS_ID);
-                    if (facility.PT != null)
+                    if (facility != null && facility.PT != null)
                     {
                         PROVIDER_CODE = facility.PT;
                     }
                     break;
                 case "ST":
                     facility = _FacilityLocationRepository.GetFirst(e => e.LOC_ID == obj.POS_ID);
-                    if (facility.ST != null)
+                    if (facility != null && facility.ST != null)
                     {
                         PROVIDER_CODE = facility.ST;
                     }
                     break;
                 case "EP":
                     facility = _FacilityLocationRepository.GetFirst(e => e.LOC_ID == obj.POS_ID);
-                    if (facility.EP != null)
+                    if (facility != null && facility.EP != null)
                     {
                         PROVIDER_CODE = facility.EP;
                     }
