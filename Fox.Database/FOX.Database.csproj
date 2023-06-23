@@ -429,6 +429,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_USER_SUPERVISOR.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_WORKQUEUE_BY_ID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_WORK_QUEUE_DETAILS.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_WORK_QUEUE_DETAILS_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_WORK_QUEUE_FILE_ALL_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET__AUTH_STATUS_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET__TASK_TYPE_LIST.sql" />
