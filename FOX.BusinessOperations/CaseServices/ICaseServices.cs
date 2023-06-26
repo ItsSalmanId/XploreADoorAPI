@@ -13,7 +13,7 @@ namespace FOX.BusinessOperations.CaseServices
     public interface ICaseServices
     {
         //ResponseGetCasesModel GetCasesData(UserProfile obj);
-        ResponseAddEditCase AddEditCase(string locationName, string certifyState, FOX_TBL_CASE caseObj, UserProfile profile); //Get Case data
+        ResponseAddEditCase AddEditCase(string locationName, string certifyState, string historyTime, FOX_TBL_CASE caseObj, UserProfile profile); //Get Case data
         //ResponseGetCasesDDL GetCasesDDL(UserProfile profile); //Get Cases drop down lists
         ResponseGetCasesDDL GetCasesDDL(string patient_Account, long practiceCode); //Get Cases drop down lists
         ResponseGetCasesDDL GetCasesDDLTalRehab(string patient_Account, long practiceCode);  //Get Cases drop down lists for TalkRehab Without Practice

@@ -7097,6 +7097,10 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["ASSIGNED_TO"].ColumnName = "Assigned Person Name";
                 }
+                if (dtcol.Contains("ORDERING_REFERRAL_SOURCE"))
+                {
+                    dtcol["ORDERING_REFERRAL_SOURCE"].ColumnName = "Ordering Referral Source";
+                }
                 if (dtcol.Contains("WORK_STATUS"))
                 {
                     dtcol["WORK_STATUS"].ColumnName = "Status";

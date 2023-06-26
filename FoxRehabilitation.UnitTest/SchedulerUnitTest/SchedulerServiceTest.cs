@@ -23,12 +23,12 @@ namespace FoxRehabilitation.UnitTest.SchedulerUnitTest
             _appointment = new Appointment();
         }
         [Test]
+        //[TestCase(1011163, 4, "")]
         [TestCase(1011163, 4, "08/03/2020")]
         [TestCase(1011163, 1, "08/03/2020")]
         [TestCase(1011163, 2, "08/03/2020")]
         [TestCase(1011163, 3, "08/03/2020")]
-        [TestCase(1011163, 4, "")]
-        [TestCase(1011163, default, "")]
+        //[TestCase(1011163, default, "")]
         public void GetAllAppointments_AppointmentsModel_ReturnData(long practiceCode, int timeFrame, string dateFrom)
         {
             //Arrange

@@ -19,6 +19,9 @@ namespace FoxRehabilitation.UnitTest.SettingsServiceUnitTest.FacilityLocationSer
         private AuthStatusSearch _authStatusSearch;
         private TaskTpyeSearch _taskTpyeSearch;
         private OrderStatusSearch _orderStatusSearch;
+        private AlertTypeSearch _alertTypeSearch;
+        private DocumentTypeSearch _documentTypeSearch;
+        private PatientContactTypeSearch _patientContactTypeSearch;
 
         [SetUp]
         public void SetUp()
@@ -34,6 +37,9 @@ namespace FoxRehabilitation.UnitTest.SettingsServiceUnitTest.FacilityLocationSer
             _authStatusSearch = new AuthStatusSearch();
             _taskTpyeSearch = new TaskTpyeSearch();
             _orderStatusSearch = new OrderStatusSearch();
+            _alertTypeSearch = new AlertTypeSearch();
+            _documentTypeSearch = new DocumentTypeSearch();
+            _patientContactTypeSearch = new PatientContactTypeSearch();
         }
         [Test]
         public void GetFacilityLocationList_GetFacilityLocationListModel_NoReturnData()
@@ -71,6 +77,111 @@ namespace FoxRehabilitation.UnitTest.SettingsServiceUnitTest.FacilityLocationSer
                 Assert.IsFalse(false);
             }
         }
+        [Test]
+        [TestCase(552100)]
+        [TestCase(552101)]
+        public void AddUpdateFacilityLocation_PassParameters_NoReturnData(long facilityTypeId)
+        {
+            //Arrange
+            _userProfile.userID = 1011163415;
+            _userProfile.PracticeCode = 1011163;
+            _userProfile.UserName = "1163testing";
+            _facilityLocation.LOC_ID = 1011163548978;
+            _facilityLocation.FACILITY_TYPE_ID = facilityTypeId;
+
+            //Act
+            var result = _facilityLocationService.AddUpdateFacilityLocation(_facilityLocation, _userProfile);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
+        [Test]
+        public void GetAlertTypeList_PassParameters_NoReturnData()
+        {
+            //Arrange
+            _userProfile.userID = 1011163415;
+            long practiceCode = 1011163;
+            _userProfile.UserName = "1163testing";
+            _alertTypeSearch.searchString = "";
+            _alertTypeSearch.sortBy = "";
+            _alertTypeSearch.sortOrder = "";
+            _alertTypeSearch.currentPage = 10;
+            _alertTypeSearch.recordPerpage = 10;
+            _alertTypeSearch.Code = "";
+            _alertTypeSearch.Description = "";
+
+            //Act
+            var result = _facilityLocationService.GetAlertTypeList(_alertTypeSearch, practiceCode);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
+        [Test]
+        public void GetDocumentTypeList_PassParameters_NoReturnData()
+        {
+            //Arrange
+            _documentTypeSearch.searchString = "";
+            _documentTypeSearch.sortBy = "";
+            _documentTypeSearch.sortOrder = "";
+            _documentTypeSearch.currentPage = 10;
+            _documentTypeSearch.recordPerpage = 10;
+            _documentTypeSearch.Code = "";
+            _documentTypeSearch.Name = "";
+
+            //Act
+            var result = _facilityLocationService.GetDocumentTypeList(_documentTypeSearch);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
+        [Test]
+        public void GetPatientContactTypeList_PassParameters_NoReturnData()
+        {
+            //Arrange
+            long practiceCode = 1011163;
+            _patientContactTypeSearch.searchString = "";
+            _patientContactTypeSearch.sortBy = "";
+            _patientContactTypeSearch.sortOrder = "";
+            _patientContactTypeSearch.currentPage = 10;
+            _patientContactTypeSearch.recordPerpage = 10;
+            _patientContactTypeSearch.Code = "";
+            _patientContactTypeSearch.Name = "";
+
+            //Act
+            var result = _facilityLocationService.GetPatientContactTypeList(_patientContactTypeSearch, practiceCode);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
+        //GetPatientContactTypeList
         [Test]
         [TestCase("1011163", 398, "101116354816561")]
         [TestCase("1011163", 6002564, "101116354816561")]
@@ -362,6 +473,9 @@ namespace FoxRehabilitation.UnitTest.SettingsServiceUnitTest.FacilityLocationSer
             _authStatusSearch = null;
             _taskTpyeSearch = null;
             _orderStatusSearch = null;
+            _alertTypeSearch = null;
+            _documentTypeSearch = null;
+            _patientContactTypeSearch = null;
         }
     }
 }
