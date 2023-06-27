@@ -50,11 +50,10 @@ namespace FOX.BusinessOperations.IndexInfoServices.UploadWorkOrderFiles
             long workId = reqSaveUploadWorkOrderFiles.WORK_ID;
 
             string zipFilePath = "";
-
             SqlParameter refWorkId = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = workId };
-            var originalQueueFilesList = SpRepository<OriginalQueueFiles>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_FILE_ALL_LIST @WORK_ID", refWorkId);
+            var originalQueueFilesCount = Convert.ToInt32(SpRepository<string>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_FILE_ALL_LIST @WORK_ID", refWorkId));
 
-            zipFilePath = _IUploadOrderImagesService.GenerateAndSaveImagesOfUploadedFilesZip(workId, reqSaveUploadWorkOrderFiles.FileNameList, Profile, originalQueueFilesList.Count);
+            zipFilePath = _IUploadOrderImagesService.GenerateAndSaveImagesOfUploadedFilesZip(workId, reqSaveUploadWorkOrderFiles.FileNameList, Profile, originalQueueFilesCount);
             result.WORK_ID = workId;
             result.zipFilePath = zipFilePath;
             result.FilePaths = SpRepository<FilePath>.GetListWithStoreProcedure(@"exec FOX_GET_File_PAGES  @WORK_ID", new SqlParameter("WORK_ID ", SqlDbType.BigInt) { Value = workId });
