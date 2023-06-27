@@ -258,7 +258,12 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                 }
 
                 List<string> filePathsZip = new List<string>();
-                var originalQueueFilesList = _OriginalQueueFiles.GetMany(x => x.WORK_ID == workId && x.deleted == false);
+                //var originalQueueFilesList = _OriginalQueueFiles.GetMany(x => x.WORK_ID == workId && x.deleted == false);
+                //SqlParameter refWorkId = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = workId };
+                //var originalQueueFilesList = SpRepository<OriginalQueueFiles>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_FILE_ALL_LIST @WORK_ID", refWorkId);
+
+                //SqlParameter refWorkIdd = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = workId };
+                //var originalQueueData = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_FILE_ALL_RECORD @WORK_ID", refWorkIdd);
                 foreach (var item in FileNameList)
                 {
                     filePathsZip.Add(HttpContext.Current.Server.MapPath("~/" + AppConfiguration.RequestForOrderUploadImages + @"\" + item));
@@ -336,8 +341,8 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
                     }
                 }
                 List<string> filePathsZip = new List<string>();
-                var originalQueueFilesList = _OriginalQueueFiles.GetMany(x => x.WORK_ID == workId && x.deleted == false);
-                var originalQueueData = _QueueRepository.GetFirst(x => x.WORK_ID == workId && x.DELETED == false);
+                SqlParameter refWorkIdd = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = workId };
+                var originalQueueData = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_FILE_ALL_RECORD @WORK_ID", refWorkIdd);
                 foreach (var item in FileNameList)
                 {
                     filePathsZip.Add(HttpContext.Current.Server.MapPath("~/" + AppConfiguration.RequestForOrderUploadImages + @"\" + item));
