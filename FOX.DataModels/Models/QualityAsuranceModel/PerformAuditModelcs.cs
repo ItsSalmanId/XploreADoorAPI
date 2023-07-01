@@ -168,6 +168,7 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public int PHD_CALL_SCENARIO_ID { get; set; }
         public bool IS_READ_ONLY_MODE { get; set; }
         public int PAGE_NUMBER { get; set; }
+        public int PAGE_SIZE { get; set; }
 
     }
 
@@ -243,6 +244,7 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public string CALL_SCANARIO { get; set; }
         public string SCORING_CRITERIA { get; set; }
         public string SURVEY_FLAG { get; set; }
+        public long RowNum { get; set; }
 
     }
     public class TeamMemberNameModel : BaseModel
