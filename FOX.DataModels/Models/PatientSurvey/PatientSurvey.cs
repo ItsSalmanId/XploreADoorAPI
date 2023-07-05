@@ -146,6 +146,16 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string LAST_DIALED_TYPE { get; set; }
 
 
+        [NotMapped]
+        public long CountNo { get; set; }
+    }
+    public class tempfd
+    {
+        [NotMapped]
+        public string survey_status_child { get; set; }
+        [NotMapped]
+        public long CountNo { get; set; }
+
     }
     [Table("FOX_TBL_SURVEY_AUTOMATION_SERVICE_LOG")]
     public class SurveyServiceLog
