@@ -338,7 +338,11 @@ namespace FOX.BusinessOperations.AssignedQueueService
             var response = new ResponseModel();
             response.Success = false;
             //var dbData = _workOrderAddtionalInfoRepository.GetFirst(e => e.WORK_ID == work_id && !e.DELETED);
-            var dbData = _queueRepository.GetFirst(e => e.WORK_ID == work_id && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
+            //var practiceCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
+            var workId = new SqlParameter("UNIQUE_ID", SqlDbType.VarChar) { Value = work_id };
+            var practiceCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = profile.PracticeCode };
+            var dbData = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS  @UNIQUE_ID, @PRACTICE_CODE", workId, practiceCode);
+           //var dbData = _queueRepository.GetFirst(e => e.WORK_ID == work_id && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
             //if (dbData == null)
             //{
             //    addInfo.WORK_ORDER_ADDTIONAL_INFO_ID = Helper.getMaximumId("FOX_WORK_ORDER_ADDTIONAL_INFO_ID");

@@ -722,16 +722,8 @@ namespace FOX.BusinessOperations.AccountService
 
         public void ClearOpenedByinPatientforUser(string UserName)
         {
-            var patient = _FoxTblPatientRepository.GetMany(t => t.Is_Opened_By == UserName && t.DELETED == false);
-            if (patient != null && patient.Count > 0)
-            {
-                foreach (var item in patient)
-                {
-                    item.Is_Opened_By = null;
-                    _FoxTblPatientRepository.Update(item);
-                    _FoxTblPatientRepository.Save();
-                }
-            }
+            var userName = new SqlParameter("USER_NAME", SqlDbType.VarChar) { Value = UserName };
+            SpRepository<FOX_TBL_PATIENT>.GetListWithStoreProcedure(@"exec FOX_PRO_CLEAR_OPENED_BY_IN_PATIENT_FOR_USER @USER_NAME", userName);
         }
 
         /// <summary>Match current machine IP with USA IP </summary>

@@ -758,16 +758,11 @@ namespace FOX.BusinessOperations.CommonService
         {
             if (!string.IsNullOrEmpty(userName))
             {
-                var usr = _UserRepository.ExecuteCommandSingle("select * from [dbo].fox_tbl_application_user WITH (NOLOCK) where USER_NAME= '"+ userName + "'");//code by irfan ullah
+                //var usr = _UserRepository.ExecuteCommandSingle("select * from [dbo].fox_tbl_application_user WITH (NOLOCK) where USER_NAME= '"+ userName + "'");//code by irfan ullah
+                var usrname = new SqlParameter("USERNAME", SqlDbType.VarChar) { Value = userName };
+                var usr = SpRepository<User>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_TBL_GET_SINGLE_USER_RECORD @USERNAME", usrname);
                 //var usr = _UserRepository.GetSingle(e => e.USER_NAME.Equals(userName));
-                if (usr != null)
-                {
-                    return usr.FIRST_NAME + " " + usr.LAST_NAME;
-                }
-                else
-                {
-                    return "";
-                }
+                return usr.fullName;
             }
             else
             {
@@ -807,7 +802,10 @@ namespace FOX.BusinessOperations.CommonService
         {
             if (patAccount.HasValue)
             {
-                var patient = _PatientRepository.GetFirst(e => e.Patient_Account == patAccount);
+               // var patient = _PatientRepository.GetFirst(e => e.Patient_Account == patAccount);
+                var patientAccount = new SqlParameter("@PATIENT_ACCOUNT", SqlDbType.BigInt) { Value = patAccount };
+                var patient = SpRepository<Patient>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_SINGLE_PATIENT @PATIENT_ACCOUNT", patientAccount);
+
                 if (patient != null)
                 {
                     return patient.First_Name + " " + patient.Last_Name;
