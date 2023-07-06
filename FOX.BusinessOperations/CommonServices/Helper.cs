@@ -805,15 +805,7 @@ namespace FOX.BusinessOperations.CommonService
                // var patient = _PatientRepository.GetFirst(e => e.Patient_Account == patAccount);
                 var patientAccount = new SqlParameter("@PATIENT_ACCOUNT", SqlDbType.BigInt) { Value = patAccount };
                 var patient = SpRepository<Patient>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_SINGLE_PATIENT @PATIENT_ACCOUNT", patientAccount);
-
-                if (patient != null)
-                {
-                    return patient.First_Name + " " + patient.Last_Name;
-                }
-                else
-                {
-                    return "";
-                }
+                return patient.fullName;
             }
             else
                 return "";
