@@ -4327,8 +4327,8 @@ namespace FOX.BusinessOperations.IndexInfoServices
         public void ClearPatientOpenedBy(long patientAccount, UserProfile profile)
         {
             {
-                var patient_account = new SqlParameter("PATIENT_ACCOUNT", SqlDbType.VarChar) { Value = patientAccount };
-                SpRepository<FOX_TBL_PATIENT>.GetListWithStoreProcedure(@"exec FOX_PRO_CLEAR_PATIENT_OPENED_BY_PATIENT_ACCOUNT @PATIENT_ACCOUNT", patient_account);
+                var patientaccount = new SqlParameter("PATIENT_ACCOUNT", SqlDbType.VarChar) { Value = patientAccount };
+                SpRepository<FOX_TBL_PATIENT>.GetListWithStoreProcedure(@"exec FOX_PROC_CLEAR_PATIENT_OPENED_BY_PATIENT_ACCOUNT @PATIENT_ACCOUNT", patientaccount);
             }
 
 

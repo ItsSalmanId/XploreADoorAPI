@@ -722,8 +722,11 @@ namespace FOX.BusinessOperations.AccountService
 
         public void ClearOpenedByinPatientforUser(string UserName)
         {
-            var userName = new SqlParameter("USER_NAME", SqlDbType.VarChar) { Value = UserName };
-            SpRepository<FOX_TBL_PATIENT>.GetListWithStoreProcedure(@"exec FOX_PRO_CLEAR_OPENED_BY_IN_PATIENT_FOR_USER @USER_NAME", userName);
+            if (!string.IsNullOrEmpty(UserName))
+            {
+                var userName = new SqlParameter("USER_NAME", SqlDbType.VarChar) { Value = UserName };
+                SpRepository<FOX_TBL_PATIENT>.GetListWithStoreProcedure(@"exec FOX_PROC_CLEAR_OPENED_BY_IN_PATIENT_FOR_USER @USER_NAME", userName);
+            }
         }
 
         /// <summary>Match current machine IP with USA IP </summary>

@@ -241,7 +241,7 @@ namespace FOX.DataModels.Models.Patient
         [NotMapped]
         public string ACQUISITION_ALERT { get; set; }
         [NotMapped]
-        public string fullName { get; set; }
+        public string Full_Name { get; set; }
     }
 
     public class PatientExportToExcelModel

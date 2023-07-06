@@ -4166,17 +4166,17 @@ namespace FOX.BusinessOperations.PatientServices
         {
             bool updateIns = false;
             //var insurances = _PatientInsuranceRepository.GetManyQueryable(x => x.Patient_Account == patient_Account && (x.Deleted ?? false) == false && x.Pri_Sec_Oth_Type != "PR").ToList();
-            var patient_account = new SqlParameter("PATIENT_ACCOUNT", SqlDbType.BigInt) {Value = patient_Account };
-            var insurances = SpRepository<PatientInsurance>.GetListWithStoreProcedure(@"EXEC FOX_PRO_GET_PATIENT_INSURANCES_DETAILES_NOT_PR @PATIENT_ACCOUNT", patient_account);
+            var patientaccount = new SqlParameter("PATIENT_ACCOUNT", SqlDbType.BigInt) {Value = patient_Account };
+            var insurances = SpRepository<PatientInsurance>.GetListWithStoreProcedure(@"EXEC FOX_PROC_GET_PATIENT_INSURANCES_DETAILES_NOT_PR @PATIENT_ACCOUNT", patientaccount);
             foreach (var insurance in insurances)
             {
                 updateIns = false;
                 if (insurance.CHK_ABN.HasValue && insurance.CHK_ABN.Value && insurance.ABN_LIMIT_ID.HasValue)
                 {
-                    var mediCareLimitId = new SqlParameter("MDC_ID", SqlDbType.BigInt) { Value = insurance.ABN_LIMIT_ID };
-                    var abnLim = SpRepository<MedicareLimit>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PRO_GET_MEDICARE_DETAILES @MDC_ID", mediCareLimitId);
+                    var paramMediCareLimitId = new SqlParameter("MDC_ID", SqlDbType.BigInt) { Value = insurance.ABN_LIMIT_ID };
+                    var result = SpRepository<MedicareLimit>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_MEDICARE_DETAILES @MDC_ID", paramMediCareLimitId);
                     //var abnLim = _MedicareLimitRepository.GetFirst(e => e.MEDICARE_LIMIT_ID == insurance.ABN_LIMIT_ID.Value && !e.DELETED);
-                    if (abnLim != null && abnLim.END_DATE.HasValue && abnLim.END_DATE.Value.Date < DateTime.Now.Date)
+                    if (result != null && result.END_DATE.HasValue && result.END_DATE.Value.Date < DateTime.Now.Date)
                     {
                         insurance.CHK_ABN = false;
                         updateIns = true;
@@ -4186,9 +4186,9 @@ namespace FOX.BusinessOperations.PatientServices
                 if (insurance.CHK_HOSPICE.HasValue && insurance.CHK_HOSPICE.Value && insurance.HOSPICE_LIMIT_ID.HasValue)
                 {
                     //var hosLim = _MedicareLimitRepository.GetFirst(e => e.MEDICARE_LIMIT_ID == insurance.HOSPICE_LIMIT_ID.Value && !e.DELETED);
-                    var hosPicLimit = new SqlParameter("MDC_ID", SqlDbType.BigInt) { Value = insurance.HOSPICE_LIMIT_ID.Value };
-                    var hosLim = SpRepository<MedicareLimit>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PRO_GET_MEDICARE_DETAILES @MDC_ID", hosPicLimit);
-                    if (hosLim != null && hosLim.END_DATE.HasValue && hosLim.END_DATE.Value.Date < DateTime.Now.Date)
+                    var paramHospiceLimitId = new SqlParameter("MDC_ID", SqlDbType.BigInt) { Value = insurance.HOSPICE_LIMIT_ID.Value };
+                    var result = SpRepository<MedicareLimit>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_MEDICARE_DETAILES @MDC_ID", paramHospiceLimitId);
+                    if (result != null && result.END_DATE.HasValue && result.END_DATE.Value.Date < DateTime.Now.Date)
                     {
                         insurance.CHK_HOSPICE = false;
                         updateIns = true;
@@ -4198,9 +4198,9 @@ namespace FOX.BusinessOperations.PatientServices
                 if (insurance.CHK_HOME_HEALTH_EPISODE.HasValue && insurance.CHK_HOME_HEALTH_EPISODE.Value && insurance.HOME_HEALTH_LIMIT_ID.HasValue)
                 {
                     // var hheLim = _MedicareLimitRepository.GetFirst(e => e.MEDICARE_LIMIT_ID == insurance.HOME_HEALTH_LIMIT_ID.Value && !e.DELETED);
-                    var hheLimit = new SqlParameter("MDC_ID", SqlDbType.BigInt) { Value = insurance.HOME_HEALTH_LIMIT_ID.Value };
-                    var hheLim = SpRepository<MedicareLimit>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PRO_GET_MEDICARE_DETAILES @MDC_ID", hheLimit);
-                    if (hheLim != null && hheLim.END_DATE.HasValue && hheLim.END_DATE.Value.Date < DateTime.Now.Date)
+                    var paramHheLimitId = new SqlParameter("MDC_ID", SqlDbType.BigInt) { Value = insurance.HOME_HEALTH_LIMIT_ID.Value };
+                    var result = SpRepository<MedicareLimit>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_MEDICARE_DETAILES @MDC_ID", paramHheLimitId);
+                    if (result != null && result.END_DATE.HasValue && result.END_DATE.Value.Date < DateTime.Now.Date)
                     {
                         insurance.CHK_HOME_HEALTH_EPISODE = false;
                         updateIns = true;
