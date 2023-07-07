@@ -187,11 +187,11 @@ namespace FOX.BusinessOperations.QualityAssuranceService.QAReportService
         }
         public string getGrade(decimal? result)
         {
-            if (result >= GradingCriteria[0].OVERALL_MIN)
+            if (result != null && result >= GradingCriteria[0].OVERALL_MIN)
                 return "A";
-            if (result <= GradingCriteria[1].OVERALL_MAX && result >= GradingCriteria[1].OVERALL_MIN)
+            if (result != null && result <= GradingCriteria[1].OVERALL_MAX && result >= GradingCriteria[1].OVERALL_MIN)
                 return "B";
-            if (result <= GradingCriteria[2].OVERALL_MAX)
+            if (result != null && result <= GradingCriteria[2].OVERALL_MAX)
                 return "U";
 
             return "";
