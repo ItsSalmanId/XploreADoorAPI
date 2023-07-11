@@ -435,13 +435,13 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             }
             return "";
         }
-        private int getNumberOfPagesOfPDF(string PdfPath)
+        public int getNumberOfPagesOfPDF(string PdfPath)
         {
             iTextSharp.text.pdf.PdfReader pdfReader = new iTextSharp.text.pdf.PdfReader(PdfPath);
             return pdfReader.NumberOfPages;
         }
 
-        private void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, int pageCounter, out long pageCounterOut)
+        public void SavePdfToImages(string PdfPath, ServiceConfiguration config, long workId, int noOfPages, int pageCounter, out long pageCounterOut)
         {
             List<int> threadCounter = new List<int>();
             if (!Directory.Exists(config.IMAGES_PATH_SERVER))
@@ -552,7 +552,7 @@ namespace FOX.BusinessOperations.RequestForOrder.UploadOrderImages
             }
         }
 
-        private void AddToDatabase(string filePath, int noOfPages, string userName, long workId, long? practiceCode)
+        public void AddToDatabase(string filePath, int noOfPages, string userName, long workId, long? practiceCode)
         {
             try
             {

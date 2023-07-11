@@ -28,6 +28,14 @@ namespace FoxRehabilitationAPI.Controllers
             return response;
         }
         [HttpPost]
+        public HttpResponseMessage GenerateAndSaveImagesOfUploadedFilesZip(ReqSaveUploadWorkOrderFiles reqSaveUploadWorkOrderFiles)
+        {
+            var responseModel = _IUploadWorkOrderFilesService.GenerateAndSaveImagesOfUploadedFilesZip(reqSaveUploadWorkOrderFiles, GetProfile());
+            var response = Request.CreateResponse(HttpStatusCode.OK, responseModel);
+            return response;
+        }
+        
+        [HttpPost]
         public HttpResponseMessage SaveUploadAdditionalWorkOrderFiles(ReqSaveUploadWorkOrderFiles reqSaveUploadWorkOrderFiles)
         {
             var responseModel = _IUploadWorkOrderFilesService.saveUploadAdditionalWorkOrderFiles(reqSaveUploadWorkOrderFiles, GetProfile());
