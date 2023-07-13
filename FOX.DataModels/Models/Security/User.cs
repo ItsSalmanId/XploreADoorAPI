@@ -157,6 +157,8 @@ namespace FOX.DataModels.Models.Security
         public bool? MFA { get; set; }
         [NotMapped]
         public int? showMfaEanbleScreen { get; set; }
+        [NotMapped]
+        public string Full_Name { get; set; }
 
     }
     public class UserRequest : BaseModel
