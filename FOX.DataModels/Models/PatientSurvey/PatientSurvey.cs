@@ -138,6 +138,12 @@ namespace FOX.DataModels.Models.PatientSurvey
         public bool? IS_EMAIL { get; set; }
         [NotMapped]
         public string NOT_ANSWERED_REASON { get; set; }
+        public string PATIENT_WORK_NUMBER { get; set; }
+        public string PATIENT_CELL_NUMBER { get; set; }
+        [NotMapped]
+        public string LAST_DAILED_TYPE { get; set; }
+
+
     }
     [Table("FOX_TBL_SURVEY_AUTOMATION_SERVICE_LOG")]
     public class SurveyServiceLog
@@ -247,6 +253,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public Double TOTAL_RECORD_PAGES { get; set; }
         [NotMapped]
         public int TOTAL_RECORD { get; set; }
+        public string LAST_DAILED_TYPE { get; set; }
 
     }
     public class PatientSurveyInBoundCallResponse
@@ -293,7 +300,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string ResponsiblePartyCity { get; set; }
         public string ResponsiblePartyState { get; set; }
         public string ResponsiblePartyZipCode { get; set; }
-        public string ResponsiblePartyTelephone { get; set; }
+        public string ResponsiblePartyHomePhone { get; set; }
         public string ResponsiblePartySSN { get; set; }
         public string ResponsiblePartySex { get; set; }
         public string ResponsiblePartyDateofBirth { get; set; }
@@ -304,7 +311,9 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string PatientCity { get; set; }
         public string PatientState { get; set; }
         public string PatientZipCode { get; set; }
-        public string PatientTelephoneNumber { get; set; }
+        public string PatientHomeNumber { get; set; }
+        public string PatientWorkNumber { get; set; }
+        public string PatientCellNumber { get; set; }
         public string PatientSocialSecurityNumber { get; set; }
         public string PatientGender { get; set; }
         public string PatientDateofBirth { get; set; }

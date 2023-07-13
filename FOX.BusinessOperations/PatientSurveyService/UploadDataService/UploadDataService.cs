@@ -12,6 +12,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.IO;
+using CsvHelper;
 
 namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
 {
@@ -59,8 +60,9 @@ namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
                     System.IO.StreamReader sr = new System.IO.StreamReader(path);
                     //Csv reader reads the stream
                     CsvHelper.CsvReader csvread = new CsvHelper.CsvReader(sr);
-                    csvread.Configuration.PrepareHeaderForMatch = header => header.Replace(" ", string.Empty);
-
+                    // csvread.Configuration.PrepareHeaderForMatch = header => header.Replace(" ", string.Empty);
+                    csvread.Configuration.PrepareHeaderForMatch = header => header.Replace("/", string.Empty).Replace(" ", string.Empty).Replace("-", string.Empty);
+                    csvread.Configuration.MissingFieldFound = null;
                     //csvread will fetch all record in one go to the IEnumerable object record
                     IEnumerable<PatientSurveyExcel> record = csvread.GetRecords<PatientSurveyExcel>().ToList();
                     totalRecordInFile = record.Count();
@@ -96,8 +98,8 @@ namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
                             patientSurvey.RESPONSIBLE_PARTY_STATE = rec.ResponsiblePartyState;
                         if (!string.IsNullOrEmpty(rec.ResponsiblePartyZipCode) && rec.ResponsiblePartyZipCode.Length <= 20)
                             patientSurvey.RESPONSIBLE_PARTY_ZIP_CODE = rec.ResponsiblePartyZipCode;
-                        if (!string.IsNullOrEmpty(rec.ResponsiblePartyTelephone) && rec.ResponsiblePartyTelephone.Length <= 20)
-                            patientSurvey.RESPONSIBLE_PARTY_TELEPHONE = rec.ResponsiblePartyTelephone;
+                        if (!string.IsNullOrEmpty(rec.ResponsiblePartyHomePhone) && rec.ResponsiblePartyHomePhone.Length <= 20)
+                            patientSurvey.RESPONSIBLE_PARTY_TELEPHONE = rec.ResponsiblePartyHomePhone;
                         if (!string.IsNullOrEmpty(rec.ResponsiblePartySSN) && rec.ResponsiblePartySSN.Length <= 20)
                             patientSurvey.RESPONSIBLE_PARTY_SSN = rec.ResponsiblePartySSN;
                         if (!string.IsNullOrEmpty(rec.ResponsiblePartySex) && rec.ResponsiblePartySex.Length <= 15)
@@ -122,8 +124,12 @@ namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
                             patientSurvey.PATIENT_STATE = rec.PatientState;
                         if (!string.IsNullOrEmpty(rec.PatientZipCode) && rec.PatientZipCode.Length <= 20)
                             patientSurvey.PATIENT_ZIP_CODE = rec.PatientZipCode;
-                        if (!string.IsNullOrEmpty(rec.PatientTelephoneNumber) && rec.PatientTelephoneNumber.Length <= 20)
-                            patientSurvey.PATIENT_TELEPHONE_NUMBER = rec.PatientTelephoneNumber;
+                        if (!string.IsNullOrEmpty(rec.PatientHomeNumber) && rec.PatientHomeNumber.Length <= 20)
+                            patientSurvey.PATIENT_TELEPHONE_NUMBER = rec.PatientHomeNumber;
+                        if(!string.IsNullOrEmpty(rec.PatientCellNumber) && rec.PatientCellNumber.Length <=20)
+                            patientSurvey.PATIENT_CELL_NUMBER = rec.PatientCellNumber;
+                        if(!string.IsNullOrEmpty(rec.PatientWorkNumber) && rec.PatientWorkNumber.Length <= 20)
+                            patientSurvey.PATIENT_WORK_NUMBER = rec.PatientWorkNumber;
                         if (!string.IsNullOrEmpty(rec.PatientSocialSecurityNumber) && rec.PatientSocialSecurityNumber.Length <= 20)
                             patientSurvey.PATIENT_SOCIAL_SECURITY_NUMBER = rec.PatientSocialSecurityNumber;
                         if (!string.IsNullOrEmpty(rec.PatientGender) && rec.PatientGender.Length <= 15)
@@ -266,8 +272,8 @@ namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
                             patientSurvey.RESPONSIBLE_PARTY_STATE = row["Responsible Party State"].ToString();
                         if (!string.IsNullOrEmpty(row["Responsible Party Zip Code"].ToString()) && row["Responsible Party Zip Code"].ToString().Length <= 20)
                             patientSurvey.RESPONSIBLE_PARTY_ZIP_CODE = row["Responsible Party Zip Code"].ToString();
-                        if (!string.IsNullOrEmpty(row["Responsible Party Telephone"].ToString()) && row["Responsible Party Telephone"].ToString().Length <= 20)
-                            patientSurvey.RESPONSIBLE_PARTY_TELEPHONE = row["Responsible Party Telephone"].ToString();
+                        if (!string.IsNullOrEmpty(row["Responsible Party Home Phone"].ToString()) && row["Responsible Party Home Phone"].ToString().Length <= 20)
+                            patientSurvey.RESPONSIBLE_PARTY_TELEPHONE = row["Responsible Party Home Phone"].ToString();
                         if (!string.IsNullOrEmpty(row["Responsible Party SSN"].ToString()) && row["Responsible Party SSN"].ToString().Length <= 20)
                             patientSurvey.RESPONSIBLE_PARTY_SSN = row["Responsible Party SSN"].ToString();
                         if (!string.IsNullOrEmpty(row["Responsible Party Sex"].ToString()) && row["Responsible Party Sex"].ToString().Length <= 15)
@@ -292,8 +298,8 @@ namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
                             patientSurvey.PATIENT_STATE = row["Patient State"].ToString();
                         if (!string.IsNullOrEmpty(row["Patient Zip Code"].ToString()) && row["Patient Zip Code"].ToString().Length <= 20)
                             patientSurvey.PATIENT_ZIP_CODE = row["Patient Zip Code"].ToString();
-                        if (!string.IsNullOrEmpty(row["Patient Telephone Number"].ToString()) && row["Patient Telephone Number"].ToString().Length <= 20)
-                            patientSurvey.PATIENT_TELEPHONE_NUMBER = row["Patient Telephone Number"].ToString();
+                        if (!string.IsNullOrEmpty(row["Patient Home Number"].ToString()) && row["Patient Home Number"].ToString().Length <= 20)
+                            patientSurvey.PATIENT_TELEPHONE_NUMBER = row["Patient Home Number"].ToString();
                         if (!string.IsNullOrEmpty(row["Patient Social Security Number"].ToString()) && row["Patient Social Security Number"].ToString().Length <= 20)
                             patientSurvey.PATIENT_SOCIAL_SECURITY_NUMBER = row["Patient Social Security Number"].ToString();
                         if (!string.IsNullOrEmpty(row["Patient Gender"].ToString()) && row["Patient Gender"].ToString().Length <= 15)
