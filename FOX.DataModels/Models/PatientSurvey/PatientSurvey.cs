@@ -141,7 +141,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string PATIENT_WORK_NUMBER { get; set; }
         public string PATIENT_CELL_NUMBER { get; set; }
         [NotMapped]
-        public string LAST_DAILED_TYPE { get; set; }
+        public string LAST_DIALED_TYPE { get; set; }
 
 
     }
@@ -253,7 +253,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public Double TOTAL_RECORD_PAGES { get; set; }
         [NotMapped]
         public int TOTAL_RECORD { get; set; }
-        public string LAST_DAILED_TYPE { get; set; }
+        public string LAST_DIALED_TYPE { get; set; }
 
     }
     public class PatientSurveyInBoundCallResponse
