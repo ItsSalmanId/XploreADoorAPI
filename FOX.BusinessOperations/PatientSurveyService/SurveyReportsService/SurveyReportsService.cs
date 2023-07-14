@@ -72,6 +72,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
         public PSDRChartData GetALLPSRDetailedReportTemp(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile)
         {
             List<PatientSurvey> list = new List<PatientSurvey>();
+            patientSurveySearchRequest.RECORD_PER_PAGE = 0;
 
             patientSurveySearchRequest.DATE_TO = Helper.GetCurrentDate();
             switch (patientSurveySearchRequest.TIME_FRAME)
@@ -96,7 +97,7 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
                 default:
                     break;
             }
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Callback,Not Answered, New Case Same Discipline, Callback, Not Answered, Not Interested, New Case Same Discipline, Pending,Completed Survey ,Deceased,Unable to Complete Survey,Not Interested, Completed Survey, Deceased, Unable to Complete Survey";
+            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Callback,Not Answered,New Case Same Discipline,Callback,Not Answered,Not Interested,New Case Same Discipline,Pending,Completed Survey,Deceased,Unable to Complete Survey,Not Interested, Completed Survey, Deceased, Unable to Complete Survey";
             patientSurveySearchRequest.NOT_ANSWERED_REASON = "Line Busy,MailBox Full,Wrong PH#, VM Left";
             var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
             var dateFrom = Helper.getDBNullOrValue("DATE_FROM", patientSurveySearchRequest.DATE_FROM.ToString());
@@ -150,10 +151,10 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
                 {
                     obj.NOT_INTERESTED = Convert.ToInt32(model.CountNo);
                 }
-                //if (surveyStatusChild == "Unable to Complete Survey")
-                //{
-                //    obj. = Convert.ToInt32(model.CountNo);
-                //}
+                if (surveyStatusChild == "Unable to Complete Survey")
+                {
+                    obj.NOT_ENOUGH_SERVICES_PROVIDE = Convert.ToInt32(model.CountNo);
+                }
                 if (surveyStatusChild == "Line Busy")
                 {
                     obj.LINE_BUSY = Convert.ToInt32(model.CountNo);
@@ -169,6 +170,26 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
                 if (surveyStatusChild == "Wrong PH#")
                 {
                     obj.WRONG_NUM = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "VM Left")
+                {
+                    obj.VM_LEFT = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "INCOMPLETE")
+                {
+                    obj.INCOMPLETE = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "Pending")
+                {
+                    obj.PENDING_ALL = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "Pending30")
+                {
+                    obj.PENDING_30 = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "COMPLETED")
+                {
+                    obj.COMPLETED = Convert.ToInt32(model.CountNo);
                 }
 
                 // Perform your desired logic with the value
@@ -237,108 +258,121 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
             patientSurveySearchRequest.RECORD_PER_PAGE = 0;
 
 
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Completed Survey ,Deceased,Unable to Complete Survey,Not Interested";
-            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            obj.COMPLETED = list.Count;
-
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Completed Survey";
-            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            obj.COMPLETED_SURVEY = list.Count;
-
-            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Recommended";
+            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Completed Survey ,Deceased,Unable to Complete Survey,Not Interested";
+            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
             //list = new List<PatientSurvey>();
             //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            //obj.NOT_RECOMMENDED = list.Count;
+            //obj.COMPLETED = list.Count;
+            ////Done
 
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Deceased";
-            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            obj.DECEASED = list.Count;
+            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Completed Survey";
+            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
+            //list = new List<PatientSurvey>();
+            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
+            //obj.COMPLETED_SURVEY = list.Count;
+            ////Done
 
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Unable to Complete Survey";
-            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            obj.NOT_ENOUGH_SERVICES_PROVIDE = list.Count;
+            ////patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Recommended";
+            ////list = new List<PatientSurvey>();
+            ////list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
+            ////obj.NOT_RECOMMENDED = list.Count;
 
-            
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Callback,Not Answered,New Case Same Discipline";
-            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            obj.INCOMPLETE = list.Count;
+            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Deceased";
+            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
+            //list = new List<PatientSurvey>();
+            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
+            //obj.DECEASED = list.Count;
+            ////Done
 
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Callback";
-            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            obj.CALL_BACK = list.Count;
+            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Unable to Complete Survey";
+            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
+            //list = new List<PatientSurvey>();
+            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
+            //obj.NOT_ENOUGH_SERVICES_PROVIDE = list.Count;
+            ////Done
 
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
-            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            obj.NOT_ANSWERED = list.Count;
 
-            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "Line Busy";
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
-            list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            obj.LINE_BUSY = list.Count;
+            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Callback,Not Answered,New Case Same Discipline";
+            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
+            //list = new List<PatientSurvey>();
+            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
+            //obj.INCOMPLETE = list.Count;
+            ////Done
 
-            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "MailBox Full";
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
-            list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            obj.MB_FULL = list.Count;
+            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Callback";
+            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
+            //list = new List<PatientSurvey>();
+            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
+            //obj.CALL_BACK = list.Count;
+            ////Done
 
-            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "Wrong PH#";
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
-            list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            obj.WRONG_NUM = list.Count;
-            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "VM Left";
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
-            list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            obj.VM_LEFT = list.Count;
+            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
+            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
+            //list = new List<PatientSurvey>();
+            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
+            //obj.NOT_ANSWERED = list.Count;
+            ////Done
 
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Interested";
-            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            obj.NOT_INTERESTED = list.Count;
+            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "Line Busy";
+            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
+            //list = new List<PatientSurvey>();
+            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
+            //obj.LINE_BUSY = list.Count;
+            ////Done
 
-            
+            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "MailBox Full";
+            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
+            //list = new List<PatientSurvey>();
+            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
+            //obj.MB_FULL = list.Count;
+            ////Done
 
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "New Case Same Discipline";
-            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            list = new List<PatientSurvey>();
-            list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            obj.NEW_CASE_SAME_DISCIPLINE = list.Count;
+            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "Wrong PH#";
+            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
+            //list = new List<PatientSurvey>();
+            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
+            //obj.WRONG_NUM = list.Count;
+            ////Done
+            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "VM Left";
+            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
+            //list = new List<PatientSurvey>();
+            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
+            //obj.VM_LEFT = list.Count;
+            ////Done
+
+            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Interested";
+            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
+            //list = new List<PatientSurvey>();
+            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
+            //obj.NOT_INTERESTED = list.Count;
+            ////Done
+
+
+
+            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "New Case Same Discipline";
+            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
+            //list = new List<PatientSurvey>();
+            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
+            //obj.NEW_CASE_SAME_DISCIPLINE = list.Count;
+            //Done
 
             patientSurveySearchRequest.SURVEYED_STATUS_CHILD = surveyedStatusChild;
             obj.DISCHARGE_TO_SURVEY_TIME_DAYS_AVERAGE = DischargeToSurveyTimeDaysAverage(patientSurveySearchRequest, profile);
 
-            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Pending";
-            patientSurveySearchRequest.TIME_FRAME = 4;
-            patientSurveySearchRequest.DATE_FROM_STR = "";
-            patientSurveySearchRequest.DATE_TO_STR = "";
-            list = new List<PatientSurvey>();
-            list = GetAllPendingDetailedReport(patientSurveySearchRequest, profile);
-            obj.PENDING_ALL = list.Count;
+            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Pending";
+            //patientSurveySearchRequest.TIME_FRAME = 4;
+            //patientSurveySearchRequest.DATE_FROM_STR = "";
+            //patientSurveySearchRequest.DATE_TO_STR = "";
+            //list = new List<PatientSurvey>();
+            //list = GetAllPendingDetailedReport(patientSurveySearchRequest, profile);
+            //obj.PENDING_ALL = list.Count;
 
-            patientSurveySearchRequest.TIME_FRAME = 3;
-            patientSurveySearchRequest.DATE_FROM_STR = "";
-            patientSurveySearchRequest.DATE_TO_STR = "";
-            list = new List<PatientSurvey>();
-            list = GetAllPendingDetailedReport(patientSurveySearchRequest, profile);
-            obj.PENDING_30 = list.Count;
+            //patientSurveySearchRequest.TIME_FRAME = 3;
+            //patientSurveySearchRequest.DATE_FROM_STR = "";
+            //patientSurveySearchRequest.DATE_TO_STR = "";
+            //list = new List<PatientSurvey>();
+            //list = GetAllPendingDetailedReport(patientSurveySearchRequest, profile);
+            //obj.PENDING_30 = list.Count;
 
             return obj;
         }
