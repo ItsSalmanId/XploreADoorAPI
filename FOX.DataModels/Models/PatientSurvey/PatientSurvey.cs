@@ -149,10 +149,10 @@ namespace FOX.DataModels.Models.PatientSurvey
         [NotMapped]
         public long CountNo { get; set; }
     }
-    public class tempfd
+    public class PatientSurveyCount
     {
         [NotMapped]
-        public string survey_status_child { get; set; }
+        public string SURVEY_STATUS_CHILD { get; set; }
         [NotMapped]
         public long CountNo { get; set; }
 
