@@ -139,9 +139,12 @@ namespace FOX.DataModels.Models.PatientSurvey
         [NotMapped]
         public string NOT_ANSWERED_REASON { get; set; }
         [NotMapped]
-        public string PATIENT_WORK_NUMBER { get; set; }
+        public long CountNo { get; set; }
+    }
+    public class PatientSurveyCount
+    {
         [NotMapped]
-        public string PATIENT_CELL_NUMBER { get; set; }
+        public string SURVEY_STATUS_CHILD { get; set; }
         [NotMapped]
         public string LAST_DIALED_TYPE { get; set; }
 

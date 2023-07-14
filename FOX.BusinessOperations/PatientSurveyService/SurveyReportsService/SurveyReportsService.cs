@@ -69,6 +69,113 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
                             PracticeCode, dateFrom, dateTo, provider, region, state, flag, format, surveyedBy, surveyStatus, notAnsweredStatus, CurrentPage, RecordPerPage, searchText, SortBy, SortOrder);
             return patientSurvey;
         }
+        public PSDRChartData GetALLPSRDetailedReportTemp(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile)
+        {
+            List<PatientSurvey> list = new List<PatientSurvey>();
+
+            patientSurveySearchRequest.DATE_TO = Helper.GetCurrentDate();
+            switch (patientSurveySearchRequest.TIME_FRAME)
+            {
+                case 1:
+                    patientSurveySearchRequest.DATE_FROM = Helper.GetCurrentDate().AddDays(-7);
+                    break;
+                case 2:
+                    patientSurveySearchRequest.DATE_FROM = Helper.GetCurrentDate().AddDays(-15);
+                    break;
+                case 3:
+                    patientSurveySearchRequest.DATE_FROM = Helper.GetCurrentDate().AddDays(-30);
+                    break;
+                case 4:
+                    if (!string.IsNullOrEmpty(patientSurveySearchRequest.DATE_FROM_STR))
+                        patientSurveySearchRequest.DATE_FROM = Convert.ToDateTime(patientSurveySearchRequest.DATE_FROM_STR);
+                    else
+                        patientSurveySearchRequest.DATE_FROM = Helper.GetCurrentDate().AddYears(-100);
+                    if (!string.IsNullOrEmpty(patientSurveySearchRequest.DATE_TO_STR))
+                        patientSurveySearchRequest.DATE_TO = Convert.ToDateTime(patientSurveySearchRequest.DATE_TO_STR);
+                    break;
+                default:
+                    break;
+            }
+            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Callback,Not Answered, New Case Same Discipline, Callback, Not Answered, Not Interested, New Case Same Discipline, Pending,Completed Survey ,Deceased,Unable to Complete Survey,Not Interested, Completed Survey, Deceased, Unable to Complete Survey";
+            patientSurveySearchRequest.NOT_ANSWERED_REASON = "Line Busy,MailBox Full,Wrong PH#, VM Left";
+            var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+            var dateFrom = Helper.getDBNullOrValue("DATE_FROM", patientSurveySearchRequest.DATE_FROM.ToString());
+            var dateTo = Helper.getDBNullOrValue("@DATE_TO", patientSurveySearchRequest.DATE_TO.ToString());
+            var provider = new SqlParameter { ParameterName = "PROVIDER", Value = patientSurveySearchRequest.PROVIDER };
+            var region = new SqlParameter { ParameterName = "REGION", Value = patientSurveySearchRequest.REGION };
+            var state = new SqlParameter { ParameterName = "STATE", Value = patientSurveySearchRequest.STATE };
+            var flag = new SqlParameter { ParameterName = "FLAG", Value = patientSurveySearchRequest.FLAG };
+            var format = new SqlParameter { ParameterName = "FORMAT", Value = patientSurveySearchRequest.FORMAT };
+            var surveyedBy = new SqlParameter { ParameterName = "SURVEYED_BY", Value = patientSurveySearchRequest.SURVEYED_BY };
+            var surveyStatus = new SqlParameter { ParameterName = "SURVEYED_STATUS", Value = patientSurveySearchRequest.SURVEYED_STATUS_CHILD };
+            var notAnsweredValue = new SqlParameter { ParameterName = "NOT_ANSWERED_REASON", Value = patientSurveySearchRequest.NOT_ANSWERED_REASON };
+            var CurrentPage = new SqlParameter { ParameterName = "CURRENT_PAGE", SqlDbType = SqlDbType.Int, Value = patientSurveySearchRequest.CURRENT_PAGE };
+            var RecordPerPage = new SqlParameter { ParameterName = "RECORD_PER_PAGE", SqlDbType = SqlDbType.Int, Value = patientSurveySearchRequest.RECORD_PER_PAGE };
+            var searchText = new SqlParameter { ParameterName = "SEARCH_TEXT", Value = patientSurveySearchRequest.SEARCH_TEXT };
+            var SortBy = Helper.getDBNullOrValue("SORT_BY", patientSurveySearchRequest.SORT_BY);
+            var SortOrder = Helper.getDBNullOrValue("SORT_ORDER", patientSurveySearchRequest.SORT_ORDER);
+
+            List<PatientSurveyCount> tempfd = new List<PatientSurveyCount>();
+            tempfd = SpRepository<PatientSurveyCount>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PSR_DETAILED_REPORT_TEMp
+                            @PRACTICE_CODE, @DATE_FROM, @DATE_TO, @PROVIDER, @REGION, @STATE, @FLAG, @FORMAT, @SURVEYED_BY, @SURVEYED_STATUS, @NOT_ANSWERED_REASON, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORT_BY, @SORT_ORDER",
+                            PracticeCode, dateFrom, dateTo, provider, region, state, flag, format, surveyedBy, surveyStatus, notAnsweredValue, CurrentPage, RecordPerPage, searchText, SortBy, SortOrder);
+            //if(tempfd[0].survey_status_child = )
+            //foreach (DataRow row in tempfd)
+            //{
+            //    // Access the value of the "SURVEY_STATUS_CHILD" column for each row
+            //    string surveyStatusChild = row["SURVEY_STATUS_CHILD"].ToString();
+            //    Console.WriteLine(surveyStatusChild);
+            //}
+            PSDRChartData obj = new PSDRChartData();
+            foreach (var model in tempfd)
+            {
+                string surveyStatusChild = model.SURVEY_STATUS_CHILD;
+                if(surveyStatusChild == "Completed Survey")
+                {
+                    obj.COMPLETED_SURVEY = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "Callback")
+                {
+                    obj.CALL_BACK = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "Deceased")
+                {
+                    obj.DECEASED = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "Not Answered")
+                {
+                    obj.NOT_ANSWERED = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "Not Interested")
+                {
+                    obj.NOT_INTERESTED = Convert.ToInt32(model.CountNo);
+                }
+                //if (surveyStatusChild == "Unable to Complete Survey")
+                //{
+                //    obj. = Convert.ToInt32(model.CountNo);
+                //}
+                if (surveyStatusChild == "Line Busy")
+                {
+                    obj.LINE_BUSY = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "MailBox Full")
+                {
+                    obj.MB_FULL = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "New Case Same Discipline")
+                {
+                    obj.NEW_CASE_SAME_DISCIPLINE = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "Wrong PH#")
+                {
+                    obj.WRONG_NUM = Convert.ToInt32(model.CountNo);
+                }
+
+                // Perform your desired logic with the value
+                Console.WriteLine(surveyStatusChild);
+            }
+            return obj;
+        }
         public List<PatientSurvey> GetALLPSRDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile)
         {
             List<PatientSurvey> list = new List<PatientSurvey>();
