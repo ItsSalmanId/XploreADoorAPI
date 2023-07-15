@@ -555,6 +555,27 @@ namespace FOX.DataModels.Models.PatientSurvey
         public int LINE_BUSY { get; set; }
         public int WRONG_NUM { get; set; }
     }
+    public class PsdrCount
+    {
+        public int COMPLETED { get; set; }
+        public int COMPLETED_SURVEY { get; set; }
+        public int RECOMMENDED { get; set; }
+        public int NOT_RECOMMENDED { get; set; }
+        public int DECEASED { get; set; }
+        public int INCOMPLETE { get; set; }
+        public int CALL_BACK { get; set; }
+        public int NOT_ANSWERED { get; set; }
+        public int NEW_CASE_SAME_DISCIPLINE { get; set; }
+        public int NOT_INTERESTED { get; set; }
+        public int PENDING_30 { get; set; }
+        public int PENDING_ALL { get; set; }
+        public int NOT_ENOUGH_SERVICES_PROVIDE { get; set; }
+        public int DISCHARGE_TO_SURVEY_TIME_DAYS_AVERAGE { get; set; }
+        public int VM_LEFT { get; set; }
+        public int MB_FULL { get; set; }
+        public int LINE_BUSY { get; set; }
+        public int WRONG_NUM { get; set; }
+    }
     public class AverageDaysSurveyCompleted
     {
         public int AVERAGE_DAY { get; set; }

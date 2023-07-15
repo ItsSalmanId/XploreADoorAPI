@@ -59,9 +59,9 @@ namespace FoxRehabilitationAPI.Controllers.PatientSurvey.SurveyReports
             return Request.CreateResponse(HttpStatusCode.OK, _surveyReportsService.GetALLPSRDetailedReport(patientSurveySearchRequest, GetProfile()));
         }
         [HttpPost]
-        public HttpResponseMessage GetALLPSRDetailedReportTemp(PatientSurveySearchRequest patientSurveySearchRequest)
+        public HttpResponseMessage GetALLPsrCount(PatientSurveySearchRequest patientSurveySearchRequest)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, _surveyReportsService.GetALLPSRDetailedReportTemp(patientSurveySearchRequest, GetProfile()));
+            return Request.CreateResponse(HttpStatusCode.OK, _surveyReportsService.GetALLPsrCount(patientSurveySearchRequest, GetProfile()));
         }
         [HttpPost]
         public HttpResponseMessage GetALLPendingPSRDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest)
