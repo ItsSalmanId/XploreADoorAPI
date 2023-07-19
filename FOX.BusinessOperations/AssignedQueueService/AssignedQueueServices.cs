@@ -341,7 +341,7 @@ namespace FOX.BusinessOperations.AssignedQueueService
             //var practiceCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
             var workId = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = work_id };
             var practiceCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = profile.PracticeCode };
-            var dbData = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS_FOR_TRASH  @WORK_ID, @PRACTICE_CODE", workId, practiceCode);
+            var dbData = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS_BY_WORKID  @WORK_ID, @PRACTICE_CODE", workId, practiceCode);
            //var dbData = _queueRepository.GetFirst(e => e.WORK_ID == work_id && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
             //if (dbData == null)
             //{
