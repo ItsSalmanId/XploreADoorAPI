@@ -1170,17 +1170,7 @@ namespace FOX.BusinessOperations.CommonService
             //QA
             string to = "abdulsattar@carecloud.com";
             //string subject = "Exception occurred in Exception Filter";
-            List<string> cc = new List<string>();
-            cc.Add("muhammadarslan3@carecloud.com");
-            cc.Add("aftabkhan@carecloud.com");
-            cc.Add("asadullah2@carecloud.com");
-            cc.Add("muhammadanwar2@carecloud.com");
-            cc.Add("taimoorhussain@carecloud.com");
-            cc.Add("ismailahmad@carecloud.com");
-            cc.Add("ayazkhan2@carecloud.com");
-            cc.Add("asadinayat@carecloud.com");
-            cc.Add("irfanullah3@carecloud.com");
-
+            List<string> cc = new List<string>(ConfigurationManager.AppSettings["SendEmailOnException"].Split(new char[] { ';' }));
             //string ccvalues = ConfigurationManager.AppSettings["CCListException"];
             //if (!string.IsNullOrWhiteSpace(ccvalues))
             //{
