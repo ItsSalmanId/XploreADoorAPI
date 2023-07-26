@@ -262,139 +262,134 @@ namespace FOX.BusinessOperations.PatientSurveyService.SurveyReportsService
          
             return list;
         }
-        public PSDRChartData GetALLPendingPSRDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile)
+        public PsdrCount GetALLPendingPSRDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile)
         {
-                patientSurveySearchRequest.objNotAnswered = new PatientSurveyNotAnswered(); ;
-            patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            List<PatientSurvey> list = new List<PatientSurvey>();
-            PSDRChartData obj = new PSDRChartData();
+            patientSurveySearchRequest.RECORD_PER_PAGE = 0;
             string surveyedStatusChild = patientSurveySearchRequest.SURVEYED_STATUS_CHILD;
 
-            patientSurveySearchRequest.RECORD_PER_PAGE = 0;
-
-
-            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Completed Survey ,Deceased,Unable to Complete Survey,Not Interested";
-            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            //list = new List<PatientSurvey>();
-            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            //obj.COMPLETED = list.Count;
-            ////Done
-
-            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Completed Survey";
-            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            //list = new List<PatientSurvey>();
-            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            //obj.COMPLETED_SURVEY = list.Count;
-            ////Done
-
-            ////patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Recommended";
-            ////list = new List<PatientSurvey>();
-            ////list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            ////obj.NOT_RECOMMENDED = list.Count;
-
-            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Deceased";
-            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            //list = new List<PatientSurvey>();
-            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            //obj.DECEASED = list.Count;
-            ////Done
-
-            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Unable to Complete Survey";
-            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            //list = new List<PatientSurvey>();
-            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            //obj.NOT_ENOUGH_SERVICES_PROVIDE = list.Count;
-            ////Done
-
-
-            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Callback,Not Answered,New Case Same Discipline";
-            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            //list = new List<PatientSurvey>();
-            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            //obj.INCOMPLETE = list.Count;
-            ////Done
-
-            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Callback";
-            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            //list = new List<PatientSurvey>();
-            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            //obj.CALL_BACK = list.Count;
-            ////Done
-
-            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
-            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            //list = new List<PatientSurvey>();
-            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            //obj.NOT_ANSWERED = list.Count;
-            ////Done
-
-            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "Line Busy";
-            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
-            //list = new List<PatientSurvey>();
-            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            //obj.LINE_BUSY = list.Count;
-            //////Done
-
-            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "MailBox Full";
-            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
-            //list = new List<PatientSurvey>();
-            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            //obj.MB_FULL = list.Count;
-            //////Done
-
-            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "Wrong PH#";
-            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
-            //list = new List<PatientSurvey>();
-            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            //obj.WRONG_NUM = list.Count;
-            //////Done
-            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "VM Left";
-            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Answered";
-            //list = new List<PatientSurvey>();
-            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            //obj.VM_LEFT = list.Count;
-            ////Done
-
-            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Not Interested";
-            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            //list = new List<PatientSurvey>();
-            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            //obj.NOT_INTERESTED = list.Count;
-            ////Done
-
-
-
-            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "New Case Same Discipline";
-            //patientSurveySearchRequest.objNotAnswered.NOT_ANSWERED_REASON = "";
-            //list = new List<PatientSurvey>();
-            //list = GetPSRDetailedReport(patientSurveySearchRequest, profile);
-            //obj.NEW_CASE_SAME_DISCIPLINE = list.Count;
-            //Done
-
-            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = surveyedStatusChild;
-            //if(patientSurveySearchRequest.TIME_FRAME == 4)
-            //{
-            //    patientSurveySearchRequest.DATE_TO_STR = Helper.GetCurrentDate().ToString();
-            //}
-
-            //obj.DISCHARGE_TO_SURVEY_TIME_DAYS_AVERAGE = DischargeToSurveyTimeDaysAverage(patientSurveySearchRequest, profile);
-
-            //patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Pending";
-            //patientSurveySearchRequest.TIME_FRAME = 4;
-            //patientSurveySearchRequest.DATE_FROM_STR = "";
-            //patientSurveySearchRequest.DATE_TO_STR = "";
-            //list = new List<PatientSurvey>();
-           // list = GetAllPendingDetailedReport(patientSurveySearchRequest, profile);
-            //obj.PENDING_ALL = list.Count;
-
-            //patientSurveySearchRequest.TIME_FRAME = 3;
-            //patientSurveySearchRequest.DATE_FROM_STR = "";
-            //patientSurveySearchRequest.DATE_TO_STR = "";
-            //list = new List<PatientSurvey>();
-            //list = GetAllPendingDetailedReport(patientSurveySearchRequest, profile);
-            //obj.PENDING_30 = list.Count;
-
-            return obj;
+            patientSurveySearchRequest.DATE_TO = Helper.GetCurrentDate();
+            switch (patientSurveySearchRequest.TIME_FRAME)
+            {
+                case 1:
+                    patientSurveySearchRequest.DATE_FROM = Helper.GetCurrentDate().AddDays(-7);
+                    break;
+                case 2:
+                    patientSurveySearchRequest.DATE_FROM = Helper.GetCurrentDate().AddDays(-15);
+                    break;
+                case 3:
+                    patientSurveySearchRequest.DATE_FROM = Helper.GetCurrentDate().AddDays(-30);
+                    break;
+                case 4:
+                    if (!string.IsNullOrEmpty(patientSurveySearchRequest.DATE_FROM_STR))
+                        patientSurveySearchRequest.DATE_FROM = Convert.ToDateTime(patientSurveySearchRequest.DATE_FROM_STR);
+                    else
+                        patientSurveySearchRequest.DATE_FROM = Helper.GetCurrentDate().AddYears(-100);
+                    if (!string.IsNullOrEmpty(patientSurveySearchRequest.DATE_TO_STR))
+                        patientSurveySearchRequest.DATE_TO = Convert.ToDateTime(patientSurveySearchRequest.DATE_TO_STR);
+                    break;
+                default:
+                    break;
+            }
+            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = "Callback,Not Answered,New Case Same Discipline,Callback,Not Answered,Not Interested,New Case Same Discipline,Pending,Completed Survey,Deceased,Unable to Complete Survey,Not Interested, Completed Survey, Deceased, Unable to Complete Survey";
+            patientSurveySearchRequest.NOT_ANSWERED_REASON = "Line Busy,MailBox Full,Wrong PH#,VM Left";
+            var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+            var dateFrom = Helper.getDBNullOrValue("DATE_FROM", patientSurveySearchRequest.DATE_FROM.ToString());
+            var dateTo = Helper.getDBNullOrValue("@DATE_TO", patientSurveySearchRequest.DATE_TO.ToString());
+            var provider = new SqlParameter { ParameterName = "PROVIDER", Value = patientSurveySearchRequest.PROVIDER };
+            var region = new SqlParameter { ParameterName = "REGION", Value = patientSurveySearchRequest.REGION };
+            var state = new SqlParameter { ParameterName = "STATE", Value = patientSurveySearchRequest.STATE };
+            var flag = new SqlParameter { ParameterName = "FLAG", Value = patientSurveySearchRequest.FLAG };
+            var format = new SqlParameter { ParameterName = "FORMAT", Value = patientSurveySearchRequest.FORMAT };
+            var surveyedBy = new SqlParameter { ParameterName = "SURVEYED_BY", Value = patientSurveySearchRequest.SURVEYED_BY };
+            var surveyStatus = new SqlParameter { ParameterName = "SURVEYED_STATUS", Value = patientSurveySearchRequest.SURVEYED_STATUS_CHILD };
+            var notAnsweredValue = new SqlParameter { ParameterName = "NOT_ANSWERED_REASON", Value = patientSurveySearchRequest.NOT_ANSWERED_REASON };
+            var CurrentPage = new SqlParameter { ParameterName = "CURRENT_PAGE", SqlDbType = SqlDbType.Int, Value = patientSurveySearchRequest.CURRENT_PAGE };
+            var RecordPerPage = new SqlParameter { ParameterName = "RECORD_PER_PAGE", SqlDbType = SqlDbType.Int, Value = patientSurveySearchRequest.RECORD_PER_PAGE };
+            var searchText = new SqlParameter { ParameterName = "SEARCH_TEXT", Value = patientSurveySearchRequest.SEARCH_TEXT };
+            var SortBy = Helper.getDBNullOrValue("SORT_BY", patientSurveySearchRequest.SORT_BY);
+            var SortOrder = Helper.getDBNullOrValue("SORT_ORDER", patientSurveySearchRequest.SORT_ORDER);
+            var patientSurveyCountObj = SpRepository<PatientSurveyCount>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_PSR_DETAILED_REPORT_TEMp
+                            @PRACTICE_CODE, @DATE_FROM, @DATE_TO, @PROVIDER, @REGION, @STATE, @FLAG, @FORMAT, @SURVEYED_BY, @SURVEYED_STATUS, @NOT_ANSWERED_REASON, @CURRENT_PAGE, @RECORD_PER_PAGE, @SEARCH_TEXT, @SORT_BY, @SORT_ORDER",
+                            PracticeCode, dateFrom, dateTo, provider, region, state, flag, format, surveyedBy, surveyStatus, notAnsweredValue, CurrentPage, RecordPerPage, searchText, SortBy, SortOrder);
+            PsdrCount psdrCountObj = new PsdrCount();
+            foreach (var model in patientSurveyCountObj)
+            {
+                string surveyStatusChild = model.SURVEY_STATUS_CHILD;
+                if (surveyStatusChild == "Completed Survey")
+                {
+                    psdrCountObj.COMPLETED_SURVEY = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "Callback")
+                {
+                    psdrCountObj.CALL_BACK = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "Deceased")
+                {
+                    psdrCountObj.DECEASED = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "Not Answered")
+                {
+                    psdrCountObj.NOT_ANSWERED = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "Not Interested")
+                {
+                    psdrCountObj.NOT_INTERESTED = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "Unable to Complete Survey")
+                {
+                    psdrCountObj.NOT_ENOUGH_SERVICES_PROVIDE = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "Line Busy")
+                {
+                    psdrCountObj.LINE_BUSY = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "MailBox Full")
+                {
+                    psdrCountObj.MB_FULL = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "New Case Same Discipline")
+                {
+                    psdrCountObj.NEW_CASE_SAME_DISCIPLINE = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "Wrong PH#")
+                {
+                    psdrCountObj.WRONG_NUM = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "VM Left")
+                {
+                    psdrCountObj.VM_LEFT = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "INCOMPLETE")
+                {
+                    psdrCountObj.INCOMPLETE = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "Pending")
+                {
+                    psdrCountObj.PENDING_ALL = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "Pending30")
+                {
+                    psdrCountObj.PENDING_30 = Convert.ToInt32(model.CountNo);
+                }
+                if (surveyStatusChild == "COMPLETED")
+                {
+                    psdrCountObj.COMPLETED = Convert.ToInt32(model.CountNo);
+                }
+            }
+            if (patientSurveySearchRequest.STATE != "")
+            {
+                psdrCountObj.WRONG_NUM = psdrCountObj.NOT_ANSWERED;
+                psdrCountObj.VM_LEFT = psdrCountObj.NOT_ANSWERED;
+                psdrCountObj.MB_FULL = psdrCountObj.NOT_ANSWERED;
+                psdrCountObj.LINE_BUSY = psdrCountObj.NOT_ANSWERED;
+            }
+            patientSurveySearchRequest.SURVEYED_STATUS_CHILD = surveyedStatusChild;
+            if (patientSurveySearchRequest.TIME_FRAME == 4)
+            {
+                patientSurveySearchRequest.DATE_TO_STR = Helper.GetCurrentDate().ToString();
+            }
+            psdrCountObj.DISCHARGE_TO_SURVEY_TIME_DAYS_AVERAGE = DischargeToSurveyTimeDaysAverage(patientSurveySearchRequest, profile);
+            return psdrCountObj;
         }
         public string ExportToExcelPSRDetailedReport(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile)
         {
