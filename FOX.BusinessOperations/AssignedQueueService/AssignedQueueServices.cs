@@ -157,9 +157,11 @@ namespace FOX.BusinessOperations.AssignedQueueService
         }
         public List<InterfcaeFailedPatient> GeInterfaceFailedPatientList(long practiceCode, string userName)
         {
+            Helper.TokenTaskCancellationExceptionLog("GeInterfaceFailedPatientList: Start Function   :  ");
             var current_user = new SqlParameter("CURRENT_USER", SqlDbType.VarChar) { Value = userName };
             var parmPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practiceCode };
             var queue = SpRepository<InterfcaeFailedPatient>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_INTERFACE_FAILED_PATIENT @PRACTICE_CODE, @CURRENT_USER", parmPracticeCode, current_user);
+            Helper.TokenTaskCancellationExceptionLog("GeInterfaceFailedPatientList: END Function   :  ");
             return queue;
 
         }
