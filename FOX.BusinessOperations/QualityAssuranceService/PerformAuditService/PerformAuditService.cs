@@ -136,7 +136,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             var CurrentPage = new SqlParameter { ParameterName = "@PAGE_NUMBER", SqlDbType = SqlDbType.Int, Value = request.PAGE_NUMBER };
             var RecordPerPage = new SqlParameter { ParameterName = "@PAGE_SIZE", SqlDbType = SqlDbType.Int, Value = 500 };
 
-            var result = SpRepository<CallLogModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_CALL_LIST_FOR_AUDIT_Revamp
+            var result = SpRepository<CallLogModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_CALL_LIST_FOR_AUDIT
                          @PRACTICE_CODE, @CALL_BY, @CALL_TYPE, @DATE_FROM, @DATE_TO, @PHD_CALL_SCENARIO_ID, @IS_READ_ONLY_MODE ,@PAGE_NUMBER,@PAGE_SIZE", PracticeCode, _callBy, _callType, dateFrom, dateTo, callScanario, readOnlyMode, CurrentPage, RecordPerPage);
             callLogList = result;
             return callLogList;
