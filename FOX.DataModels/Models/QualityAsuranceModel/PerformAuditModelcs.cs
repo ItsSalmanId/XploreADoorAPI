@@ -244,8 +244,6 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public string CALL_SCANARIO { get; set; }
         public string SCORING_CRITERIA { get; set; }
         public string SURVEY_FLAG { get; set; }
-        public long RowNum { get; set; }
-
     }
     public class TeamMemberNameModel : BaseModel
     {
