@@ -144,10 +144,8 @@ namespace FOX.BusinessOperations.IndexInfoServices.UploadWorkOrderFiles
                 uploadOrderImagesService.AddToDatabase(filePath2, totalPages + originalQueueFilesCount, Profile.UserName, workId, config.PRACTICE_CODE);
                 string zipFilePath = filePath2.ToString();
                 response.Message = zipFilePath;
-                //AddToDatabase(filePath2, totalPages + originalQueueFilesCount, profile.UserName, workId, config.PRACTICE_CODE);
                 return response;
             }
-
             catch (Exception)
             {
                 // EventLogg.writeLog("Exception occurred while creating and saving zip." + ex);
@@ -159,7 +157,7 @@ namespace FOX.BusinessOperations.IndexInfoServices.UploadWorkOrderFiles
         {
             var result = new ResSaveUploadWorkOrderFiles();
             long workId = reqSaveUploadWorkOrderFiles.WORK_ID;
-            UploadOrderImagesService uploadOrderImagesService = new UploadOrderImagesService();
+            UploadOrderImagesService uploadOrderImagesServiceObj = new UploadOrderImagesService();
             string zipFilePath = "";
             int totalPages = 0;
             SqlParameter refWorkId = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = workId };
@@ -190,22 +188,20 @@ namespace FOX.BusinessOperations.IndexInfoServices.UploadWorkOrderFiles
                     }
                     else
                     {
-                        int numberOfPages = uploadOrderImagesService.getNumberOfPagesOfPDF(filePath);
-                        uploadOrderImagesService.SavePdfToImages(filePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
+                        int numberOfPages = uploadOrderImagesServiceObj.getNumberOfPagesOfPDF(filePath);
+                        uploadOrderImagesServiceObj.SavePdfToImages(filePath, config, workId, numberOfPages, Convert.ToInt32(pageCounter), out pageCounter);
                         totalPages += numberOfPages;
                     }
                 }
             }
             string zipfolderpath = config.ORIGINAL_FILES_PATH_SERVER;
             string FileName = workId + "_" + DateTime.Now.Ticks + ".zip";
-            var filePath2 = @"" + zipfolderpath + "\\" + FileName;
+            var filePathWithFolderPath = @"" + zipfolderpath + "\\" + FileName;
             var newZipFilePath = @"" + zipfolderpath + "\\NewZipFile";
-            
 
-
-           // zipFilePath = _IUploadOrderImagesService.GenerateAndSaveImagesOfUploadedFilesZip(workId, reqSaveUploadWorkOrderFiles.FileNameList, Profile, originalQueueFilesCount);
+            //zipFilePath = _IUploadOrderImagesService.GenerateAndSaveImagesOfUploadedFilesZip(workId, reqSaveUploadWorkOrderFiles.FileNameList, Profile, originalQueueFilesCount);
             result.WORK_ID = workId;
-            result.zipFilePath = filePath2;
+            result.zipFilePath = filePathWithFolderPath;
             result.FilePaths = SpRepository<FilePath>.GetListWithStoreProcedure(@"exec FOX_GET_File_PAGES  @WORK_ID", new SqlParameter("WORK_ID ", SqlDbType.BigInt) { Value = workId });
             result.Message = $"Upload Work Order Files Successfully. WorkId = { workId }";
             result.ErrorMessage = "";

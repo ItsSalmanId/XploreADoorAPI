@@ -30,11 +30,17 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpPost]
         public HttpResponseMessage GenerateAndSaveImagesOfUploadedFilesZip(ReqSaveUploadWorkOrderFiles reqSaveUploadWorkOrderFiles)
         {
-            var responseModel = _IUploadWorkOrderFilesService.GenerateAndSaveImagesOfUploadedFilesZip(reqSaveUploadWorkOrderFiles, GetProfile());
-            var response = Request.CreateResponse(HttpStatusCode.OK, responseModel);
-            return response;
+            if (reqSaveUploadWorkOrderFiles != null)
+            {
+                var responseModel = _IUploadWorkOrderFilesService.GenerateAndSaveImagesOfUploadedFilesZip(reqSaveUploadWorkOrderFiles, GetProfile());
+                return Request.CreateResponse(HttpStatusCode.OK, responseModel);
+            }
+            else
+            { 
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Save Upload Work Order Files model is empty");
+            }
         }
-        
+
         [HttpPost]
         public HttpResponseMessage SaveUploadAdditionalWorkOrderFiles(ReqSaveUploadWorkOrderFiles reqSaveUploadWorkOrderFiles)
         {

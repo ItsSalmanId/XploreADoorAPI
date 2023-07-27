@@ -81,7 +81,6 @@ namespace FoxRehabilitationAPI.Controllers
             {
                 try
                 {
-
                     string fileName = Path.GetFileName(FilePath);
                     string test = Path.GetDirectoryName(FilePath);
                     string fileExtension = Path.GetExtension(FilePath);
