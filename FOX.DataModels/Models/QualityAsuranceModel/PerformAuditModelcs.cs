@@ -168,7 +168,6 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public int PHD_CALL_SCENARIO_ID { get; set; }
         public bool IS_READ_ONLY_MODE { get; set; }
         public int PAGE_NUMBER { get; set; }
-        public int PAGE_SIZE { get; set; }
 
     }
 

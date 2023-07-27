@@ -135,7 +135,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             var readOnlyMode = new SqlParameter { ParameterName = "IS_READ_ONLY_MODE", SqlDbType = SqlDbType.Bit, Value = request.IS_READ_ONLY_MODE };
 
             var result = SpRepository<CallLogModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_CALL_LIST_FOR_AUDIT
-                         @PRACTICE_CODE, @CALL_BY, @CALL_TYPE, @DATE_FROM, @DATE_TO, @PHD_CALL_SCENARIO_ID, @IS_READ_ONLY_MODE ,@PAGE_NUMBER,@PAGE_SIZE", PracticeCode, _callBy, _callType, dateFrom, dateTo, callScanario, readOnlyMode);
+                         @PRACTICE_CODE, @CALL_BY, @CALL_TYPE, @DATE_FROM, @DATE_TO, @PHD_CALL_SCENARIO_ID, @IS_READ_ONLY_MODE ", PracticeCode, _callBy, _callType, dateFrom, dateTo, callScanario, readOnlyMode);
             callLogList = result;
             return callLogList;
         }
