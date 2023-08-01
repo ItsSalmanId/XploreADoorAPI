@@ -694,19 +694,14 @@ namespace FOX.BusinessOperations.CommonService
         {
             if (!string.IsNullOrEmpty(logMessage))
             {
-                List<string> temp = new List<string>();
-                temp.Add(logMessage);
-                DataTable dt = GetLogTable(temp);
 
                 long Pid = Helper.getMaximumId("LOG_ID");
                 SqlParameter id = new SqlParameter("ID", Pid);
                 SqlParameter work_Id = new SqlParameter("WORK_ID", workId);
                 SqlParameter unique_Id = new SqlParameter("UNIQUE_ID", uniqueId);
-                SqlParameter MSG = new SqlParameter("ORIGNAL_QUEUE_HISTORY", SqlDbType.Structured);
-                MSG.TypeName = "ORIGNAL_QUEUE_HISTORY";
-                MSG.Value = dt;
+                SqlParameter MSG = new SqlParameter("@MESSAGE", logMessage);
                 SqlParameter user_Name = new SqlParameter("USER_NAME", user);
-                SpRepository<WorkOrderHistory>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_INSERT_ORIGNAL_QUEUE_HISTORY @ORIGNAL_QUEUE_HISTORY, @WORK_ID, @ID, @UNIQUE_ID,  @USER_NAME", MSG, work_Id, id, unique_Id, user_Name);
+                SpRepository<WorkOrderHistory>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_INSERT_SINGLE_WORK_ORDER_HISTORY @MESSAGE, @WORK_ID, @ID, @UNIQUE_ID,  @USER_NAME", MSG, work_Id, id, unique_Id, user_Name);
 
                 //DbContextCommon _DbContextSP_New = new DbContextCommon();
                 //GenericRepository<WorkOrderHistory> _WorkHistoryRepository = new GenericRepository<WorkOrderHistory>(_DbContextSP_New);
