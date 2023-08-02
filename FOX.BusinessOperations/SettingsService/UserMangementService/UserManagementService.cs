@@ -1938,7 +1938,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         }
         public string GetEmailByTick(string ticks)
         {
-            var user = _UserRepository.Get(x => x.PASSWORD_RESET_TICKS == ticks);
+            var user = _UserRepository.GetFirst(x => x.PASSWORD_RESET_TICKS == ticks);
             if (user != null)
                 return user.EMAIL;
             return null;
@@ -2005,11 +2005,13 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         public void AddUpdateUserExtension(long userId, string extension, bool? isActive)
         {
             var dbUsr = _UserRepository.GetByID(userId);
-            dbUsr.EXTENSION = extension;
-            dbUsr.IS_ACTIVE_EXTENSION = isActive;
-            _UserRepository.Update(dbUsr);
-            _UserRepository.Save();
-
+            if (dbUsr != null)
+            {
+                dbUsr.EXTENSION = extension;
+                dbUsr.IS_ACTIVE_EXTENSION = isActive;
+                _UserRepository.Update(dbUsr);
+                _UserRepository.Save();
+            }
         }
         public UserProfile UpdateProfile(string uSER_NAME)
         {

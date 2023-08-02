@@ -54,6 +54,7 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest.SurveyReportsS
                 _patientSurveySearchRequest.DATE_FROM_STR = "";
                 _patientSurveySearchRequest.DATE_FROM_STR = "";
             }
+            _patientSurveySearchRequest.NOT_ANSWERED_REASON = "";
 
             //Act
             var result = _surveyReportsService.GetPSRDetailedReport(_patientSurveySearchRequest,_userProfile);
@@ -98,6 +99,7 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest.SurveyReportsS
                 _patientSurveySearchRequest.DATE_FROM_STR = "";
                 _patientSurveySearchRequest.DATE_FROM_STR = "";
             }
+            _patientSurveySearchRequest.NOT_ANSWERED_REASON = "";
 
             //Act
             var result = _surveyReportsService.GetALLPSRDetailedReport(_patientSurveySearchRequest, _userProfile);

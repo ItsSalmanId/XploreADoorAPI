@@ -114,7 +114,7 @@ namespace FOX.BusinessOperations.GeneralNotesService
         public FOX_TBL_GENERAL_NOTE GetSingleNoteForUpdate(UserProfile profile, GeneralNoteRequestModel request)
         {
             FOX_TBL_GENERAL_NOTE res = new FOX_TBL_GENERAL_NOTE();
-            res = _generalNotesRepository.GetSingle(h => h.GENERAL_NOTE_ID == request.GENERAL_NOTE_ID && !h.DELETED);
+            res = _generalNotesRepository.GetFirst(h => h.GENERAL_NOTE_ID == request.GENERAL_NOTE_ID && !h.DELETED);
             if (res != null) {
                 var usr = _userRepository.GetFirst(e => e.USER_NAME == res.CREATED_BY && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode && e.IS_ACTIVE);
                 if (usr != null) {
@@ -129,11 +129,11 @@ namespace FOX.BusinessOperations.GeneralNotesService
                         res.CREATED_BY_FULL_NAME = usr.FIRST_NAME;
                     }
                 }
-            }
-            var casNo = _vwCaseRepository.GetFirst(e => e.CASE_ID == res.CASE_ID && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode)?.CASE_NO ?? "";
-            if (casNo != null)
-            {
-                res.CASE_NO = casNo;
+                var casNo = _vwCaseRepository.GetFirst(e => e.CASE_ID == res.CASE_ID && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode)?.CASE_NO ?? "";
+                if (casNo != null)
+                {
+                    res.CASE_NO = casNo;
+                }
             }
             return res;
         }
@@ -505,11 +505,13 @@ namespace FOX.BusinessOperations.GeneralNotesService
             else
             {
                 interfaceSynch = __InterfaceSynchModelRepository.GetFirst(x => !x.DELETED && x.FOX_INTERFACE_SYNCH_ID == obj.FOX_INTERFACE_SYNCH_ID );
-                interfaceSynch.MODIFIED_BY = Profile.UserName;
-                interfaceSynch.MODIFIED_DATE = DateTime.Now;
-                __InterfaceSynchModelRepository.Update(interfaceSynch);
-                _CaseContext.SaveChanges();
-
+                if(interfaceSynch != null)
+                {
+                    interfaceSynch.MODIFIED_BY = Profile.UserName;
+                    interfaceSynch.MODIFIED_DATE = DateTime.Now;
+                    __InterfaceSynchModelRepository.Update(interfaceSynch);
+                    _CaseContext.SaveChanges();
+                }
 
                 //interfaceSynch.FOX_INTERFACE_SYNCH_ID = Helper.getMaximumId("FOX_INTERFACE_SYNCH_ID");
                 //interfaceSynch.CASE_ID = obj.CASE_ID;
@@ -645,7 +647,7 @@ namespace FOX.BusinessOperations.GeneralNotesService
                 {
 
                     ErrorMessage = "No record found.",
-                    ID = alertToRemove.FOX_TBL_ALERT_ID + "",
+                    ID = alertToRemove?.FOX_TBL_ALERT_ID + "",
                     Message = "No record found",
                     Success = false
                 };

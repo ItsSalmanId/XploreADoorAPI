@@ -2628,8 +2628,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             try
             {
                 PdfMetamorphosis p = new PdfMetamorphosis();
-                //p.Serial = "10262870570";//server
-                p.Serial = "10261942764";//development
+                p.Serial = "10262870570";
                 p.PageSettings.Size.A4();
                 p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
                 p.PageSettings.MarginLeft.Inch(0.1f);
@@ -4327,12 +4326,9 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
         public void ClearPatientOpenedBy(long patientAccount, UserProfile profile)
         {
-            var patient = _FoxTblPatientRepository.GetFirst(t => t.Patient_Account == patientAccount && t.DELETED == false);
-            if (patient != null)
             {
-                patient.Is_Opened_By = null;
-                _FoxTblPatientRepository.Update(patient);
-                _FoxTblPatientRepository.Save();
+                var patientaccount = new SqlParameter("PATIENT_ACCOUNT", SqlDbType.VarChar) { Value = patientAccount };
+                SpRepository<FOX_TBL_PATIENT>.GetListWithStoreProcedure(@"exec FOX_PROC_CLEAR_PATIENT_OPENED_BY_PATIENT_ACCOUNT @PATIENT_ACCOUNT", patientaccount);
             }
 
 

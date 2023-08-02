@@ -22,6 +22,7 @@ using FOX.DataModels.Models.CommonModel;
 using FOX.DataModels.Models.OriginalQueueModel;
 using FOX.DataModels.Models.IndexInfo;
 using System.Web.Configuration;
+using System.Configuration;
 
 namespace FOX.BusinessOperations.CommonService
 {
@@ -757,16 +758,11 @@ namespace FOX.BusinessOperations.CommonService
         {
             if (!string.IsNullOrEmpty(userName))
             {
-                var usr = _UserRepository.ExecuteCommandSingle("select * from [dbo].fox_tbl_application_user WITH (NOLOCK) where USER_NAME= '"+ userName + "'");//code by irfan ullah
+                //var usr = _UserRepository.ExecuteCommandSingle("select * from [dbo].fox_tbl_application_user WITH (NOLOCK) where USER_NAME= '"+ userName + "'");//code by irfan ullah
+                var username = new SqlParameter("USERNAME", SqlDbType.VarChar) { Value = userName };
+                var usr = SpRepository<User>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_SINGLE_USER_RECORD @USERNAME", username);
                 //var usr = _UserRepository.GetSingle(e => e.USER_NAME.Equals(userName));
-                if (usr != null)
-                {
-                    return usr.FIRST_NAME + " " + usr.LAST_NAME;
-                }
-                else
-                {
-                    return "";
-                }
+                return usr.Full_Name;
             }
             else
             {
@@ -806,15 +802,10 @@ namespace FOX.BusinessOperations.CommonService
         {
             if (patAccount.HasValue)
             {
-                var patient = _PatientRepository.GetFirst(e => e.Patient_Account == patAccount);
-                if (patient != null)
-                {
-                    return patient.First_Name + " " + patient.Last_Name;
-                }
-                else
-                {
-                    return "";
-                }
+               // var patient = _PatientRepository.GetFirst(e => e.Patient_Account == patAccount);
+                var patientAccount = new SqlParameter("@PATIENT_ACCOUNT", SqlDbType.BigInt) { Value = patAccount };
+                var patient = SpRepository<Patient>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_SINGLE_PATIENT @PATIENT_ACCOUNT", patientAccount);
+                return patient.Full_Name;
             }
             else
                 return "";
@@ -1179,17 +1170,7 @@ namespace FOX.BusinessOperations.CommonService
             //QA
             string to = "abdulsattar@carecloud.com";
             //string subject = "Exception occurred in Exception Filter";
-            List<string> cc = new List<string>();
-            cc.Add("muhammadarslan3@carecloud.com");
-            cc.Add("aftabkhan@carecloud.com");
-            cc.Add("asadullah2@carecloud.com");
-            cc.Add("muhammadanwar2@carecloud.com");
-            cc.Add("taimoorhussain@carecloud.com");
-            cc.Add("ismailahmad@carecloud.com");
-            cc.Add("ayazkhan2@carecloud.com");
-            cc.Add("asadinayat@carecloud.com");
-            cc.Add("irfanullah3@carecloud.com");
-
+            List<string> cc = new List<string>(ConfigurationManager.AppSettings["SendEmailOnException"].Split(new char[] { ';' }));
             //string ccvalues = ConfigurationManager.AppSettings["CCListException"];
             //if (!string.IsNullOrWhiteSpace(ccvalues))
             //{
@@ -1248,12 +1229,7 @@ namespace FOX.BusinessOperations.CommonService
             //QA
             string to = "abdulsattar@carecloud.com";
             //string subject = "Exception occurred in Exception Filter";
-            List<string> cc = new List<string>();
-            cc.Add("muhammadarslan3@carecloud.com");
-            cc.Add("aftabkhan@carecloud.com");
-            cc.Add("muhammadsalman7@mtbc.com");
-            cc.Add("muhammadiqbal11@carecloud.com");
-            cc.Add("irfanullah3@carecloud.com");
+            List<string> cc = new List<string>(ConfigurationManager.AppSettings["CCExceptionEmailList"].Split(new char[] { ';' }));
             var body = "";
             body += "<body>";
             //add exception Message

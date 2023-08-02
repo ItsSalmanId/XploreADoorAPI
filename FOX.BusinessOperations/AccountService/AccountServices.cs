@@ -575,7 +575,7 @@ namespace FOX.BusinessOperations.AccountService
                     dbReferralSource.CREATED_DATE = Helper.GetCurrentDate();
                     dbReferralSource.MODIFIED_BY = "CareCloud Remote";
                     dbReferralSource.MODIFIED_DATE = Helper.GetCurrentDate();
-                    _fox_tbl_ordering_ref_source.Insert(dbReferralSource);
+                    _fox_tbl_ordering_ref_source.Update(dbReferralSource);
                     _fox_tbl_ordering_ref_source.Save();
 
                     return dbReferralSource;
@@ -722,15 +722,10 @@ namespace FOX.BusinessOperations.AccountService
 
         public void ClearOpenedByinPatientforUser(string UserName)
         {
-            var patient = _FoxTblPatientRepository.GetMany(t => t.Is_Opened_By == UserName && t.DELETED == false);
-            if (patient != null && patient.Count > 0)
+            if (!string.IsNullOrEmpty(UserName))
             {
-                foreach (var item in patient)
-                {
-                    item.Is_Opened_By = null;
-                    _FoxTblPatientRepository.Update(item);
-                    _FoxTblPatientRepository.Save();
-                }
+                var userName = new SqlParameter("USER_NAME", SqlDbType.VarChar) { Value = UserName };
+                SpRepository<FOX_TBL_PATIENT>.GetListWithStoreProcedure(@"exec FOX_PROC_CLEAR_OPENED_BY_IN_PATIENT_FOR_USER @USER_NAME", userName);
             }
         }
 

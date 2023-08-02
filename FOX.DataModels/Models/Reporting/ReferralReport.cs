@@ -25,6 +25,7 @@ namespace FOX.DataModels.Models.Reporting
         public string Received_Date_Str { get; set; }
         public string ROLE_NAME { get; set; }
         public string ASSIGNED_TO { get; set; }
+        public string ORDERING_REFERRAL_SOURCE { get; set; }
         public string WORK_STATUS { get; set; }
         public string COMPLETED_BY { get; set; }
         public DateTime? COMPLETED_DATE { get; set; }
@@ -118,7 +119,7 @@ namespace FOX.DataModels.Models.Reporting
         public string WORK_ORDER_SOURCE { get; set; }
         public string FACILITY_NAME { get; set; }
         public string DISCIPLINE_NO { get; set; }
-       
+
         public int TOTAL_RECORDS { get; set; }
         public double TOTAL_RECORD_PAGES { get; set; }
 
@@ -173,7 +174,7 @@ namespace FOX.DataModels.Models.Reporting
         public string TYPE { get; set; }
         public bool? IS_ERROR { get; set; }
         public string LOG_MESSAGE { get; set; }
-     
+
         public bool? IS_INCOMMING { get; set; }
         public bool? IS_OUTGOING { get; set; }
         public string MODIFIED_BY { get; set; }
@@ -183,7 +184,7 @@ namespace FOX.DataModels.Models.Reporting
         public int TOTAL_RECORDS { get; set; }
         public int SUCCESSFUL_INTERFACED { get; set; }
         public int FAILED_INTERFACED { get; set; }
-        
+
     }
     public class PHRReportReq : BaseModel
     {

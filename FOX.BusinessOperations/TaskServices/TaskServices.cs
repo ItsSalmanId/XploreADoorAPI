@@ -408,7 +408,10 @@ namespace FOX.BusinessOperations.TaskServices
                 if (task.PATIENT_ACCOUNT != null)
                 {
                     var _patient = _patientMaintenanceService.GetPatientByAccountNo(task.PATIENT_ACCOUNT.Value);
-                    taskLoglist.Add(new TaskLog() { ACTION = "Patient marked", ACTION_DETAIL = "Patient marked: " + Helper.ChangeStringToTitleCase(_patient.LastName) + ", " + Helper.ChangeStringToTitleCase(_patient.FirstName) + "(Account # " + _patient.Patient_Account.ToString() + ")" });
+                    if (_patient != null)
+                    {
+                        taskLoglist.Add(new TaskLog() { ACTION = "Patient marked", ACTION_DETAIL = "Patient marked: " + Helper.ChangeStringToTitleCase(_patient.LastName) + ", " + Helper.ChangeStringToTitleCase(_patient.FirstName) + "(Account # " + _patient.Patient_Account.ToString() + ")" });
+                    }
                 }
                 if (task.CASE_ID != null)
                 {

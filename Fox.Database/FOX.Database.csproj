@@ -257,6 +257,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_PAT_DOCUMENTS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_PAT_DOCUMENT_IMAGES.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_PENDING_BALANCE.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_PENDING_BALANCE_NEW_LOGIC.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_POS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_POS_BY_PA_FOR_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_SURVEY_CALL_LOG_LIST.sql" />
@@ -271,6 +272,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_UPDATE_HISTORY_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PENDING_DETAILED_REPORT.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PENDING_HIGH_BALANCE_DETAILED_REPORT.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_PENDING_HIGH_BALANCE_DETAILED_REPORT_NEW_LOGIC.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PERFORM_SURVEY_PATIENT_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PHD_CALLERS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PHD_CALL_DETAILS.sql" />
@@ -427,6 +429,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_USER_SUPERVISOR.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_WORKQUEUE_BY_ID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_WORK_QUEUE_DETAILS.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_WORK_QUEUE_DETAILS_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_WORK_QUEUE_FILE_ALL_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET__AUTH_STATUS_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET__TASK_TYPE_LIST.sql" />
@@ -648,6 +651,7 @@
     <Content Include="Tables\FOX_TBL_PATIENT_SURVEY_DELETED_RECORDS.sql" />
     <Content Include="Tables\FOX_TBL_PATIENT_SURVEY_FORMAT_TYPE.sql" />
     <Content Include="Tables\FOX_TBL_PATIENT_SURVEY_HISTORY.sql" />
+    <Content Include="Tables\FOX_TBL_PATIENT_SURVEY_NOT_ANSWERED_REASON.sql" />
     <Content Include="Tables\FOX_TBL_PATIENT_UPDATE_HISTORY.sql" />
     <Content Include="Tables\FOX_TBL_PHD_CALLING_UPDATE_SERVICE_CONFIG.sql" />
     <Content Include="Tables\FOX_TBL_PHD_CALL_DETAILS.sql" />
@@ -713,6 +717,7 @@
     <Content Include="Tables\FOX_TBL_TASK_SUB_TYPE_INTEL_TASK_FIELD.sql" />
     <Content Include="Tables\FOX_TBL_TASK_TASK_SUB_TYPE.sql" />
     <Content Include="Tables\FOX_TBL_TASK_TYPE.sql" />
+    <Content Include="Tables\Fox_TBL_TASK_WORK_INTERFACE_MAPPING.sql" />
     <Content Include="Tables\FOX_TBL_THERAPY_TREATMENT_REFERRAL_REQUEST_FORM.sql" />
     <Content Include="Tables\FOX_TBL_USER_GROUP.sql" />
     <Content Include="Tables\FOX_TBL_USER_RIGHTS.sql" />
