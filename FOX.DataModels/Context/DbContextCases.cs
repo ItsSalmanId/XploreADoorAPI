@@ -54,6 +54,7 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<PatientPOSLocation>().Property(t => t.Patient_POS_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<FOX_TBL_CASE_TREATMENT_TEAM>().Property(t => t.TREATMENT_TEAM_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<FOX_TBL_HOLD_NON_REASONS>().Property(t => t.HOLD_NON_REASONS_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<FOX_TBL_CONSENT_TO_CARE>().Property(t => t.CONSENT_TO_CARE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
         }
 
         public virtual DbSet<FOX_TBL_CASE> Case { get; set; }
@@ -90,6 +91,7 @@ namespace FOX.DataModels.Context
         public virtual DbSet<InterfaceSynchModel> InterfaceSynch { get; set; }
         public virtual DbSet<FOX_TBL_CASE_TREATMENT_TEAM> FOX_TBL_CASE_TREATMENT_TEAM { get; set; }
         public virtual DbSet<FOX_TBL_HOLD_NON_REASONS> FOX_TBL_HOLD_NON_REASONS { get; set; }
+        public virtual DbSet<FOX_TBL_CONSENT_TO_CARE> FOX_TBL_CONSENT_TO_CARE { get; set; }
 
     }
 }

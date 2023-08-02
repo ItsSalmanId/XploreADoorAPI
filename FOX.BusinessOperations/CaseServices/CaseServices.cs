@@ -17,6 +17,7 @@ using FOX.DataModels.Models.GeneralNotesModel;
 using FOX.DataModels.Models.Settings.ReferralSource;
 using FOX.DataModels.Models.Settings.FacilityLocation;
 using FOX.DataModels.Models.Settings.ClinicianSetup;
+using System.Web.Configuration;
 
 namespace FOX.BusinessOperations.CaseServices
 {
@@ -72,6 +73,7 @@ namespace FOX.BusinessOperations.CaseServices
         private readonly GenericRepository<FOX_TBL_HOLD_NON_REASONS> _foxTblHoldNonRepository;
         private readonly GenericRepository<Provider> _providerRepository;
         private readonly GenericRepository<ReferralSource> _fox_tbl_ordering_ref_source;
+        private readonly GenericRepository<FOX_TBL_CONSENT_TO_CARE> _consentToCareRepository;
 
 
         public CaseServices()
@@ -118,6 +120,7 @@ namespace FOX.BusinessOperations.CaseServices
             _foxTblHoldNonRepository = new GenericRepository<FOX_TBL_HOLD_NON_REASONS>(_CaseContext);
             _providerRepository = new GenericRepository<Provider>(_DbContextCommon);
             _fox_tbl_ordering_ref_source = new GenericRepository<ReferralSource>(_IndexinfoContext);
+            _consentToCareRepository = new GenericRepository<FOX_TBL_CONSENT_TO_CARE>(_CaseContext);
 
         }
 
@@ -2353,6 +2356,48 @@ namespace FOX.BusinessOperations.CaseServices
             treating_provider.TreatingProviderName = provider_name ;
 
             return treating_provider;
+        }
+        public long GetPracticeCode()
+        {
+            long practiceCode = Convert.ToInt64(WebConfigurationManager.AppSettings?["GetPracticeCode"]);
+            return practiceCode;
+        }
+        public FOX_TBL_CONSENT_TO_CARE AddUpdateConsentToCare(FOX_TBL_CONSENT_TO_CARE consentToCareObj, UserProfile profile)
+        {
+            if (consentToCareObj != null)
+            {
+                var consentToCareId = new SqlParameter("@CONSENT_TO_CARE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CONSENT_TO_CARE_ID };
+                var practiceCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
+                var existingInformation = SpRepository<FOX_TBL_CONSENT_TO_CARE>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_INFO @CONSENT_TO_CARE_ID, @PRACTICE_CODE", consentToCareId, practiceCode);
+                if (existingInformation == null)
+                {
+                    consentToCareObj.CONSENT_TO_CARE_ID = Helper.getMaximumId("CONSENT_TO_CARE_ID");
+                    consentToCareObj.CREATED_DATE = DateTime.Now;
+                    consentToCareObj.EXPIRY_DATE = DateTime.Now.AddDays(5);
+                    consentToCareObj.CREATED_BY = profile.UserName;
+                    consentToCareObj.PRACTICE_CODE = profile.PracticeCode;
+                    _consentToCareRepository.Insert(consentToCareObj);
+                    _consentToCareRepository.Save();
+                }
+                else
+                {
+                    consentToCareObj = existingInformation;
+                    _consentToCareRepository.Update(consentToCareObj);
+                    _consentToCareRepository.Save();
+                }
+            }
+            return consentToCareObj;
+        }
+        public List<FOX_TBL_CONSENT_TO_CARE> GetConsentToCare(FOX_TBL_CONSENT_TO_CARE consentToCareObj, UserProfile profile)
+        {
+            List<FOX_TBL_CONSENT_TO_CARE> consentToCareList = new List<FOX_TBL_CONSENT_TO_CARE>();
+            if (consentToCareObj != null)
+            {
+                var caseId = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CASE_ID };
+                var practiceCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
+                consentToCareList = SpRepository<FOX_TBL_CONSENT_TO_CARE>.GetListWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CASE_ID @CASE_ID, @PRACTICE_CODE", caseId, practiceCode);
+            }
+            return consentToCareList;
         }
     }
 }

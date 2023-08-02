@@ -237,5 +237,29 @@ namespace FoxRehabilitationAPI.Controllers
             var response = Request.CreateResponse(HttpStatusCode.OK, result);
             return response;
         }
+        [HttpPost]
+        public HttpResponseMessage AddUpdateConsentToCare(FOX_TBL_CONSENT_TO_CARE consentToCareObj)
+        {
+            if (consentToCareObj != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _CaseServices.AddUpdateConsentToCare(consentToCareObj, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Consent To Care model is Empty");
+            }
+        }
+        [HttpGet]
+        public HttpResponseMessage GetConsentToCare(FOX_TBL_CONSENT_TO_CARE consentToCareObj)
+        {
+            if (consentToCareObj != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _CaseServices.GetConsentToCare(consentToCareObj, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Consent To Care model is Empty");
+            }
+        }
     }
 }
