@@ -157,9 +157,11 @@ namespace FOX.BusinessOperations.AssignedQueueService
         }
         public List<InterfcaeFailedPatient> GeInterfaceFailedPatientList(long practiceCode, string userName)
         {
+            Helper.TokenTaskCancellationExceptionLog("GeInterfaceFailedPatientList: Start Function   :  ");
             var current_user = new SqlParameter("CURRENT_USER", SqlDbType.VarChar) { Value = userName };
             var parmPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = practiceCode };
             var queue = SpRepository<InterfcaeFailedPatient>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_INTERFACE_FAILED_PATIENT @PRACTICE_CODE, @CURRENT_USER", parmPracticeCode, current_user);
+            Helper.TokenTaskCancellationExceptionLog("GeInterfaceFailedPatientList: END Function   :  ");
             return queue;
 
         }
@@ -339,9 +341,9 @@ namespace FOX.BusinessOperations.AssignedQueueService
             response.Success = false;
             //var dbData = _workOrderAddtionalInfoRepository.GetFirst(e => e.WORK_ID == work_id && !e.DELETED);
             //var practiceCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
-            var workId = new SqlParameter("UNIQUE_ID", SqlDbType.VarChar) { Value = work_id };
+            var workId = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = work_id };
             var practiceCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = profile.PracticeCode };
-            var dbData = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS  @UNIQUE_ID, @PRACTICE_CODE", workId, practiceCode);
+            var dbData = SpRepository<OriginalQueue>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_WORK_QUEUE_DETAILS_BY_WORKID  @WORK_ID, @PRACTICE_CODE", workId, practiceCode);
            //var dbData = _queueRepository.GetFirst(e => e.WORK_ID == work_id && !e.DELETED && e.PRACTICE_CODE == profile.PracticeCode);
             //if (dbData == null)
             //{
