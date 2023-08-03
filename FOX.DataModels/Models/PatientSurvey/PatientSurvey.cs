@@ -567,6 +567,20 @@ namespace FOX.DataModels.Models.PatientSurvey
         public bool DELETED { get; set; }
         public Nullable<long> PRACTICE_CODE { get; set; }
     }
+    public class AdditionalNumber
+    {
+        public long ADDITIONAL_NUMBER_ID { get; set; }
+        public long? SURVEY_ID { get; set; }
+        public string PATIENT_WORK_NUMBER { get; set; }
+        public string LAST_DIALED_TYPE { get; set; }
+        public string PATIENT_CELL_NUMBER { get; set; }
+        public long? PRACTICE_CODE { get; set; }
+        public string CREATED_BY { get; set; } = "FOX TEAM";
+        public DateTime? CREATED_DATE { get; set; } = DateTime.Now;
+        public DateTime? MODIFIED_DATE { get; set; } = DateTime.Now;
+        public string MODIFIED_BY { get; set; } = "FOX TEAM";
+        public bool? DELETED { get; set; } = false;
+    }
 
 
 }

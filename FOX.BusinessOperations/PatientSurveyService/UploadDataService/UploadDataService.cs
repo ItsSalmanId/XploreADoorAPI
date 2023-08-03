@@ -405,7 +405,13 @@ namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
                     patientSurvey.IS_CONTACT_HQ = null;
                     patientSurvey.IS_RESPONSED_BY_HQ = null;
                     _patientSurveyRepository.Insert(patientSurvey);
-                    _patientSurveyRepository.Save();
+                    _patientSurveyRepository.Save();    
+                    var additionalNumberID = new SqlParameter { ParameterName = "@ADDITIONAL_NUMBER_ID", SqlDbType = SqlDbType.BigInt, Value = Helper.getMaximumId("ADDITIONAL_NUMBER_ID") };
+                    var surveyID = new SqlParameter { ParameterName = "@SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = patientSurvey.SURVEY_ID };
+                    SqlParameter patientWorkNumber = new SqlParameter { ParameterName = "@PATIENT_WORK_NUMBER", SqlDbType = SqlDbType.VarChar, Value = patientSurvey.PATIENT_WORK_NUMBER };
+                    SqlParameter patientCellNumber = new SqlParameter { ParameterName = "@PATIENT_CELL_NUMBER", SqlDbType = SqlDbType.VarChar, Value = patientSurvey.PATIENT_CELL_NUMBER };
+                    SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
+                    SpRepository<AdditionalNumber>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_PATIENT_SURVEY_ADDITIONAL_NUMBER  @ADDITIONAL_NUMBER_ID, @SURVEY_ID, @PATIENT_WORK_NUMBER, @PATIENT_CELL_NUMBER, @PRACTICE_CODE", additionalNumberID, surveyID, patientWorkNumber, patientCellNumber, pracCode);
                 }
             }
             else
@@ -422,6 +428,12 @@ namespace FOX.BusinessOperations.PatientSurveyService.UploadDataService
                 patientSurvey.IS_RESPONSED_BY_HQ = null;
                 _patientSurveyRepository.Insert(patientSurvey);
                 _patientSurveyRepository.Save();
+                var additionalNumberID = new SqlParameter { ParameterName = "@ADDITIONAL_NUMBER_ID", SqlDbType = SqlDbType.BigInt, Value = Helper.getMaximumId("ADDITIONAL_NUMBER_ID") };
+                var surveyID = new SqlParameter { ParameterName = "@SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = patientSurvey.SURVEY_ID };
+                SqlParameter patientWorkNumber = new SqlParameter { ParameterName = "@PATIENT_WORK_NUMBER", SqlDbType = SqlDbType.VarChar, Value = patientSurvey.PATIENT_WORK_NUMBER };
+                SqlParameter patientCellNumber = new SqlParameter { ParameterName = "@PATIENT_CELL_NUMBER", SqlDbType = SqlDbType.VarChar, Value = patientSurvey.PATIENT_CELL_NUMBER };
+                SqlParameter pracCode = new SqlParameter { ParameterName = "@PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };
+                SpRepository<AdditionalNumber>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_PATIENT_SURVEY_ADDITIONAL_NUMBER  @ADDITIONAL_NUMBER_ID, @SURVEY_ID, @PATIENT_WORK_NUMBER, @PATIENT_CELL_NUMBER, @PRACTICE_CODE", additionalNumberID, surveyID, patientWorkNumber, patientCellNumber, pracCode);
             }
         }
         private void generate_file(long totalRecordInFile, UserProfile profile, string pathtowriteFile)
