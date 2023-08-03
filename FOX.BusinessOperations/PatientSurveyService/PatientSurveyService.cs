@@ -931,6 +931,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 var modifiedBy = new SqlParameter { ParameterName = "@MODIFIED_BY", SqlDbType = SqlDbType.VarChar, Value = patientSurveyCallLog.MODIFIED_BY };
                 var modifiedDate = new SqlParameter { ParameterName = "@MODIFIED_DATE", SqlDbType = SqlDbType.DateTime, Value = patientSurveyCallLog.MODIFIED_DATE };
                 var delete = new SqlParameter { ParameterName = "@DELETED", SqlDbType = SqlDbType.Bit, Value = patientSurveyCallLog.DELETED };
+                var dailedType = new SqlParameter { ParameterName = "@DIALED_TYPE", SqlDbType = SqlDbType.VarChar, Value = patientSurveyCallLog.LAST_DIALED_TYPE};
 
 
                 if (patientSurveyCallLog.PRACTICE_CODE == null)
@@ -970,8 +971,8 @@ namespace FOX.BusinessOperations.PatientSurveyService
                     isToPatient.Value = DBNull.Value;
                 }
                 var PatientSurveyList = SpRepository<PatientSurveyCallLog>.GetListWithStoreProcedure(@"exec FOX_PROC_INSERT_PATIENT_SURVEY_CALL_LOG 
-                 @SURVEY_CALL_ID, @PRACTICE_CODE, @ACU_CALL_ID, @SURVEY_ID, @PATIENT_ACCOUNT, @FILE_NAME, @IS_RECEIVED, @CALL_OUT_COME, @CALL_DURATION, @IS_TO_PATIENT, @MODIFIED_BY, @MODIFIED_DATE, @CREATED_BY, @CREATED_DATE, @DELETED"
-                 , surveyCallId, practiceCode, acuID, surveyId, patientAccount, fileName, isReceived, callOutCome, callDuration, isToPatient, createdBy, createdDate, modifiedBy, modifiedDate, delete);
+                 @SURVEY_CALL_ID, @PRACTICE_CODE, @ACU_CALL_ID, @SURVEY_ID, @PATIENT_ACCOUNT, @FILE_NAME, @IS_RECEIVED, @CALL_OUT_COME, @CALL_DURATION, @IS_TO_PATIENT, @MODIFIED_BY, @MODIFIED_DATE, @CREATED_BY, @CREATED_DATE, @DELETED, @DIALED_TYPE"
+                 , surveyCallId, practiceCode, acuID, surveyId, patientAccount, fileName, isReceived, callOutCome, callDuration, isToPatient, createdBy, createdDate, modifiedBy, modifiedDate, delete, dailedType);
             }
         }
 
