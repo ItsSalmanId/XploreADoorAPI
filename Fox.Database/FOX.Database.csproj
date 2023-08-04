@@ -477,7 +477,6 @@
     <Content Include="StoredProcedure\FOX_PROC_PATIENT_SEARCH_ORDER.sql" />
     <Content Include="StoredProcedure\FOX_PROC_REMOVE_REFERRAL_REGION_COUNTY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_REPORT_REFERRAL_LIST.sql" />
-    <Content Include="StoredProcedure\FOX_PROC_SAVE_EXTERNAL_USER_INFO.sql" />
     <Content Include="StoredProcedure\FOX_PROC_SET_PATIENT_OPENBY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_SET_PRACTICE_ROLE_RIGHTS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_SET_USER_INVALID_LOGIN_ATTEMPTS.sql" />
