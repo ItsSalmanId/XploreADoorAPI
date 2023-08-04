@@ -180,6 +180,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_EMAIL.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_EMAIL_EMERGENCY_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_EMPLOYERS.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_EXTERNAL_USER_INFO.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_FACILITY_BY_ID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_FACILITY_BY_PATIENT_POS_LOC_ID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_FACILITY_LOCATION_LIST.sql" />
@@ -205,6 +206,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_INDEXER_FULL_NAME.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_INDEX_INFO_INDEXER.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_INSURANCE.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_INSURANCE_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_INSURANCE_PAYERS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_INSURANCE_PAYER_NAME.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_INTERFACE_FAILED_PATIENT.sql" />
@@ -477,6 +479,7 @@
     <Content Include="StoredProcedure\FOX_PROC_PATIENT_SEARCH_ORDER.sql" />
     <Content Include="StoredProcedure\FOX_PROC_REMOVE_REFERRAL_REGION_COUNTY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_REPORT_REFERRAL_LIST.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_SAVE_EXTERNAL_USER_INFO.sql" />
     <Content Include="StoredProcedure\FOX_PROC_SET_PATIENT_OPENBY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_SET_PRACTICE_ROLE_RIGHTS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_SET_USER_INVALID_LOGIN_ATTEMPTS.sql" />
