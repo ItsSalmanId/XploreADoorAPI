@@ -144,7 +144,16 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string PATIENT_CELL_NUMBER { get; set; }
         [NotMapped]
         public string LAST_DIALED_TYPE { get; set; }
-
+        [NotMapped]
+        public long CountNo { get; set; }
+    }
+    public class PatientSurveyCount
+    {
+        [NotMapped]
+        public string SURVEY_STATUS_CHILD { get; set; }
+        [NotMapped]
+        public long CountNo { get; set; }
+ 
 
     }
     [Table("FOX_TBL_SURVEY_AUTOMATION_SERVICE_LOG")]
@@ -524,7 +533,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public int? RECOMMENDED { get; set; }
         public int? NOT_RECOMMENDED { get; set; }
     }
-    public class PSDRChartData
+    public class PsdrCount
     {
         public int COMPLETED { get; set; }
         public int COMPLETED_SURVEY { get; set; }

@@ -246,26 +246,14 @@ namespace FOX.BusinessOperations.CommonService
 
             try
             {
-                OriginalQueueFiles originalQueueFiles = _OriginalQueueFiles.GetFirst(t => t.WORK_ID == workId && !t.deleted && t.FILE_PATH1.Equals(filePath) && t.FILE_PATH.Equals(logoPath));
-
-                if (originalQueueFiles == null)
+                if (workId != 0 && !string.IsNullOrEmpty(filePath) && !string.IsNullOrEmpty(logoPath))
                 {
-                    //If Work Order files is deleted
-                    originalQueueFiles = _OriginalQueueFiles.GetFirst(t => t.WORK_ID == workId && t.deleted && t.FILE_PATH1.Equals(filePath) && t.FILE_PATH.Equals(logoPath));
-                    if (originalQueueFiles == null)
-                    {
-                        originalQueueFiles = new OriginalQueueFiles();
-
-                        originalQueueFiles.FILE_ID = Helper.getMaximumId("FOXREHAB_FILE_ID");
-                        originalQueueFiles.WORK_ID = workId;
-                        originalQueueFiles.UNIQUE_ID = workId.ToString();
-                        originalQueueFiles.FILE_PATH1 = filePath;
-                        originalQueueFiles.FILE_PATH = logoPath;
-                        originalQueueFiles.deleted = false;
-
-                        _OriginalQueueFiles.Insert(originalQueueFiles);
-                        _OriginalQueueFiles.Save();
-                   }
+                    SqlParameter refWorkId = new SqlParameter { ParameterName = "@WORK_ID", SqlDbType = SqlDbType.BigInt, Value = workId };
+                    SqlParameter fileId = new SqlParameter { ParameterName = "@FILE_ID", SqlDbType = SqlDbType.BigInt, Value = Helper.getMaximumId("FOXREHAB_FILE_ID") };
+                    SqlParameter objFilePath1 = new SqlParameter { ParameterName = "@FILE_PATH1", SqlDbType = SqlDbType.VarChar, Value = filePath };
+                    SqlParameter objLoguPath = new SqlParameter { ParameterName = "@FILE_PATH", SqlDbType = SqlDbType.VarChar, Value = logoPath };
+                    var originalQueueFilesList = SpRepository<OriginalQueueFiles>.GetListWithStoreProcedure(@"exec FOX_PROC_ADD_UPLOAD_WORK_QUEUE_FILE_ALL_DETAILS @WORK_ID, @FILE_ID, @FILE_PATH1, @FILE_PATH",
+                        refWorkId, fileId, objFilePath1, objLoguPath);
                 }
             }
             catch (Exception exception)
