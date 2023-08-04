@@ -477,7 +477,6 @@
     <Content Include="StoredProcedure\FOX_PROC_PATIENT_SEARCH_ORDER.sql" />
     <Content Include="StoredProcedure\FOX_PROC_REMOVE_REFERRAL_REGION_COUNTY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_REPORT_REFERRAL_LIST.sql" />
-    <Content Include="StoredProcedure\FOX_PROC_SAVE_EXTERNAL_USER_INFO.sql" />
     <Content Include="StoredProcedure\FOX_PROC_SET_PATIENT_OPENBY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_SET_PRACTICE_ROLE_RIGHTS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_SET_USER_INVALID_LOGIN_ATTEMPTS.sql" />
@@ -604,6 +603,7 @@
     <Content Include="Tables\FOX_TBL_FREEZ_AGING_GROUP_DOS.sql" />
     <Content Include="Tables\FOX_TBL_FREEZ_AGING_GROUP_FC_DRILL.sql" />
     <Content Include="Tables\FOX_TBL_FRICTIONLESS_REFERRAL.sql" />
+    <Content Include="Tables\FOX_TBL_FRICTIONLESS_SERVICE_UNAVAILABLE_ZIPCODE.sql" />
     <Content Include="Tables\FOX_TBL_FRICTIONLESS_WORK_QUEUE_FILE_ALL.sql" />
     <Content Include="Tables\FOX_TBL_GENERAL_NOTE.sql" />
     <Content Include="Tables\FOX_TBL_GRADING_SETUP.sql" />
