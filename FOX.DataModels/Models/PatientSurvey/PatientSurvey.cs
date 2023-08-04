@@ -155,6 +155,15 @@ namespace FOX.DataModels.Models.PatientSurvey
         public long CountNo { get; set; }
  
 
+        [NotMapped]
+        public long CountNo { get; set; }
+    }
+    public class PatientSurveyCount
+    {
+        [NotMapped]
+        public string SURVEY_STATUS_CHILD { get; set; }
+        [NotMapped]
+        public long CountNo { get; set; }
     }
     [Table("FOX_TBL_SURVEY_AUTOMATION_SERVICE_LOG")]
     public class SurveyServiceLog
