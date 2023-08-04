@@ -139,6 +139,12 @@ namespace FOX.DataModels.Models.PatientSurvey
         [NotMapped]
         public string NOT_ANSWERED_REASON { get; set; }
         [NotMapped]
+        public string PATIENT_WORK_NUMBER { get; set; }
+        [NotMapped]
+        public string PATIENT_CELL_NUMBER { get; set; }
+        [NotMapped]
+        public string LAST_DIALED_TYPE { get; set; }
+        [NotMapped]
         public long CountNo { get; set; }
     }
     public class PatientSurveyCount
@@ -147,6 +153,8 @@ namespace FOX.DataModels.Models.PatientSurvey
         public string SURVEY_STATUS_CHILD { get; set; }
         [NotMapped]
         public long CountNo { get; set; }
+ 
+
     }
     [Table("FOX_TBL_SURVEY_AUTOMATION_SERVICE_LOG")]
     public class SurveyServiceLog
