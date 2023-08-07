@@ -262,6 +262,7 @@ namespace FOX.DataModels.Models.PatientSurvey
         public Double TOTAL_RECORD_PAGES { get; set; }
         [NotMapped]
         public int TOTAL_RECORD { get; set; }
+        [NotMapped]
         public string LAST_DIALED_TYPE { get; set; }
 
     }
