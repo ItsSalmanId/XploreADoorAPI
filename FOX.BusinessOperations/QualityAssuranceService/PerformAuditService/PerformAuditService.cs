@@ -133,9 +133,11 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             var dateTo = Helper.getDBNullOrValue("@DATE_TO", request.DATE_TO.ToString());
             var callScanario = new SqlParameter { ParameterName = "PHD_CALL_SCENARIO_ID", SqlDbType = SqlDbType.VarChar, Value = request.PHD_CALL_SCENARIO_ID };
             var readOnlyMode = new SqlParameter { ParameterName = "IS_READ_ONLY_MODE", SqlDbType = SqlDbType.Bit, Value = request.IS_READ_ONLY_MODE };
+            var CurrentPage = new SqlParameter { ParameterName = "@PAGE_NUMBER", SqlDbType = SqlDbType.Int, Value = request.PAGE_NUMBER };
+            var RecordPerPage = new SqlParameter { ParameterName = "@PAGE_SIZE", SqlDbType = SqlDbType.Int, Value = 500 };
 
             var result = SpRepository<CallLogModel>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_CALL_LIST_FOR_AUDIT
-                         @PRACTICE_CODE, @CALL_BY, @CALL_TYPE, @DATE_FROM, @DATE_TO, @PHD_CALL_SCENARIO_ID, @IS_READ_ONLY_MODE ", PracticeCode, _callBy, _callType, dateFrom, dateTo, callScanario, readOnlyMode);
+                         @PRACTICE_CODE, @CALL_BY, @CALL_TYPE, @DATE_FROM, @DATE_TO, @PHD_CALL_SCENARIO_ID, @IS_READ_ONLY_MODE ,@PAGE_NUMBER,@PAGE_SIZE", PracticeCode, _callBy, _callType, dateFrom, dateTo, callScanario, readOnlyMode, CurrentPage, RecordPerPage);
             callLogList = result;
             return callLogList;
         }

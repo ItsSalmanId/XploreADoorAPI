@@ -1,174 +1,430 @@
-IF (OBJECT_ID('FOX_PROC_GET_CALL_LIST_FOR_AUDIT') IS NOT NULL ) DROP PROCEDURE FOX_PROC_GET_CALL_LIST_FOR_AUDIT 
-GO
--- =============================================                                    
--- AUTHOR:  <DEVELOPER, USAMA BIN AHMED>                                    
--- CREATE DATE: <CREATE DATE, 01/04/2020>      
--- Modified By : <Muhammad Taseer Iqbal, 09/15/2022>      
--- DESCRIPTION: <GET ALL CALL LIST FOR AUDIT>                      
-              
--- EXEC [FOX_PROC_GET_CALL_LIST_FOR_AUDIT] 1012714,'Admin_5651352','survey',NULL,NULL,0                                   
-                                    
-CREATE PROCEDURE [DBO].[FOX_PROC_GET_CALL_LIST_FOR_AUDIT]                                     
-  @PRACTICE_CODE BIGINT                                    
- ,@CALL_BY VARCHAR(100)                                    
- ,@CALL_TYPE VARCHAR(100)                                    
- ,@DATE_FROM       DATETIME                                       
- ,@DATE_TO         DATETIME                                  
- ,@PHD_CALL_SCENARIO_ID  VARCHAR(100)                                   
-                                     
-AS                                    
-BEGIN                                                                                          
-  IF(@CALL_TYPE = 'all')                                    
-  BEGIN                                    
- ( SELECT PSL.SURVEY_CALL_ID AS ID                                    
-    ,PSL.MODIFIED_BY AS CREATED_BY                                    
-    ,PSL.CREATED_DATE                                    
-    ,FILE_NAME as [FILE_NAME]                                    
-    ,'Patient Survey' AS Logs                                  
-  ,                                  
-    '' AS NAME                                  
- , P.Chart_Id AS MRN                                  
- ,P.First_Name                                  
- ,P.Last_Name                                  
- , sas.SCORING_CRITERIA AS SCORING_CRITERIA                         
-  FROM FOX_TBL_PATIENT_SURVEY_CALL_LOG AS PSL    with (nolock)                              
-  LEFT JOIN Patient AS P         with (nolock)                          
-  ON PSL.PATIENT_ACCOUNT = P.Patient_Account               
-  left join FOX_TBL_SURVEY_AUDIT_SCORES as sas with (nolock)                    
-on PSL.SURVEY_CALL_ID = sas.SURVEY_CALL_ID               
- WHERE PSL.MODIFIED_BY = @CALL_BY                
-  AND ISNULL(sas.DELETED, 0) = 0             
-     AND ISNULL(PSL.DELETED, 0) = 0                                    
-  AND ISNULL(IS_RECEIVED, 0) = 1                                    
-  AND PSL.PRACTICE_CODE = @PRACTICE_CODE                                    
-  AND (@DATE_FROM IS NULL                                      
-              OR @DATE_TO IS NULL                                      
-              OR CONVERT(DATE, PSL.CREATED_DATE)                                     
-     BETWEEN CONVERT(DATE, @DATE_FROM)                                     
-     AND CONVERT(DATE, @DATE_TO))                                     
- UNION                                    
-  SELECT FOX_PHD_CALL_DETAILS_ID AS ID,                                    
-  C.CREATED_BY,                                    
-  C.CALL_DATE,                                    
-  C.CALL_RECORDING_PATH as [FILE_NAME]                                    
- ,'Patient Helpdesk' AS Logs                                    
- ,R.NAME AS NAME                                  
- ,P.Chart_Id AS MRN                                 
- ,P.First_Name                                  
- ,P.Last_Name                    
- , null AS SCORING_CRITERIA                                    
- FROM FOX_TBL_PHD_CALL_DETAILS C     with (nolock)                                
- left join FOX_TBL_PHD_CALL_REASON R with (nolock)  on C.CALL_REASON = R.PHD_CALL_REASON_ID                               
- left join FOX_TBL_PHD_CALL_SCENARIO AS SR   with (nolock)                                
- ON C.CALL_SCENARIO = SR.PHD_CALL_SCENARIO_ID                                  
- LEFT JOIN Patient AS P with (nolock)  ON C.PATIENT_ACCOUNT = P.Patient_Account                                   
- WHERE C.CREATED_BY = @CALL_BY                                    
-  AND ISNULL(C.DELETED, 0) = 0           
-  AND ISNULL(CALL_RECORDING_PATH , '') <> ''                                    
-  AND C.PRACTICE_CODE = @PRACTICE_CODE                                  
-  AND  (@PHD_CALL_SCENARIO_ID = 0 OR SR.PHD_CALL_SCENARIO_ID  = @PHD_CALL_SCENARIO_ID)                
-  AND SR.DELETED = 0                                  
-  AND (@DATE_FROM IS NULL                                      
-              OR @DATE_TO IS NULL                                      
-              OR CONVERT(DATE, C.CREATED_DATE)                                     
-     BETWEEN CONVERT(DATE, @DATE_FROM)                                     
-     AND CONVERT(DATE, @DATE_TO)) )                    
-  END                                    
-                                    
-  ELSE IF(@CALL_TYPE = 'survey')                                    
-  BEGIN                                    
- SELECT PSL.SURVEY_CALL_ID AS ID                        
-    ,PSL.PATIENT_ACCOUNT                        
-    ,PSL.MODIFIED_BY AS CREATED_BY                                    
-    ,PSL.CREATED_DATE                                    
-   ,PSL.FILE_NAME as [FILE_NAME]                                    
-    ,'Patient Survey' AS LOGS,                                    
-    '' AS NAME                                  
- , convert(varchar ,Ps.PATIENT_ACCOUNT_NUMBER ) AS MRN                                 
- ,Ps.PATIENT_FIRST_NAME AS FIRST_NAME                                  
- ,Ps.PATIENT_LAST_NAME  AS LAST_NAME              
- , sas.SCORING_CRITERIA AS SCORING_CRITERIA          
- , ps.SURVEY_FLAG              
-  FROM FOX_TBL_PATIENT_SURVEY_CALL_LOG AS PSL  with (nolock)                                 
-  left join FOX_TBL_PATIENT_SURVEY as ps      with (nolock)               
-on ps.SURVEY_ID = psl.SURVEY_ID     -- ps.PATIENT_ACCOUNT_NUMBER = psl.PATIENT_ACCOUNT  AND              
-left join FOX_TBL_SURVEY_AUDIT_SCORES as sas with (nolock)                    
-on PSL.SURVEY_CALL_ID = sas.SURVEY_CALL_ID               
-                  
- WHERE PSL.MODIFIED_BY = @CALL_BY                                    
-     AND ISNULL(PSL.DELETED, 0) = 0              
-  AND ISNULL(sas.DELETED, 0) = 0              
-  AND ISNULL(PSL.IS_RECEIVED, 0) = 1                                    
-  AND PSL.PRACTICE_CODE = @PRACTICE_CODE                                    
-  AND (@DATE_FROM IS NULL                                      
-              OR @DATE_TO IS NULL                                      
-              OR CONVERT(DATE, PSL.CREATED_DATE)                            
-     BETWEEN CONVERT(DATE, @DATE_FROM)                                     
-     AND CONVERT(DATE, @DATE_TO))                                     
- ORDER BY PSL.CREATED_DATE DESC                                    
- END                                    
-                                    
- ELSE IF(@CALL_TYPE = 'phd')                                    
-  BEGIN                              
-                                      
-  SELECT                              
---  CASE WHEN SCR.PHD_CALL_ID = 0                              
--- THEN SCR.SURVEY_AUDIT_SCORES_ID                              
--- ELSE                              
--- C.FOX_PHD_CALL_DETAILS_ID                              
--- END AS FOX_PHD_CALL_DETAILS_ID                              
-----  CASE WHEN                              
---  C.FOX_PHD_CALL_DETAILS_ID = 000000000                              
--- THEN                               
---CONVERT(nvarchar(MAX), C.FOX_PHD_CALL_DETAILS_ID) +  CONVERT( nvarchar (MAX) ,C.CREATED_DATE )                               
--- ELSE CONVERT (nvarchar(MAX),C.FOX_PHD_CALL_DETAILS_ID )                              
--- END AS STRING_ID,                              
- C.FOX_PHD_CALL_DETAILS_ID AS ID                              
- ,c.PATIENT_ACCOUNT                            
-                               
-                                       
-   ,C.CREATED_BY                                    
-   ,C.CREATED_DATE                                    
-  ,C.CALL_RECORDING_PATH as [FILE_NAME]                               
-                        
-        ,'Patient Helpdesk' AS LOGS,                              
-  CASE                               
-   WHEN                               
-   C.FOX_PHD_CALL_DETAILS_ID = 000000000                              
-   THEN  'Patient Helpdesk| Not Associated Call'                               
-   ELSE                              
-   'Patient Helpdesk'                              
-    END AS LOGS                                
-                                
-                                     
-  ,R.NAME AS NAME                       
-  , P.Chart_Id AS MRN                                 
-  ,P.First_Name  AS FIRST_NAME                                  
-  ,P.Last_Name AS  LAST_NAME                        
-  ,SR.PHD_CALL_SCENARIO_ID                        
-  ,sr.NAME AS CALL_SCANARIO              
-  , SCR.SCORING_CRITERIA AS SCORING_CRITERIA                  
- FROM FOX_TBL_PHD_CALL_DETAILS C     with (nolock)                                
- left join FOX_TBL_PHD_CALL_REASON R with (nolock) on C.CALL_REASON = R.PHD_CALL_REASON_ID                               
- left join FOX_TBL_PHD_CALL_SCENARIO AS SR with (nolock)                                  
- ON C.CALL_SCENARIO = SR.PHD_CALL_SCENARIO_ID                                  
-  LEFT JOIN Patient AS P with (nolock)                                    
- ON C.PATIENT_ACCOUNT = P.Patient_Account                              
- left join FOX_TBL_SURVEY_AUDIT_SCORES AS SCR     with (nolock)                          
- ON SCR.PHD_CALL_ID = c.FOX_PHD_CALL_DETAILS_ID                                     
-                                   AND ISNULL(SCR.DELETED, 0)=0
- WHERE C.CREATED_BY = @CALL_BY                                    
-     AND ISNULL(C.DELETED, 0) = 0                            
-  --AND ISNULL(R.DELETED,0) = 0 AND ISNULL(SR.DELETED,0) = 0                                    
-  AND ISNULL(C.CALL_RECORDING_PATH , '') <> ''                                    
-  AND C.PRACTICE_CODE = @PRACTICE_CODE                        
-  AND (@PHD_CALL_SCENARIO_ID = 0 OR SR.PHD_CALL_SCENARIO_ID  = @PHD_CALL_SCENARIO_ID)                                    
-  AND (@DATE_FROM IS NULL                                      
-              OR @DATE_TO IS NULL                                      
-              OR CONVERT(DATE, C.CREATED_DATE)                                     
-     BETWEEN CONVERT(DATE, @DATE_FROM)                                     
-     AND CONVERT(DATE, @DATE_TO))                                     
-                                    
- ORDER BY CREATED_DATE DESC                                    
-  END                                    
-END                           
+-- =============================================                                            
+-- AUTHOR:  <DEVELOPER, USAMA BIN AHMED>                                            
+-- CREATE DATE: <CREATE DATE, 01/04/2020>              
+-- Modified By : <Muhammad Salman, 06/15/2023>              
+-- DESCRIPTION: <GET ALL CALL LIST FOR AUDIT>                              
+                      
+-- EXEC [FOX_PROC_GET_CALL_LIST_FOR_AUDIT] 1012714,'Ahmaad_53411357','survey',NULL,NULL,0,1                                           
+--[FOX_PROC_GET_CALL_LIST_FOR_AUDIT_tempA]  1012714, 'Ahmaad_53411357', 'survey', Null, Null, 0, 0 
+--[FOX_PROC_GET_CALL_LIST_FOR_AUDIT_Revamp]  1012714, 'Ahmaad_53411357', 'survey', Null, Null, 0, 1 , 1,500          
+          
+ALTER PROCEDURE [dbo].[FOX_PROC_GET_CALL_LIST_FOR_AUDIT]
+@PRACTICE_CODE BIGINT, 
+@CALL_BY VARCHAR(100), 
+@CALL_TYPE VARCHAR(100), 
+@DATE_FROM DATETIME, 
+@DATE_TO DATETIME, 
+@PHD_CALL_SCENARIO_ID VARCHAR(100), 
+@IS_READ_ONLY_MODE BIT, 
+@CURRENT_PAGE BIGINT, 
+@RECORD_PER_PAGE BIGINT AS BEGIN --declare              
+--  @PRACTICE_CODE BIGINT  = 1012714                                                
+-- ,@CALL_BY   VARCHAR(100) =  'Ahmaad_53411357'                                     
+-- ,@CALL_TYPE VARCHAR(100) = 'phd'                                      
+-- ,@DATE_FROM  DATETIME = Null                                        
+-- ,@DATE_TO  DATETIME = Null                                   
+-- ,@PHD_CALL_SCENARIO_ID VARCHAR(100)  =    0               
+-- ,@IS_READ_ONLY_MODE  BIT   = 1   
+-- ,@CURRENT_PAGE BIGINT = 1
+-- ,@RECORD_PER_PAGE BIGINT = 10000    
+SET 
+  @CURRENT_PAGE = @CURRENT_PAGE -1 DECLARE @START_FROM INT = @CURRENT_PAGE * @RECORD_PER_PAGE DECLARE @TOATL_PAGESUDM FLOAT DECLARE @TOTAL_RECORDS INT = @TOATL_PAGESUDM IF(@RECORD_PER_PAGE = 0) BEGIN 
+SET 
+  @RECORD_PER_PAGE = @TOATL_PAGESUDM END ELSE BEGIN 
+SET 
+  @RECORD_PER_PAGE = @RECORD_PER_PAGE END IF(@CALL_TYPE = 'all') BEGIN (
+    SELECT 
+      PSL.SURVEY_CALL_ID AS ID, 
+      PSL.MODIFIED_BY AS CREATED_BY, 
+      PSL.CREATED_DATE, 
+      FILE_NAME as [FILE_NAME], 
+      'Patient Survey' AS Logs, 
+      '' AS NAME, 
+      P.Chart_Id AS MRN, 
+      P.First_Name, 
+      P.Last_Name, 
+      sas.SCORING_CRITERIA AS SCORING_CRITERIA 
+    FROM 
+      FOX_TBL_PATIENT_SURVEY_CALL_LOG AS PSL with (nolock) 
+      LEFT JOIN Patient AS P with (nolock) ON PSL.PATIENT_ACCOUNT = P.Patient_Account 
+      left join FOX_TBL_SURVEY_AUDIT_SCORES as sas with (nolock) on PSL.SURVEY_CALL_ID = sas.SURVEY_CALL_ID 
+    WHERE 
+      PSL.MODIFIED_BY = @CALL_BY 
+      AND ISNULL(sas.DELETED, 0) = 0 
+      AND ISNULL(PSL.DELETED, 0) = 0 
+      AND ISNULL(IS_RECEIVED, 0) = 1 
+      AND PSL.PRACTICE_CODE = @PRACTICE_CODE 
+      AND (
+        @DATE_FROM IS NULL 
+        OR @DATE_TO IS NULL 
+        OR CONVERT(DATE, PSL.CREATED_DATE) BETWEEN CONVERT(DATE, @DATE_FROM) 
+        AND CONVERT(DATE, @DATE_TO)
+      ) 
+    UNION 
+    SELECT 
+      FOX_PHD_CALL_DETAILS_ID AS ID, 
+      C.CREATED_BY, 
+      C.CALL_DATE, 
+      C.CALL_RECORDING_PATH as [FILE_NAME], 
+      'Patient Helpdesk' AS Logs, 
+      R.NAME AS NAME, 
+      P.Chart_Id AS MRN, 
+      P.First_Name, 
+      P.Last_Name, 
+      null AS SCORING_CRITERIA 
+    FROM 
+      FOX_TBL_PHD_CALL_DETAILS C with (nolock) 
+      left join FOX_TBL_PHD_CALL_REASON R with (nolock) on C.CALL_REASON = R.PHD_CALL_REASON_ID 
+      left join FOX_TBL_PHD_CALL_SCENARIO AS SR with (nolock) ON C.CALL_SCENARIO = SR.PHD_CALL_SCENARIO_ID 
+      LEFT JOIN Patient AS P with (nolock) ON C.PATIENT_ACCOUNT = P.Patient_Account 
+    WHERE 
+      C.CREATED_BY = @CALL_BY 
+      AND ISNULL(C.DELETED, 0) = 0 
+      AND ISNULL(CALL_RECORDING_PATH, '') <> '' 
+      AND C.PRACTICE_CODE = @PRACTICE_CODE 
+      AND (
+        @PHD_CALL_SCENARIO_ID = 0 
+        OR SR.PHD_CALL_SCENARIO_ID = @PHD_CALL_SCENARIO_ID
+      ) 
+      AND SR.DELETED = 0 
+      AND (
+        @DATE_FROM IS NULL 
+        OR @DATE_TO IS NULL 
+        OR CONVERT(DATE, C.CREATED_DATE) BETWEEN CONVERT(DATE, @DATE_FROM) 
+        AND CONVERT(DATE, @DATE_TO)
+      )
+  ) END ELSE IF(@CALL_TYPE = 'survey') BEGIN IF OBJECT_ID(
+    'TEMPDB.DBO.#TEMP_SURVEY_CALL_DETAILS', 
+    'U'
+  ) IS NOT NULL 
+DROP 
+  TABLE #TEMP_SURVEY_CALL_DETAILS;                                        
+SELECT 
+  PSL.SURVEY_CALL_ID AS ID, 
+  PSL.PATIENT_ACCOUNT, 
+  PSL.MODIFIED_BY AS CREATED_BY, 
+  PSL.CREATED_DATE, 
+  PSL.FILE_NAME as [FILE_NAME], 
+  convert(
+    varchar (MAX), 
+    'Patient Survey'
+  ) AS LOGS, 
+  '' AS NAME, 
+  convert(
+    varchar, Ps.PATIENT_ACCOUNT_NUMBER
+  ) AS MRN, 
+  Ps.PATIENT_FIRST_NAME AS FIRST_NAME, 
+  Ps.PATIENT_LAST_NAME AS LAST_NAME, 
+  sas.SCORING_CRITERIA AS SCORING_CRITERIA, 
+  ps.SURVEY_FLAG, 
+  CASE WHEN (
+    select 
+      top 1 SURVEY_CALL_ID 
+    From 
+      FOX_TBL_SURVEY_AUDIT_SCORES with (nolock) 
+    where 
+      SURVEY_CALL_ID = PSL.SURVEY_CALL_ID
+  ) <> '' THEN convert(bit, 1) ELSE Convert(bit, 0) END AS IS_AUDITED, 
+  ROW_NUMBER() OVER(
+    ORDER BY 
+      PSL.CREATED_DATE DESC
+  ) AS ACTIVEROW INTO #TEMP_SURVEY_CALL_DETAILS            
+FROM 
+  FOX_TBL_PATIENT_SURVEY_CALL_LOG AS PSL with (nolock) 
+  left join FOX_TBL_PATIENT_SURVEY as ps with (nolock) on ps.SURVEY_ID = psl.SURVEY_ID -- ps.PATIENT_ACCOUNT_NUMBER = psl.PATIENT_ACCOUNT  AND                            
+  left join FOX_TBL_SURVEY_AUDIT_SCORES as sas with (nolock) on PSL.SURVEY_CALL_ID = sas.SURVEY_CALL_ID 
+WHERE 
+  PSL.MODIFIED_BY = @CALL_BY 
+  AND ISNULL(PSL.DELETED, 0) = 0 
+  AND ISNULL(sas.DELETED, 0) = 0 
+  AND ISNULL(PSL.IS_RECEIVED, 0) = 1 
+  AND PSL.PRACTICE_CODE = @PRACTICE_CODE 
+  AND (
+    @DATE_FROM IS NULL 
+    OR @DATE_TO IS NULL 
+    OR CONVERT(DATE, PSL.CREATED_DATE) BETWEEN CONVERT(DATE, @DATE_FROM) 
+    AND CONVERT(DATE, @DATE_TO)
+  ) 
+ORDER BY 
+  PSL.CREATED_DATE DESC --END                
+  IF(@IS_READ_ONLY_MODE = 1) BEGIN IF OBJECT_ID(
+    'TEMPDB.DBO.#noAssociatedList', 
+    'U'
+  ) IS NOT NULL 
+DROP 
+  TABLE #noAssociatedList;            
+SELECT 
+  Na.PHD_CALL_ID as ID, 
+  Na.AGENT_NAME as CREATED_BY, 
+  Na.CREATED_DATE, 
+  convert(
+    varchar (MAX), 
+    'Not Associated Call | Patient Helpdesk'
+  ) AS LOGS, 
+  1 AS IS_AUDITED, 
+  P.Chart_Id AS MRN, 
+  P.First_Name AS FIRST_NAME, 
+  P.Last_Name AS LAST_NAME INTO #noAssociatedList            
+fROM 
+  FOX_TBL_SURVEY_AUDIT_SCORES AS Na with (nolock) 
+  LEFT JOIN Patient as P with (nolock) ON P.PATIENT_ACCOUNT = Na.PATIENT_ACCOUNT 
+  AND P.DELETED = 0 
+  AND P.PRACTICE_CODE = @PRACTICE_CODE 
+WHERE 
+  Na.PRACTICE_CODE = 1012714 --AND PHD_CALL_SCENARIO_ID <> 0             
+  AND Na.PHD_CALL_ID LIKE '%0000%' 
+  AND Na.AGENT_name = @CALL_BY INSERT into #TEMP_SURVEY_CALL_DETAILS (ID,IS_AUDITED,CREATED_BY,LOGS,NAME,MRN,FIRST_NAME,LAST_NAME,CREATED_DATE)            
+select 
+  ID, 
+  IS_AUDITED, 
+  CREATED_BY, 
+  LOGS, 
+  '', 
+  MRN, 
+  FIRST_NAME, 
+  LAST_NAME, 
+  CREATED_DATE 
+from 
+  #noAssociatedList            
+  IF OBJECT_ID(
+    'TEMPDB.DBO.#TEMP_AUDITED_CALL_LIST', 
+    'U'
+  ) IS NOT NULL 
+DROP 
+  TABLE #TEMP_AUDITED_CALL_LIST;    
+SELECT 
+  SURVEY_CALL_ID INTO #TEMP_AUDITED_CALL_LIST        
+FROM 
+  FOX_TBL_SURVEY_AUDIT_SCORES 
+WHERE 
+  (
+    @CALL_BY IS NULL 
+    OR AGENT_NAME = @CALL_BY
+  ) 
+  AND ISNULL(DELETED, 0) = 0 
+  AND PRACTICE_CODE = @PRACTICE_CODE 
+  AND (
+    @DATE_FROM IS NULL 
+    OR @DATE_TO IS NULL 
+    OR CONVERT(DATE, CREATED_DATE) BETWEEN CONVERT(DATE, @DATE_FROM) 
+    AND CONVERT(DATE, @DATE_TO)
+  ) 
+  AND CALL_TYPE = 'survey' 
+ORDER BY 
+  AGENT_NAME DESC;
+SELECT 
+  @TOATL_PAGESUDM = COUNT(*) 
+FROM 
+  #TEMP_SURVEY_CALL_DETAILS
+  -- DECLARE @TOTAL_RECORDS INT= @TOATL_PAGESUDM         
+SET 
+  @TOATL_PAGESUDM = CEILING(
+    @TOATL_PAGESUDM / @RECORD_PER_PAGE
+  ) 
+SELECT 
+  distinct ID, 
+  PATIENT_ACCOUNT, 
+  CREATED_BY, 
+  tempsurvey.CREATED_DATE, 
+  FILE_NAME, 
+  LOGS, 
+  NAME, 
+  MRN, 
+  FIRST_NAME, 
+  LAST_NAME, 
+  SCORING_CRITERIA, 
+  SURVEY_FLAG, 
+  Convert(bit, 0) AS IS_AUDITED --,@TOATL_PAGESUDM AS TOTAL_RECORD_PAGES,                     
+  -- @TOTAL_RECORDS AS TOTAL_RECORDS  
+FROM 
+  #TEMP_SURVEY_CALL_DETAILS tempsurvey WITH (NOLOCK)
+WHERE 
+  ID IN (
+    SELECT 
+      SURVEY_CALL_ID 
+    FROM 
+      #TEMP_AUDITED_CALL_LIST tempAudit WITH (NOLOCK)
+      ) 
+ORDER BY 
+  tempsurvey.CREATED_DATE DESC OFFSET @START_FROM ROWS FETCH NEXT @RECORD_PER_PAGE ROWS ONLY;
+END ELSE IF(@IS_READ_ONLY_MODE = 0) BEGIN 
+Select 
+  * 
+From 
+  #TEMP_SURVEY_CALL_DETAILS WITH (NOLOCK)           
+ORDER BY 
+  CREATED_DATE DESC OFFSET @START_FROM ROWS FETCH NEXT @RECORD_PER_PAGE ROWS ONLY END END ELSE IF(@CALL_TYPE = 'phd') BEGIN IF OBJECT_ID(
+    'TEMPDB.DBO.#TEMP_PHD_CALL_DETAILS', 
+    'U'
+  ) IS NOT NULL 
+DROP 
+  TABLE #TEMP_PHD_CALL_DETAILS;                                                            
+SELECT 
+  C.FOX_PHD_CALL_DETAILS_ID AS ID, 
+  c.PATIENT_ACCOUNT, 
+  C.CREATED_BY, 
+  C.CREATED_DATE, 
+  C.CALL_RECORDING_PATH as [FILE_NAME], 
+  --    ,convert(varchar (MAX),'Patient Helpdesk') AS LOGS,                                            
+  CASE WHEN C.FOX_PHD_CALL_DETAILS_ID = 000000000 THEN convert(
+    varchar (MAX), 
+    'Patient Helpdesk| Not Associated Call'
+  ) ELSE convert(
+    varchar (MAX), 
+    'Patient Helpdesk'
+  ) END AS LOGS, 
+  R.NAME AS NAME, 
+  P.Chart_Id AS MRN, 
+  P.First_Name AS FIRST_NAME, 
+  P.Last_Name AS LAST_NAME, 
+  SR.PHD_CALL_SCENARIO_ID, 
+  sr.NAME AS CALL_SCANARIO, 
+  SCR.SCORING_CRITERIA AS SCORING_CRITERIA, 
+  CASE WHEN (
+    select 
+      top 1 PHD_CALL_ID 
+    From 
+      FOX_TBL_SURVEY_AUDIT_SCORES as temp with (nolock) 
+    where 
+      temp.PHD_CALL_ID = C.FOX_PHD_CALL_DETAILS_ID 
+      AND PRACTICE_CODE = @PRACTICE_CODE 
+      AND CALL_TYPE = 'phd' 
+      AND DELETED = 0
+  ) <> '' THEN convert(bit, 1) ELSE Convert(bit, 0) END AS IS_AUDITED --,ROW_NUMBER() OVER(ORDER BY C.CREATED_DATE DESC) AS ACTIVEROW   
+  INTO #TEMP_PHD_CALL_DETAILS                            
+FROM 
+  FOX_TBL_PHD_CALL_DETAILS C with (nolock) 
+  left join FOX_TBL_PHD_CALL_REASON R with (nolock) on C.CALL_REASON = R.PHD_CALL_REASON_ID 
+  left join FOX_TBL_PHD_CALL_SCENARIO AS SR with (nolock) ON C.CALL_SCENARIO = SR.PHD_CALL_SCENARIO_ID 
+  LEFT JOIN Patient AS P with (nolock) ON C.PATIENT_ACCOUNT = P.Patient_Account 
+  left join FOX_TBL_SURVEY_AUDIT_SCORES AS SCR with (nolock) ON SCR.PHD_CALL_ID = c.FOX_PHD_CALL_DETAILS_ID 
+  AND ISNULL(SCR.DELETED, 0)= 0 
+WHERE 
+  C.CREATED_BY = @CALL_BY 
+  AND ISNULL(C.DELETED, 0) = 0 --AND ISNULL(R.DELETED,0) = 0 AND ISNULL(SR.DELETED,0) = 0                                                  
+  AND ISNULL(C.CALL_RECORDING_PATH, '') <> '' 
+  AND C.PRACTICE_CODE = @PRACTICE_CODE 
+  AND (
+    @PHD_CALL_SCENARIO_ID = 0 
+    OR SR.PHD_CALL_SCENARIO_ID = @PHD_CALL_SCENARIO_ID
+  ) 
+  AND (
+    @DATE_FROM IS NULL 
+    OR @DATE_TO IS NULL 
+    OR CONVERT(DATE, C.CREATED_DATE) BETWEEN CONVERT(DATE, @DATE_FROM) 
+    AND CONVERT(DATE, @DATE_TO)
+  ) 
+ORDER BY 
+  CREATED_DATE DESC IF(@IS_READ_ONLY_MODE = 1) BEGIN IF OBJECT_ID(
+    'TEMPDB.DBO.#NO_ASSOCIATED_PHD_LIST', 
+    'U'
+  ) IS NOT NULL 
+DROP 
+  TABLE #NO_ASSOCIATED_PHD_LIST;            
+SELECT 
+  Na.PHD_CALL_ID as ID, 
+  Na.AGENT_NAME as CREATED_BY, 
+  Na.CREATED_DATE, 
+  convert(
+    varchar (MAX), 
+    'Not Associated Call | Patient Helpdesk'
+  ) AS LOGS, 
+  1 AS IS_AUDITED, 
+  P.Chart_Id AS MRN, 
+  P.First_Name AS FIRST_NAME, 
+  P.Last_Name AS LAST_NAME INTO #NO_ASSOCIATED_PHD_LIST            
+fROM 
+  FOX_TBL_SURVEY_AUDIT_SCORES AS Na with (nolock) 
+  LEFT JOIN Patient as P with (nolock) ON P.PATIENT_ACCOUNT = Na.PATIENT_ACCOUNT 
+  AND P.DELETED = 0 
+  AND P.PRACTICE_CODE = @PRACTICE_CODE 
+WHERE 
+  Na.PRACTICE_CODE = @PRACTICE_CODE --AND PHD_CALL_SCENARIO_ID <> 0             
+  AND Na.PHD_CALL_ID LIKE '%0000%' 
+  AND Na.AGENT_name = @CALL_BY INSERT into #TEMP_PHD_CALL_DETAILS (ID,IS_AUDITED,CREATED_BY,LOGS,NAME,MRN,FIRST_NAME,LAST_NAME,CREATED_DATE)            
+select 
+  ID, 
+  IS_AUDITED, 
+  CREATED_BY, 
+  LOGS, 
+  '', 
+  MRN, 
+  FIRST_NAME, 
+  LAST_NAME, 
+  CREATED_DATE 
+from 
+  #NO_ASSOCIATED_PHD_LIST 
+  IF OBJECT_ID(
+    'TEMPDB.DBO.#TEMP_AUDITED_CALL_LIST_PHD', 
+    'U'
+  ) IS NOT NULL 
+DROP 
+  TABLE #TEMP_AUDITED_CALL_LIST_PHD;     
+SELECT 
+  PHD_CALL_ID INTO #TEMP_AUDITED_CALL_LIST_PHD  WITH (NOLOCK)    
+FROM 
+  FOX_TBL_SURVEY_AUDIT_SCORES  WITH (NOLOCK)
+WHERE 
+  (
+    @CALL_BY IS NULL 
+    OR AGENT_NAME = @CALL_BY
+  ) 
+  AND ISNULL(DELETED, 0) = 0 
+  AND PRACTICE_CODE = @PRACTICE_CODE 
+  AND (
+    @DATE_FROM IS NULL 
+    OR @DATE_TO IS NULL 
+    OR CONVERT(DATE, CREATED_DATE) BETWEEN CONVERT(DATE, @DATE_FROM) 
+    AND CONVERT(DATE, @DATE_TO)
+  ) 
+  AND CALL_TYPE = 'phd' 
+ORDER BY 
+  AGENT_NAME DESC;
+SELECT 
+  @TOATL_PAGESUDM = COUNT(*) 
+FROM 
+  #TEMP_PHD_CALL_DETAILS
+SET 
+  @TOATL_PAGESUDM = CEILING(
+    @TOATL_PAGESUDM / @RECORD_PER_PAGE
+  ) 
+SELECT 
+  distinct ID, 
+  PATIENT_ACCOUNT, 
+  CREATED_BY, 
+  tempPhd.CREATED_DATE, 
+  FILE_NAME, 
+  LOGS, 
+  NAME, 
+  MRN, 
+  FIRST_NAME, 
+  LAST_NAME, 
+  PHD_CALL_SCENARIO_ID, 
+  CALL_SCANARIO, 
+  SCORING_CRITERIA, 
+  Convert(bit, 0) AS IS_AUDITED --,@TOATL_PAGESUDM AS TOTAL_RECORD_PAGES,                     
+  -- @TOTAL_RECORDS AS TOTAL_RECORDS  
+FROM 
+  #TEMP_PHD_CALL_DETAILS tempPhd WITH (NOLOCK)
+WHERE 
+  ID IN (
+    SELECT 
+      PHD_CALL_ID 
+    FROM 
+      #TEMP_AUDITED_CALL_LIST_PHD WITH (NOLOCK)
+      ) 
+ORDER BY 
+  tempPhd.CREATED_DATE DESC OFFSET @START_FROM ROWS FETCH NEXT @RECORD_PER_PAGE ROWS ONLY;
+--Select * From #TEMP_PHD_CALL_DETAILS            
+--ORDER BY CREATED_DATE DESC             
+END ELSE IF(@IS_READ_ONLY_MODE = 0) BEGIN 
+Select 
+  * 
+From 
+  #TEMP_PHD_CALL_DETAILS   WITH (NOLOCK)           
+ORDER BY 
+  CREATED_DATE DESC OFFSET @START_FROM ROWS FETCH NEXT @RECORD_PER_PAGE ROWS ONLY END END END
+
+
+  
+  GO

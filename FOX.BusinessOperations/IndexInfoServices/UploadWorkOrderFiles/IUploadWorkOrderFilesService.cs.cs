@@ -1,4 +1,5 @@
-﻿using FOX.DataModels.Models.Security;
+﻿using FOX.DataModels.Models.CommonModel;
+using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.UploadWorkOrderFiles;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace FOX.BusinessOperations.IndexInfoServices.UploadWorkOrderFiles
     public interface IUploadWorkOrderFilesService
     {
         ResSaveUploadWorkOrderFiles SaveUploadWorkOrderFiles(ReqSaveUploadWorkOrderFiles reqSaveUploadWorkOrderFiles, UserProfile Profile);
+        ResponseModel GenerateAndSaveImagesOfUploadedFilesZip(ReqSaveUploadWorkOrderFiles reqSaveUploadWorkOrderFiles, UserProfile Profile);
         ResSaveUploadWorkOrderFiles saveUploadAdditionalWorkOrderFiles(ReqSaveUploadWorkOrderFiles reqSaveUploadWorkOrderFiles, UserProfile Profile);
     }
 }
