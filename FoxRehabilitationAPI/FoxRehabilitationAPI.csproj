@@ -317,6 +317,7 @@
     <Compile Include="Controllers\CasesController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\CompleteQueueController.cs" />
+    <Compile Include="Controllers\ConsentToCareController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FaxController.cs" />
@@ -392,6 +393,7 @@
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
+    <Content Include="HtmlTemplates\Consent-To-Care-Email_Template.html" />
     <Content Include="HtmlTemplates\Eligibility_MVP_View_Template.html" />
     <Content Include="HtmlTemplates\Eligibilty_View_Template.html" />
     <Content Include="HtmlTemplates\email_fax_to_sender_template.html" />

@@ -12,6 +12,7 @@ using FOX.BusinessOperations.TaskServices;
 using FOX.BusinessOperations.CaseServices;
 using FOX.BusinessOperations.GroupServices;
 using FOX.BusinessOperations.FrictionlessReferral.SupportStaff;
+using FOX.BusinessOperations.ConsentToCareService;
 
 namespace FoxRehabilitationAPI.App_Start
 {
@@ -71,6 +72,8 @@ namespace FoxRehabilitationAPI.App_Start
             container.RegisterType<FOX.BusinessOperations.SignatureRequiredServices.ISignatureRequiredService, FOX.BusinessOperations.SignatureRequiredServices.SignatureRequiredService>();
             container.RegisterType<ISupportStaffService, SupportStaffService>();
             container.RegisterType<FOX.BusinessOperations.SurveyAutomationService.ISurveyAutomationService, FOX.BusinessOperations.SurveyAutomationService.SurveyAutomationService>();
+            container.RegisterType<IConsentToCareService, ConsentToCareService>();
+            //container.RegisterType<FOX.BusinessOperations.ConsentToCareService.IConsentToCareService, FOX.BusinessOperations.ConsentToCareService.ConsentToCareService>();
             return container;
         }
     }

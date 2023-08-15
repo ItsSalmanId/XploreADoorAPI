@@ -45,6 +45,6 @@ namespace FOX.BusinessOperations.CaseServices
         GetTreatingProviderRes PopulateTreatingProviderbasedOnPOS(GetTreatingProviderReq obj, UserProfile profile);
         InactiveListOfGroupIDNAndSourceOfReferral GetAllIdentifierANDSourceofReferralList(UserProfile profile);
         FOX_TBL_CONSENT_TO_CARE AddUpdateConsentToCare(FOX_TBL_CONSENT_TO_CARE consentToCareObj, UserProfile profile);
-        List<FOX_TBL_CONSENT_TO_CARE> GetConsentToCare(FOX_TBL_CONSENT_TO_CARE consentToCareObj, UserProfile profile);
+        //ConsentToCareList GetConsentToCare(FOX_TBL_CONSENT_TO_CARE consentToCareObj, UserProfile profile);
     }
 }

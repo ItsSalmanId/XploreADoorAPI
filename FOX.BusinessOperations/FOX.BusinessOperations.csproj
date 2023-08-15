@@ -220,6 +220,8 @@
     <Compile Include="CommonServices\USStreetApiClass.cs" />
     <Compile Include="CompleteQueueService\CompleteQueueService.cs" />
     <Compile Include="CompleteQueueService\ICompleteQueueService.cs" />
+    <Compile Include="ConsentToCareService\ConsentToCareService.cs" />
+    <Compile Include="ConsentToCareService\IConsentToCareService.cs" />
     <Compile Include="DashboardServices\DashboardService.cs" />
     <Compile Include="DashboardServices\IDashboardService.cs" />
     <Compile Include="FaxServices\FaxService.cs" />

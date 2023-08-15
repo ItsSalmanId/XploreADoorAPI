@@ -1120,7 +1120,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             return sourceAddDetail;
         }
 
-        private FOX_TBL_TASK setTaskData(UserProfile profile, long? PATIENT_ACCOUNT, string tasktypeHBR, string CURRENT_DATE_STR)
+        public FOX_TBL_TASK setTaskData(UserProfile profile, long? PATIENT_ACCOUNT, string tasktypeHBR, string CURRENT_DATE_STR)
         {
             var task = new FOX_TBL_TASK();
             SqlParameter pPracticeCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
@@ -1137,6 +1137,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 pTaskTypeName.Value = "porta";
                 //task.TASK_TYPE_ID = _taskTypeRepository.GetFirst(t => t.NAME.ToLower() == "porta" && t.PRACTICE_CODE == profile.PracticeCode && !t.DELETED)?.TASK_TYPE_ID ?? 0;
 
+            }
+            else if(tasktypeHBR == "CONSENTTOCARE")
+            {
+                pTaskTypeName.Value = "consenttocare";
             }
             var Task_type_Id = SpRepository<FOX_TBL_TASK_TYPE>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_GET_TASK_ID @PRACTICE_CODE, @NAME", pPracticeCode, pTaskTypeName);
             task.TASK_TYPE_ID = Task_type_Id?.TASK_TYPE_ID ?? 0;

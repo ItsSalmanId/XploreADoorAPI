@@ -238,6 +238,10 @@ namespace FOX.DataModels.Models.CasesModel
         public System.DateTime MODIFIED_DATE { get; set; }
         public bool DELETED { get; set; }
     }
+    //public class ConsentToCareList : BaseModel
+    //{
+    //    public List<FOX_TBL_CONSENT_TO_CARE> ConsentToCareDbList { get; set; }
+    //}
     [Table("FOX_TBL_CONSENT_TO_CARE")]
     public class FOX_TBL_CONSENT_TO_CARE
     {
@@ -248,18 +252,20 @@ namespace FOX.DataModels.Models.CasesModel
         public string SIGNATORY { get; set; }
         public long CASE_ID { get; set; }
         public int STATUS_ID { get; set; }
-        public int PATIENT_ACCOUNT { get; set; }
+        public long PATIENT_ACCOUNT { get; set; }
         public string SIGNATURE_PATH { get; set; }
         public string SOURCE_TYPE { get; set; }
-        public DateTime EXPIRY_DATE { get; set; }
+        public DateTime? EXPIRY_DATE { get; set; }
         public string TEMPLATE_HTML { get; set; }
         public int FAILED_ATTEMPTS { get; set; }
         public long PRACTICE_CODE { get; set; }
         public string CREATED_BY { get; set; }
-        public DateTime CREATED_DATE { get; set; }
-        public DateTime MODIFIED_DATE { get; set; }
+        public DateTime? CREATED_DATE { get; set; }
+        public DateTime? MODIFIED_DATE { get; set; }
         public string MODIFIED_BY { get; set; }
         public bool DELETED { get; set; }
+        [NotMapped]
+        public string PatientLastName { get; set; }
     }
 
     [Table("FOX_TBL_CASE_STATUS")]
