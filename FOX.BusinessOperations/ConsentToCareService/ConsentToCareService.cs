@@ -30,6 +30,8 @@ using System.Web;
 using System.Web.Configuration;
 using System.Windows.Forms;
 using static FOX.DataModels.Models.ConsentToCare.ConsentToCare;
+using HtmlAgilityPack;
+using HtmlDocument = System.Windows.Forms.HtmlDocument;
 
 namespace FOX.BusinessOperations.ConsentToCareService
 {
@@ -39,7 +41,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
         #region PROPERTIES
         private readonly DBContextConsentToCare _consentToCareContext = new DBContextConsentToCare();
         private readonly DbContextTasks _TaskContext = new DbContextTasks();
-        private readonly GenericRepository<FoxTblConsentToCare> _foxTblConsentToCareRepository;
+        private readonly GenericRepository<FoxTblConsentToCare> _consentToCareRepository;
         private readonly GenericRepository<ConsentToCareDocument> _consentToCareDocumentRepository;
         private readonly GenericRepository<FOX_TBL_TASK_TYPE> _taskTypeRepository;
         public static string SurveyMethod = string.Empty;
@@ -51,7 +53,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
         #region CONSTRUCTOR
         public ConsentToCareService()
         {
-            _foxTblConsentToCareRepository = new GenericRepository<FoxTblConsentToCare>(_consentToCareContext);
+            _consentToCareRepository = new GenericRepository<FoxTblConsentToCare>(_consentToCareContext);
             _consentToCareDocumentRepository = new GenericRepository<ConsentToCareDocument>(_consentToCareContext);
             _taskTypeRepository = new GenericRepository<FOX_TBL_TASK_TYPE>(_TaskContext);
         }
@@ -59,6 +61,9 @@ namespace FOX.BusinessOperations.ConsentToCareService
         #region FUNCTIONS
         public FoxTblConsentToCare AddUpdateConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile)
         {
+            SupportStaffService supportStaffService1 = new SupportStaffService();
+            //string htmlTamplate = supportStaffService1.stringToHtml(consentToCareObj.TEMPLATE_HTML);
+            string htmlTemplate = string.Empty;
             if (consentToCareObj != null)
             {
                 string concentToCareReceiverEmail = string.Empty;
@@ -82,7 +87,8 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 consentToCareObj.PATIENT_ACCOUNT = long.Parse(consentToCareObj.PATIENT_ACCOUNT_Str == null ? "0" : consentToCareObj.PATIENT_ACCOUNT_Str);
                 profile.PracticeCode = GetPracticeCode();
                 var config = Helper.GetServiceConfiguration(AppConfiguration.GetPracticeCode);
-                var htmlTemplate = consentToCareObj.TEMPLATE_HTML;
+                htmlTemplate = consentToCareObj.TEMPLATE_HTML;
+              
                 var consentToCareIdStr = consentToCareObj.CONSENT_TO_CARE_ID.ToString();
                 var consentToCareId = new SqlParameter("@CONSENT_TO_CARE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CONSENT_TO_CARE_ID };
                 //var practiceCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
@@ -91,7 +97,8 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 var caseId = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CASE_ID };
                 var practiceCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
                 var sendTo = new SqlParameter("@SEND_TO", SqlDbType.VarChar) { Value = consentToCareObj.SEND_TO };
-                var existingInformation = SpRepository<FoxTblConsentToCare>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CASE_ID_AND_SEND_TO @CASE_ID, @PRACTICE_CODE, @SEND_TO", caseId, practiceCode, sendTo);
+                var sentToId = new SqlParameter("@SENT_TO_ID", SqlDbType.VarChar) { Value = consentToCareObj.SENT_TO_ID };
+                var existingInformation = SpRepository<FoxTblConsentToCare>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CASE_ID_AND_SEND_TO @CASE_ID, @PRACTICE_CODE, @SEND_TO, @SENT_TO_ID", caseId, practiceCode, sendTo, sentToId);
                 if (existingInformation == null)
                 {
                     consentToCareObj.CONSENT_TO_CARE_ID = Helper.getMaximumId("CONSENT_TO_CARE_ID");
@@ -102,17 +109,21 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     consentToCareObj.STATUS = "Sent";
                     consentToCareObj.STATUS_ID = 54100;
                     consentToCareObj.SOURCE_TYPE = "FOX TEAM";
-                    _foxTblConsentToCareRepository.Insert(consentToCareObj);
-                    _foxTblConsentToCareRepository.Save();
+                    _consentToCareRepository.Insert(consentToCareObj);
+                    _consentToCareRepository.Save();
                     var currentConsentToCareId = consentToCareObj.CONSENT_TO_CARE_ID;
                     // Get List of CC Users
                     //var cc = GetEmailCCList();
                     // Get List of BCC Users
                     //var bcc = GetEmailBCCList();
                     //consentToCareId.
+
+                    var encryptedUrl = EncryptTemp(consentToCareObj.CASE_ID.ToString());
+                    var decryptioUrl = Decryption(encryptedUrl.ToString());
+
                     var encryptedEmailURL = GenerateEncryptedEmailURL(consentToCareObj);
                     var emailBody = EmailBody(consentToCareObj.PatientLastName, encryptedEmailURL);
-                    var email = concentToCareReceiverEmail;
+                    var email = "muhammadsalman7@carecloud.com";
                     //var email = concentToCareReceiverEmail;
                     var number = concentToCareHomePhone;
                     //var number = concentToCareHomePhone;
@@ -157,19 +168,23 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 }
                 else
                 {
-                    consentToCareObj = existingInformation;
-                    consentToCareObj.EXPIRY_DATE = DateTime.Now.AddDays(5);
-                    consentToCareObj.MODIFIED_BY = profile.UserName;
-                    consentToCareObj.MODIFIED_DATE = DateTime.Now;
-                    _foxTblConsentToCareRepository.Update(consentToCareObj);
-                    _foxTblConsentToCareRepository.Save();
+                    //consentToCareObj = existingInformation;
+                    existingInformation.TEMPLATE_HTML = htmlTemplate;
+                    existingInformation.EXPIRY_DATE = DateTime.Now.AddDays(5);
+                    existingInformation.MODIFIED_BY = profile.UserName;
+                    existingInformation.MODIFIED_DATE = DateTime.Now;
+                    _consentToCareRepository.Update(existingInformation);
+                    _consentToCareRepository.Save();
                     var existingconsentToCareId = consentToCareObj.CONSENT_TO_CARE_ID;
                     // send Email Or SMS
                     consentToCareObj.CASE_ID = existingCaseId;
 
+                    var encryptedUrl = EncryptTemp(consentToCareObj.CONSENT_TO_CARE_ID.ToString());
+                    var decryptioUrl = Decryption(encryptedUrl.ToString());
+
                     var encryptedEmailURL = GenerateEncryptedEmailURL(consentToCareObj);
                     var emailBody = EmailBody(consentToCareObj.PatientLastName, encryptedEmailURL);
-                    var email = concentToCareReceiverEmail;
+                    var email = "muhammadsalman7@carecloud.com";
                     //var email = concentToCareReceiverEmail;
                     var number = concentToCareHomePhone;
                     //var number = concentToCareHomePhone;
@@ -685,9 +700,9 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 //var modifiedSurveyId = ModifiedSurveyId(patientDetail.SURVEY_ID);
                 //var timeSpan = TimeSpan();
                 string environmentURL = GetClientURL() + "#/ConsentToCare";
-                string conactURL = consentToCareObj.CASE_ID + "#";
+                string conactURL = consentToCareObj.CONSENT_TO_CARE_ID + "#";
                 //encryptedUrl = Encrypt(consentToCareObj.CASE_ID.ToString(), "sblw-3hn8-sqoy19").ToString();
-                encryptedUrl = EncryptTemp(consentToCareObj.CASE_ID.ToString());
+                encryptedUrl = EncryptTemp(consentToCareObj.CONSENT_TO_CARE_ID.ToString());
                 encryptedUrl = environmentURL + "/#" + encryptedUrl + "#";
             }
             return encryptedUrl;
@@ -769,6 +784,54 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     break;
             }
             return surveyMethodRemoveChar;
+        }
+        private byte[] Decrypt(byte[] encryptedData, RijndaelManaged rijndaelManaged)
+        {
+            return rijndaelManaged.CreateDecryptor().TransformFinalBlock(encryptedData, 0, encryptedData.Length);
+        }
+        public string Decryption(string encryptedText)
+        {
+
+            try
+            {
+                var encryptedBytes = Convert.FromBase64String(encryptedText);
+                return Encoding.UTF8.GetString(Decrypt(encryptedBytes, GetRijndaelManaged(passPhrase)));
+            }
+            catch (Exception ex)
+            {
+                return "exception : " + ex.Message;
+            }
+
+        }
+        // Description: This function is decrypt patient account number & handle the flow of Unsubscribe Email & SMS
+        public FoxTblConsentToCare DecryptionUrl(FoxTblConsentToCare consentToCareObj)
+        {
+            ConsentToCareResponse consentToCareResponse = new ConsentToCareResponse();
+            var decryptioUrl = Decryption(consentToCareObj.encryptedCaseId.ToString());
+            consentToCareObj.CONSENT_TO_CARE_ID = int.Parse(decryptioUrl);
+            var consentToCareId = new SqlParameter("@CONSENT_TO_CARE_ID", SqlDbType.VarChar) { Value = consentToCareObj.CONSENT_TO_CARE_ID };
+            var practiceCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
+            consentToCareObj = SpRepository<FoxTblConsentToCare>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CONSENT_TO_CARE_ID @CONSENT_TO_CARE_ID, @PRACTICE_CODE", consentToCareId, practiceCode);
+
+            //var  encryptedUrl = EncryptTemp(encryptedCaseId);
+            return consentToCareObj;
+        }
+        // Description: This function is decrypt patient account number & handle the flow of Unsubscribe Email & SMS
+        public bool DobVerificationInvalidAttempt(AddInvalidAttemptRequest addInvalidAttemptRequestObj)
+        {
+            bool invalidAttemptsLimitExceed = false;
+            var dbResult = _consentToCareRepository.GetFirst(x => x.CONSENT_TO_CARE_ID == addInvalidAttemptRequestObj.CONSENT_TO_CARE_ID && !x.DELETED);
+            if(dbResult != null)
+            {
+                dbResult.FAILED_ATTEMPTS = dbResult.FAILED_ATTEMPTS + 1;
+            }
+            _consentToCareRepository.Update(dbResult);
+            _consentToCareRepository.Save();
+            if(dbResult.FAILED_ATTEMPTS >= 5)
+            {
+                invalidAttemptsLimitExceed = true;
+            }
+            return invalidAttemptsLimitExceed;
         }
         #endregion
         #region Email & SMS body 

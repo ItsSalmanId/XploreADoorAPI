@@ -33,6 +33,9 @@ namespace FOX.DataModels.Models.ConsentToCare
             public DateTime? MODIFIED_DATE { get; set; }
             public string MODIFIED_BY { get; set; }
             public bool DELETED { get; set; }
+            public long SENT_TO_ID { get; set; }
+            [NotMapped]
+            public DateTime? Date_Of_Birth { get; set; }
             [NotMapped]
             public string PatientLastName { get; set; }
             [NotMapped]
@@ -53,7 +56,16 @@ namespace FOX.DataModels.Models.ConsentToCare
             public string PatientEmailAddress { get; set; }
             [NotMapped]
             public string PatientHomePhone { get; set; }
-            public long SENT_TO_ID { get; set; }
+            [NotMapped]
+            public string encryptedCaseId { get; set; }
+            [NotMapped]
+            public string Last_Name { get; set; }
+            [NotMapped]
+            public string First_Name { get; set; }
+            [NotMapped]
+            public int Policy_Number { get; set; }
+            [NotMapped]
+            public string INSURANCE_PAYERS_ID { get; set; }
         }
 
         [Table("FOX_TBL_SURVEY_QUESTION")]
@@ -95,6 +107,16 @@ namespace FOX.DataModels.Models.ConsentToCare
             public DateTime MODIFIED_DATE { get; set; }
             public string MODIFIED_BY { get; set; }
             public bool DELETED { get; set; } = false;
+        }
+        public class ConsentToCareResponse
+        {
+            public FoxTblConsentToCare consentToCareObj { get; set; }
+            public bool Success { get; set; }
+            public string Message { get; set; }
+        }
+        public class AddInvalidAttemptRequest
+        {
+            public long CONSENT_TO_CARE_ID { get; set; }
         }
     }
 }

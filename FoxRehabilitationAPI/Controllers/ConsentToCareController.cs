@@ -62,6 +62,30 @@ namespace FoxRehabilitationAPI.Controllers
             var response = Request.CreateResponse(HttpStatusCode.OK, pathtoDownload);
             return response;
         }
+        [HttpPost]
+        public HttpResponseMessage DecryptionUrl(FoxTblConsentToCare consentToCareObj)
+        {
+            if (consentToCareObj != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _consentToCareService.DecryptionUrl(consentToCareObj));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "SurveyLink model is empty");
+            }
+        }
+        [HttpPost]
+        public HttpResponseMessage DobVerificationInvalidAttempt(AddInvalidAttemptRequest addInvalidAttemptRequestObj)
+        {
+            if (addInvalidAttemptRequestObj != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _consentToCareService.DobVerificationInvalidAttempt(addInvalidAttemptRequestObj));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "SurveyLink model is empty");
+            }
+        }
         //[HttpPost]
         //public HttpResponseMessage GetConsentToCareDocumentsInfo(FoxTblConsentToCare consentToCareObj)
         //{

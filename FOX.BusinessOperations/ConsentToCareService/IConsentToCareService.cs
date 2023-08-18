@@ -13,11 +13,8 @@ namespace FOX.BusinessOperations.ConsentToCareService
         FoxTblConsentToCare AddUpdateConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile);
         ConsentToCareList GetConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile);
         string GeneratePdfForConcentToCare(FoxTblConsentToCare consentToCareObj, string practiceDocumentDirectory);
-        //FoxTblConsentToCare GetConsentToCareDocumentsInfo(FoxTblConsentToCare consentToCareObj, string practiceDocumentDirectory);
-        //SurveyAutomation GetPatientDetails(SurveyAutomation objSurveyAutomation);
-        //List<SurveyQuestions> GetSurveyQuestionDetails(SurveyLink objSurveyLink);
-        //ResponseModel UpdatePatientSurvey(PatientSurvey objPatientSurvey);
-        //SurveyLink DecryptionUrl(SurveyLink objSurveyLink);
+        FoxTblConsentToCare DecryptionUrl(FoxTblConsentToCare consentToCareObj);
+        bool DobVerificationInvalidAttempt(AddInvalidAttemptRequest addInvalidAttemptRequestObj);
         #endregion
     }
 }
