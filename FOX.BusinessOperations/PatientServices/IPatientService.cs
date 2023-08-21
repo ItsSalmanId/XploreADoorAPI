@@ -101,5 +101,6 @@ namespace FOX.BusinessOperations.PatientServices
         List<CheckDuplicatePatientsRes> CheckDuplicatePatients(CheckDuplicatePatientsReq documentSaveEligibility, UserProfile profile);
         FoxInsurancePayers GetInsuranc(long ID, UserProfile profile);
         POSCoordinates ResetCoordinates(FacilityLocation loc, UserProfile profile);
+        Patient GetPatientDetails(long patientAccount, UserProfile profile);
     }
 }

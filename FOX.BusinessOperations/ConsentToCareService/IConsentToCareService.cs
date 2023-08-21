@@ -15,6 +15,8 @@ namespace FOX.BusinessOperations.ConsentToCareService
         string GeneratePdfForConcentToCare(FoxTblConsentToCare consentToCareObj, string practiceDocumentDirectory);
         FoxTblConsentToCare DecryptionUrl(FoxTblConsentToCare consentToCareObj);
         bool DobVerificationInvalidAttempt(AddInvalidAttemptRequest addInvalidAttemptRequestObj);
+        FoxTblConsentToCare SubmitConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile);
+        ConsentToCareList GetConsentToCareImagePath(FoxTblConsentToCare consentToCareObj, UserProfile profile);
         #endregion
     }
 }

@@ -98,5 +98,31 @@ namespace FoxRehabilitationAPI.Controllers
         //        return Request.CreateResponse(HttpStatusCode.BadRequest, "Consent To Care model is Empty");
         //    }
         //}
+
+        [HttpPost]
+        public HttpResponseMessage SubmitConsentToCare(FoxTblConsentToCare consentToCareObj)
+        {
+            if (consentToCareObj != null)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.OK, _consentToCareService.SubmitConsentToCare(consentToCareObj, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "SurveyLink model is empty");
+            }
+        }
+        [HttpPost]
+        public HttpResponseMessage GetConsentToCareImagePath(FoxTblConsentToCare consentToCareObj)
+        {
+            if (consentToCareObj != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _consentToCareService.GetConsentToCareImagePath(consentToCareObj, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Consent To Care model is Empty");
+            }
+        }
     }
 }
