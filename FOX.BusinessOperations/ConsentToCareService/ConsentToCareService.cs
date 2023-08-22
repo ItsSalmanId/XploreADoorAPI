@@ -120,8 +120,9 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     ////Add Consent To Care 
                     consentToCareObj.CONSENT_TO_CARE_ID = Helper.getMaximumId("CONSENT_TO_CARE_ID");
                     consentToCareObj.CREATED_DATE = DateTime.Now;
-                    consentToCareObj.EXPIRY_DATE = DateTime.Now.AddDays(5);
-                    //consentToCareObj.EXPIRY_DATE = DateTime.Now.AddMinutes(1);
+                    consentToCareObj.EXPIRY_DATE = DateTime.UtcNow;
+                    //consentToCareObj.EXPIRY_DATE = DateTime.Now.AddDays(5);
+                    consentToCareObj.EXPIRY_DATE = DateTime.Now.AddMinutes(5);
                     consentToCareObj.CREATED_BY = profile.UserName;
                     consentToCareObj.PRACTICE_CODE = AppConfiguration.GetPracticeCode;
                     /// consentToCareObj.STATUS = "Sent";
@@ -200,8 +201,8 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 {
                     //consentToCareObj = existingInformation;
                     existingInformation.TEMPLATE_HTML = htmlTemplate;
-                    existingInformation.EXPIRY_DATE = DateTime.Now.AddDays(5);
-                    //existingInformation.EXPIRY_DATE = DateTime.Now.AddMinutes(1);
+                    //existingInformation.EXPIRY_DATE = DateTime.Now.AddDays(5);
+                    existingInformation.EXPIRY_DATE = DateTime.Now.AddMinutes(5);
                     existingInformation.MODIFIED_BY = profile.UserName;
                     existingInformation.MODIFIED_DATE = DateTime.Now;
                     _consentToCareRepository.Update(existingInformation);
@@ -258,7 +259,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     //var consentToCareID = consentToCareObj.CONSENT_TO_CARE_ID;
                     //SavePdfToImages(coverFilePath, config, existingconsentToCareId, consentToCareID.ToString(), consentToCareID, 1, "DR:Fax", "", profile.UserName, true);
                 }
-            }
+                }
             return consentToCareObj;
          }
         private int getNumberOfPagesOfPDF(string PdfPath)
@@ -471,6 +472,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             SqlParameter pTaskTypeName = new SqlParameter();
             pTaskTypeName.ParameterName = "NAME";
             pTaskTypeName.Value = "porta";
+            //pTaskTypeName.Value = "Consent";
             var Task_type_Id = SpRepository<FOX_TBL_TASK_TYPE>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_GET_TASK_ID @PRACTICE_CODE, @NAME", pPracticeCode, pTaskTypeName);
             task.TASK_TYPE_ID = Task_type_Id?.TASK_TYPE_ID ?? 0;
             task.PRACTICE_CODE = profile.PracticeCode;
@@ -883,6 +885,14 @@ namespace FOX.BusinessOperations.ConsentToCareService
             _consentToCareRepository.Save();
             if (dbResult.FAILED_ATTEMPTS >= 5)
             {
+                var consentStatus = _consentToCareStatusRepository.GetFirst(x => x.STATUS_NAME == "Expired" && x.PRACTICE_CODE == AppConfiguration.GetPracticeCode && !x.DELETED);
+                if (consentStatus != null)
+                {
+                    dbResult.STATUS_ID = consentStatus.CONSENT_TO_CARE_STATUS_ID;
+                    /// consentToCareObj.STATUS = consentStatus.STATUS_NAME;
+                }
+                _consentToCareRepository.Update(dbResult);
+                _consentToCareRepository.Save();
                 invalidAttemptsLimitExceed = true;
             }
             return invalidAttemptsLimitExceed;
@@ -962,7 +972,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
 
             if (taskLoglist.Count() > 0)
             {
-                profile.UserName = "FOX TEAM";
+                profile.UserName = consentToCareObj.CREATED_BY;
                 InsertTaskLog(consentToCareObj.TASK_ID, taskLoglist, profile);
             }
             //Task mark as complete

@@ -36,6 +36,8 @@ namespace FOX.DataModels.Models.ConsentToCare
             public string MODIFIED_BY { get; set; }
             public bool DELETED { get; set; }
             [NotMapped]
+            public string DESCRIPTION { get; set; }
+            [NotMapped]
             public string STATUS { get; set; }
             [NotMapped]
             public DateTime? Date_Of_Birth { get; set; }
