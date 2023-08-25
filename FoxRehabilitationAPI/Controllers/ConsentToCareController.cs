@@ -65,6 +65,7 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpPost]
         public HttpResponseMessage DecryptionUrl(FoxTblConsentToCare consentToCareObj)
         {
+            
             if (consentToCareObj != null)
             {
                 return Request.CreateResponse(HttpStatusCode.OK, _consentToCareService.DecryptionUrl(consentToCareObj));
@@ -79,7 +80,7 @@ namespace FoxRehabilitationAPI.Controllers
         {
             if (addInvalidAttemptRequestObj != null)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _consentToCareService.DobVerificationInvalidAttempt(addInvalidAttemptRequestObj));
+                return Request.CreateResponse(HttpStatusCode.OK, _consentToCareService.DobVerificationInvalidAttempt(addInvalidAttemptRequestObj, GetProfile()));
             }
             else
             {

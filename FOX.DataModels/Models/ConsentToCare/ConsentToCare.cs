@@ -23,7 +23,7 @@ namespace FOX.DataModels.Models.ConsentToCare
             public long PATIENT_ACCOUNT { get; set; }
             public string SIGNATURE_PATH { get; set; }
             public string SOURCE_TYPE { get; set; }
-            public DateTime? EXPIRY_DATE { get; set; }
+            public DateTime? EXPIRY_DATE_UTC { get; set; }
             public string TEMPLATE_HTML { get; set; }
             public int FAILED_ATTEMPTS { get; set; }
             public long SENT_TO_ID { get; set; }
@@ -77,6 +77,13 @@ namespace FOX.DataModels.Models.ConsentToCare
             public string PATIENT_FULL_NAME { get; set; }
             [NotMapped]
             public string PROVIDER_FULL_NAME { get; set; }
+            [NotMapped]
+            public string CONTACTS_FULL_NAME { get; set; }
+            [NotMapped]
+            public long? TREATING_PROVIDER_ID { get; set; }
+            [NotMapped]
+            public long? POS_ID { get; set; }
+
         }
 
         [Table("FOX_TBL_SURVEY_QUESTION")]

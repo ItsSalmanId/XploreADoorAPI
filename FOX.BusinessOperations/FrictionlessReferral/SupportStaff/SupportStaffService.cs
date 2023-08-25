@@ -736,7 +736,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 converter.Options.MarginRight = 10;
                 converter.Options.DisplayHeader = false;
                 converter.Options.DisplayHeader = false;
-                converter.Options.WebPageWidth = 1550;
+                converter.Options.WebPageWidth = 1570;
                 converter.Options.PdfPageOrientation = PdfPageOrientation.Landscape;
                 PdfDocument doc = converter.ConvertHtmlString(htmlDoc.DocumentNode.OuterHtml);
                 string pdfPath = config.ORIGINAL_FILES_PATH_SERVER;

@@ -1155,24 +1155,10 @@ namespace FOX.BusinessOperations.CaseServices
                 var PatientData = _PatientRepository.GetSingle(t => !(t.DELETED ?? false) && t.Practice_Code == practiceCode && t.Patient_Account == _patient_Account);
                 var CallType = _CallTypeRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode);
 
-
-                var CaseTreatmentTeamList = _CaseTreatmentTeamRepository.GetMany(t => !t.DELETED && t.PRACTICE_CODE == practiceCode && t.PATIENT_ACCOUNT.ToString() == patient_Account);
-                if (CaseTreatmentTeamList != null && CaseTreatmentTeamList.Count > 0)
-                {
-                    CaseTreatmentTeamList.ForEach(t=> {
-                        var TreatingProvider = _FoxProviderClassRepository.GetFirst(e => e.FOX_PROVIDER_ID == t.TREATING_PROVIDER_ID && !t.DELETED && t.PRACTICE_CODE == practiceCode) ;
-                        if(TreatingProvider != null && TreatingProvider.FIRST_NAME != null && TreatingProvider.LAST_NAME != null)
-                        {
-                            t.TREATING_PROVIDER = TreatingProvider.LAST_NAME +  ", " + TreatingProvider.FIRST_NAME;
-                        }
-                        var CaseProvider = _FoxProviderClassRepository.GetFirst(e => e.FOX_PROVIDER_ID == t.CASE_PROVIDER_ID && !t.DELETED && t.PRACTICE_CODE == practiceCode);
-                        if (CaseProvider != null && CaseProvider.FIRST_NAME != null && CaseProvider.LAST_NAME != null)
-                        {
-                            t.CASE_PROVIDER = CaseProvider.LAST_NAME + ", " + CaseProvider.FIRST_NAME;
-                        }
-
-                    } );
-                }
+   
+                var patientAccount = new SqlParameter("@PATIENT_ACCOUNT", SqlDbType.BigInt) { Value = patient_Account };
+                var pracCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
+                var CaseTreatmentTeamList = SpRepository<FOX_TBL_CASE_TREATMENT_TEAM>.GetListWithStoreProcedure(@"EXEC FOX_PROC_GET_CASE_TRATEMENT_TEAM @PRACTICE_CODE, @PATIENT_ACCOUNT", pracCode, patientAccount);
                 DiscpilineList = GetTotalDiscipline(_patient_Account, practiceCode);
 
                 var insuranceHistory = _PatientInsuranceRepository.GetMany(x => x.Patient_Account == _patient_Account && (x.Deleted ?? false) == false && x.ELIG_LOADED_ON.HasValue); //History

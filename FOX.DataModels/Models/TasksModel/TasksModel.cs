@@ -298,6 +298,7 @@ namespace FOX.DataModels.Models.TasksModel
     {
         public long? CASE_ID { get; set; }
         public long? PATIENT_ACCOUNT { get; set; }
+        public string Patient_AccountStr { get; set; }
         public string statusOption { get; set; }
         public int CurrentPage { get; set; }
         public int RecordPerPage { get; set; }

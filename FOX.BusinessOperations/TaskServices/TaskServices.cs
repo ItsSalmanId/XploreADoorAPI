@@ -956,7 +956,7 @@ namespace FOX.BusinessOperations.TaskServices
             }
             var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
             var caseId = Helper.getDBNullOrValue("CASE_ID", taskSearchRequest.CASE_ID.ToString());
-            var patientAccount = Helper.getDBNullOrValue("PATIENT_ACCOUNT", taskSearchRequest.PATIENT_ACCOUNT.ToString());
+            var patientAccount = Helper.getDBNullOrValue("PATIENT_ACCOUNT", taskSearchRequest.Patient_AccountStr);
             var option = new SqlParameter { ParameterName = "OPTION", Value = taskSearchRequest.statusOption };
             var userId = new SqlParameter { ParameterName = "USER_ID", SqlDbType = SqlDbType.BigInt, Value = profile.userID };
             var currentPage = new SqlParameter { ParameterName = "CURRENT_PAGE", SqlDbType = SqlDbType.Int, Value = taskSearchRequest.CurrentPage };
