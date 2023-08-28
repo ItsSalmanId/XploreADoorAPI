@@ -26,15 +26,14 @@ using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using System.Web;
 using System.Web.Configuration;
-using System.Windows.Forms;
 using static FOX.DataModels.Models.ConsentToCare.ConsentToCare;
-using HtmlAgilityPack;
 using System.Threading.Tasks;
 using System.Net;
 using System.Xml;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
+using FOX.DataModels.Models.IndexInfo;
+using SelectPdf;
 
 namespace FOX.BusinessOperations.ConsentToCareService
 {
@@ -52,12 +51,13 @@ namespace FOX.BusinessOperations.ConsentToCareService
         private readonly GenericRepository<FOX_TBL_TASK> _TaskRepository;
         private readonly GenericRepository<PatientContact> _PatientContactRepository;
         private readonly DbContextPatient _PatientContext = new DbContextPatient();
+        private readonly DBContextPatientDocuments _patientDocument = new DBContextPatientDocuments();
+        private readonly GenericRepository<FoxDocumentType> _foxDocumentTypeRepository;
         private readonly GenericRepository<Patient> _PatientRepository;
         public static string SurveyMethod = string.Empty;
         private static List<Thread> threadsList = new List<Thread>();
         // To handle encryption/decryption Objective-C,C#
         private string passPhrase = "2657894562368456";
-        SupportStaffService supportStaffService = new SupportStaffService();
         private ResponseHTMLToPDF htmlToPdfResponseObj;
         #endregion
 
@@ -72,13 +72,13 @@ namespace FOX.BusinessOperations.ConsentToCareService
             htmlToPdfResponseObj = new ResponseHTMLToPDF();
             _PatientContactRepository = new GenericRepository<PatientContact>(_PatientContext);
             _PatientRepository = new GenericRepository<Patient>(_PatientContext);
+            _foxDocumentTypeRepository = new GenericRepository<FoxDocumentType>(_patientDocument);
         }
         #endregion
         #region FUNCTIONS
         public FoxTblConsentToCare AddUpdateConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile)
         {
             SupportStaffService supportStaffService1 = new SupportStaffService();
-            //string htmlTamplate = supportStaffService1.stringToHtml(consentToCareObj.TEMPLATE_HTML);
             string htmlTemplate = string.Empty;
             string consnetReceiverName = string.Empty;
             if (consentToCareObj != null)
@@ -105,9 +105,10 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 {
                     var patinetContactID = consentToCareObj.SENT_TO_ID;
                     var conList = _PatientContactRepository.GetFirst(x => x.Contact_ID == consentToCareObj.SENT_TO_ID && x.Deleted == false);
-                    //var signatoryName = conList.Last_Name + ',' + conList.First_Name;
-                    //consentToCareObj.SIGNATORY = signatoryName;
-                    consnetReceiverName = conList.Last_Name;
+                    if (conList != null)
+                    {
+                        consnetReceiverName = conList.Last_Name;
+                    }
                 }
                 else
                 {
@@ -120,9 +121,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
 
                 var consentToCareIdStr = consentToCareObj.CONSENT_TO_CARE_ID.ToString();
                 var consentToCareId = new SqlParameter("@CONSENT_TO_CARE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CONSENT_TO_CARE_ID };
-                //var practiceCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
                 var existingCaseId = consentToCareObj.CASE_ID;
-                //var existingconsentToCareId = consentToCareObj.CONSENT_TO_CARE_ID;
                 var caseId = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CASE_ID };
                 var practiceCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
                 var sendTo = new SqlParameter("@SEND_TO", SqlDbType.VarChar) { Value = consentToCareObj.SEND_TO };
@@ -133,21 +132,15 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     ////Add Consent To Care 
                     consentToCareObj.CONSENT_TO_CARE_ID = Helper.getMaximumId("CONSENT_TO_CARE_ID");
                     consentToCareObj.CREATED_DATE = DateTime.Now;
-                    consentToCareObj.EXPIRY_DATE_UTC = DateTime.UtcNow;
-                    //consentToCareObj.EXPIRY_DATE = DateTime.Now.AddDays(5);
-                    consentToCareObj.EXPIRY_DATE_UTC = DateTime.UtcNow.AddMinutes(5);
+                    consentToCareObj.EXPIRY_DATE_UTC = DateTime.UtcNow.AddDays(5);
                     consentToCareObj.CREATED_BY = profile.UserName;
                     consentToCareObj.PRACTICE_CODE = AppConfiguration.GetPracticeCode;
-                    /// consentToCareObj.STATUS = "Sent";
                     var consentStatus = _consentToCareStatusRepository.GetFirst(x => x.STATUS_NAME == "Sent" && x.PRACTICE_CODE == consentToCareObj.PRACTICE_CODE && !x.DELETED);
                     if (consentStatus != null)
                     {
                         consentToCareObj.STATUS_ID = consentStatus.CONSENT_TO_CARE_STATUS_ID;
-                       /// consentToCareObj.STATUS = consentStatus.STATUS_NAME;
                     }
                     consentToCareObj.SOURCE_TYPE = "FOX TEAM";
-                    //_consentToCareRepository.Insert(consentToCareObj);
-                    //_consentToCareRepository.Save();
                     var currentConsentToCareId = consentToCareObj.CONSENT_TO_CARE_ID;
                     string currentConsentToCareIdStr = consentToCareObj.CONSENT_TO_CARE_ID.ToString();
 
@@ -157,14 +150,14 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     var currentDate = DateTime.Now.ToString();
                     IndexInfoService indexInfoServiceObj = new IndexInfoService();
                     //// set Task Data 
-                    var consentToCareTask = setTaskData(profile, consentToCareObj.PATIENT_ACCOUNT, tasktypeHBR, currentDate);
+                    var consentToCareTask = SetTaskData(profile, consentToCareObj.PATIENT_ACCOUNT, tasktypeHBR, currentDate);
                     consentToCareTask.PROVIDER_ID = consentToCareObj.TREATING_PROVIDER_ID;
                     consentToCareTask.LOC_ID = consentToCareObj.POS_ID;
                     consentToCareTask.CASE_ID = consentToCareObj.CASE_ID;
                     var pracCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.VarChar) { Value = GetPracticeCode() };
                     var treatingProviderId = new SqlParameter("@TREATING_PROVIDER_ID", SqlDbType.VarChar) { Value = consentToCareObj.TREATING_PROVIDER_ID };
                     var sendToId = SpRepository<string>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_USER_ID_BY_PROVIDER_CODE @PRACTICE_CODE, @TREATING_PROVIDER_ID", pracCode, treatingProviderId);
-                    if(sendToId != null)
+                    if (sendToId != null)
                     {
                         consentToCareTask.SEND_TO_ID = Convert.ToInt64(sendToId);
                         consentToCareTask.IS_SEND_TO_USER = true;
@@ -180,11 +173,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
                         ////Task Interface
                         InsertInterfaceTeamData(interfaceSynch, profile);
                     }
-                    // Get List of CC Users
-                    //var cc = GetEmailCCList();
-                    // Get List of BCC Users
-                    //var bcc = GetEmailBCCList();
-                    // Add Consent To care
                     consentToCareObj.TASK_ID = taskInterfacedHBR.TASK_ID;
                     _consentToCareRepository.Insert(consentToCareObj);
                     _consentToCareRepository.Save();
@@ -193,20 +181,16 @@ namespace FOX.BusinessOperations.ConsentToCareService
 
                     var encryptedEmailURL = GenerateEncryptedEmailURL(consentToCareObj);
                     var emailBody = EmailBody(consnetReceiverName, encryptedEmailURL);
-                    //var email = "muhammadsalman7@carecloud.com";
                     var email = concentToCareReceiverEmail;
                     var number = concentToCareHomePhone;
-                    //var number = concentToCareHomePhone;
                     var smsBody = SmsBody(consnetReceiverName, encryptedEmailURL);
                     if (!string.IsNullOrEmpty(concentToCareReceiverEmail))
                     {
-                        bool sent = Helper.Email(to: email, subject: "Fox Patient Portal", body: emailBody, profile: profile, CC: null, BCC: null);
+                        bool sent = Helper.ConcentToCareEmail(to: email, subject: "Fox Patient Portal", body: emailBody, profile: profile, CC: null, BCC: null);
                     }
-                    ///var sendEmail = Helper.consentToCareEmail(email, "Consent To Care", emailBody, CC: null, BCC: null);
                     if (!string.IsNullOrEmpty(number))
                     {
                         var status = SmsService.SMSTwilio(number, smsBody);
-                        var temp = TelenorAPI(number, smsBody);
                     }
                     var htmlBackup = htmlTemplate;
                     htmlTemplate = htmlBackup;
@@ -242,30 +226,23 @@ namespace FOX.BusinessOperations.ConsentToCareService
 
                     htmlTemplate = htmlDoc.DocumentNode.OuterHtml;
                     htmlToPdfResponseObj = new ResponseHTMLToPDF();
-                    htmlToPdfResponseObj = supportStaffService.HTMLToPDF(config, htmlTemplate, currentConsentToCareIdStr, "email", "");
+                    htmlToPdfResponseObj = HTMLToPDF(config, htmlTemplate, currentConsentToCareIdStr, "email", "");
                     var coverFilePath = htmlToPdfResponseObj.FilePath + "\\" + htmlToPdfResponseObj.FileName;
-                    //var coverFilePath = HTMLToPDFSautinsoft(config, htmlTemplate, consentToCareIdStr);
-                    //var coverFilePath = HTMLToPDFSautinsoft(config, htmlTemplate, consentToCareIdStr);
                     var consentToCareID = consentToCareObj.CONSENT_TO_CARE_ID;
                     var CASE_ID = consentToCareObj.CASE_ID;
                     int numberOfPages = getNumberOfPagesOfPDF(coverFilePath);
                     SavePdfToImages(coverFilePath, config, currentConsentToCareId, numberOfPages);
-
-                    //var taskInterfacedHBR = AddUpdateTask(interfaceTaskHBR, profile, obj);
                 }
                 else
                 {
-                    //consentToCareObj = existingInformation;
                     existingInformation.TEMPLATE_HTML = htmlTemplate;
-                    //existingInformation.EXPIRY_DATE = DateTime.Now.AddDays(5);
-                    existingInformation.EXPIRY_DATE_UTC = DateTime.UtcNow.AddMinutes(5);
+                    existingInformation.EXPIRY_DATE_UTC = DateTime.UtcNow.AddDays(5);
                     existingInformation.MODIFIED_BY = profile.UserName;
                     existingInformation.MODIFIED_DATE = DateTime.Now;
                     var consentStatus = _consentToCareStatusRepository.GetFirst(x => x.STATUS_NAME == "Sent" && x.PRACTICE_CODE == AppConfiguration.GetPracticeCode && !x.DELETED);
                     if (consentStatus != null)
                     {
                         existingInformation.STATUS_ID = consentStatus.CONSENT_TO_CARE_STATUS_ID;
-                        /// consentToCareObj.STATUS = consentStatus.STATUS_NAME;
                     }
                     existingInformation.FAILED_ATTEMPTS = 0;
                     _consentToCareRepository.Update(existingInformation);
@@ -274,32 +251,20 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     // send Email Or SMS
                     consentToCareObj.CASE_ID = existingCaseId;
                     consentToCareObj.CONSENT_TO_CARE_ID = existingconsentToCareId;
-
-                    //var consentStatus = _consentToCareStatusRepository.GetFirst(x => x.STATUS_NAME == "Sent" && x.PRACTICE_CODE == profile.PracticeCode && !x.DELETED);
-                    //if (consentStatus != null)
-                    //{
-                    //    consentToCareObj.STATUS_ID = consentStatus.CONSENT_TO_CARE_STATUS_ID;
-                    //    //consentToCareObj.STATUS = consentStatus.STATUS_NAME;
-                    //}
-
                     var encryptedUrl = EncryptTemp(existingconsentToCareId.ToString());
                     var decryptioUrl = Decryption(encryptedUrl.ToString());
                     var encryptedEmailURL = GenerateEncryptedEmailURL(consentToCareObj);
                     var emailBody = EmailBody(consnetReceiverName, encryptedEmailURL);
-                    //var email = "muhammadsalman7@carecloud.com";
                     var email = concentToCareReceiverEmail;
                     var number = concentToCareHomePhone;
-                    //var number = concentToCareHomePhone;
                     var smsBody = SmsBody(consnetReceiverName, encryptedEmailURL);
                     if (!string.IsNullOrEmpty(concentToCareReceiverEmail))
                     {
-                        bool sent = Helper.Email(to: email, subject: "Fox Patient Portal", body: emailBody, profile: profile, CC: null, BCC: null);
+                        bool sent = Helper.ConcentToCareEmail(to: email, subject: "Fox Patient Portal", body: emailBody, profile: profile, CC: null, BCC: null);
                     }
-                    ///var sendEmail = Helper.consentToCareEmail(email, "Consent To Care", emailBody, CC: null, BCC: null);
                     if (!string.IsNullOrEmpty(number))
                     {
                         var status = SmsService.SMSTwilio(number, smsBody);
-                        var temp = TelenorAPI(number, smsBody);
                     }
                     List<TaskLog> taskLoglist = new List<TaskLog>();
                     List<string> consentTocarelogs = new List<string>();
@@ -331,110 +296,107 @@ namespace FOX.BusinessOperations.ConsentToCareService
                         ////Task Interface
                         InsertInterfaceTeamData(interfaceSynch, profile);
                     }
-                    //htmlToPdfResponseObj = new ResponseHTMLToPDF();
-                    //htmlToPdfResponseObj = supportStaffService.HTMLToPDF(config, htmlTemplate, consentToCareIdStr, "email", "");
-                    //var coverFilePath = htmlToPdfResponseObj.FilePath + "\\" + htmlToPdfResponseObj.FileName;
-                    ////var coverFilePath = HTMLToPDFSautinsoft(config, htmlTemplate, consentToCareIdStr);
-                    ////var coverFilePath = HTMLToPDFSautinsoft(config, htmlTemplate, consentToCareIdStr);
-                    //var consentToCareID = consentToCareObj.CONSENT_TO_CARE_ID;
-                    //var CASE_ID = consentToCareObj.CASE_ID;
-                    //SavePdfToImages(coverFilePath, config, existingconsentToCareId);
-
-                    //var encryptedEmailURL = GenerateEncryptedEmailURL(consentToCareObj);
-                    //var emailBody = EmailBody(consentToCareObj.PatientLastName, encryptedEmailURL);
-                    //var email = "muhammadsalman7@carecloud.com";
-                    //var number = "3040177646";
-                    //var smsBody = SmsBody(consentToCareObj.PatientLastName);
-                    ////bool sent = Helper.Email(to: email, subject: "Fox Patient Portal", body: emailBody, profile: profile, CC: null, BCC: null);
-                    //var sendEmail = Helper.consentToCareEmail(email, "Consent To Care", emailBody, CC: null, BCC: null);
-                    //var status = SmsService.SMSTwilio(number, smsBody);
-                    //var coverFilePath = HTMLToPDFSautinsoft(config, htmlTemplate, consentToCareIdStr);
-                    //var consentToCareID = consentToCareObj.CONSENT_TO_CARE_ID;
-                    //SavePdfToImages(coverFilePath, config, existingconsentToCareId, consentToCareID.ToString(), consentToCareID, 1, "DR:Fax", "", profile.UserName, true);
                 }
-                }
+            }
             return consentToCareObj;
-         }
+        }
+        public static ServiceConfiguration GetServiceConfiguration(long practiceCode)
+        {
+            var config = new ServiceConfiguration();
+            var configList = SpRepository<ServiceConfiguration>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SERVICE_CONFIGURATION_CONSENT_TO_CARE");
+            if (configList.Count() > 0)
+            {
+                config = configList.Where(e => e.PRACTICE_CODE.HasValue && e.PRACTICE_CODE.Value == practiceCode).FirstOrDefault();
+            }
+            return config;
+        }
+        public ResponseHTMLToPDF HTMLToPDF(ServiceConfiguration config, string htmlString, string fileName, string type, string linkMessage = null)
+        {
+            try
+            {
+                HtmlDocument htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(htmlString);
+                htmlDoc.DocumentNode.SelectSingleNode("//*[contains(@id,'print-footer')]")?.Remove();
+                if (!string.IsNullOrWhiteSpace(linkMessage))
+                {
+                    var htmlNode_link = htmlDoc.DocumentNode.SelectSingleNode("//*[contains(@id,'link')]");
+                    if (htmlNode_link != null)
+                    {
+                        htmlNode_link.InnerHtml = linkMessage;
+                    }
+                }
+                HtmlToPdf converter = new HtmlToPdf();
+                converter.Options.PdfPageSize = PdfPageSize.A4;
+                converter.Options.MarginBottom = 10;
+                converter.Options.MarginTop = 10;
+                converter.Options.MarginLeft = 10;
+                converter.Options.MarginRight = 10;
+                converter.Options.DisplayHeader = false;
+                converter.Options.DisplayHeader = false;
+                converter.Options.WebPageWidth = 1570;
+                converter.Options.PdfPageOrientation = PdfPageOrientation.Landscape;
+                PdfDocument doc = converter.ConvertHtmlString(htmlDoc.DocumentNode.OuterHtml);
+                string pdfPath = config.ORIGINAL_FILES_PATH_SERVER;
+                if (!Directory.Exists(pdfPath))
+                {
+                    Directory.CreateDirectory(pdfPath);
+                }
+                fileName += DateTime.Now.Ticks + ".pdf";
+                string pdfFilePath = pdfPath + fileName;
+                // save pdf document
+                doc.Save(pdfFilePath);
+                // close pdf document
+                doc.Close();
+                return new ResponseHTMLToPDF() { FileName = fileName, FilePath = pdfPath, Success = true, ErrorMessage = "" };
+            }
+            catch (Exception exception)
+            {
+                return new ResponseHTMLToPDF() { FileName = "", FilePath = "", Success = false, ErrorMessage = exception.ToString() };
+            }
+        }
         private int getNumberOfPagesOfPDF(string PdfPath)
         {
             iTextSharp.text.pdf.PdfReader pdfReader = new iTextSharp.text.pdf.PdfReader(PdfPath);
             return pdfReader.NumberOfPages;
         }
-        public static Task<bool> TelenorAPI(string phoneNumber, string message)
-        {
-            phoneNumber = string.Concat("0", phoneNumber);
-            HttpWebRequest request = CreateWebRequest();
-            XmlDocument soapEnvelopeXml = new XmlDocument();
-            soapEnvelopeXml.LoadXml(@"<?xml version=""1.0"" encoding=""utf-8""?><soap:Envelope xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:soap=""http://schemas.xmlsoap.org/soap/envelope/""><soap:Body><SendTelenorSMS xmlns=""http://tempuri.org/""><RecipentName>Fox</RecipentName><PhoneNumbers>" + phoneNumber + @"</PhoneNumbers><SMS_Text>" + message + @"</SMS_Text><TeamName>Fox</TeamName></SendTelenorSMS></soap:Body></soap:Envelope>"); using (Stream stream = request.GetRequestStream())
-            {
-                soapEnvelopeXml.Save(stream);
-            }
-            using (WebResponse response = request.GetResponse())
-            {
-                using (StreamReader rd = new StreamReader(response.GetResponseStream()))
-                {
-                    string soapResult = rd.ReadToEnd();
-                    Console.WriteLine(soapResult);
-                }
-            }
-            return Task.FromResult(true);
-        }
-
-        private static HttpWebRequest CreateWebRequest()
-        {
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://172.16.0.71/TelenorAPI/TelenorSMS.asmx?op=SendTelenorSMS");
-            webRequest.Headers.Add(@"SOAP:Action");
-            webRequest.ContentType = "text/xml;charset=\"utf-8\"";
-            webRequest.Accept = "text/xml";
-            webRequest.Method = "POST";
-            return webRequest;
-        }
-
         public int InsertInterfaceTeamData(InterfaceSynchModel obj, UserProfile Profile)
         {
-            try
+            bool isSync = false;
+            InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
+
+            if (obj.PATIENT_ACCOUNT == null && obj.CASE_ID == null && obj.TASK_ID == null)
             {
-                bool isSync = false;
-                InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
 
-                if (obj.PATIENT_ACCOUNT == null && obj.CASE_ID == null && obj.TASK_ID == null)
+            }
+            else
+            {
+                obj.APPLICATION = "PORTAL";
+                SqlParameter pracCode = new SqlParameter("@Practice_code", AppConfiguration.GetPracticeCode);
+                var response = SpRepository<string>.GetSingleObjectWithStoreProcedure(@"Exec Af_proc_is_talkrehab_practice @Practice_code", pracCode);
+                if (response == null)
                 {
-
+                    isSync = false;
                 }
                 else
                 {
-                    obj.APPLICATION = "PORTAL";
-                    SqlParameter pracCode = new SqlParameter("@Practice_code", AppConfiguration.GetPracticeCode);
-                    var response = SpRepository<string>.GetSingleObjectWithStoreProcedure(@"Exec Af_proc_is_talkrehab_practice @Practice_code", pracCode);
-                    if (response == null)
-                    {
-                        isSync = false;
-                    }
-                    else
-                    {
-                        isSync = true;
-                    }
-                    long Pid = Helper.getMaximumId("FOX_INTERFACE_SYNCH_ID");
-                    SqlParameter id = new SqlParameter("ID", Pid);
-
-                    SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", Profile.PracticeCode);
-                    SqlParameter caseId = new SqlParameter("CASE_ID", obj.CASE_ID ?? (object)DBNull.Value);
-                    SqlParameter workId = new SqlParameter("Work_ID", obj.Work_ID ?? (object)DBNull.Value);
-                    SqlParameter taskId = new SqlParameter("TASK_ID", obj.TASK_ID ?? (object)DBNull.Value);
-                    SqlParameter patientAccount = new SqlParameter("PATIENT_ACCOUNT", obj.PATIENT_ACCOUNT);
-                    SqlParameter userName = new SqlParameter("USER_NAME", Profile.UserName);
-                    SqlParameter isSynced = new SqlParameter("IS_SYNCED", isSync);
-                    SqlParameter application = new SqlParameter("APPLICATION", string.IsNullOrEmpty(obj.APPLICATION) ? string.Empty : obj.APPLICATION);
-                    var result = SpRepository<InterfaceSynchModel>.GetListWithStoreProcedure(@"FOX_PROC_INSERT_INTERFACE_DATA @ID, @PRACTICE_CODE,@CASE_ID,@Work_ID,@TASK_ID,@PATIENT_ACCOUNT,@USER_NAME,@IS_SYNCED,@APPLICATION",
-                                                                                                           id, practiceCode, caseId, workId, taskId, patientAccount, userName, isSynced, application);
-                    return result.Count;
+                    isSync = true;
                 }
-                return 0;
+                long Pid = Helper.getMaximumId("FOX_INTERFACE_SYNCH_ID");
+                SqlParameter id = new SqlParameter("ID", Pid);
+
+                SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", Profile.PracticeCode);
+                SqlParameter caseId = new SqlParameter("CASE_ID", obj.CASE_ID ?? (object)DBNull.Value);
+                SqlParameter workId = new SqlParameter("Work_ID", obj.Work_ID ?? (object)DBNull.Value);
+                SqlParameter taskId = new SqlParameter("TASK_ID", obj.TASK_ID ?? (object)DBNull.Value);
+                SqlParameter patientAccount = new SqlParameter("PATIENT_ACCOUNT", obj.PATIENT_ACCOUNT);
+                SqlParameter userName = new SqlParameter("USER_NAME", Profile.UserName);
+                SqlParameter isSynced = new SqlParameter("IS_SYNCED", isSync);
+                SqlParameter application = new SqlParameter("APPLICATION", string.IsNullOrEmpty(obj.APPLICATION) ? string.Empty : obj.APPLICATION);
+                var result = SpRepository<InterfaceSynchModel>.GetListWithStoreProcedure(@"FOX_PROC_INSERT_INTERFACE_DATA @ID, @PRACTICE_CODE,@CASE_ID,@Work_ID,@TASK_ID,@PATIENT_ACCOUNT,@USER_NAME,@IS_SYNCED,@APPLICATION",
+                                                                                                       id, practiceCode, caseId, workId, taskId, patientAccount, userName, isSynced, application);
+                return result.Count;
             }
-            catch (Exception ex)
-            {
-                return 0;
-            }
+            return 0;
         }
         private FOX_TBL_TASK GetTask(long Practice_Code, long Task_Id)
         {
@@ -496,7 +458,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     List<string> consentTocarelogs = new List<string>();
                     StringBuilder consentTocarelogsString = new StringBuilder();
                     consentTocarelogs.Add("Consent To Care :" + Helper.GetCurrentDate());
-                    consentTocarelogs.Add("Consent to care link has been sent to: " + sendTo + " ("+consnetReceiverName+")");
+                    consentTocarelogs.Add("Consent to care link has been sent to: " + sendTo + " (" + consnetReceiverName + ")");
                     foreach (string str in consentTocarelogs)
                     {
                         consentTocarelogsString.Append(str + "<br>");
@@ -518,7 +480,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             }
             return null;
         }
-        private void InsertTaskLog(long? taskId, List<TaskLog> tasklog, UserProfile profile)
+        public void InsertTaskLog(long? taskId, List<TaskLog> tasklog, UserProfile profile)
         {
             if (taskId != null && taskId.Value > 0)
             {
@@ -554,14 +516,13 @@ namespace FOX.BusinessOperations.ConsentToCareService
             }
             return dt;
         }
-        private FOX_TBL_TASK setTaskData(UserProfile profile, long? PATIENT_ACCOUNT, string tasktypeHBR, string CURRENT_DATE_STR)
+        private FOX_TBL_TASK SetTaskData(UserProfile profile, long? PATIENT_ACCOUNT, string tasktypeHBR, string CURRENT_DATE_STR)
         {
             var task = new FOX_TBL_TASK();
             SqlParameter pPracticeCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
             SqlParameter pTaskTypeName = new SqlParameter();
             pTaskTypeName.ParameterName = "NAME";
             pTaskTypeName.Value = "CARE";
-            //pTaskTypeName.Value = "Consent";
             var Task_type_Id = SpRepository<FOX_TBL_TASK_TYPE>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_GET_TASK_ID @PRACTICE_CODE, @NAME", pPracticeCode, pTaskTypeName);
             task.TASK_TYPE_ID = Task_type_Id?.TASK_TYPE_ID ?? 0;
             task.PRACTICE_CODE = profile.PracticeCode;
@@ -574,21 +535,47 @@ namespace FOX.BusinessOperations.ConsentToCareService
             return task;
         }
 
-        private void AddFilesToDatabase(string filePath, string logoPath, long consentToCareId)
+        public void AddFilesToDatabase(string filePath, string logoPath, long consentToCareId)
         {
             try
             {
-                ConsentToCareDocument consentToCareDocumentObj = new ConsentToCareDocument();
-                consentToCareDocumentObj.DOCUMENTS_ID = Helper.getMaximumId("DOCUMENTS_ID");
-                consentToCareDocumentObj.IMAGE_PATH = filePath;
-                consentToCareDocumentObj.LOGO_PATH = logoPath;
-                consentToCareDocumentObj.CREATED_DATE = DateTime.Now;
-                consentToCareDocumentObj.MODIFIED_DATE = DateTime.Now;
-                consentToCareDocumentObj.PRACTICE_CODE = AppConfiguration.GetPracticeCode;
-                //consentToCareDocumentObj.CASE_ID = int.Parse(caseID);
-                consentToCareDocumentObj.CONSENT_TO_CARE_ID = consentToCareId;
-                _consentToCareDocumentRepository.Insert(consentToCareDocumentObj);
-                _consentToCareDocumentRepository.Save();
+                var consentDocuments = _consentToCareDocumentRepository.GetFirst(x => x.CONSENT_TO_CARE_ID == consentToCareId && x.PRACTICE_CODE == AppConfiguration.GetPracticeCode && !x.DELETED);
+                if (consentDocuments == null)
+                {
+                    ConsentToCareDocument consentToCareDocumentObj = new ConsentToCareDocument();
+                    var documentType = _foxDocumentTypeRepository.GetFirst(x => x.NAME == "PCORS" && !x.DELETED);
+                    if (documentType != null)
+                    {
+                        consentToCareDocumentObj.DOCUMENT_TYPE_ID = documentType.DOCUMENT_TYPE_ID;
+                    }
+                    consentToCareDocumentObj.DOCUMENTS_ID = Helper.getMaximumId("DOCUMENTS_ID");
+                    consentToCareDocumentObj.IMAGE_PATH = filePath;
+                    consentToCareDocumentObj.LOGO_PATH = logoPath;
+                    consentToCareDocumentObj.CREATED_DATE = DateTime.Now;
+                    consentToCareDocumentObj.MODIFIED_DATE = DateTime.Now;
+                    consentToCareDocumentObj.PRACTICE_CODE = AppConfiguration.GetPracticeCode;
+                    consentToCareDocumentObj.CONSENT_TO_CARE_ID = consentToCareId;
+                    _consentToCareDocumentRepository.Insert(consentToCareDocumentObj);
+                    _consentToCareDocumentRepository.Save();
+
+                }
+                else
+                {
+                    ConsentToCareDocument consentToCareDocumentObj = new ConsentToCareDocument();
+                    var documentType = _foxDocumentTypeRepository.GetFirst(x => x.NAME == "PCORN" && !x.DELETED);
+                    if (documentType != null)
+                    {
+                        consentToCareDocumentObj.DOCUMENT_TYPE_ID = documentType.DOCUMENT_TYPE_ID;
+                    }
+                    consentToCareDocumentObj.IMAGE_PATH = filePath;
+                    consentToCareDocumentObj.LOGO_PATH = logoPath;
+                    consentToCareDocumentObj.CREATED_DATE = DateTime.Now;
+                    consentToCareDocumentObj.MODIFIED_DATE = DateTime.Now;
+                    consentToCareDocumentObj.PRACTICE_CODE = AppConfiguration.GetPracticeCode;
+                    consentToCareDocumentObj.CONSENT_TO_CARE_ID = consentToCareId;
+                    _consentToCareDocumentRepository.Update(consentToCareDocumentObj);
+                    _consentToCareDocumentRepository.Save();
+                }
             }
             catch (Exception exception)
             {
@@ -755,7 +742,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
         }
         public ConsentToCareList GetConsentToCareImagePath(FoxTblConsentToCare consentToCareObj, UserProfile profile)
         {
-            List<FoxTblConsentToCare> consentToCareList = new List<FoxTblConsentToCare>();
             ConsentToCareList response = new ConsentToCareList();
             if (consentToCareObj != null)
             {
@@ -777,8 +763,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             {
                 consentToCareObj.PATIENT_ACCOUNT = long.Parse(consentToCareObj.PATIENT_ACCOUNT_Str == null ? "0" : consentToCareObj.PATIENT_ACCOUNT_Str);
                 var practiceCode = GetPracticeCode();
-                var userName = "FOX TEAM";
-                var config = Helper.GetServiceConfiguration(practiceCode);
+                var config = GetServiceConfiguration(practiceCode);
                 var htmlTemplate = consentToCareObj.TEMPLATE_HTML;
                 var consentToCareIdStr = consentToCareObj.CONSENT_TO_CARE_ID.ToString();
                 var coverFilePath = HTMLToPDFSautinsoft(config, htmlTemplate, consentToCareIdStr);
@@ -788,23 +773,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 int numberOfPages = getNumberOfPagesOfPDF(coverFilePath);
                 SavePdfToImages(coverFilePath, config, currentConsentToCareId, numberOfPages);
                 return coverFilePath;
-                //var queue = _consentToCareDocumentRepository.GetSingle(e => e.CASE_ID == consentToCareObj.CASE_ID && e.CONSENT_TO_CARE_ID == consentToCareObj.CONSENT_TO_CARE_ID);
-                //var queue = _consentToCareDocumentRepository.GetSingleOrDefault(e => e.CASE_ID == consentToCareObj.CASE_ID);
-                //if (queue != null)
-                //{
-                //    var localPath = practiceDocumentDirectory + "/" + queue.CASE_ID + " __" + DateTime.Now.Ticks + ".pdf";
-                //    //var pathForPDF = @"\\10.10.30.165\\" + practiceDocumentDirectory + queue.CASE_ID + " __" + DateTime.Now.Ticks + ".pdf";
-                //    var pathForPDF = Path.Combine(HttpContext.Current.Server.MapPath(@"~/" + practiceDocumentDirectory), queue.CASE_ID + " __" + DateTime.Now.Ticks + ".pdf");
-                //    ImageHandler imgHandler = new ImageHandler();
-                //    var imges = _consentToCareDocumentRepository.GetMany(x => x.CASE_ID == consentToCareObj.CASE_ID);
-                //    if (imges != null && imges.Count > 0)
-                //    {
-                //        var imgPaths = (from x in imges select x.IMAGE_PATH).ToArray();
-                //        imgHandler.ImagesToPdf(imgPaths, pathForPDF);
-                //        return coverFilePath;
-                //    }
-                //}
-                return "";
             }
             catch (Exception ex)
             {
@@ -830,8 +798,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
             if (consentToCareObj != null)
             {
                 string environmentURL = GetClientURL() + "#/ConsentToCare";
-                string conactURL = consentToCareObj.CONSENT_TO_CARE_ID + "#";
-                //encryptedUrl = Encrypt(consentToCareObj.CASE_ID.ToString(), "sblw-3hn8-sqoy19").ToString();
                 encryptedUrl = EncryptTemp(consentToCareObj.CONSENT_TO_CARE_ID.ToString());
                 encryptedUrl = environmentURL + "?" + encryptedUrl;
             }
@@ -920,8 +886,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
             var consentToCareId = new SqlParameter("@CONSENT_TO_CARE_ID", SqlDbType.VarChar) { Value = consentToCareObj.CONSENT_TO_CARE_ID };
             var practiceCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
             consentToCareObj = SpRepository<FoxTblConsentToCare>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CONSENT_TO_CARE_ID @CONSENT_TO_CARE_ID, @PRACTICE_CODE", consentToCareId, practiceCode);
-
-            //var  encryptedUrl = EncryptTemp(encryptedCaseId);
             return consentToCareObj;
         }
         // Description: This function is decrypt patient account number & handle the flow of Unsubscribe Email & SMS
@@ -1038,31 +1002,16 @@ namespace FOX.BusinessOperations.ConsentToCareService
 
             //HTML to PDF
             htmlToPdfResponseObj = new ResponseHTMLToPDF();
-            htmlToPdfResponseObj = supportStaffService.HTMLToPDF(config, updatedHtml, consentToCareObj.CONSENT_TO_CARE_ID.ToString(), "email", "");
+            htmlToPdfResponseObj = HTMLToPDF(config, updatedHtml, consentToCareObj.CONSENT_TO_CARE_ID.ToString(), "email", "");
             var coverFilePath = htmlToPdfResponseObj.FilePath + "\\" + htmlToPdfResponseObj.FileName;
             var consentToCareID = consentToCareObj.CONSENT_TO_CARE_ID;
             var CASE_ID = consentToCareObj.CASE_ID;
-
-            //Delete existing Unsigned documents
-            var consentDocuments = _consentToCareDocumentRepository.GetMany(x => x.CONSENT_TO_CARE_ID == consentToCareObj.CONSENT_TO_CARE_ID && x.PRACTICE_CODE == consentToCareObj.PRACTICE_CODE && !x.DELETED);
-            if(consentDocuments != null)
-            {
-                foreach (var consentDocument in consentDocuments)
-                {
-                    consentDocument.DELETED = true;
-                    _consentToCareDocumentRepository.Update(consentDocument);
-                }
-                _consentToCareDocumentRepository.Save();
-            }
-           
-           // _consentToCareDocumentRepository.ExecuteCommand("update FOX_TBL_CONSENT_TO_CARE_DOCUMENTS set DELETED=1 where CONSENT_TO_CARE_ID = {0} and PRACTICE_CODE = {1}", consentToCareObj.CONSENT_TO_CARE_ID, consentToCareObj.PRACTICE_CODE);
-
             //Save PDF to Images and Save in consent-to-care document table
             int numberOfPages = getNumberOfPagesOfPDF(coverFilePath);
             SavePdfToImages(coverFilePath, config, consentToCareObj.CONSENT_TO_CARE_ID, numberOfPages);
 
             //Update consent table data
-            if(consentToCareObj.SENT_TO_ID != 0)
+            if (consentToCareObj.SENT_TO_ID != 0)
             {
                 var patinetContactID = consentToCareObj.SENT_TO_ID;
                 var conList = _PatientContactRepository.GetFirst(x => x.Contact_ID == consentToCareObj.SENT_TO_ID && x.Deleted == false);
@@ -1085,8 +1034,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
             {
                 var patinetContactID = consentToCareObj.SENT_TO_ID;
                 var conList = _PatientContactRepository.GetFirst(x => x.Contact_ID == consentToCareObj.SENT_TO_ID && x.Deleted == false);
-                //var signatoryName = conList.Last_Name + ',' + conList.First_Name;
-                //consentToCareObj.SIGNATORY = signatoryName;
                 consnetReceiverName = conList.Last_Name;
             }
             else
@@ -1136,85 +1083,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
         }
         #endregion
         #region Email & SMS body 
-        // Description: This function is used for Email body
-        public static string EmailBody(string patientFirstName)
-        {
-            string mailBody = string.Empty;
-            string templatePathOfSenderEmail = AppDomain.CurrentDomain.BaseDirectory;
-            templatePathOfSenderEmail = templatePathOfSenderEmail.Replace(@"\bin\Debug", "") + "HtmlTemplates\\UnsubscribeAutomatedPatientSurveyEmailTemplate.html";
-            if (File.Exists(templatePathOfSenderEmail))
-            {
-                mailBody = File.ReadAllText(templatePathOfSenderEmail);
-                mailBody = mailBody.Replace("[[PATIENT_FIRST_NAME]]", patientFirstName);
-            }
-            return mailBody ?? "";
-        }
-        // Description: This function is used for send email
-        public static bool SendEmail(string to, string subject, string body, List<string> CC = null, List<string> BCC = null, string AttachmentFilePaths = null, string from = "foxrehab@carecloud.com")
-        {
-            bool IsMailSent = false;
-            var bodyHTML = "";
-            bodyHTML += "<body>";
-            bodyHTML += body;
-            bodyHTML += "</body>";
-            try
-            {
-                using (SmtpClient smtp = new SmtpClient())
-                {
-                    using (MailMessage mail = new MailMessage())
-                    {
-                        mail.From = new MailAddress(from);
-                        mail.To.Add(new MailAddress(to));
-                        mail.Subject = subject;
-                        mail.Body = bodyHTML;
-                        mail.IsBodyHtml = true;
-                        mail.SubjectEncoding = Encoding.UTF8;
-                        if (CC != null && CC.Count > 0)
-                        {
-                            foreach (var item in CC) { mail.CC.Add(item); }
-                        }
-                        if (BCC != null && BCC.Count > 0)
-                        {
-                            foreach (var item in BCC) { mail.Bcc.Add(item); }
-                        }
-                        if (AttachmentFilePaths != null)
-                        {
-                            if (File.Exists(AttachmentFilePaths)) { mail.Attachments.Add(new Attachment(AttachmentFilePaths)); }
-                        }
-                        smtp.Credentials = new System.Net.NetworkCredential(ConfigurationManager.AppSettings["FoxRehabUserName"], ConfigurationManager.AppSettings["FoxRehabPassword"]);
-                        smtp.Send(mail);
-                        IsMailSent = true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return IsMailSent;
-        }
-        // Description: This function is used for get list of Email CC
-        public static List<string> GetEmailCCList()
-        {
-            List<string> cc = new List<string>();
-            var ccUsers = ConfigurationManager.AppSettings?["SurveyAutomationCCList"].ToString();
-            if (!string.IsNullOrEmpty(ccUsers))
-            {
-                cc = ccUsers.Split(',').ToList();
-            }
-            return cc ?? null;
-        }
-        // Description: This function is used for get list of Email BCC
-        public static List<string> GetEmailBCCList()
-        {
-            List<string> bcc = new List<string>();
-            var ccUsers = ConfigurationManager.AppSettings?["SurveyAutomationBCCList"].ToString();
-            if (!string.IsNullOrEmpty(ccUsers))
-            {
-                bcc = ccUsers.Split(',').ToList();
-            }
-            return bcc ?? null;
-        }
         // Description: This function is used forcreate SMS body
         public static string SmsBody(string patientFirstName, string link)
         {

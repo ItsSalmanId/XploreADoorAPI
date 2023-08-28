@@ -713,7 +713,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 return new ResponseHTMLToPDF() { FileName = "", FilePath = "", Success = false, ErrorMessage = exception.ToString() };
             }
         }
-        public ResponseHTMLToPDF HTMLToPDF(ServiceConfiguration config, string htmlString, string fileName, string type, string linkMessage = null)
+        private ResponseHTMLToPDF HTMLToPDF(ServiceConfiguration config, string htmlString, string fileName, string type, string linkMessage = null)
         {
             try
             {
@@ -735,9 +735,7 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 converter.Options.MarginLeft = 10;
                 converter.Options.MarginRight = 10;
                 converter.Options.DisplayHeader = false;
-                converter.Options.DisplayHeader = false;
-                converter.Options.WebPageWidth = 1570;
-                converter.Options.PdfPageOrientation = PdfPageOrientation.Landscape;
+                converter.Options.WebPageWidth = 768;
                 PdfDocument doc = converter.ConvertHtmlString(htmlDoc.DocumentNode.OuterHtml);
                 string pdfPath = config.ORIGINAL_FILES_PATH_SERVER;
                 if (!Directory.Exists(pdfPath))

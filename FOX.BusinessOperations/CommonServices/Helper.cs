@@ -251,34 +251,6 @@ namespace FOX.BusinessOperations.CommonService
                         IsMailSent = true;
                     }
                 }
-
-                /////////////////////////////////////
-                //SmtpClient smtp = new SmtpClient();
-                //MailMessage mail = new MailMessage();
-                //mail.From = new MailAddress(from);
-                //mail.To.Add(new MailAddress(to));
-                //mail.Subject = subject;
-                //mail.Body = body;
-                //mail.IsBodyHtml = true;
-                //mail.SubjectEncoding = Encoding.UTF8;
-                //if (CC != null && CC.Count > 0)
-                //{
-                //    foreach (var item in CC) { mail.CC.Add(item); }
-                //}
-                //if (BCC != null && BCC.Count > 0)
-                //{
-                //    foreach (var item in BCC) { mail.Bcc.Add(item); }
-                //}
-                //if (AttachmentFilePaths != null && AttachmentFilePaths.Count > 0)
-                //{
-                //    foreach (string filePth in AttachmentFilePaths)
-                //    {
-                //        if (File.Exists(filePth)) { mail.Attachments.Add(new Attachment(filePth)); }
-                //    }
-                //}
-                //smtp.Send(mail);
-                //LogEmailData(to,"Success",profile,CC,BCC, from,null,WORK_ID, AttachmentFilePaths);
-                //IsMailSent = true;
             }
             catch (Exception ex)
             {
@@ -963,7 +935,7 @@ namespace FOX.BusinessOperations.CommonService
         {
             //practiceCode = AppConfiguration.GetPracticeCode;
             var config = new ServiceConfiguration();
-            var configList = SpRepository<ServiceConfiguration>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SERVICE_CONFIGURATION_CONSENT_TO_CARE");
+            var configList = SpRepository<ServiceConfiguration>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_SERVICE_CONFIGURATION");
             if (configList.Count() > 0)
             {
                 config = configList.Where(e => e.PRACTICE_CODE.HasValue && e.PRACTICE_CODE.Value == practiceCode).FirstOrDefault();
@@ -1312,16 +1284,12 @@ namespace FOX.BusinessOperations.CommonService
             }
             return sb.ToString();
         }
-        // Description: This function is used for send email
-        public static bool consentToCareEmail(string to, string subject, string body, List<string> CC = null, List<string> BCC = null, string AttachmentFilePaths = null, string from = "foxrehab@carecloud.com")
+        public static bool ConcentToCareEmail(string to, string subject, string body, UserProfile profile = null, long? WORK_ID = null, List<string> CC = null, List<string> BCC = null, List<string> AttachmentFilePaths = null, string from = "foxrehab@carecloud.com")
         {
             bool IsMailSent = false;
-            var bodyHTML = "";
-            bodyHTML += "<body>";
-            bodyHTML += body;
-            bodyHTML += "</body>";
             try
             {
+
                 using (SmtpClient smtp = new SmtpClient())
                 {
                     using (MailMessage mail = new MailMessage())
@@ -1329,7 +1297,7 @@ namespace FOX.BusinessOperations.CommonService
                         mail.From = new MailAddress(from);
                         mail.To.Add(new MailAddress(to));
                         mail.Subject = subject;
-                        mail.Body = bodyHTML;
+                        mail.Body = body;
                         mail.IsBodyHtml = true;
                         mail.SubjectEncoding = Encoding.UTF8;
                         if (CC != null && CC.Count > 0)
@@ -1340,23 +1308,33 @@ namespace FOX.BusinessOperations.CommonService
                         {
                             foreach (var item in BCC) { mail.Bcc.Add(item); }
                         }
-                        if (AttachmentFilePaths != null)
+                        if (AttachmentFilePaths != null && AttachmentFilePaths.Count > 0)
                         {
-                            if (File.Exists(AttachmentFilePaths)) { mail.Attachments.Add(new Attachment(AttachmentFilePaths)); }
+                            foreach (string filePth in AttachmentFilePaths)
+                            {
+                                if (File.Exists(filePth)) { mail.Attachments.Add(new Attachment(filePth)); }
+                            }
                         }
-                        smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["FoxRehabUserName"], WebConfigurationManager.AppSettings["FoxRehabPassword"]);
-                        //smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["NoReplyUserName"], WebConfigurationManager.AppSettings["NoReplyPassword"]);
+                        if (profile != null && profile.isTalkRehab)
+                        {
+                            smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["NoReplyUserName"], WebConfigurationManager.AppSettings["NoReplyPassword"]);
+                        }
+                        else
+                        {
+                            smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["FoxRehabUserName"], WebConfigurationManager.AppSettings["FoxRehabPassword"]);
+                        }
                         smtp.Send(mail);
+                        LogEmailData(to, "Success", profile, CC, BCC, from, null, WORK_ID, AttachmentFilePaths);
                         IsMailSent = true;
                     }
                 }
             }
             catch (Exception ex)
             {
-                throw ex;
+                LogEmailData(to, "Failed", profile, CC, BCC, from, ex, WORK_ID, AttachmentFilePaths);
+                IsMailSent = false;
             }
             return IsMailSent;
         }
-
     }
 }

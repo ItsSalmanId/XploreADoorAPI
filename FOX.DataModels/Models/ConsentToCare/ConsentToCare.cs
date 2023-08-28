@@ -93,22 +93,6 @@ namespace FOX.DataModels.Models.ConsentToCare
             public long SURVEY_QUESTIONS_ID { get; set; }
             public string SURVEY_QUESTIONS { get; set; }
         }
-        [Table("FOX_TBL_AUTOMATED_SURVEY_UNSUBSCRIPTION")]
-        public class AutomatedSurveyUnSubscription
-        {
-            [Key]
-            public long AUTOMATED_SURVEY_UNSUBSCRIPTION_ID { get; set; }
-            public long SURVEY_ID { get; set; }
-            public long PATIENT_ACCOUNT { get; set; }
-            public long PRACTICE_CODE { get; set; }
-            public bool SMS_UNSUBSCRIBE { get; set; }
-            public bool EMAIL_UNSUBSCRIBE { get; set; }
-            public DateTime? CREATED_DATE { get; set; }
-            public string CREATED_BY { get; set; }
-            public DateTime? MODIFIED_DATE { get; set; }
-            public string MODIFIED_BY { get; set; }
-            public bool DELETED { get; set; }
-        }
         [Table("FOX_TBL_CONSENT_TO_CARE_DOCUMENTS")]
         public class ConsentToCareDocument
         {
@@ -123,6 +107,7 @@ namespace FOX.DataModels.Models.ConsentToCare
             public DateTime MODIFIED_DATE { get; set; }
             public string MODIFIED_BY { get; set; }
             public bool DELETED { get; set; } = false;
+            public long DOCUMENT_TYPE_ID { get; set; }
         }
 
         [Table("FOX_TBL_CONSENT_TO_CARE_STATUS")]
