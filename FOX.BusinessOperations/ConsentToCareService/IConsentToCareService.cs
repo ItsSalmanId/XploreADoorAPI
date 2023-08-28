@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using FOX.DataModels.Models.CommonModel;
-using FOX.DataModels.Models.PatientSurvey;
-using FOX.DataModels.Models.Security;
+﻿using FOX.DataModels.Models.Security;
 using static FOX.DataModels.Models.ConsentToCare.ConsentToCare;
-using static FOX.DataModels.Models.SurveyAutomation.SurveyAutomations;
 
 namespace FOX.BusinessOperations.ConsentToCareService
 {

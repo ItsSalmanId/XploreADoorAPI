@@ -78,7 +78,6 @@ namespace FOX.BusinessOperations.CaseServices
         private readonly GenericRepository<FOX_TBL_HOLD_NON_REASONS> _foxTblHoldNonRepository;
         private readonly GenericRepository<Provider> _providerRepository;
         private readonly GenericRepository<ReferralSource> _fox_tbl_ordering_ref_source;
-        private readonly GenericRepository<FOX_TBL_CONSENT_TO_CARE> _consentToCareRepository;
 
         public static object AESEncryption { get; private set; }
 

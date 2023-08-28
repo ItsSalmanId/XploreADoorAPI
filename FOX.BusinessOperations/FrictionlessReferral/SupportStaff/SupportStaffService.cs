@@ -95,15 +95,6 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
             long practiceCode = Convert.ToInt64(WebConfigurationManager.AppSettings?["GetPracticeCode"]);
             return practiceCode;
         }
-        public string stringToHtml(string Html)
-        {
-            HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(Html);
-            //Replace Bottom Border
-            HtmlNode temp = doc.GetElementbyId("stringTopBorderLine");
-            string tempHtml = temp.OuterHtml;
-            return tempHtml;
-        }
         // Description: This function is used to get insurance payer names.
         public List<InsurancePayer> GetInsurancePayers()
         {
