@@ -79,8 +79,6 @@ namespace FOX.BusinessOperations.CaseServices
         private readonly GenericRepository<Provider> _providerRepository;
         private readonly GenericRepository<ReferralSource> _fox_tbl_ordering_ref_source;
 
-        public static object AESEncryption { get; private set; }
-
         public CaseServices()
         {
             _CaseRepository = new GenericRepository<FOX_TBL_CASE>(_CaseContext);

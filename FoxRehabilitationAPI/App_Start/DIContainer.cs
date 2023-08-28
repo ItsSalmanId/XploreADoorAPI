@@ -57,7 +57,6 @@ namespace FoxRehabilitationAPI.App_Start
             container.RegisterType<FOX.BusinessOperations.ReconciliationService.IReconciliationService, FOX.BusinessOperations.ReconciliationService.ReconciliationService>();
 
             container.RegisterType<IGroupService, GroupService>();
-            // container.RegisterType<FOX.BusinessOperations.ReconnectCallService.IReconnectCallService, FOX.BusinessOperations.ReconnectCallService.ReconnectCallService>();
             container.RegisterType<FOX.BusinessOperations.SettingsService.AnnouncementService.IAnnouncementService, FOX.BusinessOperations.SettingsService.AnnouncementService.AnnouncementService>();
             container.RegisterType<FOX.BusinessOperations.SettingsService.ClinicianSetupService.IClinicianSetupService, FOX.BusinessOperations.SettingsService.ClinicianSetupService.ClinicianSetupService>();
             container.RegisterType<FOX.BusinessOperations.PatientMaintenanceService.PatientInsuranceService.IPatientInsuranceService, FOX.BusinessOperations.PatientMaintenanceService.PatientInsuranceService.PatientInsuranceService>();
@@ -73,7 +72,7 @@ namespace FoxRehabilitationAPI.App_Start
             container.RegisterType<ISupportStaffService, SupportStaffService>();
             container.RegisterType<FOX.BusinessOperations.SurveyAutomationService.ISurveyAutomationService, FOX.BusinessOperations.SurveyAutomationService.SurveyAutomationService>();
             container.RegisterType<IConsentToCareService, ConsentToCareService>();
-            //container.RegisterType<FOX.BusinessOperations.ConsentToCareService.IConsentToCareService, FOX.BusinessOperations.ConsentToCareService.ConsentToCareService>();
+            container.RegisterType<IPowerOfAttorneyService, PowerOfAttorneyService>();
             return container;
         }
     }
