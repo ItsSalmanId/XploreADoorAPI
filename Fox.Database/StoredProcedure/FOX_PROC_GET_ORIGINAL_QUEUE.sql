@@ -234,7 +234,7 @@ SELECT   WORK_ID,
              AND ISNULL(FC.DELETED, 0) = 0                        
          WHERE(Replace(SORCE_NAME,'(','') LIKE '%'+@SEARCH_GO+'%'                  
                OR Replace(SORCE_TYPE,' ','') LIKE '%'+@SEARCH_GO+'%'                  
-               OR Replace(Replace(Replace(Replace(WORK_STATUS,' ',''),'Guest_Created','Pending'),'Created','Pending'),'Index_Pending','Pending') LIKE '%'+@SEARCH_GO+'%'                    
+               OR Replace(Replace(Replace(Replace(WORK_STATUS,' ',''),'Guest_Created','Pending'),'Created','Pending'),'IndexPending','Pending') LIKE '%'+@SEARCH_GO+'%'                    
                OR TP.TOTAL_PAGES LIKE '%'+@SEARCH_GO+'%'                  
       OR CONVERT(VARCHAR, RECEIVE_DATE, 101) LIKE '%'+@SEARCH_GO+'%'                  
                OR CONVERT(VARCHAR, RECEIVE_DATE, 100) LIKE '%'+@SEARCH_GO+'%'                  
