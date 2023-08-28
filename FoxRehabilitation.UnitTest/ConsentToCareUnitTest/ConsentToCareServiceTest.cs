@@ -54,7 +54,7 @@ namespace FoxRehabilitation.UnitTest.ConsentToCareServiceUnitTest
         [Test]
         [TestCase("patinet", "Salman")]
         [TestCase("patinet", "Salman")]
-        public void GetPatientDetails_PatientDetailsModel_ReturnData(string sendTo, string consnetReceiverName)
+        public void AddUpdateTask_PassModel_ReturnData(string sendTo, string consnetReceiverName)
         {
             //Arrange
             _userProfile.UserName = "N Unit testing";
@@ -80,7 +80,7 @@ namespace FoxRehabilitation.UnitTest.ConsentToCareServiceUnitTest
         [Test]
         [TestCase(101116354816636)]
         [TestCase(1234)]
-        public void GetSurveyQuestionDetails_SurveyQuestions_ReturnString(long taskId)
+        public void InsertTaskLog_PassParameter_ReturnString(long taskId)
         {
             //Arrange
             List<TaskLog> list = new List<TaskLog>();
@@ -94,7 +94,7 @@ namespace FoxRehabilitation.UnitTest.ConsentToCareServiceUnitTest
         [Test]
         [TestCase("test", "test", 54100)]
         [TestCase("test", "test", 54101)]
-        public void UpdatePatientSurvey_UpdateSurvey_UpdateData(string filePath, string logoPath, long consentToCareId)
+        public void AddFilesToDatabase_PassParameter_UpdateData(string filePath, string logoPath, long consentToCareId)
         {
             //Arrange
 
