@@ -216,6 +216,14 @@ namespace FOX.BusinessOperations.SupervisorWorkService
             if (dbData != null)
             {
                 dbData.IS_TRASH_REFERRAL = markAsTrashed;
+                if (markAsTrashed == true)
+                {
+                    dbData.WORK_STATUS = "Trashed";
+                }
+                if(markAsTrashed == false)
+                {
+                    dbData.WORK_STATUS = "Index Pending";
+                }
                 dbData.MODIFIED_BY = profile.UserName;
                 dbData.MODIFIED_DATE = Helper.GetCurrentDate();
             }
