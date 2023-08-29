@@ -384,7 +384,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 long Pid = Helper.getMaximumId("FOX_INTERFACE_SYNCH_ID");
                 SqlParameter id = new SqlParameter("ID", Pid);
 
-                SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", Profile.PracticeCode);
+                SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", AppConfiguration.GetPracticeCode);
                 SqlParameter caseId = new SqlParameter("CASE_ID", obj.CASE_ID ?? (object)DBNull.Value);
                 SqlParameter workId = new SqlParameter("Work_ID", obj.Work_ID ?? (object)DBNull.Value);
                 SqlParameter taskId = new SqlParameter("TASK_ID", obj.TASK_ID ?? (object)DBNull.Value);
