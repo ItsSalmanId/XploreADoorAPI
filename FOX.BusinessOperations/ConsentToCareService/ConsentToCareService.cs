@@ -551,8 +551,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     consentToCareDocumentObj.DOCUMENTS_ID = Helper.getMaximumId("DOCUMENTS_ID");
                     consentToCareDocumentObj.IMAGE_PATH = filePath;
                     consentToCareDocumentObj.LOGO_PATH = logoPath;
-                    consentToCareDocumentObj.CREATED_DATE = DateTime.Now;
-                    consentToCareDocumentObj.CREATED_BY = "Fox Team";
                     consentToCareDocumentObj.PRACTICE_CODE = AppConfiguration.GetPracticeCode;
                     consentToCareDocumentObj.CONSENT_TO_CARE_ID = consentToCareId;
                     _consentToCareDocumentRepository.Insert(consentToCareDocumentObj);
@@ -568,8 +566,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     }
                     consentDocuments.IMAGE_PATH = filePath;
                     consentDocuments.LOGO_PATH = logoPath;
-                    consentDocuments.MODIFIED_DATE = DateTime.Now;
-                    consentDocuments.MODIFIED_BY = "Fox Team";
+                    consentDocuments.MODIFIED_DATE = Helper.GetCurrentDate();
                     consentDocuments.PRACTICE_CODE = AppConfiguration.GetPracticeCode;
                     _consentToCareDocumentRepository.Update(consentDocuments);
                     _consentToCareDocumentRepository.Save();
