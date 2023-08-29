@@ -18,18 +18,18 @@ namespace FOX.DataModels.Models.ConsentToCare
             public long CONSENT_TO_CARE_ID { get; set; }
             public string SEND_TO { get; set; }
             public string SIGNATORY { get; set; }
-            public long CASE_ID { get; set; }
-            public long STATUS_ID { get; set; }
-            public long PATIENT_ACCOUNT { get; set; }
+            public long? CASE_ID { get; set; }
+            public long? STATUS_ID { get; set; }
+            public long? PATIENT_ACCOUNT { get; set; }
             public string SIGNATURE_PATH { get; set; }
             public string SOURCE_TYPE { get; set; }
             public DateTime? EXPIRY_DATE_UTC { get; set; }
             public string TEMPLATE_HTML { get; set; }
-            public int FAILED_ATTEMPTS { get; set; }
-            public long SENT_TO_ID { get; set; }
+            public int? FAILED_ATTEMPTS { get; set; }
+            public long? SENT_TO_ID { get; set; }
             public string SIGNED_PDF_PATH { get; set; }
             public long? TASK_ID { get; set; }
-            public long PRACTICE_CODE { get; set; }
+            public long? PRACTICE_CODE { get; set; }
             public string CREATED_BY { get; set; }
             public DateTime? CREATED_DATE { get; set; }
             public DateTime? MODIFIED_DATE { get; set; }
