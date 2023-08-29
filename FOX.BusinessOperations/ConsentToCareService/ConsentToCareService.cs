@@ -552,7 +552,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     consentToCareDocumentObj.IMAGE_PATH = filePath;
                     consentToCareDocumentObj.LOGO_PATH = logoPath;
                     consentToCareDocumentObj.CREATED_DATE = DateTime.Now;
-                    consentToCareDocumentObj.MODIFIED_DATE = DateTime.Now;
+                    consentToCareDocumentObj.CREATED_BY = "Fox Team";
                     consentToCareDocumentObj.PRACTICE_CODE = AppConfiguration.GetPracticeCode;
                     consentToCareDocumentObj.CONSENT_TO_CARE_ID = consentToCareId;
                     _consentToCareDocumentRepository.Insert(consentToCareDocumentObj);
@@ -561,19 +561,17 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 }
                 else
                 {
-                    ConsentToCareDocument consentToCareDocumentObj = new ConsentToCareDocument();
-                    var documentType = _foxDocumentTypeRepository.GetFirst(x => x.NAME == "PCORN" && !x.DELETED);
+                    var documentType = _foxDocumentTypeRepository.GetFirst(x => x.NAME == "PCORS" && !x.DELETED);
                     if (documentType != null)
                     {
-                        consentToCareDocumentObj.DOCUMENT_TYPE_ID = documentType.DOCUMENT_TYPE_ID;
+                        consentDocuments.DOCUMENT_TYPE_ID = documentType.DOCUMENT_TYPE_ID;
                     }
-                    consentToCareDocumentObj.IMAGE_PATH = filePath;
-                    consentToCareDocumentObj.LOGO_PATH = logoPath;
-                    consentToCareDocumentObj.CREATED_DATE = DateTime.Now;
-                    consentToCareDocumentObj.MODIFIED_DATE = DateTime.Now;
-                    consentToCareDocumentObj.PRACTICE_CODE = AppConfiguration.GetPracticeCode;
-                    consentToCareDocumentObj.CONSENT_TO_CARE_ID = consentToCareId;
-                    _consentToCareDocumentRepository.Update(consentToCareDocumentObj);
+                    consentDocuments.IMAGE_PATH = filePath;
+                    consentDocuments.LOGO_PATH = logoPath;
+                    consentDocuments.MODIFIED_DATE = DateTime.Now;
+                    consentDocuments.MODIFIED_BY = "Fox Team";
+                    consentDocuments.PRACTICE_CODE = AppConfiguration.GetPracticeCode;
+                    _consentToCareDocumentRepository.Update(consentDocuments);
                     _consentToCareDocumentRepository.Save();
                 }
             }
@@ -1062,7 +1060,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 InsertTaskLog(consentToCareObj.TASK_ID, taskLoglist, profile);
             }
             //Task mark as complete
-            var dbTask = _TaskRepository.GetSingle(x => x.TASK_ID == consentToCareObj.TASK_ID && !x.DELETED && x.PRACTICE_CODE == consentToCareObj.PRACTICE_CODE);
+            var dbTask = _TaskRepository.GetSingleOrDefault(x => x.TASK_ID == consentToCareObj.TASK_ID && !x.DELETED && x.PRACTICE_CODE == consentToCareObj.PRACTICE_CODE);
             if (dbTask != null)
             {
                 dbTask.IS_SENDTO_MARK_COMPLETE = true;
