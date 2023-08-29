@@ -890,7 +890,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             var dbResult = _consentToCareRepository.GetFirst(x => x.CONSENT_TO_CARE_ID == addInvalidAttemptRequestObj.CONSENT_TO_CARE_ID && !x.DELETED);
             if (dbResult != null)
             {
-                dbResult.FAILED_ATTEMPTS = dbResult.FAILED_ATTEMPTS + 1;
+                dbResult.FAILED_ATTEMPTS = (dbResult.FAILED_ATTEMPTS == null ? 0 : dbResult.FAILED_ATTEMPTS) + 1;
             }
             _consentToCareRepository.Update(dbResult);
             _consentToCareRepository.Save();
