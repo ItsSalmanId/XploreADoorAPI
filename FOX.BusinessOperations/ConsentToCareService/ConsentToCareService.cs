@@ -485,22 +485,13 @@ namespace FOX.BusinessOperations.ConsentToCareService
             {
                 foreach (var item in tasklog)
                 {
-                    List<TaskLog> lstTaskLog = new List<TaskLog>();
-                    lstTaskLog.Add(item);
-                    DataTable _dataTable = GetTaskLogTable(lstTaskLog);
-
-                    if (_dataTable.Rows.Count > 0)
-                    {
-                        long primaryKey = Helper.getMaximumId("FOX_TASK_LOG_ID");
-                        SqlParameter id = new SqlParameter("ID", primaryKey);
-                        SqlParameter task_log = new SqlParameter("TASK_LOG", SqlDbType.Structured);
-                        task_log.TypeName = "TASK_LOG_HISTORY";
-                        task_log.Value = _dataTable;
                         SqlParameter practice_Code = new SqlParameter("PRACTICE_CODE", AppConfiguration.GetPracticeCode);
                         SqlParameter Task_Id = new SqlParameter("TASK_ID", taskId);
                         SqlParameter user_Name = new SqlParameter("USER_NAME", profile.UserName);
-                        SpRepository<TaskLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_INSERT_TASK_LOG @ID, @PRACTICE_CODE, @TASK_ID, @TASK_LOG, @USER_NAME", id, practice_Code, Task_Id, task_log, user_Name);
-                    }
+                        SqlParameter actionDetails = new SqlParameter("ACTION_DETAIL", item.ACTION_DETAIL);
+                        SqlParameter action = new SqlParameter("ACTION", item.ACTION);
+                        SpRepository<TaskLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_UPDATE_TASK_LOG  @PRACTICE_CODE, @TASK_ID, @USER_NAME, @ACTION_DETAIL, @ACTION", practice_Code, Task_Id, user_Name, actionDetails, action);
+                
                 }
             }
         }
@@ -529,7 +520,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             task.PRIORITY = "NORMAL";
             if (task.DUE_DATE_TIME == null)
             {
-                task.DUE_DATE_TIME_str = CURRENT_DATE_STR;
+                task.DUE_DATE_TIME_str = Convert.ToString(Helper.GetCurrentDate().AddDays(5));
             }
             return task;
         }
@@ -914,7 +905,8 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 }
                 else
                 {
-                    consnetReceiverName = dbResult.PatientLastName;
+                    var patient = _PatientRepository.GetFirst(e => e.Patient_Account == dbResult.PATIENT_ACCOUNT && (e.DELETED ?? false) == false);
+                    consnetReceiverName = patient.Last_Name;
                 }
                 List<TaskLog> taskLoglist = new List<TaskLog>();
                 List<string> consentTocarelogs = new List<string>();
@@ -949,6 +941,62 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 invalidAttemptsLimitExceed = true;
             }
             return invalidAttemptsLimitExceed;
+        }
+        public bool CommentOnCallTap(FoxTblConsentToCare consentToCareObj, UserProfile profile)
+        {
+            bool CommentOnCallTap = false;
+            var dbResult = _consentToCareRepository.GetFirst(x => x.CONSENT_TO_CARE_ID == consentToCareObj.CONSENT_TO_CARE_ID && !x.DELETED);
+                var consentStatus = _consentToCareStatusRepository.GetFirst(x => x.STATUS_NAME == "Expired" && x.PRACTICE_CODE == AppConfiguration.GetPracticeCode && !x.DELETED);
+                if (consentStatus != null)
+                {
+                    dbResult.STATUS_ID = consentStatus.CONSENT_TO_CARE_STATUS_ID;
+                }
+                _consentToCareRepository.Update(dbResult);
+                _consentToCareRepository.Save();
+                string consnetReceiverName = string.Empty;
+                if (dbResult.SENT_TO_ID != 0)
+                {
+                    var patinetContactID = dbResult.SENT_TO_ID;
+                    var conList = _PatientContactRepository.GetFirst(x => x.Contact_ID == dbResult.SENT_TO_ID && x.Deleted == false);
+                    consnetReceiverName = conList.Last_Name;
+                }
+                else
+                {
+                    var patient = _PatientRepository.GetFirst(e => e.Patient_Account == dbResult.PATIENT_ACCOUNT && (e.DELETED ?? false) == false);
+                    consnetReceiverName = patient.Last_Name;
+                }
+                List<TaskLog> taskLoglist = new List<TaskLog>();
+                List<string> consentTocarelogs = new List<string>();
+                StringBuilder consentTocarelogsString = new StringBuilder();
+                consentTocarelogs.Add("Patient need to talk with someone before showing consent");
+                foreach (string str in consentTocarelogs)
+                {
+                    consentTocarelogsString.Append(str + "<br>");
+                }
+                taskLoglist.Add(new TaskLog()
+                {
+                    ACTION = "Consent To Care Logs",
+                    ACTION_DETAIL = consentTocarelogsString.ToString()
+                }
+                    );
+
+                if (taskLoglist.Count() > 0)
+                {
+                    profile.UserName = "FOX TEAM";
+                    InsertTaskLog(dbResult.TASK_ID, taskLoglist, profile);
+                }
+                InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
+                if (dbResult != null)
+                {
+                    interfaceSynch.TASK_ID = dbResult.TASK_ID;
+                    interfaceSynch.PATIENT_ACCOUNT = dbResult.PATIENT_ACCOUNT;
+                    interfaceSynch.CASE_ID = dbResult.CASE_ID;
+                    ////Task Interface
+                    InsertInterfaceTeamData(interfaceSynch, profile);
+                }
+
+            CommentOnCallTap = true;
+            return CommentOnCallTap;
         }
         public FoxTblConsentToCare SubmitConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile)
         {
@@ -1013,7 +1061,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     var signatoryName = conList.Last_Name + ", " + conList.First_Name;
                     consentToCareObj.SIGNATORY = signatoryName;
                 }
-                
             }
             else
             {
@@ -1065,6 +1112,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             if (dbTask != null)
             {
                 dbTask.IS_SENDTO_MARK_COMPLETE = true;
+                dbTask.Completed_Date = Helper.GetCurrentDate();
                 _TaskRepository.Update(dbTask);
                 _TaskRepository.Save();
             }

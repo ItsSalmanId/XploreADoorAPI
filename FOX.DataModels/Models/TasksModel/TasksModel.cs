@@ -97,6 +97,7 @@ namespace FOX.DataModels.Models.TasksModel
         public bool IS_FINALROUTE_MARK_COMPLETE { get; set; }
         [NotMapped]
         public string dbChangeMsg { get; set; }
+        public DateTime? Completed_Date { get; set; }
     }
 
     [Table("FOX_TBL_TASK_TYPE")]

@@ -13,6 +13,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
         bool DobVerificationInvalidAttempt(AddInvalidAttemptRequest addInvalidAttemptRequestObj, UserProfile profile);
         FoxTblConsentToCare SubmitConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile);
         ConsentToCareList GetConsentToCareImagePath(FoxTblConsentToCare consentToCareObj, UserProfile profile);
+        bool CommentOnCallTap(FoxTblConsentToCare consentToCareObj, UserProfile profile);
         #endregion
     }
 }
