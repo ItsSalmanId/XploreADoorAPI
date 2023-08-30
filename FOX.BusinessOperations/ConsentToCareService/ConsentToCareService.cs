@@ -457,7 +457,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     List<TaskLog> taskLoglist = new List<TaskLog>();
                     List<string> consentTocarelogs = new List<string>();
                     StringBuilder consentTocarelogsString = new StringBuilder();
-                    consentTocarelogs.Add("Consent To Care :" + Helper.GetCurrentDate());
                     consentTocarelogs.Add("Consent to care link has been sent to: " + sendTo + " (" + consnetReceiverName + ")");
                     foreach (string str in consentTocarelogs)
                     {
@@ -919,8 +918,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 }
                 List<TaskLog> taskLoglist = new List<TaskLog>();
                 List<string> consentTocarelogs = new List<string>();
-                StringBuilder consentTocarelogsString = new StringBuilder();
-                consentTocarelogs.Add("Consent To Care :" + Helper.GetCurrentDate());
+                StringBuilder consentTocarelogsString = new StringBuilder();    
                 consentTocarelogs.Add("Consent to Care link has been expired due to invalid attempts by: " + dbResult.SEND_TO + " (" + consnetReceiverName + ")");
                 foreach (string str in consentTocarelogs)
                 {
@@ -1010,13 +1008,20 @@ namespace FOX.BusinessOperations.ConsentToCareService
             {
                 var patinetContactID = consentToCareObj.SENT_TO_ID;
                 var conList = _PatientContactRepository.GetFirst(x => x.Contact_ID == consentToCareObj.SENT_TO_ID && x.Deleted == false);
-                var signatoryName = conList.Last_Name + ',' + conList.First_Name;
-                consentToCareObj.SIGNATORY = signatoryName;
+                if(conList != null)
+                {
+                    var signatoryName = conList.Last_Name + ", " + conList.First_Name;
+                    consentToCareObj.SIGNATORY = signatoryName;
+                }
+                
             }
             else
             {
                 var patient = _PatientRepository.GetFirst(e => e.Patient_Account == consentToCareObj.PATIENT_ACCOUNT && (e.DELETED ?? false) == false);
-                consentToCareObj.SIGNATORY = patient.Last_Name + ',' + patient.First_Name;
+                if(patient != null)
+                {
+                     consentToCareObj.SIGNATORY = patient.Last_Name + ", " + patient.First_Name;
+                }
             }
 
             consentToCareObj.SIGNED_PDF_PATH = coverFilePath;
@@ -1033,11 +1038,10 @@ namespace FOX.BusinessOperations.ConsentToCareService
             }
             else
             {
-                consnetReceiverName = consentToCareObj.PatientLastName;
+                consnetReceiverName = consentToCareObj.SIGNATORY;
             }
             List<TaskLog> taskLoglist = new List<TaskLog>();
             List<string> consentTocarelogs = new List<string>();
-            consentTocarelogs.Add("Consent To Care :" + Helper.GetCurrentDate());
             consentTocarelogs.Add("Signed Consent to Care form has been received by: " + consentToCareObj.SEND_TO + " (" + consnetReceiverName + ")");
             StringBuilder consentTocarelogsString = new StringBuilder();
             foreach (string str in consentTocarelogs)
