@@ -946,25 +946,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
         {
             bool CommentOnCallTap = false;
             var dbResult = _consentToCareRepository.GetFirst(x => x.CONSENT_TO_CARE_ID == consentToCareObj.CONSENT_TO_CARE_ID && !x.DELETED);
-                var consentStatus = _consentToCareStatusRepository.GetFirst(x => x.STATUS_NAME == "Expired" && x.PRACTICE_CODE == AppConfiguration.GetPracticeCode && !x.DELETED);
-                if (consentStatus != null)
-                {
-                    dbResult.STATUS_ID = consentStatus.CONSENT_TO_CARE_STATUS_ID;
-                }
-                _consentToCareRepository.Update(dbResult);
-                _consentToCareRepository.Save();
-                string consnetReceiverName = string.Empty;
-                if (dbResult.SENT_TO_ID != 0)
-                {
-                    var patinetContactID = dbResult.SENT_TO_ID;
-                    var conList = _PatientContactRepository.GetFirst(x => x.Contact_ID == dbResult.SENT_TO_ID && x.Deleted == false);
-                    consnetReceiverName = conList.Last_Name;
-                }
-                else
-                {
-                    var patient = _PatientRepository.GetFirst(e => e.Patient_Account == dbResult.PATIENT_ACCOUNT && (e.DELETED ?? false) == false);
-                    consnetReceiverName = patient.Last_Name;
-                }
                 List<TaskLog> taskLoglist = new List<TaskLog>();
                 List<string> consentTocarelogs = new List<string>();
                 StringBuilder consentTocarelogsString = new StringBuilder();
