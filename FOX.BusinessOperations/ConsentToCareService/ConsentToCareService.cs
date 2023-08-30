@@ -906,7 +906,10 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 else
                 {
                     var patient = _PatientRepository.GetFirst(e => e.Patient_Account == dbResult.PATIENT_ACCOUNT && (e.DELETED ?? false) == false);
-                    consnetReceiverName = patient.Last_Name;
+                    if (patient != null)
+                    {
+                        consnetReceiverName = patient.Last_Name == null ? "" : patient.Last_Name;
+                    }
                 }
                 List<TaskLog> taskLoglist = new List<TaskLog>();
                 List<string> consentTocarelogs = new List<string>();

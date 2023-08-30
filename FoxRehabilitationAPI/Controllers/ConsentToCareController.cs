@@ -99,5 +99,17 @@ namespace FoxRehabilitationAPI.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Consent To Care model is Empty");
             }
         }
+        [HttpPost]
+        public HttpResponseMessage CommentOnCallTap(FoxTblConsentToCare consentToCareObj)
+        {
+            if (consentToCareObj != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, _consentToCareService.CommentOnCallTap(consentToCareObj, GetProfile()));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Consent To Care model is Empty");
+            }
+        }
     }
 }
