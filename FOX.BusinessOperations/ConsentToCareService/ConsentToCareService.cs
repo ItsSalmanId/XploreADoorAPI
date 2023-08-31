@@ -205,6 +205,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                         if (existingConsentCaseId != null)
                         {
                             interfaceSynch.TASK_ID = existingConsentCaseId.TASK_ID;
+                            currentTaskId = Convert.ToInt32(existingConsentCaseId.TASK_ID);
                             interfaceSynch.PATIENT_ACCOUNT = existingConsentCaseId.PATIENT_ACCOUNT;
                             interfaceSynch.CASE_ID = existingConsentCaseId.CASE_ID;
                             ////Task Interface
