@@ -163,17 +163,55 @@ namespace FOX.BusinessOperations.ConsentToCareService
                         consentToCareTask.IS_SEND_TO_USER = true;
                     }
                     ////Add Update Task 
-                    var taskInterfacedHBR = AddUpdateTask(consentToCareTask, profile, consentToCareObj.SEND_TO, consnetReceiverName);
-                    InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
-                    if (taskInterfacedHBR != null)
+                    var existingConsentCaseId = _consentToCareRepository.GetFirst(x => x.CASE_ID == consentToCareObj.CASE_ID && !x.DELETED);
+                    long currentTaskId = 0;
+                    if(existingConsentCaseId == null)
                     {
-                        interfaceSynch.TASK_ID = taskInterfacedHBR.TASK_ID;
-                        interfaceSynch.PATIENT_ACCOUNT = consentToCareObj.PATIENT_ACCOUNT;
-                        interfaceSynch.CASE_ID = consentToCareObj.CASE_ID;
-                        ////Task Interface
-                        InsertInterfaceTeamData(interfaceSynch, profile);
+                        var taskInterfacedHBR = AddUpdateTask(consentToCareTask, profile, consentToCareObj.SEND_TO, consnetReceiverName);
+                        InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
+                        if (taskInterfacedHBR != null)
+                        {
+                            interfaceSynch.TASK_ID = taskInterfacedHBR.TASK_ID;
+                            currentTaskId = taskInterfacedHBR.TASK_ID;
+                            interfaceSynch.PATIENT_ACCOUNT = consentToCareObj.PATIENT_ACCOUNT;
+                            interfaceSynch.CASE_ID = consentToCareObj.CASE_ID;
+                            ////Task Interface
+                            InsertInterfaceTeamData(interfaceSynch, profile);
+                        }
                     }
-                    consentToCareObj.TASK_ID = taskInterfacedHBR.TASK_ID;
+                    else
+                    {
+                        List<TaskLog> taskLoglist = new List<TaskLog>();
+                        List<string> consentTocarelogs = new List<string>();
+                        StringBuilder consentTocarelogsString = new StringBuilder();
+                        consentTocarelogs.Add(Helper.GetCurrentDate() +" Consent to care link has been sent to: " + consentToCareObj.SEND_TO + " (" + consnetReceiverName + ")");
+                        foreach (string str in consentTocarelogs)
+                        {
+                            consentTocarelogsString.Append(str + "<br>");
+                        }
+                        taskLoglist.Add(new TaskLog()
+                        {
+                            ACTION = "Task Comment",
+                            ACTION_DETAIL = consentTocarelogsString.ToString()
+                        }
+                            );
+
+                        if (taskLoglist.Count() > 0)
+                        {
+                            profile.UserName = "FOX TEAM";
+                            InsertTaskLog(existingConsentCaseId.TASK_ID, taskLoglist, profile);
+                        }
+                        InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
+                        if (existingConsentCaseId != null)
+                        {
+                            interfaceSynch.TASK_ID = existingConsentCaseId.TASK_ID;
+                            interfaceSynch.PATIENT_ACCOUNT = existingConsentCaseId.PATIENT_ACCOUNT;
+                            interfaceSynch.CASE_ID = existingConsentCaseId.CASE_ID;
+                            ////Task Interface
+                            InsertInterfaceTeamData(interfaceSynch, profile);
+                        }
+                    }
+                    consentToCareObj.TASK_ID = currentTaskId;
                     _consentToCareRepository.Insert(consentToCareObj);
                     _consentToCareRepository.Save();
                     var encryptedUrl = EncryptTemp(consentToCareObj.CONSENT_TO_CARE_ID.ToString());
@@ -192,46 +230,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     {
                         var status = SmsService.SMSTwilio(number, smsBody);
                     }
-                    var htmlBackup = htmlTemplate;
-                    htmlTemplate = htmlBackup;
-                    HtmlDocument htmlDoc = new HtmlDocument();
-                    htmlDoc.LoadHtml(htmlTemplate);
-                    htmlDoc.GetElementbyId("consent-to-care-foxrehab-url")?.Remove();
-                    htmlTemplate = htmlDoc.DocumentNode.OuterHtml;
-                    htmlDoc.LoadHtml(htmlTemplate);
-                    htmlDoc.GetElementbyId("consent-to-care-sign-form").Remove();
-                    htmlTemplate = htmlDoc.DocumentNode.OuterHtml;
-                    htmlDoc.LoadHtml(htmlTemplate);
-                    htmlDoc.GetElementbyId("consent-to-care-contactus")?.Remove();
-                    htmlTemplate = htmlDoc.DocumentNode.OuterHtml;
-                    htmlDoc.LoadHtml(htmlTemplate);
-                    htmlDoc.GetElementbyId("consent-to-care-check-eligibility")?.Remove();
-                    htmlTemplate = htmlDoc.DocumentNode.OuterHtml;
-                    htmlDoc.LoadHtml(htmlTemplate);
-                    htmlDoc.GetElementbyId("consent-to-care-contactus-questions")?.Remove();
-                    htmlTemplate = htmlDoc.DocumentNode.OuterHtml;
-                    htmlDoc.LoadHtml(htmlTemplate);
-                    htmlDoc.GetElementbyId("consent-to-care-foxrehab-url-br")?.Remove();
-                    htmlTemplate = htmlDoc.DocumentNode.OuterHtml;
-                    htmlDoc.LoadHtml(htmlTemplate);
-                    htmlDoc.GetElementbyId("consent-to-care-sign-form-br")?.Remove();
-                    htmlTemplate = htmlDoc.DocumentNode.OuterHtml;
-                    htmlDoc.LoadHtml(htmlTemplate);
-                    htmlDoc.GetElementbyId("consent-to-care-contactus-questions-br")?.Remove();
-                    htmlTemplate = htmlDoc.DocumentNode.OuterHtml;
-                    htmlDoc.LoadHtml(htmlTemplate);
-                    htmlDoc.GetElementbyId("consent-to-care-check-eligibility-br")?.Remove();
-                    htmlTemplate = htmlDoc.DocumentNode.OuterHtml;
-                    htmlDoc.LoadHtml(htmlTemplate);
-
-                    htmlTemplate = htmlDoc.DocumentNode.OuterHtml;
-                    htmlToPdfResponseObj = new ResponseHTMLToPDF();
-                    htmlToPdfResponseObj = HTMLToPDF(config, htmlTemplate, currentConsentToCareIdStr, "email", "");
-                    var coverFilePath = htmlToPdfResponseObj.FilePath + "\\" + htmlToPdfResponseObj.FileName;
-                    var consentToCareID = consentToCareObj.CONSENT_TO_CARE_ID;
-                    var CASE_ID = consentToCareObj.CASE_ID;
-                    int numberOfPages = getNumberOfPagesOfPDF(coverFilePath);
-                    SavePdfToImages(coverFilePath, config, currentConsentToCareId, numberOfPages);
                 }
                 else
                 {
@@ -269,15 +267,14 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     List<TaskLog> taskLoglist = new List<TaskLog>();
                     List<string> consentTocarelogs = new List<string>();
                     StringBuilder consentTocarelogsString = new StringBuilder();
-                    consentTocarelogs.Add("Consent To Care :" + Helper.GetCurrentDate());
-                    consentTocarelogs.Add("Consent to care link has been resent to: " + existingInformation.SEND_TO + " (" + consnetReceiverName + ")");
+                    consentTocarelogs.Add(Helper.GetCurrentDate() +" Consent to care link has been resent to: " + existingInformation.SEND_TO + " (" + consnetReceiverName + ")");
                     foreach (string str in consentTocarelogs)
                     {
                         consentTocarelogsString.Append(str + "<br>");
                     }
                     taskLoglist.Add(new TaskLog()
                     {
-                        ACTION = "Consent To Care Logs",
+                        ACTION = "Task Comment",
                         ACTION_DETAIL = consentTocarelogsString.ToString()
                     }
                         );
@@ -464,7 +461,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     }
                     taskLoglist.Add(new TaskLog()
                     {
-                        ACTION = "Consent To Care Logs",
+                        ACTION = "Task Comment",
                         ACTION_DETAIL = consentTocarelogsString.ToString()
                     }
                         );
@@ -914,14 +911,14 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 List<TaskLog> taskLoglist = new List<TaskLog>();
                 List<string> consentTocarelogs = new List<string>();
                 StringBuilder consentTocarelogsString = new StringBuilder();    
-                consentTocarelogs.Add("Consent to Care link has been expired due to invalid attempts by: " + dbResult.SEND_TO + " (" + consnetReceiverName + ")");
+                consentTocarelogs.Add(Helper.GetCurrentDate() +" Consent to Care link has been expired due to invalid attempts by: " + dbResult.SEND_TO + " (" + consnetReceiverName + ")");
                 foreach (string str in consentTocarelogs)
                 {
                     consentTocarelogsString.Append(str + "<br>");
                 }
                 taskLoglist.Add(new TaskLog()
                 {
-                    ACTION = "Consent To Care Logs",
+                    ACTION = "Task Comment",
                     ACTION_DETAIL = consentTocarelogsString.ToString()
                 }
                     );
@@ -952,14 +949,14 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 List<TaskLog> taskLoglist = new List<TaskLog>();
                 List<string> consentTocarelogs = new List<string>();
                 StringBuilder consentTocarelogsString = new StringBuilder();
-                consentTocarelogs.Add("Patient need to talk with someone before showing consent");
+                consentTocarelogs.Add(Helper.GetCurrentDate() +" Patient need to talk with someone before showing consent");
                 foreach (string str in consentTocarelogs)
                 {
                     consentTocarelogsString.Append(str + "<br>");
                 }
                 taskLoglist.Add(new TaskLog()
                 {
-                    ACTION = "Consent To Care Logs",
+                    ACTION = "Task Comment",
                     ACTION_DETAIL = consentTocarelogsString.ToString()
                 }
                     );
@@ -1073,7 +1070,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             }
             List<TaskLog> taskLoglist = new List<TaskLog>();
             List<string> consentTocarelogs = new List<string>();
-            consentTocarelogs.Add("Signed Consent to Care form has been received by: " + consentToCareObj.SEND_TO + " (" + consnetReceiverName + ")");
+            consentTocarelogs.Add(Helper.GetCurrentDate() +" Signed Consent to Care form has been received by: " + consentToCareObj.SEND_TO + " (" + consnetReceiverName + ")");
             StringBuilder consentTocarelogsString = new StringBuilder();
             foreach (string str in consentTocarelogs)
             {
@@ -1081,7 +1078,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             }
             taskLoglist.Add(new TaskLog()
             {
-                ACTION = "Consent To Care Logs",
+                ACTION = "Task Comment",
                 ACTION_DETAIL = consentTocarelogsString.ToString()
             }
                 );
