@@ -990,7 +990,10 @@ namespace FOX.BusinessOperations.ConsentToCareService
         }
         public FoxTblConsentToCare SubmitConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile)
         {
+            Helper.TokenTaskCancellationExceptionLog("config start");
             var config = Helper.GetServiceConfiguration(AppConfiguration.GetPracticeCode);
+            Helper.TokenTaskCancellationExceptionLog("config End");
+            Helper.TokenTaskCancellationExceptionLog("updatedHtml start");
             var updatedHtml = consentToCareObj.TEMPLATE_HTML;
             HtmlDocument htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(updatedHtml);
@@ -1022,26 +1025,37 @@ namespace FOX.BusinessOperations.ConsentToCareService
             updatedHtml = htmlDoc.DocumentNode.OuterHtml;
             htmlDoc.LoadHtml(updatedHtml);
             updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+            Helper.TokenTaskCancellationExceptionLog("updatedHtml END");
+            Helper.TokenTaskCancellationExceptionLog("_consentToCareRepository START");
             consentToCareObj = _consentToCareRepository.GetFirst(x => x.CONSENT_TO_CARE_ID == consentToCareObj.CONSENT_TO_CARE_ID && !x.DELETED);
+            Helper.TokenTaskCancellationExceptionLog("_consentToCareRepository END");
+            Helper.TokenTaskCancellationExceptionLog("_consentToCareStatusRepository START");
             var consentStatus = _consentToCareStatusRepository.GetFirst(x => x.STATUS_NAME == "Signed" && x.PRACTICE_CODE == consentToCareObj.PRACTICE_CODE && !x.DELETED);
+            Helper.TokenTaskCancellationExceptionLog("_consentToCareStatusRepository END");
             if (consentStatus != null)
             {
                 consentToCareObj.STATUS_ID = consentStatus.CONSENT_TO_CARE_STATUS_ID;
             }
             consentToCareObj.MODIFIED_DATE = Helper.GetCurrentDate();
 
-
+            Helper.TokenTaskCancellationExceptionLog("HTMLToPDF START");
             //HTML to PDF
             htmlToPdfResponseObj = new ResponseHTMLToPDF();
             htmlToPdfResponseObj = HTMLToPDF(config, updatedHtml, consentToCareObj.CONSENT_TO_CARE_ID.ToString(), "email", "");
+            Helper.TokenTaskCancellationExceptionLog("HTMLToPDF END");
             var coverFilePath = htmlToPdfResponseObj.FilePath + "\\" + htmlToPdfResponseObj.FileName;
             var consentToCareID = consentToCareObj.CONSENT_TO_CARE_ID;
             var CASE_ID = consentToCareObj.CASE_ID;
             //Save PDF to Images and Save in consent-to-care document table
+            Helper.TokenTaskCancellationExceptionLog("getNumberOfPagesOfPDF START");
             int numberOfPages = getNumberOfPagesOfPDF(coverFilePath);
+            Helper.TokenTaskCancellationExceptionLog("getNumberOfPagesOfPDF END");
+            Helper.TokenTaskCancellationExceptionLog("SavePdfToImages START");
             SavePdfToImages(coverFilePath, config, consentToCareObj.CONSENT_TO_CARE_ID, numberOfPages);
+            Helper.TokenTaskCancellationExceptionLog("SavePdfToImages END");
 
             //Update consent table data
+            Helper.TokenTaskCancellationExceptionLog("Update consent table data START");
             if (consentToCareObj.SENT_TO_ID != 0 && consentToCareObj.SEND_TO != "Patient")
             {
                 var patinetContactID = consentToCareObj.SENT_TO_ID;
@@ -1057,15 +1071,17 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 var patient = _PatientRepository.GetFirst(e => e.Patient_Account == consentToCareObj.PATIENT_ACCOUNT && (e.DELETED ?? false) == false);
                 if(patient != null)
                 {
-                     consentToCareObj.SIGNATORY = patient.Last_Name + ", " + patient.First_Name;
+                    consentToCareObj.SIGNATORY = patient.Last_Name + ", " + patient.First_Name;
                 }
             }
+            Helper.TokenTaskCancellationExceptionLog("Update consent table data END");
 
             consentToCareObj.SIGNED_PDF_PATH = coverFilePath;
             _consentToCareRepository.Update(consentToCareObj);
             _consentToCareRepository.Save();
 
             //Add task logs
+            Helper.TokenTaskCancellationExceptionLog("_PatientContactRepository START");
             string consnetReceiverName = string.Empty;
             if (consentToCareObj.SENT_TO_ID != 0 && consentToCareObj.SEND_TO != "Patient")
             {
@@ -1080,6 +1096,8 @@ namespace FOX.BusinessOperations.ConsentToCareService
             {
                 consnetReceiverName = consentToCareObj.SIGNATORY;
             }
+            Helper.TokenTaskCancellationExceptionLog("_PatientContactRepository END");
+            Helper.TokenTaskCancellationExceptionLog("Add task logs START");
             List<TaskLog> taskLoglist = new List<TaskLog>();
             List<string> consentTocarelogs = new List<string>();
             consentTocarelogs.Add(Helper.GetCurrentDate() +" Signed Consent to Care form has been received from: " + consentToCareObj.SEND_TO + " (" + consnetReceiverName + ")");
@@ -1100,8 +1118,12 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 profile.UserName = consentToCareObj.CREATED_BY;
                 InsertTaskLog(consentToCareObj.TASK_ID, taskLoglist, profile);
             }
+            Helper.TokenTaskCancellationExceptionLog("Add task logs END");
             //Task mark as complete
+            Helper.TokenTaskCancellationExceptionLog("_TaskRepository START");
             var dbTask = _TaskRepository.GetSingleOrDefault(x => x.TASK_ID == consentToCareObj.TASK_ID && !x.DELETED && x.PRACTICE_CODE == consentToCareObj.PRACTICE_CODE);
+            Helper.TokenTaskCancellationExceptionLog("_TaskRepository END");
+            Helper.TokenTaskCancellationExceptionLog("dbTask START");
             if (dbTask != null)
             {
                 dbTask.IS_SENDTO_MARK_COMPLETE = true;
@@ -1109,6 +1131,8 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 _TaskRepository.Update(dbTask);
                 _TaskRepository.Save();
             }
+            Helper.TokenTaskCancellationExceptionLog("dbTask END");
+            Helper.TokenTaskCancellationExceptionLog("InterfaceSynchModel START");
             InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
             if (dbTask != null)
             {
@@ -1118,7 +1142,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 ////Task Interface
                 InsertInterfaceTeamData(interfaceSynch, profile);
             }
-
+            Helper.TokenTaskCancellationExceptionLog("InterfaceSynchModel END");
             return consentToCareObj;
         }
         #endregion
