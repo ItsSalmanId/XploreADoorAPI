@@ -116,7 +116,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 }
                 consentToCareObj.PATIENT_ACCOUNT = long.Parse(consentToCareObj.PATIENT_ACCOUNT_Str == null ? "0" : consentToCareObj.PATIENT_ACCOUNT_Str);
                 profile.PracticeCode = GetPracticeCode();
-                var config = Helper.GetServiceConfiguration(AppConfiguration.GetPracticeCode);
+                var config = GetServiceConfiguration(AppConfiguration.GetPracticeCode);
                 htmlTemplate = consentToCareObj.TEMPLATE_HTML;
 
                 var consentToCareIdStr = consentToCareObj.CONSENT_TO_CARE_ID.ToString();
@@ -276,7 +276,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     List<TaskLog> taskLoglist = new List<TaskLog>();
                     List<string> consentTocarelogs = new List<string>();
                     StringBuilder consentTocarelogsString = new StringBuilder();
-                    consentTocarelogs.Add(Helper.GetCurrentDate() +" Consent to care link has been resent to: " + existingInformation.SEND_TO + " (" + consnetReceiverName + ")");
+                    consentTocarelogs.Add("Consent to care link has been resent to: " + existingInformation.SEND_TO + " (" + consnetReceiverName + ")");
                     foreach (string str in consentTocarelogs)
                     {
                         consentTocarelogsString.Append(str + "<br>");
@@ -920,7 +920,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 List<TaskLog> taskLoglist = new List<TaskLog>();
                 List<string> consentTocarelogs = new List<string>();
                 StringBuilder consentTocarelogsString = new StringBuilder();    
-                consentTocarelogs.Add(Helper.GetCurrentDate() +" Consent to Care link has been expired due to invalid attempts by: " + dbResult.SEND_TO + " (" + consnetReceiverName + ")");
+                consentTocarelogs.Add("Consent to Care link has been expired due to invalid attempts by: " + dbResult.SEND_TO + " (" + consnetReceiverName + ")");
                 foreach (string str in consentTocarelogs)
                 {
                     consentTocarelogsString.Append(str + "<br>");
@@ -958,7 +958,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 List<TaskLog> taskLoglist = new List<TaskLog>();
                 List<string> consentTocarelogs = new List<string>();
                 StringBuilder consentTocarelogsString = new StringBuilder();
-                consentTocarelogs.Add(Helper.GetCurrentDate() +" Patient need to talk with someone before showing consent");
+                consentTocarelogs.Add("Patient need to talk with someone before showing consent");
                 foreach (string str in consentTocarelogs)
                 {
                     consentTocarelogsString.Append(str + "<br>");
@@ -991,7 +991,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
         public FoxTblConsentToCare SubmitConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile)
         {
             Helper.TokenTaskCancellationExceptionLog("config start");
-            var config = Helper.GetServiceConfiguration(AppConfiguration.GetPracticeCode);
+            var config = GetServiceConfiguration(AppConfiguration.GetPracticeCode);
             Helper.TokenTaskCancellationExceptionLog("config End");
             Helper.TokenTaskCancellationExceptionLog("updatedHtml start");
             var updatedHtml = consentToCareObj.TEMPLATE_HTML;
@@ -1100,7 +1100,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             Helper.TokenTaskCancellationExceptionLog("Add task logs START");
             List<TaskLog> taskLoglist = new List<TaskLog>();
             List<string> consentTocarelogs = new List<string>();
-            consentTocarelogs.Add(Helper.GetCurrentDate() +" Signed Consent to Care form has been received from: " + consentToCareObj.SEND_TO + " (" + consnetReceiverName + ")");
+            consentTocarelogs.Add("Signed Consent to Care form has been received from: " + consentToCareObj.SEND_TO + " (" + consnetReceiverName + ")");
             StringBuilder consentTocarelogsString = new StringBuilder();
             foreach (string str in consentTocarelogs)
             {
