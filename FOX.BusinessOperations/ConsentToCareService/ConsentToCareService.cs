@@ -184,7 +184,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                         List<TaskLog> taskLoglist = new List<TaskLog>();
                         List<string> consentTocarelogs = new List<string>();
                         StringBuilder consentTocarelogsString = new StringBuilder();
-                        consentTocarelogs.Add(Helper.GetCurrentDate() +" Consent to care link has been sent to: " + consentToCareObj.SEND_TO + " (" + consnetReceiverName + ")");
+                        consentTocarelogs.Add("Consent to care link has been sent to: " + consentToCareObj.SEND_TO + " (" + consnetReceiverName + ")");
                         foreach (string str in consentTocarelogs)
                         {
                             consentTocarelogsString.Append(str + "<br>");
