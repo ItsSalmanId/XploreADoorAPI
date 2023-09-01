@@ -225,7 +225,11 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     var smsBody = SmsBody(consnetReceiverName, encryptedEmailURL);
                     if (!string.IsNullOrEmpty(concentToCareReceiverEmail))
                     {
-                        bool sent = Helper.ConcentToCareEmail(to: email, subject: "Fox Patient Portal", body: emailBody, profile: profile, CC: null, BCC: null);
+                        Thread emailThread = new Thread(() =>
+                        {
+                            bool sent = Helper.ConcentToCareEmail(to: email, subject: "Fox Patient Portal", body: emailBody, profile: profile, CC: null, BCC: null);
+                        });
+                        emailThread.Start();
                     }
                     if (!string.IsNullOrEmpty(number))
                     {
@@ -259,7 +263,11 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     var smsBody = SmsBody(consnetReceiverName, encryptedEmailURL);
                     if (!string.IsNullOrEmpty(concentToCareReceiverEmail))
                     {
-                        bool sent = Helper.ConcentToCareEmail(to: email, subject: "Fox Patient Portal", body: emailBody, profile: profile, CC: null, BCC: null);
+                        Thread emailThread = new Thread(() =>
+                        {
+                            bool sent = Helper.ConcentToCareEmail(to: email, subject: "Fox Patient Portal", body: emailBody, profile: profile, CC: null, BCC: null);
+                        });
+                        emailThread.Start();
                     }
                     if (!string.IsNullOrEmpty(number))
                     {
@@ -307,7 +315,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 config = configList.Where(e => e.PRACTICE_CODE.HasValue && e.PRACTICE_CODE.Value == practiceCode).FirstOrDefault();
             }
             return config;
-        }
+        }  
         public ResponseHTMLToPDF HTMLToPDF(ServiceConfiguration config, string htmlString, string fileName, string type, string linkMessage = null)
         {
             try
@@ -1034,7 +1042,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             SavePdfToImages(coverFilePath, config, consentToCareObj.CONSENT_TO_CARE_ID, numberOfPages);
 
             //Update consent table data
-            if (consentToCareObj.SENT_TO_ID != 0)
+            if (consentToCareObj.SENT_TO_ID != 0 && consentToCareObj.SEND_TO != "Patient")
             {
                 var patinetContactID = consentToCareObj.SENT_TO_ID;
                 var conList = _PatientContactRepository.GetFirst(x => x.Contact_ID == consentToCareObj.SENT_TO_ID && x.Deleted == false);
@@ -1059,11 +1067,14 @@ namespace FOX.BusinessOperations.ConsentToCareService
 
             //Add task logs
             string consnetReceiverName = string.Empty;
-            if (consentToCareObj.SENT_TO_ID != 0)
+            if (consentToCareObj.SENT_TO_ID != 0 && consentToCareObj.SEND_TO != "Patient")
             {
                 var patinetContactID = consentToCareObj.SENT_TO_ID;
                 var conList = _PatientContactRepository.GetFirst(x => x.Contact_ID == consentToCareObj.SENT_TO_ID && x.Deleted == false);
-                consnetReceiverName = conList.Last_Name;
+                if (conList != null)
+                {
+                    consnetReceiverName = conList.Last_Name;
+                }
             }
             else
             {
@@ -1071,7 +1082,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             }
             List<TaskLog> taskLoglist = new List<TaskLog>();
             List<string> consentTocarelogs = new List<string>();
-            consentTocarelogs.Add(Helper.GetCurrentDate() +" Signed Consent to Care form has been received by: " + consentToCareObj.SEND_TO + " (" + consnetReceiverName + ")");
+            consentTocarelogs.Add(Helper.GetCurrentDate() +" Signed Consent to Care form has been received from: " + consentToCareObj.SEND_TO + " (" + consnetReceiverName + ")");
             StringBuilder consentTocarelogsString = new StringBuilder();
             foreach (string str in consentTocarelogs)
             {
