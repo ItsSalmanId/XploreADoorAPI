@@ -83,7 +83,12 @@ namespace FOX.DataModels.Models.ConsentToCare
             public long? TREATING_PROVIDER_ID { get; set; }
             [NotMapped]
             public long? POS_ID { get; set; }
-
+            [NotMapped]
+            public string STATUS_NAME { get; set; }
+            [NotMapped]
+            public string PRI_SEC_OTH_TYPE { get; set; }
+            [NotMapped]
+            public string lastConsentreceiver { get; set; }  
         }
 
         [Table("FOX_TBL_SURVEY_QUESTION")]
@@ -132,6 +137,18 @@ namespace FOX.DataModels.Models.ConsentToCare
         public class AddInvalidAttemptRequest
         {
             public long CONSENT_TO_CARE_ID { get; set; }
+        }
+        public class InsuranceDetails
+        {
+            public string INSURANCE_NAME { get; set; }
+            public long? Co_Payment { get; set; }
+            public bool IS_COPAY_PER { get; set; }
+            public string GENERAL_COMMENTS { get; set; }
+            public long? PT_ST_TOT_AMT_USED { get; set; }
+            public long? OT_TOT_AMT_USED { get; set; }
+            public long? YEARLY_DED_AMT { get; set; }
+            public bool Is_Authorization_Required { get; set; } = false;
+
         }
     }
 }

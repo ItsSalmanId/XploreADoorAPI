@@ -1,4 +1,5 @@
 ﻿using FOX.DataModels.Models.Security;
+using System.Collections.Generic;
 using static FOX.DataModels.Models.ConsentToCare.ConsentToCare;
 
 namespace FOX.BusinessOperations.ConsentToCareService
@@ -14,6 +15,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
         FoxTblConsentToCare SubmitConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile);
         ConsentToCareList GetConsentToCareImagePath(FoxTblConsentToCare consentToCareObj, UserProfile profile);
         bool CommentOnCallTap(FoxTblConsentToCare consentToCareObj, UserProfile profile);
+        List<InsuranceDetails> GetInsuranceDetails(FoxTblConsentToCare consentToCareObj, UserProfile profile);
         #endregion
     }
 }

@@ -34,6 +34,7 @@ using System.Xml;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 using FOX.DataModels.Models.IndexInfo;
 using SelectPdf;
+using FOX.DataModels.Models.GroupsModel;
 
 namespace FOX.BusinessOperations.ConsentToCareService
 {
@@ -45,6 +46,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
         private readonly DbContextCases _CaseContext = new DbContextCases();
         private readonly DbContextTasks _TaskContext = new DbContextTasks();
         private readonly GenericRepository<FoxTblConsentToCare> _consentToCareRepository;
+        private readonly GenericRepository<FoxTblConsentToCare> _consentToCareRepositoryForUseMultiple;
         private readonly GenericRepository<ConsentToCareDocument> _consentToCareDocumentRepository;
         private readonly GenericRepository<ConsentToCareStatus> _consentToCareStatusRepository;
         private readonly GenericRepository<FOX_TBL_TASK_TYPE> _taskTypeRepository;
@@ -65,6 +67,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
         public ConsentToCareService()
         {
             _consentToCareRepository = new GenericRepository<FoxTblConsentToCare>(_consentToCareContext);
+            _consentToCareRepositoryForUseMultiple = new GenericRepository<FoxTblConsentToCare>(_consentToCareContext);
             _consentToCareDocumentRepository = new GenericRepository<ConsentToCareDocument>(_consentToCareContext);
             _consentToCareStatusRepository = new GenericRepository<ConsentToCareStatus>(_consentToCareContext);
             _TaskRepository = new GenericRepository<FOX_TBL_TASK>(_CaseContext);
@@ -114,6 +117,43 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 {
                     consnetReceiverName = consentToCareObj.PatientLastName;
                 }
+                var selectedCaseId = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CASE_ID };
+                var praCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
+                var existingConsentDetails = SpRepository<string>.GetListWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_DETAILS_BY_CASE_ID @CASE_ID, @PRACTICE_CODE", selectedCaseId, praCode);
+                var stringdd = existingConsentDetails.Contains("True");
+                if(stringdd == true)
+                {
+                    List<TaskLog> taskLoglist = new List<TaskLog>();
+                    List<string> consentTocarelogs = new List<string>();
+                    StringBuilder consentTocarelogsString = new StringBuilder();
+                    //+ dbResult.SEND_TO + " (" + consnetReceiverName + ")"
+                    consentTocarelogs.Add("The consent to care link for " + consentToCareObj.lastConsentreceiver + " has been expired to send it to another recipient");
+                    foreach (string str in consentTocarelogs)
+                    {
+                        consentTocarelogsString.Append(str + "<br>");
+                    }
+                    taskLoglist.Add(new TaskLog()
+                    {
+                        ACTION = "Task Comment",
+                        ACTION_DETAIL = consentTocarelogsString.ToString()
+                    }
+                        );
+
+                    if (taskLoglist.Count() > 0)
+                    {
+                        profile.UserName = "FOX TEAM";
+                        InsertTaskLog(consentToCareObj.TASK_ID, taskLoglist, profile);
+                    }
+                    InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
+                    if (consentToCareObj != null)
+                    {
+                        interfaceSynch.TASK_ID = consentToCareObj.TASK_ID;
+                        interfaceSynch.PATIENT_ACCOUNT = consentToCareObj.PATIENT_ACCOUNT;
+                        interfaceSynch.CASE_ID = consentToCareObj.CASE_ID;
+                        ////Task Interface
+                        InsertInterfaceTeamData(interfaceSynch, profile);
+                    }
+                }
                 consentToCareObj.PATIENT_ACCOUNT = long.Parse(consentToCareObj.PATIENT_ACCOUNT_Str == null ? "0" : consentToCareObj.PATIENT_ACCOUNT_Str);
                 profile.PracticeCode = GetPracticeCode();
                 var config = GetServiceConfiguration(AppConfiguration.GetPracticeCode);
@@ -150,17 +190,20 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     var currentDate = DateTime.Now.ToString();
                     IndexInfoService indexInfoServiceObj = new IndexInfoService();
                     //// set Task Data 
-                    var consentToCareTask = SetTaskData(profile, consentToCareObj.PATIENT_ACCOUNT, tasktypeHBR, currentDate);
-                    consentToCareTask.PROVIDER_ID = consentToCareObj.TREATING_PROVIDER_ID;
-                    consentToCareTask.LOC_ID = consentToCareObj.POS_ID;
+                    var consentToCareTask = SetTaskData(profile, consentToCareObj.PATIENT_ACCOUNT, tasktypeHBR, currentDate, consentToCareObj);
+                    //consentToCareTask.PROVIDER_ID = consentToCareObj.TREATING_PROVIDER_ID;
+                    //consentToCareTask.LOC_ID = consentToCareObj.POS_ID;
                     consentToCareTask.CASE_ID = consentToCareObj.CASE_ID;
-                    var pracCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.VarChar) { Value = GetPracticeCode() };
-                    var treatingProviderId = new SqlParameter("@TREATING_PROVIDER_ID", SqlDbType.VarChar) { Value = consentToCareObj.TREATING_PROVIDER_ID };
-                    var sendToId = SpRepository<string>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_USER_ID_BY_PROVIDER_CODE @PRACTICE_CODE, @TREATING_PROVIDER_ID", pracCode, treatingProviderId);
-                    if (sendToId != null)
+                    if (consentToCareObj.TREATING_PROVIDER_ID != 0 && consentToCareObj.TREATING_PROVIDER_ID != null)
                     {
-                        consentToCareTask.SEND_TO_ID = Convert.ToInt64(sendToId);
-                        consentToCareTask.IS_SEND_TO_USER = true;
+                        var pracCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.VarChar) { Value = GetPracticeCode() };
+                        var treatingProviderId = new SqlParameter("@TREATING_PROVIDER_ID", SqlDbType.VarChar) { Value = consentToCareObj.TREATING_PROVIDER_ID };
+                        var sendToId = SpRepository<string>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_USER_ID_BY_PROVIDER_CODE @PRACTICE_CODE, @TREATING_PROVIDER_ID", pracCode, treatingProviderId);
+                        if (sendToId != null)
+                        {
+                            consentToCareTask.SEND_TO_ID = Convert.ToInt64(sendToId);
+                            consentToCareTask.IS_SEND_TO_USER = true;
+                        }
                     }
                     ////Add Update Task 
                     var existingConsentCaseId = _consentToCareRepository.GetFirst(x => x.CASE_ID == consentToCareObj.CASE_ID && !x.DELETED);
@@ -512,7 +555,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             }
             return dt;
         }
-        private FOX_TBL_TASK SetTaskData(UserProfile profile, long? PATIENT_ACCOUNT, string tasktypeHBR, string CURRENT_DATE_STR)
+        private FOX_TBL_TASK SetTaskData(UserProfile profile, long? PATIENT_ACCOUNT, string tasktypeHBR, string CURRENT_DATE_STR, FoxTblConsentToCare objConsentToCare)
         {
             var task = new FOX_TBL_TASK();
             SqlParameter pPracticeCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
@@ -520,6 +563,21 @@ namespace FOX.BusinessOperations.ConsentToCareService
             pTaskTypeName.ParameterName = "NAME";
             pTaskTypeName.Value = "CARE";
             var Task_type_Id = SpRepository<FOX_TBL_TASK_TYPE>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_GET_TASK_ID @PRACTICE_CODE, @NAME", pPracticeCode, pTaskTypeName);
+            if(objConsentToCare.TREATING_PROVIDER_ID == 0 || objConsentToCare.TREATING_PROVIDER_ID == null)
+            {
+                SqlParameter pPractice_Code = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
+                SqlParameter pGroupName = new SqlParameter("GROUP_NAME", "02CC1");
+                var group02CC1 = SpRepository<GROUP>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_GET_GROUP_ID @PRACTICE_CODE, @GROUP_NAME", pPractice_Code, pGroupName);
+                if (group02CC1 != null)
+                {
+                    task.SEND_TO_ID = group02CC1.GROUP_ID;
+                }
+            } 
+            else
+            {
+                task.SEND_TO_ID = objConsentToCare.TREATING_PROVIDER_ID;
+                task.LOC_ID = objConsentToCare.POS_ID;
+            }
             task.TASK_TYPE_ID = Task_type_Id?.TASK_TYPE_ID ?? 0;
             task.PRACTICE_CODE = profile.PracticeCode;
             task.PATIENT_ACCOUNT = PATIENT_ACCOUNT;
@@ -752,12 +810,46 @@ namespace FOX.BusinessOperations.ConsentToCareService
         {
             try
             {
-                consentToCareObj.PATIENT_ACCOUNT = long.Parse(consentToCareObj.PATIENT_ACCOUNT_Str == null ? "0" : consentToCareObj.PATIENT_ACCOUNT_Str);
                 var practiceCode = GetPracticeCode();
                 var config = GetServiceConfiguration(practiceCode);
                 var htmlTemplate = consentToCareObj.TEMPLATE_HTML;
                 var consentToCareIdStr = consentToCareObj.CONSENT_TO_CARE_ID.ToString();
-                var coverFilePath = HTMLToPDFSautinsoft(config, htmlTemplate, consentToCareIdStr);
+                var updatedHtml = consentToCareObj.TEMPLATE_HTML;
+                HtmlDocument htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(updatedHtml);
+                htmlDoc.GetElementbyId("consent-to-care-foxrehab-url")?.Remove();
+                updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+                htmlDoc.LoadHtml(updatedHtml);
+                htmlDoc.GetElementbyId("consent-to-care-sign-form").Remove();
+                updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+                htmlDoc.LoadHtml(updatedHtml);
+                htmlDoc.GetElementbyId("consent-to-care-contactus")?.Remove();
+                updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+                htmlDoc.LoadHtml(updatedHtml);
+                htmlDoc.GetElementbyId("consent-to-care-check-eligibility")?.Remove();
+                updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+                htmlDoc.LoadHtml(updatedHtml);
+                htmlDoc.GetElementbyId("consent-to-care-contactus-questions")?.Remove();
+                updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+                htmlDoc.LoadHtml(updatedHtml);
+                htmlDoc.GetElementbyId("consent-to-care-foxrehab-url-br")?.Remove();
+                updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+                htmlDoc.LoadHtml(updatedHtml);
+                htmlDoc.GetElementbyId("consent-to-care-sign-form-br")?.Remove();
+                updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+                htmlDoc.LoadHtml(updatedHtml);
+                htmlDoc.GetElementbyId("consent-to-care-contactus-questions-br")?.Remove();
+                updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+                htmlDoc.LoadHtml(updatedHtml);
+                htmlDoc.GetElementbyId("consent-to-care-check-eligibility-br")?.Remove();
+                updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+                htmlDoc.LoadHtml(updatedHtml);
+                updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+                //HTML to PDF
+                htmlToPdfResponseObj = new ResponseHTMLToPDF();
+                htmlToPdfResponseObj = HTMLToPDF(config, htmlTemplate, consentToCareObj.CONSENT_TO_CARE_ID.ToString(), "email", "");
+                var coverFilePath = htmlToPdfResponseObj.FilePath + "\\" + htmlToPdfResponseObj.FileName;
+                //var coverFilePath = HTMLToPDFSautinsoft(config, htmlTemplate, consentToCareIdStr);
                 var consentToCareID = consentToCareObj.CONSENT_TO_CARE_ID;
                 var CASE_ID = consentToCareObj.CASE_ID;
                 var currentConsentToCareId = consentToCareObj.CONSENT_TO_CARE_ID;
@@ -1152,6 +1244,17 @@ namespace FOX.BusinessOperations.ConsentToCareService
         {
             string smsBody = "Hello " + patientFirstName + "!\n \nFox Rehabilitation would like to obtain your consent for services. Please tap the below link to access consent form:\n" + link + "\n\nRegards\n\nFox Rehab Team ";
             return smsBody ?? "";
+        }
+        // Description: This function is decrypt patient account number & handle the flow of Unsubscribe Email & SMS
+        public List<InsuranceDetails> GetInsuranceDetails(FoxTblConsentToCare insuranceDetailsObj, UserProfile profile)
+        {
+            List<InsuranceDetails> insuranceDetailsList = new List<InsuranceDetails>();
+            var patientAccount = new SqlParameter("@PATINET_ACCOUNT", SqlDbType.VarChar) { Value = insuranceDetailsObj.PATIENT_ACCOUNT };
+            //var InsuranceType = new SqlParameter("@PRI_SEC_OTH_TYPE", SqlDbType.VarChar) { Value = consentToCareObj.PRI_SEC_OTH_TYPE };
+            var caseID = new SqlParameter("@CASE_ID", SqlDbType.VarChar) { Value = insuranceDetailsObj.CASE_ID };
+            var practiceCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
+            insuranceDetailsList = SpRepository<InsuranceDetails>.GetListWithStoreProcedure(@"EXEC FOX_PROC_GET_INSURANCE_DETAILS_FOR_CONSENT_TO_CARE @PATINET_ACCOUNT, @CASE_ID", patientAccount, caseID);
+            return insuranceDetailsList;
         }
         #endregion
     }
