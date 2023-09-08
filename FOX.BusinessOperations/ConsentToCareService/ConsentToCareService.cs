@@ -969,6 +969,10 @@ namespace FOX.BusinessOperations.ConsentToCareService
             var consentToCareId = new SqlParameter("@CONSENT_TO_CARE_ID", SqlDbType.VarChar) { Value = consentToCareObj.CONSENT_TO_CARE_ID };
             var practiceCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
             consentToCareObj = SpRepository<FoxTblConsentToCare>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CONSENT_TO_CARE_ID @CONSENT_TO_CARE_ID, @PRACTICE_CODE", consentToCareId, practiceCode);
+            if (consentToCareObj != null)
+            {
+                consentToCareObj.PATIENT_ACCOUNT_Str = consentToCareObj.PATIENT_ACCOUNT.ToString();
+            }
             return consentToCareObj;
         }
         // Description: This function is decrypt patient account number & handle the flow of Unsubscribe Email & SMS
@@ -1249,7 +1253,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
         public List<InsuranceDetails> GetInsuranceDetails(FoxTblConsentToCare insuranceDetailsObj, UserProfile profile)
         {
             List<InsuranceDetails> insuranceDetailsList = new List<InsuranceDetails>();
-            var patientAccount = new SqlParameter("@PATINET_ACCOUNT", SqlDbType.VarChar) { Value = insuranceDetailsObj.PATIENT_ACCOUNT };
+            var patientAccount = new SqlParameter("@PATINET_ACCOUNT", SqlDbType.BigInt) { Value = long.Parse(insuranceDetailsObj.PATIENT_ACCOUNT_Str) };
             //var InsuranceType = new SqlParameter("@PRI_SEC_OTH_TYPE", SqlDbType.VarChar) { Value = consentToCareObj.PRI_SEC_OTH_TYPE };
             var caseID = new SqlParameter("@CASE_ID", SqlDbType.VarChar) { Value = insuranceDetailsObj.CASE_ID };
             var practiceCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };

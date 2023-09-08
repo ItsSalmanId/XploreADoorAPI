@@ -142,13 +142,22 @@ namespace FOX.DataModels.Models.ConsentToCare
         {
             public string INSURANCE_NAME { get; set; }
             public long? Co_Payment { get; set; }
-            public bool IS_COPAY_PER { get; set; }
+            public bool? IS_COPAY_PER { get; set; }
             public string GENERAL_COMMENTS { get; set; }
             public long? PT_ST_TOT_AMT_USED { get; set; }
             public long? OT_TOT_AMT_USED { get; set; }
             public long? YEARLY_DED_AMT { get; set; }
-            public bool Is_Authorization_Required { get; set; } = false;
-
+            public bool? Is_Authorization_Required { get; set; } = false;
+            public long? DED_REMAINING { get; set; }
+            public DateTime? EFFECTIVE_FROM { get; set; }
+            public DateTime? EFFECTIVE_TO { get; set; }
+            public long? MULT_USED { get; set; }
+            public long? MULT_REMAINING { get; set; }
+            public long? MULT_VALUE { get; set; }
+            public long? DED_MET { get; set; }
+            public string AUTH_NUMBER { get; set; }
+            public string Pri_Sec_Oth_Type { get; set; }
+            
         }
     }
 }
