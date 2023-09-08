@@ -120,8 +120,8 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 var selectedCaseId = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CASE_ID };
                 var praCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
                 var existingConsentDetails = SpRepository<string>.GetListWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_DETAILS_BY_CASE_ID @CASE_ID, @PRACTICE_CODE", selectedCaseId, praCode);
-                var stringdd = existingConsentDetails.Contains("True");
-                if(stringdd == true)
+                var isUpdateExpired = existingConsentDetails.Contains("True");
+                if(isUpdateExpired == true)
                 {
                     List<TaskLog> taskLoglist = new List<TaskLog>();
                     List<string> consentTocarelogs = new List<string>();
