@@ -88,7 +88,11 @@ namespace FOX.DataModels.Models.ConsentToCare
             [NotMapped]
             public string PRI_SEC_OTH_TYPE { get; set; }
             [NotMapped]
-            public string lastConsentreceiver { get; set; }  
+            public string lastConsentreceiver { get; set; }
+            [NotMapped]
+            public string PatientGender { get; set; }
+            [NotMapped]
+            public string PatientFirstName { get; set; }  
         }
 
         [Table("FOX_TBL_SURVEY_QUESTION")]
@@ -158,6 +162,12 @@ namespace FOX.DataModels.Models.ConsentToCare
             public string AUTH_NUMBER { get; set; }
             public string Pri_Sec_Oth_Type { get; set; }
             
+        }
+        public class PatientContactDetails
+        {
+            public string First_Name { get; set; }
+            public string Type_Name { get; set; }
+            public string Last_Name { get; set; }
         }
     }
 }

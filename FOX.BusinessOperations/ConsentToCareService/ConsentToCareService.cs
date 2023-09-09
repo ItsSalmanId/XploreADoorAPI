@@ -107,15 +107,34 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 if (consentToCareObj.SENT_TO_ID != 0)
                 {
                     var patinetContactID = consentToCareObj.SENT_TO_ID;
-                    var conList = _PatientContactRepository.GetFirst(x => x.Contact_ID == consentToCareObj.SENT_TO_ID && x.Deleted == false);
-                    if (conList != null)
+                    var selectedSentToId = new SqlParameter("@SENT_TO_ID", SqlDbType.BigInt) { Value = consentToCareObj.SENT_TO_ID };
+                    var pracCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
+                    var existingConsentDetail = SpRepository<PatientContactDetails>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_PATINET_CONTACT_DETAILS @SENT_TO_ID, @PRACTICE_CODE", selectedSentToId, pracCode);
+                    if(existingConsentDetail.Type_Name.ToLower() == "Daughter" || existingConsentDetail.Type_Name.ToLower() == "sister" || existingConsentDetail.Type_Name.ToLower() == "Spouse" || existingConsentDetail.Type_Name.ToLower() == "grandmother" || existingConsentDetail.Type_Name.ToLower() == "mother")
                     {
-                        consnetReceiverName = conList.Last_Name;
+                        consnetReceiverName = "Miss. " + existingConsentDetail.First_Name + ", " + existingConsentDetail.Last_Name.Substring(0, 1)[0]; 
                     }
+                    else
+                    {
+                        consnetReceiverName = "Mr. " + existingConsentDetail.First_Name + ", " + existingConsentDetail.Last_Name.Substring(0, 1)[0];
+                    }
+                    //var conList = _PatientContactRepository.GetFirst(x => x.Contact_ID == consentToCareObj.SENT_TO_ID && x.Deleted == false);
+                    //if (conList != null)
+                    //{
+                    //    consnetReceiverName = conList.Last_Name;
+                    //}
                 }
                 else
                 {
-                    consnetReceiverName = consentToCareObj.PatientLastName;
+                    if(consentToCareObj.PatientGender == "Male")
+                    {
+                        consnetReceiverName = "Mr. " + consentToCareObj.PatientFirstName + ", " + consentToCareObj.PatientLastName.Substring(0, 1)[0]; 
+                    }
+                    else
+                    {
+                        consnetReceiverName = "Miss. " + consentToCareObj.PatientFirstName +", "+ consentToCareObj.PatientLastName.Substring(0, 1)[0]; 
+                    }
+                    //consnetReceiverName = consentToCareObj.PatientLastName;
                 }
                 var selectedCaseId = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CASE_ID };
                 var praCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
@@ -968,11 +987,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             consentToCareObj.CONSENT_TO_CARE_ID = int.Parse(decryptioUrl);
             var consentToCareId = new SqlParameter("@CONSENT_TO_CARE_ID", SqlDbType.VarChar) { Value = consentToCareObj.CONSENT_TO_CARE_ID };
             var practiceCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
-            consentToCareObj = SpRepository<FoxTblConsentToCare>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CONSENT_TO_CARE_ID @CONSENT_TO_CARE_ID, @PRACTICE_CODE", consentToCareId, practiceCode);
-            if (consentToCareObj != null)
-            {
-                consentToCareObj.PATIENT_ACCOUNT_Str = consentToCareObj.PATIENT_ACCOUNT.ToString();
-            }
+                consentToCareObj = SpRepository<FoxTblConsentToCare>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CONSENT_TO_CARE_ID @CONSENT_TO_CARE_ID, @PRACTICE_CODE", consentToCareId, practiceCode);
             return consentToCareObj;
         }
         // Description: This function is decrypt patient account number & handle the flow of Unsubscribe Email & SMS
