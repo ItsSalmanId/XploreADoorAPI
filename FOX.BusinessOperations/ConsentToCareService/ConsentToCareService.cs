@@ -81,7 +81,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
         #region FUNCTIONS
         public FoxTblConsentToCare AddUpdateConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile)
         {
-            SupportStaffService supportStaffService1 = new SupportStaffService();
             string htmlTemplate = string.Empty;
             string consnetReceiverName = string.Empty;
             if (consentToCareObj != null)
@@ -92,7 +91,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 {
                     concentToCareReceiverEmail = consentToCareObj.PatientEmailAddress;
                     concentToCareHomePhone = consentToCareObj.PatientHomePhone;
-
                 }
                 else if (consentToCareObj.SEND_TO == "Financially Responsible Party")
                 {
@@ -110,31 +108,14 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     var selectedSentToId = new SqlParameter("@SENT_TO_ID", SqlDbType.BigInt) { Value = consentToCareObj.SENT_TO_ID };
                     var pracCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
                     var existingConsentDetail = SpRepository<PatientContactDetails>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_PATINET_CONTACT_DETAILS @SENT_TO_ID, @PRACTICE_CODE", selectedSentToId, pracCode);
-                    if(existingConsentDetail.Type_Name.ToLower() == "Daughter" || existingConsentDetail.Type_Name.ToLower() == "sister" || existingConsentDetail.Type_Name.ToLower() == "Spouse" || existingConsentDetail.Type_Name.ToLower() == "grandmother" || existingConsentDetail.Type_Name.ToLower() == "mother")
+                    if(existingConsentDetail != null)
                     {
-                        consnetReceiverName = "Miss. " + existingConsentDetail.First_Name + ", " + existingConsentDetail.Last_Name.Substring(0, 1)[0]; 
+                        consnetReceiverName = existingConsentDetail.First_Name + ", " + existingConsentDetail.Last_Name.Substring(0, 1)[0]; 
                     }
-                    else
-                    {
-                        consnetReceiverName = "Mr. " + existingConsentDetail.First_Name + ", " + existingConsentDetail.Last_Name.Substring(0, 1)[0];
-                    }
-                    //var conList = _PatientContactRepository.GetFirst(x => x.Contact_ID == consentToCareObj.SENT_TO_ID && x.Deleted == false);
-                    //if (conList != null)
-                    //{
-                    //    consnetReceiverName = conList.Last_Name;
-                    //}
                 }
                 else
                 {
-                    if(consentToCareObj.PatientGender == "Male")
-                    {
-                        consnetReceiverName = "Mr. " + consentToCareObj.PatientFirstName + ", " + consentToCareObj.PatientLastName.Substring(0, 1)[0]; 
-                    }
-                    else
-                    {
-                        consnetReceiverName = "Miss. " + consentToCareObj.PatientFirstName +", "+ consentToCareObj.PatientLastName.Substring(0, 1)[0]; 
-                    }
-                    //consnetReceiverName = consentToCareObj.PatientLastName;
+                    consnetReceiverName = consentToCareObj.PatientFirstName + ", " + consentToCareObj.PatientLastName.Substring(0, 1)[0];
                 }
                 var selectedCaseId = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CASE_ID };
                 var praCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
@@ -145,7 +126,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     List<TaskLog> taskLoglist = new List<TaskLog>();
                     List<string> consentTocarelogs = new List<string>();
                     StringBuilder consentTocarelogsString = new StringBuilder();
-                    //+ dbResult.SEND_TO + " (" + consnetReceiverName + ")"
                     consentTocarelogs.Add("The consent to care link for " + consentToCareObj.lastConsentreceiver + " has been expired to send it to another recipient");
                     foreach (string str in consentTocarelogs)
                     {
@@ -177,7 +157,10 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 profile.PracticeCode = GetPracticeCode();
                 var config = GetServiceConfiguration(AppConfiguration.GetPracticeCode);
                 htmlTemplate = consentToCareObj.TEMPLATE_HTML;
-
+                if (consentToCareObj.SEND_TO == "Patient")
+                {
+                    consentToCareObj.SENT_TO_ID = 0;
+                }
                 var consentToCareIdStr = consentToCareObj.CONSENT_TO_CARE_ID.ToString();
                 var consentToCareId = new SqlParameter("@CONSENT_TO_CARE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CONSENT_TO_CARE_ID };
                 var existingCaseId = consentToCareObj.CASE_ID;
@@ -295,7 +278,11 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     }
                     if (!string.IsNullOrEmpty(number))
                     {
-                        var status = SmsService.SMSTwilio(number, smsBody);
+                        Thread smsThread = new Thread(() =>
+                        {
+                            var status = SmsService.SMSTwilio(number, smsBody);
+                        });
+                        smsThread.Start();
                     }
                 }
                 else
@@ -333,7 +320,11 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     }
                     if (!string.IsNullOrEmpty(number))
                     {
-                        var status = SmsService.SMSTwilio(number, smsBody);
+                        Thread smsThread = new Thread(() =>
+                        {
+                            var status = SmsService.SMSTwilio(number, smsBody);
+                        });
+                        smsThread.Start();
                     }
                     List<TaskLog> taskLoglist = new List<TaskLog>();
                     List<string> consentTocarelogs = new List<string>();
