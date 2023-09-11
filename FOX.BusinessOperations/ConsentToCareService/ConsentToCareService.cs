@@ -1252,7 +1252,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
         // Description: This function is used forcreate SMS body
         public static string SmsBody(string patientFirstName, string link)
         {
-            string smsBody = "Hello " + patientFirstName + "!\n \nFox Rehabilitation would like to obtain your consent for services. Please tap the below link to access consent form:\n" + link + "\n\nRegards\n\nFox Rehab Team ";
+            string smsBody = "Dear  Mr/Ms " + patientFirstName + "\n \nFox Rehabilitation would like to obtain your consent for services. Please tap the below link to access consent form:\n" + link + "\n\nRegards\n\nFox Rehab Team ";
             return smsBody ?? "";
         }
         // Description: This function is decrypt patient account number & handle the flow of Unsubscribe Email & SMS
