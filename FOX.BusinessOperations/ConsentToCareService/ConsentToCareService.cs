@@ -992,6 +992,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             {
                 consentToCareObj.PATIENT_ACCOUNT_Str = consentToCareObj.PATIENT_ACCOUNT.ToString();
             }
+            consentToCareObj.OrderingRefNotes = consentToCareObj.OrderingRefNotes == null ? "" : consentToCareObj.OrderingRefNotes;
             return consentToCareObj;
         }
         // Description: This function is decrypt patient account number & handle the flow of Unsubscribe Email & SMS
