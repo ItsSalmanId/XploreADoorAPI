@@ -987,7 +987,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             consentToCareObj.CONSENT_TO_CARE_ID = int.Parse(decryptioUrl);
             var consentToCareId = new SqlParameter("@CONSENT_TO_CARE_ID", SqlDbType.VarChar) { Value = consentToCareObj.CONSENT_TO_CARE_ID };
             var practiceCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
-                consentToCareObj = SpRepository<FoxTblConsentToCare>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CONSENT_TO_CARE_ID_TEMP1 @CONSENT_TO_CARE_ID, @PRACTICE_CODE", consentToCareId, practiceCode);
+                consentToCareObj = SpRepository<FoxTblConsentToCare>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CONSENT_TO_CARE_ID @CONSENT_TO_CARE_ID, @PRACTICE_CODE", consentToCareId, practiceCode);
             if (consentToCareObj != null)
             {
                 consentToCareObj.PATIENT_ACCOUNT_Str = consentToCareObj.PATIENT_ACCOUNT.ToString();
