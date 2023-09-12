@@ -9,7 +9,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
         #region FUNCTIONS
         FoxTblConsentToCare AddUpdateConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile);
         ConsentToCareList GetConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile);
-        string GeneratePdfForConcentToCare(FoxTblConsentToCare consentToCareObj, string practiceDocumentDirectory);
+        string GeneratePdfForConcentToCare(FoxTblConsentToCare consentToCareObj);
         FoxTblConsentToCare DecryptionUrl(FoxTblConsentToCare consentToCareObj);
         bool DobVerificationInvalidAttempt(AddInvalidAttemptRequest addInvalidAttemptRequestObj, UserProfile profile);
         FoxTblConsentToCare SubmitConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile);

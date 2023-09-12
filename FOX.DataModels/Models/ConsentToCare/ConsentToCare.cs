@@ -92,7 +92,11 @@ namespace FOX.DataModels.Models.ConsentToCare
             [NotMapped]
             public string PatientGender { get; set; }
             [NotMapped]
-            public string PatientFirstName { get; set; }  
+            public string PatientFirstName { get; set; }
+            [NotMapped]
+            public string PATIENT_NAME { get; set; }
+            [NotMapped]
+            public string TemplateHtmlWithInsuranceDetails { get; set; }
         }
 
         [Table("FOX_TBL_SURVEY_QUESTION")]
@@ -161,7 +165,8 @@ namespace FOX.DataModels.Models.ConsentToCare
             public long? DED_MET { get; set; }
             public string AUTH_NUMBER { get; set; }
             public string Pri_Sec_Oth_Type { get; set; }
-            
+            public string BENEFIT_COMMENTS { get; set; }
+
         }
         public class PatientContactDetails
         {

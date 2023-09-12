@@ -816,21 +816,30 @@ namespace FOX.BusinessOperations.ConsentToCareService
             long practiceCode = Convert.ToInt64(WebConfigurationManager.AppSettings?["GetPracticeCode"]);
             return practiceCode;
         }
-        public string GeneratePdfForConcentToCare(FoxTblConsentToCare consentToCareObj, string practiceDocumentDirectory)
+        public string GeneratePdfForConcentToCare(FoxTblConsentToCare consentToCareObj)
         {
             try
             {
                 var practiceCode = GetPracticeCode();
                 var config = GetServiceConfiguration(practiceCode);
-                var htmlTemplate = consentToCareObj.TEMPLATE_HTML;
+                var htmlTemplate = consentToCareObj.TemplateHtmlWithInsuranceDetails;
                 var consentToCareIdStr = consentToCareObj.CONSENT_TO_CARE_ID.ToString();
-                var updatedHtml = consentToCareObj.TEMPLATE_HTML;
+                var updatedHtml = consentToCareObj.TemplateHtmlWithInsuranceDetails;
                 HtmlDocument htmlDoc = new HtmlDocument();
                 htmlDoc.LoadHtml(updatedHtml);
                 htmlDoc.GetElementbyId("consent-to-care-foxrehab-url")?.Remove();
                 updatedHtml = htmlDoc.DocumentNode.OuterHtml;
                 htmlDoc.LoadHtml(updatedHtml);
-                htmlDoc.GetElementbyId("consent-to-care-sign-form").Remove();
+                htmlDoc.GetElementbyId("consent-to-care-sign-form")?.Remove();
+                updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+                htmlDoc.LoadHtml(updatedHtml);
+                htmlDoc.GetElementbyId("consent-to-care-download-pdf-br")?.Remove();
+                updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+                htmlDoc.LoadHtml(updatedHtml);
+                htmlDoc.GetElementbyId("consent-to-care-download-pdf-b")?.Remove();
+                updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+                htmlDoc.LoadHtml(updatedHtml);
+                htmlDoc.GetElementbyId("consent-to-care-download-pdf")?.Remove();
                 updatedHtml = htmlDoc.DocumentNode.OuterHtml;
                 htmlDoc.LoadHtml(updatedHtml);
                 htmlDoc.GetElementbyId("consent-to-care-contactus")?.Remove();
@@ -857,7 +866,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 updatedHtml = htmlDoc.DocumentNode.OuterHtml;
                 //HTML to PDF
                 htmlToPdfResponseObj = new ResponseHTMLToPDF();
-                htmlToPdfResponseObj = HTMLToPDF(config, htmlTemplate, consentToCareObj.CONSENT_TO_CARE_ID.ToString(), "email", "");
+                htmlToPdfResponseObj = HTMLToPDF(config, updatedHtml, consentToCareObj.CONSENT_TO_CARE_ID.ToString(), "email", "");
                 var coverFilePath = htmlToPdfResponseObj.FilePath + "\\" + htmlToPdfResponseObj.FileName;
                 //var coverFilePath = HTMLToPDFSautinsoft(config, htmlTemplate, consentToCareIdStr);
                 var consentToCareID = consentToCareObj.CONSENT_TO_CARE_ID;
@@ -978,7 +987,11 @@ namespace FOX.BusinessOperations.ConsentToCareService
             consentToCareObj.CONSENT_TO_CARE_ID = int.Parse(decryptioUrl);
             var consentToCareId = new SqlParameter("@CONSENT_TO_CARE_ID", SqlDbType.VarChar) { Value = consentToCareObj.CONSENT_TO_CARE_ID };
             var practiceCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
-                consentToCareObj = SpRepository<FoxTblConsentToCare>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CONSENT_TO_CARE_ID @CONSENT_TO_CARE_ID, @PRACTICE_CODE", consentToCareId, practiceCode);
+                consentToCareObj = SpRepository<FoxTblConsentToCare>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CONSENT_TO_CARE_ID_TEMP1 @CONSENT_TO_CARE_ID, @PRACTICE_CODE", consentToCareId, practiceCode);
+            if (consentToCareObj != null)
+            {
+                consentToCareObj.PATIENT_ACCOUNT_Str = consentToCareObj.PATIENT_ACCOUNT.ToString();
+            }
             return consentToCareObj;
         }
         // Description: This function is decrypt patient account number & handle the flow of Unsubscribe Email & SMS
@@ -1092,10 +1105,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
         }
         public FoxTblConsentToCare SubmitConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile)
         {
-            Helper.TokenTaskCancellationExceptionLog("config start");
             var config = GetServiceConfiguration(AppConfiguration.GetPracticeCode);
-            Helper.TokenTaskCancellationExceptionLog("config End");
-            Helper.TokenTaskCancellationExceptionLog("updatedHtml start");
             var updatedHtml = consentToCareObj.TEMPLATE_HTML;
             HtmlDocument htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(updatedHtml);
@@ -1127,37 +1137,23 @@ namespace FOX.BusinessOperations.ConsentToCareService
             updatedHtml = htmlDoc.DocumentNode.OuterHtml;
             htmlDoc.LoadHtml(updatedHtml);
             updatedHtml = htmlDoc.DocumentNode.OuterHtml;
-            Helper.TokenTaskCancellationExceptionLog("updatedHtml END");
-            Helper.TokenTaskCancellationExceptionLog("_consentToCareRepository START");
             consentToCareObj = _consentToCareRepository.GetFirst(x => x.CONSENT_TO_CARE_ID == consentToCareObj.CONSENT_TO_CARE_ID && !x.DELETED);
-            Helper.TokenTaskCancellationExceptionLog("_consentToCareRepository END");
-            Helper.TokenTaskCancellationExceptionLog("_consentToCareStatusRepository START");
             var consentStatus = _consentToCareStatusRepository.GetFirst(x => x.STATUS_NAME == "Signed" && x.PRACTICE_CODE == consentToCareObj.PRACTICE_CODE && !x.DELETED);
-            Helper.TokenTaskCancellationExceptionLog("_consentToCareStatusRepository END");
             if (consentStatus != null)
             {
                 consentToCareObj.STATUS_ID = consentStatus.CONSENT_TO_CARE_STATUS_ID;
             }
             consentToCareObj.MODIFIED_DATE = Helper.GetCurrentDate();
-
-            Helper.TokenTaskCancellationExceptionLog("HTMLToPDF START");
             //HTML to PDF
             htmlToPdfResponseObj = new ResponseHTMLToPDF();
             htmlToPdfResponseObj = HTMLToPDF(config, updatedHtml, consentToCareObj.CONSENT_TO_CARE_ID.ToString(), "email", "");
-            Helper.TokenTaskCancellationExceptionLog("HTMLToPDF END");
             var coverFilePath = htmlToPdfResponseObj.FilePath + "\\" + htmlToPdfResponseObj.FileName;
             var consentToCareID = consentToCareObj.CONSENT_TO_CARE_ID;
             var CASE_ID = consentToCareObj.CASE_ID;
             //Save PDF to Images and Save in consent-to-care document table
-            Helper.TokenTaskCancellationExceptionLog("getNumberOfPagesOfPDF START");
             int numberOfPages = getNumberOfPagesOfPDF(coverFilePath);
-            Helper.TokenTaskCancellationExceptionLog("getNumberOfPagesOfPDF END");
-            Helper.TokenTaskCancellationExceptionLog("SavePdfToImages START");
             SavePdfToImages(coverFilePath, config, consentToCareObj.CONSENT_TO_CARE_ID, numberOfPages);
-            Helper.TokenTaskCancellationExceptionLog("SavePdfToImages END");
-
             //Update consent table data
-            Helper.TokenTaskCancellationExceptionLog("Update consent table data START");
             if (consentToCareObj.SENT_TO_ID != 0 && consentToCareObj.SEND_TO != "Patient")
             {
                 var patinetContactID = consentToCareObj.SENT_TO_ID;
@@ -1176,8 +1172,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     consentToCareObj.SIGNATORY = patient.Last_Name + ", " + patient.First_Name;
                 }
             }
-            Helper.TokenTaskCancellationExceptionLog("Update consent table data END");
-
             consentToCareObj.SIGNED_PDF_PATH = coverFilePath;
             _consentToCareRepository.Update(consentToCareObj);
             _consentToCareRepository.Save();
@@ -1252,7 +1246,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
         // Description: This function is used forcreate SMS body
         public static string SmsBody(string patientFirstName, string link)
         {
-            string smsBody = "Dear  Mr/Ms " + patientFirstName + "\n \nFox Rehabilitation would like to obtain your consent for services. Please tap the below link to access consent form:\n" + link + "\n\nRegards\n\nFox Rehab Team ";
+            string smsBody = "Dear  Mr/Ms. " + patientFirstName + ".\n \nThis is Fox Rehabilitation, we would like to obtain your consent for services. Please click the link for additional information:\n" + "<a href='" + link + "'>Click here to sign e-consent to care</a>" + "\n\nRegards\n\nFox Team ";
             return smsBody ?? "";
         }
         // Description: This function is decrypt patient account number & handle the flow of Unsubscribe Email & SMS
