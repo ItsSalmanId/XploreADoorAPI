@@ -1254,7 +1254,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
         {
             List<InsuranceDetails> insuranceDetailsList = new List<InsuranceDetails>();
             var patientAccount = new SqlParameter("@PATINET_ACCOUNT", SqlDbType.BigInt) { Value = long.Parse(insuranceDetailsObj.PATIENT_ACCOUNT_Str) };
-            //var InsuranceType = new SqlParameter("@PRI_SEC_OTH_TYPE", SqlDbType.VarChar) { Value = consentToCareObj.PRI_SEC_OTH_TYPE };
             var caseID = new SqlParameter("@CASE_ID", SqlDbType.VarChar) { Value = insuranceDetailsObj.CASE_ID };
             var practiceCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
             insuranceDetailsList = SpRepository<InsuranceDetails>.GetListWithStoreProcedure(@"EXEC FOX_PROC_GET_INSURANCE_DETAILS_FOR_CONSENT_TO_CARE @PATINET_ACCOUNT, @CASE_ID", patientAccount, caseID);

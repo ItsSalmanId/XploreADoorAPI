@@ -48,8 +48,7 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpPost]
         public HttpResponseMessage GeneratePdfForConcentToCare(FoxTblConsentToCare consentToCareObj)
         {
-            var profile = GetProfile();
-            string pathtoDownload = _consentToCareService.GeneratePdfForConcentToCare(consentToCareObj, profile.PracticeDocumentDirectory);
+            string pathtoDownload = _consentToCareService.GeneratePdfForConcentToCare(consentToCareObj);
             var response = Request.CreateResponse(HttpStatusCode.OK, pathtoDownload);
             return response;
         }
@@ -75,7 +74,7 @@ namespace FoxRehabilitationAPI.Controllers
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "SurveyLink model is empty");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "SurveyLink model is empty");   
             }
         }
 
