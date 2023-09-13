@@ -392,7 +392,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 converter.Options.MarginRight = 10;
                 converter.Options.DisplayHeader = false;
                 converter.Options.DisplayHeader = false;
-                converter.Options.WebPageWidth = 1570;
+                converter.Options.WebPageWidth = 1590;
                 converter.Options.PdfPageOrientation = PdfPageOrientation.Landscape;
                 PdfDocument doc = converter.ConvertHtmlString(htmlDoc.DocumentNode.OuterHtml);
                 string pdfPath = config.ORIGINAL_FILES_PATH_SERVER;
@@ -992,7 +992,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             {
                 consentToCareObj.PATIENT_ACCOUNT_Str = consentToCareObj.PATIENT_ACCOUNT.ToString();
             }
-            consentToCareObj.OrderingRefNotes = consentToCareObj.OrderingRefNotes == null ? "" : consentToCareObj.OrderingRefNotes;
+            consentToCareObj.OrderingRefNotes = consentToCareObj.OrderingRefNotes == null ? "" : " from " + consentToCareObj.OrderingRefNotes;
             return consentToCareObj;
         }
         // Description: This function is decrypt patient account number & handle the flow of Unsubscribe Email & SMS
@@ -1113,7 +1113,16 @@ namespace FOX.BusinessOperations.ConsentToCareService
             htmlDoc.GetElementbyId("consent-to-care-foxrehab-url")?.Remove();
             updatedHtml = htmlDoc.DocumentNode.OuterHtml;
             htmlDoc.LoadHtml(updatedHtml);
-            htmlDoc.GetElementbyId("consent-to-care-sign-form").Remove();
+            htmlDoc.GetElementbyId("consent-to-care-sign-form")?.Remove();
+            updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+            htmlDoc.LoadHtml(updatedHtml);
+            htmlDoc.GetElementbyId("consent-to-care-download-pdf-br")?.Remove();
+            updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+            htmlDoc.LoadHtml(updatedHtml);
+            htmlDoc.GetElementbyId("consent-to-care-download-pdf-b")?.Remove();
+            updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+            htmlDoc.LoadHtml(updatedHtml);
+            htmlDoc.GetElementbyId("consent-to-care-download-pdf")?.Remove();
             updatedHtml = htmlDoc.DocumentNode.OuterHtml;
             htmlDoc.LoadHtml(updatedHtml);
             htmlDoc.GetElementbyId("consent-to-care-contactus")?.Remove();
@@ -1247,7 +1256,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
         // Description: This function is used forcreate SMS body
         public static string SmsBody(string patientFirstName, string link)
         {
-            string smsBody = "Dear  Mr/Ms. " + patientFirstName + ".\n \nThis is Fox Rehabilitation, we would like to obtain your consent for services. Please click the link for additional information:\n" + "<a href='" + link + "'>Click here to sign e-consent to care</a>" + "\n\nRegards\n\nFox Team ";
+            string smsBody = "Dear  Mr/Ms. " + patientFirstName + ".\n \nThis is Fox Rehabilitation, we would like to obtain your consent for services. Please click the link for additional information:\n\n" + link + "\n\nRegards\n\nFox Team ";
             return smsBody ?? "";
         }
         // Description: This function is decrypt patient account number & handle the flow of Unsubscribe Email & SMS
