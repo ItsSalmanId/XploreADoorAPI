@@ -7,9 +7,11 @@ using FoxRehabilitationAPI.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Security.Policy;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -22,10 +24,10 @@ namespace FoxRehabilitationAPI.Filters
         public override void OnAuthorization(HttpActionContext actionContext)
         {
             if (actionContext.Request.Headers.Authorization != null)
-            {
+            {              
                 var accessedTokenFromRequst = actionContext?.Request?.Headers?.Authorization?.Parameter;
                 if (accessedTokenFromRequst != null && accessedTokenFromRequst != "undefined" && accessedTokenFromRequst != "null")
-                {
+                {                 
                     UserProfile profile = new UserProfile();
                     if (HttpContext.Current.User != null && HttpContext.Current.User.Identity != null)
                     {
@@ -42,13 +44,89 @@ namespace FoxRehabilitationAPI.Filters
                         }
                         base.HandleUnauthorizedRequest(actionContext);
                     }
+                    //if (profile.MFA == true && profile.showMfaEanbleScreen == 1)
+                    //{
+                    //    TokenService tokenupdate = new TokenService();
+                    //    bool isSecondCall = true;
+                    //    tokenupdate.UpdateToken(profile.UserName, ExpiredToken.AuthToken, isSecondCall);
+                    //}
+                    if (ExpiredToken.isMFAVerified == 0 && profile.MFA == true && profile.showMfaEanbleScreen == 1 && !actionContext.Request.RequestUri.OriginalString.Contains("Singout") && (actionContext.Request.RequestUri.OriginalString.Contains("GetOtp")))
+                    {
+                        ExpiredToken.isLogOut = false;
+                        base.OnAuthorization(actionContext);
+
+                    }
+                    else if (ExpiredToken.isMFAVerified == 0 && profile.MFA == true && profile.showMfaEanbleScreen == 1 && actionContext.Request.RequestUri.OriginalString.Contains("UpdateOtpEnableDate"))
+                    {
+                        TokenService tokenupdate = new TokenService();
+                        bool isSecondCall = true;
+                        tokenupdate.UpdateToken(profile.UserName, ExpiredToken.AuthToken, isSecondCall);
+
+                    }
+                    else if (ExpiredToken.isMFAVerified == 0 && profile.MFA == true && profile.showMfaEanbleScreen == 1 && actionContext.Request.RequestUri.OriginalString.Contains("VerifyOTP"))
+                    {
+                        TokenService tokenupdate = new TokenService();
+                        bool isSecondCall = true;
+                        tokenupdate.UpdateToken(profile.UserName, ExpiredToken.AuthToken, isSecondCall);
+                    }
+
+                    else if (ExpiredToken.isMFAVerified == 0 && profile.MFA == true && profile.showMfaEanbleScreen == 1 && actionContext.Request.RequestUri.OriginalString.Contains("Singout"))
+                    {
+                        base.HandleUnauthorizedRequest(actionContext);
+                    }
+                    else if (ExpiredToken.isMFAVerified == 1 && profile.MFA == true && profile.showMfaEanbleScreen == 1)
+                    {
+                        base.OnAuthorization(actionContext);
+                    }
+                    else if (ExpiredToken.isLogOut == true && ExpiredToken.isMFAVerified == 0 && profile.MFA == true && ExpiredToken.isValidate == 0)
+                    {
+                        base.HandleUnauthorizedRequest(actionContext);
+                    }
+
+                    else if (ExpiredToken.isMFAVerified == 1)
+                    {
+                        base.OnAuthorization(actionContext);
+                    }
+                    //else if (ExpiredToken.isMFAVerified == 0 && profile.MFA == true && profile.showMfaEanbleScreen == 1 && !actionContext.Request.RequestUri.OriginalString.Contains("Singout"))
+                    //{
+
+                    //    base.HandleUnauthorizedRequest(actionContext);
+
+                    //}
                     else if (ExpiredToken.isLogOut == true)
                     {
-                        if (profile?.UserName == "6455testing" || profile?.UserName == "1163TESTING")
-                        {
+                        //if (actionContext.Request.RequestUri.OriginalString.Contains("Singout") != null)
+                        //{
+
+                        //    string uri = actionContext.Request.RequestUri.OriginalString;
+                        //    NameValueCollection queryParams = HttpUtility.ParseQueryString(uri);
+                        //    string userauthorization = queryParams["userauthoirization"];
+                        //if (userauthorization !=null  && actionContext.Request.RequestUri.OriginalString.Contains(queryParams["userauthoirization"]))
+                        //{
+                        //string userauthmfa = Encrypt.DecrypStringEncryptedInClient(userauthorization);
+                        //    if (profile.MFA == true && profile.showMfaEanbleScreen == 1 && !actionContext.Request.RequestUri.OriginalString.Contains("Singout"))
+                        //{
+                        //    ExpiredToken.isLogOut = false;
+                        //    base.OnAuthorization(actionContext);
+
+                        //    //TokenService tokenupdate = new TokenService();
+                        //    //bool isSecondCall = true;
+                        //    //tokenupdate.UpdateToken(profile.UserName, ExpiredToken.AuthToken, isSecondCall);
+                        //}
+                    
+                     if (actionContext.Request.RequestUri.OriginalString.Contains("Singout"))
+                    {
+                        base.HandleUnauthorizedRequest(actionContext);
+                    }
+
+                    if (profile?.UserName == "6455testing" || profile?.UserName == "1163TESTING")
+                     {
                             Helper.TokenTaskCancellationExceptionLog("ExpiredToken null for User: " + profile?.UserName, profile?.isTalkRehab == true ? "CCR" : "Fox");
                         }
-                        base.HandleUnauthorizedRequest(actionContext);
+                        if (ExpiredToken.isLogOut == true)
+                        {
+                            base.HandleUnauthorizedRequest(actionContext);
+                        }
                     }
                     else if (Convert.ToInt64(ExpiredToken.UserId) != profile?.userID)
                     {
