@@ -122,7 +122,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     List<TaskLog> taskLoglist = new List<TaskLog>();
                     List<string> consentTocarelogs = new List<string>();
                     StringBuilder consentTocarelogsString = new StringBuilder();
-                    consentTocarelogs.Add("The consent to care link for " + consentToCareObj.lastConsentreceiver +" "+ consentToCareObj.lastConsentReceiverName + " has been expired to send it to another recipient");
+                    consentTocarelogs.Add("The consent to care link for " + consentToCareObj.lastConsentreceiver +" "+ consentToCareObj.lastConsentReceiverName + " has been expired because it has been sent to another recipient.");
                     foreach (string str in consentTocarelogs)
                     {
                         consentTocarelogsString.Append(str + "<br>");
