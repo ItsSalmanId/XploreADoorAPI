@@ -98,7 +98,9 @@ namespace FOX.DataModels.Models.ConsentToCare
             [NotMapped]
             public string TemplateHtmlWithInsuranceDetails { get; set; }
             [NotMapped]
-            public string OrderingRefNotes { get; set; }   
+            public string OrderingRefNotes { get; set; }
+            [NotMapped]
+            public string lastConsentReceiverName { get; set; }  
         }
 
         [Table("FOX_TBL_SURVEY_QUESTION")]

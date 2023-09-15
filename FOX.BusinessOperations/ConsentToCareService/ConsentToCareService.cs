@@ -1,6 +1,5 @@
 ﻿using FOX.BusinessOperations.CommonService;
 using FOX.BusinessOperations.CommonServices;
-using FOX.BusinessOperations.FrictionlessReferral.SupportStaff;
 using FOX.BusinessOperations.IndexInfoServices;
 using FOX.DataModels.Context;
 using FOX.DataModels.GenericRepository;
@@ -22,15 +21,11 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Web.Configuration;
 using static FOX.DataModels.Models.ConsentToCare.ConsentToCare;
-using System.Threading.Tasks;
-using System.Net;
-using System.Xml;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 using FOX.DataModels.Models.IndexInfo;
 using SelectPdf;
@@ -87,6 +82,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             {
                 string concentToCareReceiverEmail = string.Empty;
                 string concentToCareHomePhone = string.Empty;
+                consentToCareObj.PATIENT_ACCOUNT = long.Parse(consentToCareObj.PATIENT_ACCOUNT_Str == null ? "0" : consentToCareObj.PATIENT_ACCOUNT_Str);
                 if (consentToCareObj.SEND_TO == "Patient")
                 {
                     concentToCareReceiverEmail = consentToCareObj.PatientEmailAddress;
@@ -102,7 +98,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     concentToCareReceiverEmail = consentToCareObj.PoaEmailAddress;
                     concentToCareHomePhone = consentToCareObj.PoaHomePhone;
                 }
-                if (consentToCareObj.SENT_TO_ID != 0)
+                if (consentToCareObj.SENT_TO_ID != 0 && consentToCareObj.SEND_TO != "Patient")
                 {
                     var patinetContactID = consentToCareObj.SENT_TO_ID;
                     var selectedSentToId = new SqlParameter("@SENT_TO_ID", SqlDbType.BigInt) { Value = consentToCareObj.SENT_TO_ID };
@@ -126,7 +122,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     List<TaskLog> taskLoglist = new List<TaskLog>();
                     List<string> consentTocarelogs = new List<string>();
                     StringBuilder consentTocarelogsString = new StringBuilder();
-                    consentTocarelogs.Add("The consent to care link for " + consentToCareObj.lastConsentreceiver + " has been expired to send it to another recipient");
+                    consentTocarelogs.Add("The consent to care link for " + consentToCareObj.lastConsentreceiver +" "+ consentToCareObj.lastConsentReceiverName + " has been expired to send it to another recipient");
                     foreach (string str in consentTocarelogs)
                     {
                         consentTocarelogsString.Append(str + "<br>");
@@ -159,7 +155,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 htmlTemplate = consentToCareObj.TEMPLATE_HTML;
                 if (consentToCareObj.SEND_TO == "Patient")
                 {
-                    consentToCareObj.SENT_TO_ID = 0;
+                    consentToCareObj.SENT_TO_ID = consentToCareObj.PATIENT_ACCOUNT;
                 }
                 var consentToCareIdStr = consentToCareObj.CONSENT_TO_CARE_ID.ToString();
                 var consentToCareId = new SqlParameter("@CONSENT_TO_CARE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CONSENT_TO_CARE_ID };
@@ -392,7 +388,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 converter.Options.MarginRight = 10;
                 converter.Options.DisplayHeader = false;
                 converter.Options.DisplayHeader = false;
-                converter.Options.WebPageWidth = 1590;
+                converter.Options.WebPageWidth = 1580;
                 converter.Options.PdfPageOrientation = PdfPageOrientation.Landscape;
                 PdfDocument doc = converter.ConvertHtmlString(htmlDoc.DocumentNode.OuterHtml);
                 string pdfPath = config.ORIGINAL_FILES_PATH_SERVER;
@@ -551,7 +547,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                         SqlParameter action = new SqlParameter("ACTION", item.ACTION);
                         SpRepository<TaskLog>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_UPDATE_TASK_LOG  @PRACTICE_CODE, @TASK_ID, @USER_NAME, @ACTION_DETAIL, @ACTION", practice_Code, Task_Id, user_Name, actionDetails, action);
                 
-                }
+               }
             }
         }
         private DataTable GetTaskLogTable(List<TaskLog> lst)
@@ -991,8 +987,8 @@ namespace FOX.BusinessOperations.ConsentToCareService
             if (consentToCareObj != null)
             {
                 consentToCareObj.PATIENT_ACCOUNT_Str = consentToCareObj.PATIENT_ACCOUNT.ToString();
-            }
-            consentToCareObj.OrderingRefNotes = consentToCareObj.OrderingRefNotes == null ? "" : " from " + consentToCareObj.OrderingRefNotes;
+                consentToCareObj.OrderingRefNotes = consentToCareObj.OrderingRefNotes == null ? "" : " from " + consentToCareObj.OrderingRefNotes;
+            }    
             return consentToCareObj;
         }
         // Description: This function is decrypt patient account number & handle the flow of Unsubscribe Email & SMS
