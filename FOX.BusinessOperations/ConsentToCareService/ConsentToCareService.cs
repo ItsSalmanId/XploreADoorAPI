@@ -613,6 +613,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     consentToCareDocumentObj.LOGO_PATH = logoPath;
                     consentToCareDocumentObj.PRACTICE_CODE = AppConfiguration.GetPracticeCode;
                     consentToCareDocumentObj.CONSENT_TO_CARE_ID = consentToCareId;
+                    consentToCareDocumentObj.IsSigned = true;
                     _consentToCareDocumentRepository.Insert(consentToCareDocumentObj);
                     _consentToCareDocumentRepository.Save();
 
@@ -628,6 +629,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     consentDocuments.LOGO_PATH = logoPath;
                     consentDocuments.MODIFIED_DATE = Helper.GetCurrentDate();
                     consentDocuments.PRACTICE_CODE = AppConfiguration.GetPracticeCode;
+                    consentDocuments.IsSigned = true;
                     _consentToCareDocumentRepository.Update(consentDocuments);
                     _consentToCareDocumentRepository.Save();
                 }
@@ -999,67 +1001,69 @@ namespace FOX.BusinessOperations.ConsentToCareService
             if (dbResult != null)
             {
                 dbResult.FAILED_ATTEMPTS = (dbResult.FAILED_ATTEMPTS == null ? 0 : dbResult.FAILED_ATTEMPTS) + 1;
-            }
-            _consentToCareRepository.Update(dbResult);
-            _consentToCareRepository.Save();
-            if (dbResult.FAILED_ATTEMPTS >= 5)
-            {
-                var consentStatus = _consentToCareStatusRepository.GetFirst(x => x.STATUS_NAME == "Expired" && x.PRACTICE_CODE == AppConfiguration.GetPracticeCode && !x.DELETED);
-                if (consentStatus != null)
-                {
-                    dbResult.STATUS_ID = consentStatus.CONSENT_TO_CARE_STATUS_ID;
-                    /// consentToCareObj.STATUS = consentStatus.STATUS_NAME;
-                }
+
                 _consentToCareRepository.Update(dbResult);
                 _consentToCareRepository.Save();
-                string consnetReceiverName = string.Empty;
-                if (dbResult.SENT_TO_ID != 0)
+                if (dbResult.FAILED_ATTEMPTS >= 5)
                 {
-                    var patinetContactID = dbResult.SENT_TO_ID;
-                    var conList = _PatientContactRepository.GetFirst(x => x.Contact_ID == dbResult.SENT_TO_ID && x.Deleted == false);
-                    //var signatoryName = conList.Last_Name + ',' + conList.First_Name;
-                    //consentToCareObj.SIGNATORY = signatoryName;
-                    consnetReceiverName = conList.Last_Name;
-                }
-                else
-                {
-                    var patient = _PatientRepository.GetFirst(e => e.Patient_Account == dbResult.PATIENT_ACCOUNT && (e.DELETED ?? false) == false);
-                    if (patient != null)
+                    var consentStatus = _consentToCareStatusRepository.GetFirst(x => x.STATUS_NAME == "Expired" && x.PRACTICE_CODE == AppConfiguration.GetPracticeCode && !x.DELETED);
+                    if (consentStatus != null)
                     {
-                        consnetReceiverName = patient.Last_Name == null ? "" : patient.Last_Name;
+                        dbResult.STATUS_ID = consentStatus.CONSENT_TO_CARE_STATUS_ID;
+                        /// consentToCareObj.STATUS = consentStatus.STATUS_NAME;
                     }
-                }
-                List<TaskLog> taskLoglist = new List<TaskLog>();
-                List<string> consentTocarelogs = new List<string>();
-                StringBuilder consentTocarelogsString = new StringBuilder();    
-                consentTocarelogs.Add("Consent to Care link has been expired due to invalid attempts by: " + dbResult.SEND_TO + " (" + consnetReceiverName + ")");
-                foreach (string str in consentTocarelogs)
-                {
-                    consentTocarelogsString.Append(str + "<br>");
-                }
-                taskLoglist.Add(new TaskLog()
-                {
-                    ACTION = "Task Comment",
-                    ACTION_DETAIL = consentTocarelogsString.ToString()
-                }
-                    );
+                    _consentToCareRepository.Update(dbResult);
+                    _consentToCareRepository.Save();
+                    string consnetReceiverName = string.Empty;
+                    if (dbResult.SENT_TO_ID != 0 && dbResult.SEND_TO != "Patient")
+                    {
+                        var patinetContactID = dbResult.SENT_TO_ID;
+                        var conList = _PatientContactRepository.GetFirst(x => x.Contact_ID == dbResult.SENT_TO_ID && x.Deleted == false);
+                        if (conList != null)
+                        {
+                            consnetReceiverName = conList.Last_Name == null ? "" : conList.Last_Name;
+                        }
+                    }
+                    else
+                    {
+                        var patient = _PatientRepository.GetFirst(e => e.Patient_Account == dbResult.PATIENT_ACCOUNT && (e.DELETED ?? false) == false);
+                        if (patient != null)
+                        {
+                            consnetReceiverName = patient.Last_Name == null ? "" : patient.Last_Name;
+                        }
+                    }
+                    List<TaskLog> taskLoglist = new List<TaskLog>();
+                    List<string> consentTocarelogs = new List<string>();
+                    StringBuilder consentTocarelogsString = new StringBuilder();
+                    consentTocarelogs.Add("Consent to Care link has been expired due to invalid attempts by: " + dbResult.SEND_TO + " (" + consnetReceiverName + ")");
+                    foreach (string str in consentTocarelogs)
+                    {
+                        consentTocarelogsString.Append(str + "<br>");
+                    }
+                    taskLoglist.Add(new TaskLog()
+                    {
+                        ACTION = "Task Comment",
+                        ACTION_DETAIL = consentTocarelogsString.ToString()
+                    }
+                        );
 
-                if (taskLoglist.Count() > 0)
-                {
-                    profile.UserName = "FOX TEAM";
-                    InsertTaskLog(dbResult.TASK_ID, taskLoglist, profile);
-                }
-                InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
-                if (dbResult != null)
-                {
-                    interfaceSynch.TASK_ID = dbResult.TASK_ID;
-                    interfaceSynch.PATIENT_ACCOUNT = dbResult.PATIENT_ACCOUNT;
-                    interfaceSynch.CASE_ID = dbResult.CASE_ID;
-                    ////Task Interface
-                    InsertInterfaceTeamData(interfaceSynch, profile);
-                }
+                    if (taskLoglist.Count() > 0)
+                    {
+                        profile.UserName = "FOX TEAM";
+                        InsertTaskLog(dbResult.TASK_ID, taskLoglist, profile);
+                    }
+                    InterfaceSynchModel interfaceSynch = new InterfaceSynchModel();
+                    if (dbResult != null)
+                    {
+                        interfaceSynch.TASK_ID = dbResult.TASK_ID;
+                        interfaceSynch.PATIENT_ACCOUNT = dbResult.PATIENT_ACCOUNT;
+                        interfaceSynch.CASE_ID = dbResult.CASE_ID;
+                        ////Task Interface
+                        InsertInterfaceTeamData(interfaceSynch, profile);
+                    }
 
-                invalidAttemptsLimitExceed = true;
+                    invalidAttemptsLimitExceed = true;
+                }
             }
             return invalidAttemptsLimitExceed;
         }

@@ -123,8 +123,9 @@ namespace FOX.DataModels.Models.ConsentToCare
             public DateTime? CREATED_DATE { get; set; }
             public DateTime? MODIFIED_DATE { get; set; }
             public string MODIFIED_BY { get; set; }
-            public bool DELETED { get; set; } = false;
-            public long DOCUMENT_TYPE_ID { get; set; }
+            public bool? DELETED { get; set; } = false;
+            public long? DOCUMENT_TYPE_ID { get; set; }
+            public bool? IsSigned { get; set; } = false;
         }
 
         [Table("FOX_TBL_CONSENT_TO_CARE_STATUS")]
