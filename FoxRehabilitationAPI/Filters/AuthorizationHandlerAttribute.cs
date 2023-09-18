@@ -52,16 +52,16 @@ namespace FoxRehabilitationAPI.Filters
                     }
                     else if (ExpiredToken.isMFAVerified == 0 && profile.MFA == true && profile.showMfaEanbleScreen == 1 && actionContext.Request.RequestUri.OriginalString.Contains("UpdateOtpEnableDate"))
                     {
-                        TokenService tokenupdate = new TokenService();
+                        TokenService tokenUpdate = new TokenService();
                         bool isSecondCall = true;
-                        tokenupdate.UpdateToken(profile.UserName, ExpiredToken.AuthToken, isSecondCall);
+                        tokenUpdate.UpdateToken(profile.UserName, ExpiredToken.AuthToken, isSecondCall);
 
                     }
                     else if (ExpiredToken.isMFAVerified == 0 && profile.MFA == true && profile.showMfaEanbleScreen == 1 && actionContext.Request.RequestUri.OriginalString.Contains("VerifyOTP"))
                     {
-                        TokenService tokenupdate = new TokenService();
+                        TokenService tokenUpdate = new TokenService();
                         bool isSecondCall = true;
-                        tokenupdate.UpdateToken(profile.UserName, ExpiredToken.AuthToken, isSecondCall);
+                        tokenUpdate.UpdateToken(profile.UserName, ExpiredToken.AuthToken, isSecondCall);
                     }
 
                     else if (ExpiredToken.isMFAVerified == 0 && profile.MFA == true && profile.showMfaEanbleScreen == 1 && actionContext.Request.RequestUri.OriginalString.Contains("Singout"))
