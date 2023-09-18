@@ -2847,15 +2847,6 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
 
 
         }
-        public bool AddMFAInvlaidAttempts(string Email)
-        {
-            DateTime utctime = DateTime.UtcNow;
-            SqlParameter email = new SqlParameter("@Email", Email);
-            SqlParameter date_time_utc = new SqlParameter("@LAST_ATTEMPTUTC_DATETIME", utctime);
-            Mfa_Login_Attempts mfa_Login_Attempts = SpRepository<Mfa_Login_Attempts>.GetSingleObjectWithStoreProcedure(@"Exec FOX_PROC_SET_MFA_INVALID_LOGIN_ATTEMPTS @Email, @LAST_ATTEMPTUTC_DATETIME", email, date_time_utc);
-            return mfa_Login_Attempts == null ? false : true;
-
-        }
 
         private void UnblockUser(User userToUpdate)
         {
