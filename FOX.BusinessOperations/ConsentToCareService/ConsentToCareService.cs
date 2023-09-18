@@ -30,6 +30,9 @@ using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 using FOX.DataModels.Models.IndexInfo;
 using SelectPdf;
 using FOX.DataModels.Models.GroupsModel;
+using System.Net;
+using System.Xml;
+using System.Threading.Tasks;
 
 namespace FOX.BusinessOperations.ConsentToCareService
 {
@@ -106,12 +109,12 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     var existingConsentDetail = SpRepository<PatientContactDetails>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_PATINET_CONTACT_DETAILS @SENT_TO_ID, @PRACTICE_CODE", selectedSentToId, pracCode);
                     if(existingConsentDetail != null)
                     {
-                        consnetReceiverName = existingConsentDetail.First_Name + ", " + existingConsentDetail.Last_Name.Substring(0, 1)[0]; 
+                        consnetReceiverName = existingConsentDetail.First_Name + " " + existingConsentDetail.Last_Name.Substring(0, 1)[0] + ","; 
                     }
                 }
                 else
                 {
-                    consnetReceiverName = consentToCareObj.PatientFirstName + ", " + consentToCareObj.PatientLastName.Substring(0, 1)[0];
+                    consnetReceiverName = consentToCareObj.PatientFirstName + " " + consentToCareObj.PatientLastName.Substring(0, 1)[0] + ",";
                 }
                 var selectedCaseId = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CASE_ID };
                 var praCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
@@ -260,18 +263,35 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     var decryptioUrl = Decryption(encryptedUrl.ToString());
 
                     var encryptedEmailURL = GenerateEncryptedEmailURL(consentToCareObj);
-                    var emailBody = EmailBody(consnetReceiverName, encryptedEmailURL);
+                    var emailBody = EmailBody(consnetReceiverName, encryptedEmailURL, consentToCareObj.disciplineName);
                     var email = concentToCareReceiverEmail;
                     var number = concentToCareHomePhone;
                     var smsBody = SmsBody(consnetReceiverName, encryptedEmailURL);
+                    string subject = String.Empty;
+                    if(consentToCareObj.disciplineName != null)
+                    {
+                        if (consentToCareObj.disciplineName.ToLower() == "Physical Therapy")
+                        {
+                            subject = "FOX Rehabilitation -Your Physical Therapy Services PLEASE READ!";
+                        }
+                        else if (consentToCareObj.disciplineName.ToLower() == "Occupational Therapy")
+                        {
+                            subject = "FOX Rehabilitation -Your Occupational Therapy Services PLEASE READ!";
+                        }
+                        else if (consentToCareObj.disciplineName.ToLower() == "Speech Therapy")
+                        {
+                            subject = "FOX Rehabilitation -Your Speech Therapy Services PLEASE READ!";
+                        }
+                    }
                     if (!string.IsNullOrEmpty(concentToCareReceiverEmail))
                     {
                         Thread emailThread = new Thread(() =>
                         {
-                            bool sent = Helper.ConcentToCareEmail(to: email, subject: "Fox Patient Portal", body: emailBody, profile: profile, CC: null, BCC: null);
+                            bool sent = Helper.ConcentToCareEmail(to: email, subject, body: emailBody, profile: profile, CC: null, BCC: null);
                         });
                         emailThread.Start();
                     }
+                    var sendSms = TelenorAPI(number, smsBody);
                     if (!string.IsNullOrEmpty(number))
                     {
                         Thread smsThread = new Thread(() =>
@@ -302,7 +322,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     var encryptedUrl = EncryptTemp(existingconsentToCareId.ToString());
                     var decryptioUrl = Decryption(encryptedUrl.ToString());
                     var encryptedEmailURL = GenerateEncryptedEmailURL(consentToCareObj);
-                    var emailBody = EmailBody(consnetReceiverName, encryptedEmailURL);
+                    var emailBody = EmailBody(consnetReceiverName, encryptedEmailURL, consentToCareObj.disciplineName);
                     var email = concentToCareReceiverEmail;
                     var number = concentToCareHomePhone;
                     var smsBody = SmsBody(consnetReceiverName, encryptedEmailURL);
@@ -314,6 +334,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                         });
                         emailThread.Start();
                     }
+                    var sendSms = TelenorAPI(number, smsBody);
                     if (!string.IsNullOrEmpty(number))
                     {
                         Thread smsThread = new Thread(() =>
@@ -879,7 +900,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 throw ex;
             }
         }
-        public static string EmailBody(string patientFirstName, string link)
+        public static string EmailBody(string patientFirstName, string link, string disciplineName)
         {
             string mailBody = string.Empty;
             string templatePathOfSenderEmail = AppDomain.CurrentDomain.BaseDirectory;
@@ -888,6 +909,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             {
                 mailBody = File.ReadAllText(templatePathOfSenderEmail);
                 mailBody = mailBody.Replace("[[PATIENT_FIRST_NAME]]", patientFirstName);
+                mailBody = mailBody.Replace("[[DISCIPLINE_NAME]]", disciplineName);
                 mailBody = mailBody.Replace("[[LINK]]", link);
             }
             return mailBody ?? "";
@@ -1268,6 +1290,34 @@ namespace FOX.BusinessOperations.ConsentToCareService
             var practiceCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
             insuranceDetailsList = SpRepository<InsuranceDetails>.GetListWithStoreProcedure(@"EXEC FOX_PROC_GET_INSURANCE_DETAILS_FOR_CONSENT_TO_CARE @PATINET_ACCOUNT, @CASE_ID", patientAccount, caseID);
             return insuranceDetailsList;
+        }
+        public static Task<bool> TelenorAPI(string phoneNumber, string message)
+        {
+            phoneNumber = string.Concat("0", phoneNumber);
+            HttpWebRequest request = CreateWebRequest();
+            XmlDocument soapEnvelopeXml = new XmlDocument();
+            soapEnvelopeXml.LoadXml(@"<?xml version=""1.0"" encoding=""utf-8""?><soap:Envelope xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:soap=""http://schemas.xmlsoap.org/soap/envelope/""><soap:Body><SendTelenorSMS xmlns=""http://tempuri.org/""><RecipentName>Fox</RecipentName><PhoneNumbers>" + phoneNumber + @"</PhoneNumbers><SMS_Text>" + message + @"</SMS_Text><TeamName>Fox</TeamName></SendTelenorSMS></soap:Body></soap:Envelope>"); using (Stream stream = request.GetRequestStream())
+            {
+                soapEnvelopeXml.Save(stream);
+            }
+            using (WebResponse response = request.GetResponse())
+            {
+                using (StreamReader rd = new StreamReader(response.GetResponseStream()))
+                {
+                    string soapResult = rd.ReadToEnd();
+                    Console.WriteLine(soapResult);
+                }
+            }
+            return Task.FromResult(true);
+        }
+        public static HttpWebRequest CreateWebRequest()
+        {
+            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://172.16.0.71/TelenorAPI/TelenorSMS.asmx?op=SendTelenorSMS");
+            webRequest.Headers.Add(@"SOAP:Action");
+            webRequest.ContentType = "text/xml;charset=\"utf-8\"";
+            webRequest.Accept = "text/xml";
+            webRequest.Method = "POST";
+            return webRequest;
         }
         #endregion
     }

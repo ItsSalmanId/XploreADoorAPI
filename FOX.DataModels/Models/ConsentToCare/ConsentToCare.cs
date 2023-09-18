@@ -100,7 +100,9 @@ namespace FOX.DataModels.Models.ConsentToCare
             [NotMapped]
             public string OrderingRefNotes { get; set; }
             [NotMapped]
-            public string lastConsentReceiverName { get; set; }  
+            public string lastConsentReceiverName { get; set; }
+            [NotMapped]
+            public string disciplineName { get; set; }
         }
 
         [Table("FOX_TBL_SURVEY_QUESTION")]
