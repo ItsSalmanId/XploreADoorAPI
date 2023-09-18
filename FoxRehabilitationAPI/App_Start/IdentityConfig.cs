@@ -24,6 +24,8 @@ using System.Collections;
 using System.Web.Configuration;
 using System.Collections.Specialized;
 using FOX.DataModels;
+using FOX.DataModels.Models.SenderName;
+using FOX.DataModels.Models.TasksModel;
 
 namespace FoxRehabilitationAPI
 {
@@ -193,11 +195,11 @@ namespace FoxRehabilitationAPI
                                     var _FOX_TBL_ROLE = _DbContextCommon.GetUserRoles.FirstOrDefault(t => !t.DELETED && (t.PRACTICE_CODE == _ADDetail.PracticeCode || t.PRACTICE_CODE == null) && t.ROLE_ID == user.ROLE_ID);
                                     //var _FOX_TBL_ROLE = _DbContextCommon.GetUserRoles.FirstOrDefault(t => !t.DELETED && t.PRACTICE_CODE == _ADDetail.PracticeCode && t.ROLE_ID == user.ROLE_ID);
 
-                                    if(_FOX_TBL_ROLE != null)
+                                    if (_FOX_TBL_ROLE != null)
                                     {
                                         user.ROLE_NAME = _FOX_TBL_ROLE.ROLE_NAME;
                                     }
-                                    if(!string.IsNullOrEmpty(user.ROLE_NAME) && (user.ROLE_NAME.ToLower().Contains("administrator") || user.ROLE_NAME.ToLower().Contains("supervisor") || user.ROLE_NAME.ToLower().Contains("director revenue") || user.ROLE_NAME.ToLower().Contains("adjustment poster") || user.ROLE_NAME.ToLower().Contains("lead fox survey") || user.ROLE_NAME.ToLower().Contains("auditor") || user.ROLE_NAME.ToLower().Contains("coordinator") || user.ROLE_NAME.ToLower().Contains("view indexed queue") || user.ROLE_NAME.ToLower().Contains("feedback caller")))
+                                    if (!string.IsNullOrEmpty(user.ROLE_NAME) && (user.ROLE_NAME.ToLower().Contains("administrator") || user.ROLE_NAME.ToLower().Contains("supervisor") || user.ROLE_NAME.ToLower().Contains("director revenue") || user.ROLE_NAME.ToLower().Contains("adjustment poster") || user.ROLE_NAME.ToLower().Contains("lead fox survey") || user.ROLE_NAME.ToLower().Contains("auditor") || user.ROLE_NAME.ToLower().Contains("coordinator") || user.ROLE_NAME.ToLower().Contains("view indexed queue") || user.ROLE_NAME.ToLower().Contains("feedback caller")))
                                     {
 
                                         var _FOX_TBL_SENDER_TYPE = _DbContextCommon.insertUpdateSenderType.FirstOrDefault(t => !t.DELETED && t.PRACTICE_CODE == _ADDetail.PracticeCode && t.SENDER_TYPE_NAME.ToLower().Contains("fox admin".ToLower()));
@@ -207,7 +209,7 @@ namespace FoxRehabilitationAPI
                                             user.FOX_TBL_SENDER_TYPE_ID = _FOX_TBL_SENDER_TYPE?.FOX_TBL_SENDER_TYPE_ID;
                                         }
                                     }
-                                    else if (!string.IsNullOrEmpty(user.ROLE_NAME) && (user.ROLE_NAME.ToLower().Contains("ceo founder") || user.ROLE_NAME.ToLower().Contains("executive") || user.ROLE_NAME.ToLower().Contains("senior regional director") || (user.ROLE_NAME.ToLower().Contains("regional qa liaison")) || user.ROLE_NAME.ToLower().Contains("vice president") || user.ROLE_NAME.ToLower().Contains("fox optimal living director") || user.ROLE_NAME.ToLower().Contains("clinician")) )
+                                    else if (!string.IsNullOrEmpty(user.ROLE_NAME) && (user.ROLE_NAME.ToLower().Contains("ceo founder") || user.ROLE_NAME.ToLower().Contains("executive") || user.ROLE_NAME.ToLower().Contains("senior regional director") || (user.ROLE_NAME.ToLower().Contains("regional qa liaison")) || user.ROLE_NAME.ToLower().Contains("vice president") || user.ROLE_NAME.ToLower().Contains("fox optimal living director") || user.ROLE_NAME.ToLower().Contains("clinician")))
                                     {
                                         var _FOX_TBL_SENDER_TYPE = _DbContextCommon.insertUpdateSenderType.FirstOrDefault(t => !t.DELETED && t.PRACTICE_CODE == _ADDetail.PracticeCode && t.SENDER_TYPE_NAME.ToLower().Contains("fox clinician".ToLower()));
 
@@ -624,7 +626,7 @@ namespace FoxRehabilitationAPI
             #endregion Old Code
             return new Tuple<ApplicationUser, UserProfile>(null, null);
         }
-        
+
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)
         {
             var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<ApplicationDbContext>()));
@@ -689,7 +691,19 @@ namespace FoxRehabilitationAPI
             }
             return 0;
         }
+        public Mfa_Login_Attempts GetInvalidMFAAttempts(string userName)
+        {
+            UserManagementService user = new UserManagementService();
+            try
+            {
+                return user.GetInvalidMFAAttempts(userName: userName);
+            }
+            catch (Exception)
+            {
 
+            }
+            return null;
+        }
         public bool AddInvalidLoginAttempt(string userName)
         {
             UserManagementService user = new UserManagementService();
@@ -713,6 +727,18 @@ namespace FoxRehabilitationAPI
             catch (Exception)
             {
                 return user.AddUserValidLoginAttempt(userName: userName);
+            }
+        }
+        public bool AddMFAValidLoginAttempt(string userName)
+        {
+            UserManagementService user = new UserManagementService();
+            try
+            {
+                return user.AddMFAValidLoginAttempt(userName: userName);
+            }
+            catch (Exception)
+            {
+                return user.AddMFAValidLoginAttempt(userName: userName);
             }
         }
     }

@@ -31,6 +31,8 @@ using System.Text;
 using System.Configuration;
 using FOX.DataModels.Models.Settings.ClinicianSetup;
 using FOX.DataModels.Models.SenderType;
+using FOX.DataModels.Models.Reporting;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace FOX.BusinessOperations.SettingsService.UserMangementService
 {
@@ -64,6 +66,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         private readonly GenericRepository<FOX_TBL_USER_RIGHTS_TYPE> _rightsTypeRepository;
         private readonly GenericRepository<FOX_TBL_APP_USER_ADDITIONAL_INFO> _userAdditionalInfoRepository;
         private readonly GenericRepository<Valid_Login_Attempts> _validLoginAtttempts;
+        private readonly GenericRepository<Mfa_Login_Attempts> _mfaLoginAttempts;
         private readonly GenericRepository<FOX_TBL_DASHBOARD_ACCESS> _dashBoardAccessRepository;
         private readonly GenericRepository<WS_TBL_FOX_Login_LOGS> _loginLogsRepository;
         private readonly GenericRepository<FoxProviderClass> _FoxProviderClassRepository;
@@ -377,6 +380,14 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 try
                 {
                     var users = SpRepository<User>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_PRACTICE_USERS] @PRACTICE_CODE,@SEARCH_TEXT, @RECORD_PER_PAGE, @CURRENT_PAGE,@FILTER_IS_APPROVED", parmPracticeCode, parmSearchText, RecordPerPage, CurrentPage, FilterIs_Approved);
+                    users.ForEach(user =>
+                    {
+                        if (user.PASSWORD != null)
+                        {
+                            user.PASSWORD = Encrypt.EncryptionForClient(user.PASSWORD);
+                        }
+
+                    });
                     return users;
 
                     //var users = SpRepository<User>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_PRACTICE_USERS_90365] @PRACTICE_CODE,@SEARCH_TEXT, @RECORD_PER_PAGE, @CURRENT_PAGE", parmPracticeCode, parmSearchText, RecordPerPage, CurrentPage);
@@ -2778,6 +2789,19 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 return 0;
             }
         }
+        public Mfa_Login_Attempts GetInvalidMFAAttempts (string userName)
+        {
+            SqlParameter username = new SqlParameter("@USER_NAME", userName);
+            Mfa_Login_Attempts mfaLoginAttempts = SpRepository<Mfa_Login_Attempts>.GetSingleObjectWithStoreProcedure(@"Exec FOX_PROC_GET_FAIL_COUNT_FOR_MFA_USER @USER_NAME", username);
+            if (mfaLoginAttempts != null)
+            {
+                return mfaLoginAttempts;
+            }
+            else
+            {
+                return new Mfa_Login_Attempts();
+            }
+        }
 
         public bool AddUserValidLoginAttempt(string userName)
         {
@@ -2789,6 +2813,13 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 _validLoginAtttempts.Update(validAttempts);
                 _validLoginAtttempts.Save();
             }
+            return true;
+        }
+
+       public bool AddMFAValidLoginAttempt(string userName)
+        {
+            SqlParameter username = new SqlParameter("@USER_NAME", userName);
+            var mfaLoginAttempts = SpRepository<Mfa_Login_Attempts>.GetSingleObjectWithStoreProcedure(@"Exec FOX_PROC_RESET_COUNT_FOR_MFA_USER @USER_NAME", username);
             return true;
         }
 

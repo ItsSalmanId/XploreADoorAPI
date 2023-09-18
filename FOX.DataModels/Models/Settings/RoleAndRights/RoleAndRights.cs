@@ -27,6 +27,7 @@ namespace FOX.DataModels.Models.Settings.RoleAndRights
         public string Token { get; set; }
         public string TokenExpiry { get; set; }
         public List<RoleAndRights> UserRights { get; set; }
+        public DateTime ModifiedDate { get; set; }
     }
 
     public class right

@@ -195,6 +195,20 @@ namespace FOX.DataModels.Models.Security
         public DateTime MODIFIED_DATE { get; set; }
     }
 
+    [Table("FOX_TBL_MFA_INVALID_USER_ATTEMPTS")]
+    public class Mfa_Login_Attempts
+    {
+        [Key]
+        public long? INVALID_MFA_COUNT_ID { get; set; }
+        public string USER_NAME { get; set; }
+        public long? FAIL_ATTEMPT_COUNT { get; set; }
+        public DateTime CREATED_DATE { get; set; }
+        public DateTime MODIFIED_DATE { get; set; }  
+        public long? DELETED { get; set; }
+        public DateTime LAST_ATTEMPT_DATE_UTC { get; set; }
+        public long? SENT_OTP_COUNT { get; set; }
+    }
+
     public class Clinician_And_Referral_Region_Data
     {
         public long USER_ID { get; set; }
