@@ -61,7 +61,6 @@ namespace FoxRehabilitationAPI.Controllers
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
         private ApplicationRoleManager _roleManager;
-        static long retrycatch = 0;
         public AccountController()
         {
             _UserRepository = new GenericRepository<User>(security);
@@ -74,7 +73,6 @@ namespace FoxRehabilitationAPI.Controllers
 
         public AccountController(ApplicationUserManager userManager, ApplicationRoleManager roleManager, ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
         {
-             retrycatch = 0;
             _userManager = userManager;
             _roleManager = roleManager;
             AccessTokenFormat = accessTokenFormat;
@@ -535,7 +533,7 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("VerifyOTP")]
-        public async Task<HttpResponseMessage> VerifyOTP(string otp, string otpIdentifier, string eResponse, string utcDateTime, OAuthGrantResourceOwnerCredentialsContext context)
+        public async Task<HttpResponseMessage> VerifyOTP(string otp, string otpIdentifier, string captchaResponse, string utcDateTime, OAuthGrantResourceOwnerCredentialsContext context)
         {
             var LAST_ATTEMPTUTC_DATETIME = Convert.ToDateTime(utcDateTime);
             int randomValue = new Random().Next();
@@ -556,7 +554,7 @@ namespace FoxRehabilitationAPI.Controllers
             }
             else
             {
-                var verifyOtpCode = await VerifyOtpCode(otp, otpIdentifier, eResponse, LAST_ATTEMPTUTC_DATETIME.ToString()) ;
+                var verifyOtpCode = await VerifyOtpCode(otp, otpIdentifier, captchaResponse, LAST_ATTEMPTUTC_DATETIME.ToString()) ;
                 if (verifyOtpCode != null)
                 {
                     OtpModel obj = JsonConvert.DeserializeObject<OtpModel>(verifyOtpCode);
@@ -586,10 +584,10 @@ namespace FoxRehabilitationAPI.Controllers
 
                             }
                         }
-                        if (String.IsNullOrEmpty(eResponse) || eResponse != "undefined")
+                        if (String.IsNullOrEmpty(captchaResponse) || captchaResponse != "undefined")
                         {
 
-                            GoogleRecaptchaResponse captcharesponse = await ValidateCaptcha(eResponse);
+                            GoogleRecaptchaResponse captcharesponse = await ValidateCaptcha(captchaResponse);
                             if (!captcharesponse.Success)
                             {
                                 obj.OtpCaptcha = false;
@@ -1219,7 +1217,7 @@ namespace FoxRehabilitationAPI.Controllers
         }
 
         // Description: This function is used to verfify otp code 
-        private async Task<string> VerifyOtpCode(string otp, string otpIdentifier, string eResponse, string utcDateTime)
+        private async Task<string> VerifyOtpCode(string otp, string otpIdentifier, string captchaResponse, string utcDateTime)
         {
             
                 var verifyOtpUrl = ConfigurationManager.AppSettings["VerifyOtpURL"];
