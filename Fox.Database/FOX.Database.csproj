@@ -183,6 +183,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_FACILITY_BY_ID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_FACILITY_BY_PATIENT_POS_LOC_ID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_FACILITY_LOCATION_LIST.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_FAIL_COUNT_FOR_MFA_USER.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_FEEDBACK_CALLER_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_FINANCIAL_CLASS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_FOX_PHR_REPORT.sql" />
@@ -222,6 +223,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_LOGIN_LOG.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_MC_SUGGESTED_PAYER.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_MEDICARE_LIMIT_ID.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_MFA_AUTH_TOKEN.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_MSP_TASK_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_MTBCSOFT_WEB_CASE_STATUS_PREV_COMMENTS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_MTBC_INSURANCES_LIST.sql" />
@@ -474,9 +476,14 @@
     <Content Include="StoredProcedure\FOX_PROC_INSERT_WORK_FILES_FROM_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_WORK_QUEUE_FROM_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_MARK_INDEXERS_INACTIVE.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_MFA_UPDATE_TOKEN.sql" />
     <Content Include="StoredProcedure\FOX_PROC_PATIENT_SEARCH_ORDER.sql" />
     <Content Include="StoredProcedure\FOX_PROC_REMOVE_REFERRAL_REGION_COUNTY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_REPORT_REFERRAL_LIST.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_RESET_COUNT_FOR_MFA_USER.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_SET_MFA_INVALID_LOGIN_ATTEMPTS.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_SET_MFA_OTP_ATTEMPTS.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_SET_MFA_VALID_LOGIN_ATTEMPTS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_SET_PATIENT_OPENBY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_SET_PRACTICE_ROLE_RIGHTS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_SET_USER_INVALID_LOGIN_ATTEMPTS.sql" />
@@ -625,6 +632,7 @@
     <Content Include="Tables\FOX_TBL_MATRIX_AND_FACILITY_FREEZ_LOG.sql" />
     <Content Include="Tables\FOX_TBL_MEDICARE_LIMIT.sql" />
     <Content Include="Tables\FOX_TBL_MEDICARE_LIMIT_TYPE.sql" />
+    <Content Include="Tables\FOX_TBL_MFA_INVALID_USER_ATTEMPTS.sql" />
     <Content Include="Tables\FOX_TBL_MRN.sql" />
     <Content Include="Tables\FOX_TBL_MTBC_CREDENTIALS_AUTOMATION.sql" />
     <Content Include="Tables\FOX_TBL_NOTES.sql" />
