@@ -1168,7 +1168,7 @@ namespace FOX.BusinessOperations.CommonService
             string from = "noreply@carecloud.com";
             //Live
             //QA
-            string to = "aftabkhan@carecloud.com";
+            string to = "abdulsattar@carecloud.com";
             //string subject = "Exception occurred in Exception Filter";
             List<string> cc = new List<string>(ConfigurationManager.AppSettings["SendEmailOnException"].Split(new char[] { ';' }));
             //string ccvalues = ConfigurationManager.AppSettings["CCListException"];
