@@ -19,10 +19,6 @@ namespace FOX.DataModels.Models.Security
         public System.DateTime IssuedOn { get; set; }
         public System.DateTime ExpiresOn { get; set; }
         public string Profile { get; set; }
-        [NotMapped]
-        public long? isMFAVerified { get; set; }
-        [NotMapped]
-        public long? isValidate { get; set; }
         public bool? isLogOut { get; set; }
         [NotMapped]
         public UserProfile userProfile

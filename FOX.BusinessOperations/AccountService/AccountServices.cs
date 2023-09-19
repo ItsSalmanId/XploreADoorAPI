@@ -741,7 +741,6 @@ namespace FOX.BusinessOperations.AccountService
             if (data.userIP != null && data.userIP != "undefined")
             {
                 data.userIP = Encrypt.DecrypStringEncryptedInClient(data.userIP);
-                data.userName = Encrypt.DecrypStringEncryptedInClient(data.userName);
             }
             else
             {
