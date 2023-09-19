@@ -614,6 +614,17 @@ namespace FoxRehabilitationAPI.Controllers
                             ResponseModel resp = _userManagementService.UpdateOtpEnableDate(profile.userID);
                             if (resp != null)
                             {
+                                //var usrParmAuth = new SqlParameter("@User_ID", SqlDbType.VarChar) { Value = profile.userID };
+                                //var UserDetailsAuth = SpRepository<MFAAuthToken>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_MFA_AUTH_TOKEN @User_ID", usrParmAuth).FirstOrDefault();
+                                //var updatedToken = UserDetailsAuth.AuthToken + DateTime.Now.Millisecond.ToString();
+                                //var userOldToken = new SqlParameter("@OLD_TOKEN", SqlDbType.VarChar) { Value = UserDetailsAuth.AuthToken };
+                                //var userNewToken = new SqlParameter("@NEW_TOKEN", SqlDbType.VarChar) { Value = updatedToken };
+                                //var userID = new SqlParameter("@User_ID", SqlDbType.VarChar) { Value = profile.userID };
+                                //var tokenModel = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_MFA_UPDATE_TOKEN @OLD_TOKEN, @NEW_TOKEN , @User_ID", userOldToken, userNewToken, userID);                               
+                                //obj.NewToken = tokenModel.AuthToken;
+                                //obj.IssuedOn = tokenModel.IssuedOn;
+                                //obj.ExpiresOn = tokenModel.ExpiresOn;
+                                //obj.Profile = tokenModel.Profile;
                                 verifyOtpCode = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
                                 verifyOtpCode = Encrypt.EncryptionForClient(verifyOtpCode);
                                 return Request.CreateResponse(HttpStatusCode.OK, verifyOtpCode);

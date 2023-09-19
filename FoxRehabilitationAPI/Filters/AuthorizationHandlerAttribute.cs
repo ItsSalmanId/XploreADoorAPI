@@ -44,6 +44,12 @@ namespace FoxRehabilitationAPI.Filters
                         }
                         base.HandleUnauthorizedRequest(actionContext);
                     }
+                    //if (profile.MFA == true && profile.showMfaEanbleScreen == 1)
+                    //{
+                    //    TokenService tokenupdate = new TokenService();
+                    //    bool isSecondCall = true;
+                    //    tokenupdate.UpdateToken(profile.UserName, ExpiredToken.AuthToken, isSecondCall);
+                    //}
                     if (ExpiredToken.isMFAVerified == 0 && profile.MFA == true && profile.showMfaEanbleScreen == 1 && !actionContext.Request.RequestUri.OriginalString.Contains("Singout") && (actionContext.Request.RequestUri.OriginalString.Contains("GetOtp")))
                     {
                         ExpiredToken.isLogOut = false;
@@ -81,8 +87,33 @@ namespace FoxRehabilitationAPI.Filters
                     {
                         base.OnAuthorization(actionContext);
                     }
+                    //else if (ExpiredToken.isMFAVerified == 0 && profile.MFA == true && profile.showMfaEanbleScreen == 1 && !actionContext.Request.RequestUri.OriginalString.Contains("Singout"))
+                    //{
+
+                    //    base.HandleUnauthorizedRequest(actionContext);
+
+                    //}
                     else if (ExpiredToken.isLogOut == true)
-                    {                  
+                    {
+                        //if (actionContext.Request.RequestUri.OriginalString.Contains("Singout") != null)
+                        //{
+
+                        //    string uri = actionContext.Request.RequestUri.OriginalString;
+                        //    NameValueCollection queryParams = HttpUtility.ParseQueryString(uri);
+                        //    string userauthorization = queryParams["userauthoirization"];
+                        //if (userauthorization !=null  && actionContext.Request.RequestUri.OriginalString.Contains(queryParams["userauthoirization"]))
+                        //{
+                        //string userauthmfa = Encrypt.DecrypStringEncryptedInClient(userauthorization);
+                        //    if (profile.MFA == true && profile.showMfaEanbleScreen == 1 && !actionContext.Request.RequestUri.OriginalString.Contains("Singout"))
+                        //{
+                        //    ExpiredToken.isLogOut = false;
+                        //    base.OnAuthorization(actionContext);
+
+                        //    //TokenService tokenupdate = new TokenService();
+                        //    //bool isSecondCall = true;
+                        //    //tokenupdate.UpdateToken(profile.UserName, ExpiredToken.AuthToken, isSecondCall);
+                        //}
+                    
                      if (actionContext.Request.RequestUri.OriginalString.Contains("Singout"))
                     {
                         base.HandleUnauthorizedRequest(actionContext);
