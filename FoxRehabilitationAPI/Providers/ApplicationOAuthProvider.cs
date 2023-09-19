@@ -22,7 +22,6 @@ using static FOX.BusinessOperations.CommonServices.AppConfiguration.ActiveDirect
 using FOX.BusinessOperations.CommonService;
 using FoxRehabilitationAPI.Filters;
 using FOX.DataModels;
-using System.Globalization;
 
 namespace FoxRehabilitationAPI.Providers
 {
@@ -89,24 +88,6 @@ namespace FoxRehabilitationAPI.Providers
                         return;
                     }
                 }
-                var invalidMFAAttempts = userManager.GetInvalidMFAAttempts(context.UserName);
-                if (invalidMFAAttempts != null)
-                {
-                    DateTime currentDateTime = DateTime.UtcNow;
-                    DateTime modifiedDateTime = invalidMFAAttempts.LAST_ATTEMPT_DATE_UTC;
-                    TimeSpan timeDifference = modifiedDateTime - currentDateTime;
-                    int differenceInMinutes = (int)timeDifference.TotalMinutes;
-                    if (modifiedDateTime.Date < currentDateTime.Date || differenceInMinutes < 0)
-                    {
-                        userManager.AddMFAValidLoginAttempt(context.UserName);
-                    }
-                }
-                    var invalidMFAAttempt = userManager.GetInvalidMFAAttempts(context.UserName);
-                if (invalidMFAAttempt.FAIL_ATTEMPT_COUNT >= 5)
-                {
-                    context.SetError("invalid_grant", invalidAttempts + 1 + "Your Account has been locked by Invalid MFA attempts, please try again in," +invalidMFAAttempts.LAST_ATTEMPT_DATE_UTC);
-                    return;
-                }
                 tuple = await userManager.FindProfileAsync(context.UserName, context.Password);
                 if (tuple.Item1 == null || tuple.Item2 == null)
                 {
@@ -141,7 +122,6 @@ namespace FoxRehabilitationAPI.Providers
                     }
                     userManager.AddValidLoginAttempt(context.UserName);
                     invalidAttempts = 0;
-                    userManager.AddMFAValidLoginAttempt(context.UserName);
                 }
                 tuple.Item1.UserName = tuple.Item1.USER_NAME = tuple.Item2.UserName;
                 ClaimsIdentity oAuthIdentity;
@@ -218,33 +198,20 @@ namespace FoxRehabilitationAPI.Providers
             }
         }
 
-        //public override Task TokenEndpointResponse(OAuthTokenEndpointResponseContext context)
-        //{
-        //    try
-        //    {
-
-        //        ITokenService tokenService = new TokenService();
-        //        var userProfile = ClaimsModel.GetUserProfile(context.Identity as System.Security.Claims.ClaimsIdentity);
-        //        var result = tokenService.SaveTokenWithProfile(userProfile, context.AccessToken);
-        //        return base.TokenEndpointResponse(context);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return base.TokenEndpointResponse(context);
-        //    }
-        //}
         public override Task TokenEndpointResponse(OAuthTokenEndpointResponseContext context)
-{
-            ITokenService tokenService = new TokenService();
-            var userProfile = ClaimsModel.GetUserProfile(context.Identity as System.Security.Claims.ClaimsIdentity);
-            var result = tokenService.SaveTokenWithProfile(userProfile, context.AccessToken);
-            string encryptedToken = Encrypt.EncryptionForClient(context.AccessToken);
-            context.AdditionalResponseParameters.Add("EncryptedAccessToken", encryptedToken);
-            
-
-            return base.TokenEndpointResponse(context);
-}
-
+        {
+            try
+            {
+                ITokenService tokenService = new TokenService();
+                var userProfile = ClaimsModel.GetUserProfile(context.Identity as System.Security.Claims.ClaimsIdentity);
+                var result = tokenService.SaveTokenWithProfile(userProfile, context.AccessToken);
+                return base.TokenEndpointResponse(context);
+            }
+            catch (Exception)
+            {
+                return base.TokenEndpointResponse(context);
+            }
+        }
 
         public override Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
         {

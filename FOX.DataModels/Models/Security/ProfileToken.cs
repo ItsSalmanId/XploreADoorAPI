@@ -19,10 +19,6 @@ namespace FOX.DataModels.Models.Security
         public System.DateTime IssuedOn { get; set; }
         public System.DateTime ExpiresOn { get; set; }
         public string Profile { get; set; }
-        [NotMapped]
-        public long? isMFAVerified { get; set; }
-        [NotMapped]
-        public long? isValidate { get; set; }
         public bool? isLogOut { get; set; }
         [NotMapped]
         public UserProfile userProfile
@@ -37,26 +33,6 @@ namespace FOX.DataModels.Models.Security
         }
         [NotMapped]
         public int AUTO_LOCK_TIMESPAN { get; set; }
-        //public  class MFAProfileToken
-        //{
-        //    public long TokenId { get; set; }
-        //    public long UserId { get; set; }
-        //    public string AuthToken { get; set; }
-        //    public DateTime IssuedOn { get; set; }
-        //    public DateTime ExpiresOn { get; set; }
-        //    public string Profile { get; set; }
-        //    public bool? isLogOut { get; set; }
-        //    public UserProfile userProfile
-        //    {
-        //        get
-        //        {
-        //            UserProfile UF = new UserProfile();
-        //            UF = JsonConvert.DeserializeObject<UserProfile>(this.Profile);
-        //            return UF;
-        //        }
-        //        set { this.Profile = JsonConvert.SerializeObject(value); }
-        //    }
-        //}
 
         [Table("FOX_TBL_PROFILE_TOKENS_SECURITY")]
         public class ProfileTokensSecurity //: Alachisoft.NCache.Runtime.Serialization.ICompactSerializable
