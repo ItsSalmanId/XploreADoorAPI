@@ -380,14 +380,6 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 try
                 {
                     var users = SpRepository<User>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_PRACTICE_USERS] @PRACTICE_CODE,@SEARCH_TEXT, @RECORD_PER_PAGE, @CURRENT_PAGE,@FILTER_IS_APPROVED", parmPracticeCode, parmSearchText, RecordPerPage, CurrentPage, FilterIs_Approved);
-                    users.ForEach(user =>
-                    {
-                        if (user.PASSWORD != null)
-                        {
-                            user.PASSWORD = Encrypt.EncryptionForClient(user.PASSWORD);
-                        }
-
-                    });
                     return users;
 
                     //var users = SpRepository<User>.GetListWithStoreProcedure(@"exec [FOX_PROC_GET_PRACTICE_USERS_90365] @PRACTICE_CODE,@SEARCH_TEXT, @RECORD_PER_PAGE, @CURRENT_PAGE", parmPracticeCode, parmSearchText, RecordPerPage, CurrentPage);
