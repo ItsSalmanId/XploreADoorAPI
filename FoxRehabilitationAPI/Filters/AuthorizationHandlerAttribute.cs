@@ -21,7 +21,7 @@ namespace FoxRehabilitationAPI.Filters
     {
         public override void OnAuthorization(HttpActionContext actionContext)
         {
-            if (actionContext.Request.Headers.Authorization != null)
+            if (actionContext.Request.Headers.Authorization != null) 
             {
                 var accessedTokenFromRequst = actionContext?.Request?.Headers?.Authorization?.Parameter;
                 if (accessedTokenFromRequst != null && accessedTokenFromRequst != "undefined" && accessedTokenFromRequst != "null")
@@ -66,12 +66,13 @@ namespace FoxRehabilitationAPI.Filters
                     }
                     else if (ExpiredToken.isLogOut == true)
                     {
-                        if (profile?.UserName == "6455testing" || profile?.UserName == "1163TESTING")
+
+                     if (profile?.UserName == "6455testing" || profile?.UserName == "1163TESTING")
                         {
                             Helper.TokenTaskCancellationExceptionLog("ExpiredToken null for User: " + profile?.UserName, profile?.isTalkRehab == true ? "CCR" : "Fox");
                         }
                         base.HandleUnauthorizedRequest(actionContext);
-                    }
+                     }
                     else if (Convert.ToInt64(ExpiredToken.UserId) != profile?.userID)
                     {
                         if (profile?.UserName == "6455testing" || profile?.UserName == "1163TESTING")
