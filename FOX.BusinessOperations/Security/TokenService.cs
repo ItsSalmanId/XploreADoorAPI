@@ -101,21 +101,17 @@ namespace FOX.BusinessOperations.Security
 
             var tokenModel =  SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GENERATE_INSERT_TOKEN @USERNAME, @TOKEN , @USER_PROFILE, @ISMFAVERIFIED, @ISLOGOUT, @ISVALIDATE", userNameToken, userToken, userProfile, isMFAVerify, islogout, validate);  
             tokenModel.isLogOut = false;
-
             return tokenModel;
+
         }
 
-
-
-         public ProfileToken UpdateToken(string userName, string token, bool isSecondCall)
-
+          public ProfileToken UpdateToken(string userName, string token, bool isSecondCall)
         {
             try
             { 
                 var usrParmAuth = new SqlParameter("UserName", SqlDbType.VarChar) { Value = userName };
                 var UserDetailsAuth = SpRepository<UserProfile>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_USER_PROFILING_DATA @UserName", usrParmAuth).FirstOrDefault();
                 UserDetailsAuth.Token = token;
-
                 int islogoutValue = 1; 
                 int isMFAVerified = 0;
                 int isValidate = 0;
@@ -129,11 +125,9 @@ namespace FOX.BusinessOperations.Security
                 }
                 var isUserValidate = new SqlParameter("@ISVALIDATE", SqlDbType.BigInt) { Value = isValidate };
                 var isMFAVerify = new SqlParameter("@ISMFAVERIFIED", SqlDbType.BigInt) { Value = isMFAVerified };
-
                 var userNameToken = new SqlParameter("@USERNAME", SqlDbType.BigInt) { Value = UserDetailsAuth.userID };
                 var userToken = new SqlParameter("@TOKEN", SqlDbType.VarChar) { Value = token };
                 var userProfile = new SqlParameter("@USER_PROFILE", SqlDbType.VarChar) { Value = JsonConvert.SerializeObject(UserDetailsAuth).ToString() };
-
                 var tokenModel = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_UPDATE_TOKEN @ISLOGOUT,@ISVALIDATE,@ISMFAVERIFIED,@USERNAME,@TOKEN ,@USER_PROFILE", islogout, isUserValidate, isMFAVerify, userNameToken, userToken, userProfile);  
 
                 return tokenModel;

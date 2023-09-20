@@ -552,6 +552,26 @@ namespace FoxRehabilitationAPI.Controllers
                         }
                     }
                     var result = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+                    UserProfile usrProfile = ClaimsModel.GetUserProfile(User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
+                    var usrParmAuth = new SqlParameter("UserName", SqlDbType.VarChar) { Value = usrProfile.UserName };
+                    var userId = new SqlParameter("@User_ID", SqlDbType.VarChar) { Value = usrProfile.userID };
+                    var UserDetailsAuthToken = SpRepository<MFAAuthToken>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_MFA_AUTH_TOKEN @User_ID", userId).FirstOrDefault();
+                    var token = UserDetailsAuthToken.AuthToken;
+                    if (obj.status == true)
+                    {
+                      
+                        TokenService tokenupdate = new TokenService();
+                        bool isSecondCall = true;
+                        tokenupdate.UpdateToken(usrProfile.UserName, token, isSecondCall);
+                    }
+                    else
+                    {
+                         TokenService tokenupdate = new TokenService();
+                         bool isSecondCall = false;
+                         tokenupdate.UpdateToken(usrProfile.UserName, token, isSecondCall);
+                    }
+                        result = Encrypt.EncryptionForClient(result);
+
                     return Request.CreateResponse(HttpStatusCode.OK, result);
                 }
                 else
