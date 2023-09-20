@@ -104,7 +104,7 @@ namespace FOX.DataModels.Models.ConsentToCare
             [NotMapped]
             public string disciplineName { get; set; }
             [NotMapped]
-            public int ALREADY_SENT_TO_SAME_DISCIPLINE { get; set; }
+            public int alreadySentToSameDiscipline { get; set; }
         }
 
         [Table("FOX_TBL_SURVEY_QUESTION")]
