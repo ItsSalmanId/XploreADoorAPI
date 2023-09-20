@@ -658,9 +658,9 @@ namespace FoxRehabilitationAPI.Controllers
                     }
                     else
                     {
-                        TokenService tokenupdate = new TokenService();
-                        bool isSecondCall = false;
-                        tokenupdate.UpdateToken(usrProfile.UserName, token, isSecondCall);
+                         TokenService tokenupdate = new TokenService();
+                         bool isSecondCall = false;
+                         tokenupdate.UpdateToken(usrProfile.UserName, token, isSecondCall);
                     }
                         result = Encrypt.EncryptionForClient(result);
                     return Request.CreateResponse(HttpStatusCode.OK, result);

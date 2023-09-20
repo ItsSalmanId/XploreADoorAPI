@@ -105,7 +105,7 @@ namespace FOX.BusinessOperations.Security
 
         }
 
-         public ProfileToken UpdateToken(string userName, string token, bool isSecondCall)
+          public ProfileToken UpdateToken(string userName, string token, bool isSecondCall)
         {
             try
             { 
