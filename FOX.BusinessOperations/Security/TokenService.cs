@@ -98,7 +98,8 @@ namespace FOX.BusinessOperations.Security
             var isMFAVerify = new SqlParameter("ISMFAVERIFIED", SqlDbType.BigInt) { Value = isMFAVerified }; 
             var islogout = new SqlParameter("ISLOGOUT", SqlDbType.BigInt) { Value = isLogoutValue };
             var validate = new SqlParameter("ISVALIDATE", SqlDbType.BigInt) { Value = isValidate };
-            var tokenModel = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GENERATE_INSERT_TOKEN @USERNAME, @TOKEN , @USER_PROFILE, @ISMFAVERIFIED, @ISLOGOUT, @ISVALIDATE", userNameToken, userToken, userProfile, isMFAVerify, islogout, validate);  
+
+            var tokenModel =  SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GENERATE_INSERT_TOKEN @USERNAME, @TOKEN , @USER_PROFILE, @ISMFAVERIFIED, @ISLOGOUT, @ISVALIDATE", userNameToken, userToken, userProfile, isMFAVerify, islogout, validate);  
             tokenModel.isLogOut = false;
             return tokenModel;
 
