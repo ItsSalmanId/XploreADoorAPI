@@ -83,8 +83,8 @@ namespace FOX.BusinessOperations.Security
             var userToken = new SqlParameter("TOKEN", SqlDbType.VarChar) { Value = token };
             var userProfile = new SqlParameter("USER_PROFILE", SqlDbType.VarChar) { Value = JsonConvert.SerializeObject(profile).ToString() };
 
-            int isLogoutValue = 0;
-            int isMFAVerified = 0;
+            int isLogoutValue = 0; 
+            int isMFAVerified = 0; 
             int isValidate = 0;
             if (profile.MFA == true && profile.showMfaEanbleScreen == 1)
             {
@@ -95,10 +95,10 @@ namespace FOX.BusinessOperations.Security
             {
                 isValidate = 1;
             }
-            var isMFAVerify = new SqlParameter("ISMFAVERIFIED", SqlDbType.BigInt) { Value = isMFAVerified };
+            var isMFAVerify = new SqlParameter("ISMFAVERIFIED", SqlDbType.BigInt) { Value = isMFAVerified }; 
             var islogout = new SqlParameter("ISLOGOUT", SqlDbType.BigInt) { Value = isLogoutValue };
             var validate = new SqlParameter("ISVALIDATE", SqlDbType.BigInt) { Value = isValidate };
-            var tokenModel = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GENERATE_INSERT_TOKEN @USERNAME, @TOKEN , @USER_PROFILE, @ISMFAVERIFIED, @ISLOGOUT, @ISVALIDATE", userNameToken, userToken, userProfile, isMFAVerify, islogout, validate);
+            var tokenModel = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GENERATE_INSERT_TOKEN @USERNAME, @TOKEN , @USER_PROFILE, @ISMFAVERIFIED, @ISLOGOUT, @ISVALIDATE", userNameToken, userToken, userProfile, isMFAVerify, islogout, validate);  
             tokenModel.isLogOut = false;
             return tokenModel;
 
