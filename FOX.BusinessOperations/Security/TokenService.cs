@@ -107,11 +107,11 @@ namespace FOX.BusinessOperations.Security
         public ProfileToken UpdateToken(string userName, string token, bool isSecondCall)
         {
             try
-            {
+            { 
                 var usrParmAuth = new SqlParameter("UserName", SqlDbType.VarChar) { Value = userName };
                 var UserDetailsAuth = SpRepository<UserProfile>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_USER_PROFILING_DATA @UserName", usrParmAuth).FirstOrDefault();
                 UserDetailsAuth.Token = token;
-                int islogoutValue = 1;
+                int islogoutValue = 1; 
                 int isMFAVerified = 0;
                 int isValidate = 0;
                 var islogout = new SqlParameter("ISLOGOUT", SqlDbType.BigInt) { Value = islogoutValue };
