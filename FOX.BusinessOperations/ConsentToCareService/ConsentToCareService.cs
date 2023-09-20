@@ -330,7 +330,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                         });
                         emailThread.Start();
                     }
-                    var sendSms = TelenorAPI(number, smsBody);
+                    if (!string.IsNullOrEmpty(number))
                     {
                         Thread smsThread = new Thread(() =>
                         {
