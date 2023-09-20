@@ -30,9 +30,6 @@ using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 using FOX.DataModels.Models.IndexInfo;
 using SelectPdf;
 using FOX.DataModels.Models.GroupsModel;
-using System.Net;
-using System.Xml;
-using System.Threading.Tasks;
 
 namespace FOX.BusinessOperations.ConsentToCareService
 {
@@ -1295,34 +1292,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
             var practiceCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
             insuranceDetailsList = SpRepository<InsuranceDetails>.GetListWithStoreProcedure(@"EXEC FOX_PROC_GET_INSURANCE_DETAILS_FOR_CONSENT_TO_CARE @PATINET_ACCOUNT, @CASE_ID", patientAccount, caseID);
             return insuranceDetailsList;
-        }
-        public static Task<bool> TelenorAPI(string phoneNumber, string message)
-        {
-            phoneNumber = string.Concat("0", phoneNumber);
-            HttpWebRequest request = CreateWebRequest();
-            XmlDocument soapEnvelopeXml = new XmlDocument();
-            soapEnvelopeXml.LoadXml(@"<?xml version=""1.0"" encoding=""utf-8""?><soap:Envelope xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:soap=""http://schemas.xmlsoap.org/soap/envelope/""><soap:Body><SendTelenorSMS xmlns=""http://tempuri.org/""><RecipentName>Fox</RecipentName><PhoneNumbers>" + phoneNumber + @"</PhoneNumbers><SMS_Text>" + message + @"</SMS_Text><TeamName>Fox</TeamName></SendTelenorSMS></soap:Body></soap:Envelope>"); using (Stream stream = request.GetRequestStream())
-            {
-                soapEnvelopeXml.Save(stream);
-            }
-            using (WebResponse response = request.GetResponse())
-            {
-                using (StreamReader rd = new StreamReader(response.GetResponseStream()))
-                {
-                    string soapResult = rd.ReadToEnd();
-                    Console.WriteLine(soapResult);
-                }
-            }
-            return Task.FromResult(true);
-        }
-        public static HttpWebRequest CreateWebRequest()
-        {
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("http://172.16.0.71/TelenorAPI/TelenorSMS.asmx?op=SendTelenorSMS");
-            webRequest.Headers.Add(@"SOAP:Action");
-            webRequest.ContentType = "text/xml;charset=\"utf-8\"";
-            webRequest.Accept = "text/xml";
-            webRequest.Method = "POST";
-            return webRequest;
         }
         #endregion
     }
