@@ -103,6 +103,8 @@ namespace FOX.DataModels.Models.ConsentToCare
             public string lastConsentReceiverName { get; set; }
             [NotMapped]
             public string disciplineName { get; set; }
+            [NotMapped]
+            public int ALREADY_SENT_TO_SAME_DISCIPLINE { get; set; }
         }
 
         [Table("FOX_TBL_SURVEY_QUESTION")]
@@ -146,6 +148,8 @@ namespace FOX.DataModels.Models.ConsentToCare
         public class ConsentToCareResponse
         {
             public FoxTblConsentToCare consentToCareObj { get; set; }
+            public InsuranceDetails InsuranceDetailsObj { get; set; }
+            public List<InsuranceDetails> InsuranceDetailsListObj { get; set; }
             public bool Success { get; set; }
             public string Message { get; set; }
         }
@@ -173,7 +177,10 @@ namespace FOX.DataModels.Models.ConsentToCare
             public string AUTH_NUMBER { get; set; }
             public string Pri_Sec_Oth_Type { get; set; }
             public string BENEFIT_COMMENTS { get; set; }
-
+            public long? MOP_AMT { get; set; }
+            public long? MYB_LIMIT_VISI { get; set; }
+            public long? MYB_LIMIT_DOLLARS { get; set; }
+            public long? MOP_AMT_REMAINING { get; set; }
         }
         public class PatientContactDetails
         {
