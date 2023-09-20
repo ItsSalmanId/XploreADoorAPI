@@ -23,11 +23,11 @@ namespace FoxRehabilitationAPI.Filters
     {
         public override void OnAuthorization(HttpActionContext actionContext)
         {
-            if (actionContext.Request.Headers.Authorization != null) 
-            {              
+            if (actionContext.Request.Headers.Authorization != null)
+            {
                 var accessedTokenFromRequst = actionContext?.Request?.Headers?.Authorization?.Parameter;
                 if (accessedTokenFromRequst != null && accessedTokenFromRequst != "undefined" && accessedTokenFromRequst != "null")
-                {                 
+                {
                     UserProfile profile = new UserProfile();
                     if (HttpContext.Current.User != null && HttpContext.Current.User.Identity != null)
                     {
@@ -52,16 +52,16 @@ namespace FoxRehabilitationAPI.Filters
                     }
                     else if (ExpiredToken.isMFAVerified == 0 && profile.MFA == true && profile.showMfaEanbleScreen == 1 && actionContext.Request.RequestUri.OriginalString.Contains("UpdateOtpEnableDate"))
                     {
-                         TokenService tokenUpdate = new TokenService();
-                         bool isSecondCall = true;
-                         tokenUpdate.UpdateToken(profile.UserName, ExpiredToken.AuthToken, isSecondCall);
+                        TokenService tokenUpdate = new TokenService();
+                        bool isSecondCall = true;
+                        tokenUpdate.UpdateToken(profile.UserName, ExpiredToken.AuthToken, isSecondCall);
 
                     }
                     else if (ExpiredToken.isMFAVerified == 0 && profile.MFA == true && profile.showMfaEanbleScreen == 1 && actionContext.Request.RequestUri.OriginalString.Contains("VerifyOTP"))
                     {
-                         TokenService tokenUpdate = new TokenService();
-                         bool isSecondCall = true;
-                         tokenUpdate.UpdateToken(profile.UserName, ExpiredToken.AuthToken, isSecondCall);
+                        TokenService tokenUpdate = new TokenService();
+                        bool isSecondCall = true;
+                        tokenUpdate.UpdateToken(profile.UserName, ExpiredToken.AuthToken, isSecondCall);
                     }
 
                     else if (ExpiredToken.isMFAVerified == 0 && profile.MFA == true && profile.showMfaEanbleScreen == 1 && actionContext.Request.RequestUri.OriginalString.Contains("Singout"))
@@ -82,21 +82,21 @@ namespace FoxRehabilitationAPI.Filters
                         base.OnAuthorization(actionContext);
                     }
                     else if (ExpiredToken.isLogOut == true)
-                    {                  
-                     if (actionContext.Request.RequestUri.OriginalString.Contains("Singout"))
                     {
-                        base.HandleUnauthorizedRequest(actionContext);
-                    }
+                        if (actionContext.Request.RequestUri.OriginalString.Contains("Singout"))
+                        {
+                            base.HandleUnauthorizedRequest(actionContext);
+                        }
 
-                     if (profile?.UserName == "6455testing" || profile?.UserName == "1163TESTING")
-                     {
+                        if (profile?.UserName == "6455testing" || profile?.UserName == "1163TESTING")
+                        {
                             Helper.TokenTaskCancellationExceptionLog("ExpiredToken null for User: " + profile?.UserName, profile?.isTalkRehab == true ? "CCR" : "Fox");
                         }
                         if (ExpiredToken.isLogOut == true)
                         {
                             base.HandleUnauthorizedRequest(actionContext);
                         }
-                     }
+                    }
                     else if (Convert.ToInt64(ExpiredToken.UserId) != profile?.userID)
                     {
                         if (profile?.UserName == "6455testing" || profile?.UserName == "1163TESTING")
