@@ -22,7 +22,7 @@ namespace FOX.BusinessOperations.Security
         /// </summary>
         /// <param name="tokenId"></param>
         /// <returns></returns>
-         ProfileToken UpdateToken(string userName, string token, bool isSecondCall);
+        ProfileToken UpdateToken(string userName, string token, bool isSecondCall);
         /// <summary>
         /// Function to validate token againt expiry and existance in database.
         /// </summary>

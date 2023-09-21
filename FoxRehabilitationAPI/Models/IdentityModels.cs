@@ -9,6 +9,10 @@ using FOX.DataModels.Models.Security;
 using FOX.DataModels.Models.Settings.RoleAndRights;
 using System.Collections.Generic;
 using FOX.BusinessOperations.CommonService;
+using System.Data.SqlTypes;
+using Newtonsoft.Json;
+using Microsoft.Ajax.Utilities;
+using FOX.DataModels.Models.IndexInfo;
 
 namespace FoxRehabilitationAPI.Models
 {
@@ -181,16 +185,28 @@ namespace FoxRehabilitationAPI.Models
             var profileString = identity.Claims.Where(c => c.Type == "UserProfile").Select(s => s.Value).FirstOrDefault();
             if (profileString != null)
                 return Newtonsoft.Json.JsonConvert.DeserializeObject<UserProfile>(profileString);
+
             else
                 return null;
+
         }
 
     }
 
     public class OtpModel
     {
-        public bool status { get;set; }
+        public bool status { get; set; }
         public string message { get; set; }
         public string data { get; set; }
+        public bool OtpCaptcha { get; set; }
+        public string ErrorMessage { get; set; }
+        public long loginCount { get; set; }
+        public string NewToken { get; set; }
+        public System.DateTime IssuedOn { get; set; }
+        public System.DateTime ExpiresOn { get; set; }
+        public string Profile { get; set; }
+        public bool? isLogOut { get; set; }
+        public string otpkey { get; set; }
+
     }
 }
