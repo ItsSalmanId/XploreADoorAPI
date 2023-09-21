@@ -85,18 +85,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 string subject = string.Empty;
                 if (consentToCareObj.disciplineName != null)
                 {
-                    if (consentToCareObj.disciplineName == "Physical Therapy")
-                    {
-                        subject = "FOX Rehabilitation - Your Physical Therapy Services PLEASE READ!";
-                    }
-                    else if (consentToCareObj.disciplineName == "Occupational Therapy")
-                    {
-                        subject = "FOX Rehabilitation - Your Occupational Therapy Services PLEASE READ!";
-                    }
-                    else if (consentToCareObj.disciplineName == "Speech Therapy")
-                    {
-                        subject = "FOX Rehabilitation - Your Speech Therapy Services PLEASE READ!";
-                    }
+                    subject = "FOX Rehabilitation - Your "+ consentToCareObj.disciplineName + " Services PLEASE READ!"; 
                 }
                 consentToCareObj.PATIENT_ACCOUNT = long.Parse(consentToCareObj.PATIENT_ACCOUNT_Str == null ? "0" : consentToCareObj.PATIENT_ACCOUNT_Str);
                 if (consentToCareObj.SEND_TO == "Patient")
@@ -792,17 +781,30 @@ namespace FOX.BusinessOperations.ConsentToCareService
         public ConsentToCareList GetConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile)
         {
             ConsentToCareList response = new ConsentToCareList();
+            string statusName = string.Empty;
             var patinetAccount = new SqlParameter("@PATINET_ACCOUNT", SqlDbType.BigInt) { Value = long.Parse(consentToCareObj.PATIENT_ACCOUNT_Str) };
             var selectedCaseId = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CASE_ID };
             var pracCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
+            var patinetAccountForCheckSignedConcent = new SqlParameter("@PATINET_ACCOUNT", SqlDbType.BigInt) { Value = long.Parse(consentToCareObj.PATIENT_ACCOUNT_Str) };
+            var selectedCaseIdForCheckSignedConcent = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CASE_ID };
+            var pracCodeForCheckSignedConcent = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
             var alreadySentToSameDiscipline = SpRepository<FoxTblConsentToCare>.GetListWithStoreProcedure(@"EXEC FOX_PROC_CHECK_IF_CCARE_ALREADY_SENT_TO_SAME_DISCIPLINE @PATINET_ACCOUNT, @CASE_ID, @PRACTICE_CODE", patinetAccount, selectedCaseId, pracCode);
+            var signedReviceToSameDiscipline = SpRepository<FoxTblConsentToCare>.GetListWithStoreProcedure(@"EXEC FOX_PROC_CHECK_IF_CCARE_ALREADY_SIGNED_SENT_TO_SAME_DISCIPLINE @PATINET_ACCOUNT, @CASE_ID, @PRACTICE_CODE", patinetAccountForCheckSignedConcent, selectedCaseIdForCheckSignedConcent, pracCodeForCheckSignedConcent);
             if (consentToCareObj != null)
             {
                 var caseId = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CASE_ID };
                 var practiceCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
                 response.ConsentToCareDbList = SpRepository<FoxTblConsentToCare>.GetListWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CASE_ID @CASE_ID, @PRACTICE_CODE", caseId, practiceCode);
             }
-            if(alreadySentToSameDiscipline[0].alreadySentToSameDiscipline == 1 && response.ConsentToCareDbList.Count == 0)
+            if (signedReviceToSameDiscipline.Count != 0)
+            {
+                statusName = signedReviceToSameDiscipline[0].STATUS_NAME;
+            }
+            else
+            {
+                statusName = "";
+            }
+            if(alreadySentToSameDiscipline[0].alreadySentToSameDiscipline == 1 && response.ConsentToCareDbList.Count == 0 && statusName != "Signed")
             {
                 response.ConsentToCareDbList = alreadySentToSameDiscipline;
             }
