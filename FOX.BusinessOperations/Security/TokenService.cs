@@ -128,7 +128,7 @@ namespace FOX.BusinessOperations.Security
                 var userNameToken = new SqlParameter("@USERNAME", SqlDbType.BigInt) { Value = UserDetailsAuth.userID };
                 var userToken = new SqlParameter("@TOKEN", SqlDbType.VarChar) { Value = token };
                 var userProfile = new SqlParameter("@USER_PROFILE", SqlDbType.VarChar) { Value = JsonConvert.SerializeObject(UserDetailsAuth).ToString() };
-                var tokenModel = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_UPDATE_TOKEN_aftab @ISLOGOUT, @ISVALIDATE, @ISMFAVERIFIED, @USERNAME, @TOKEN , @USER_PROFILE", islogout, isUserValidate, isMFAVerify, userNameToken, userToken, userProfile);
+                var tokenModel = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_UPDATE_TOKEN_aftab @ISLOGOUT, @ISVALIDATE, @ISMFAVERIFIED, @USERNAME, @TOKEN , @USER_PROFILE", isLogout, isUserValidate, isMFAVerify, userNameToken, userToken, userProfile);
 
                 return tokenModel;
             }
