@@ -112,16 +112,16 @@ namespace FOX.BusinessOperations.Security
                 var usrParmAuth = new SqlParameter("UserName", SqlDbType.VarChar) { Value = userName };
                 var UserDetailsAuth = SpRepository<UserProfile>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_USER_PROFILING_DATA @UserName", usrParmAuth).FirstOrDefault();
                 UserDetailsAuth.Token = token;
-                int islogoutValue = 1;
+                int isLogoutValue = 1;
                 int isMFAVerified = 0;
                 int isValidate = 0;
-                var islogout = new SqlParameter("ISLOGOUT", SqlDbType.BigInt) { Value = islogoutValue };
+                var isLogout = new SqlParameter("ISLOGOUT", SqlDbType.BigInt) { Value = isLogoutValue }; 
                 if (isSecondCall == true)
                 {
-                    islogoutValue = 1;
+                    isLogoutValue = 1;
                     isMFAVerified = 1;
                     isValidate = 1;
-                    islogout = new SqlParameter("ISLOGOUT", SqlDbType.BigInt) { Value = islogoutValue };
+                    isLogout = new SqlParameter("ISLOGOUT", SqlDbType.BigInt) { Value = isLogoutValue }; 
                 }
                 var isUserValidate = new SqlParameter("@ISVALIDATE", SqlDbType.BigInt) { Value = isValidate };
                 var isMFAVerify = new SqlParameter("@ISMFAVERIFIED", SqlDbType.BigInt) { Value = isMFAVerified };
