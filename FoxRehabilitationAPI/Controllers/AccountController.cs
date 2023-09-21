@@ -61,7 +61,7 @@ namespace FoxRehabilitationAPI.Controllers
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
         private ApplicationRoleManager _roleManager;
-        static long retrycatch = 0;
+        static long retryCatch = 0;
         public AccountController()
         {
             _UserRepository = new GenericRepository<User>(security);
@@ -74,7 +74,7 @@ namespace FoxRehabilitationAPI.Controllers
 
         public AccountController(ApplicationUserManager userManager, ApplicationRoleManager roleManager, ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
         {
-            retrycatch = 0;
+            retryCatch = 0;
             _userManager = userManager;
             _roleManager = roleManager;
             AccessTokenFormat = accessTokenFormat;
