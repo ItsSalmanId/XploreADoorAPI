@@ -39,6 +39,11 @@ using FOX.DataModels.GenericRepository;
 using FOX.DataModels.Models.GoogleRecaptcha;
 using Newtonsoft.Json;
 using System.Configuration;
+using System.Web.Helpers;
+using static FOX.DataModels.Models.Security.ProfileToken;
+using FOX.DataModels.Models.IndexInfo;
+using System.Web.Http.Controllers;
+using Microsoft.Ajax.Utilities;
 
 namespace FoxRehabilitationAPI.Controllers
 {
@@ -56,6 +61,7 @@ namespace FoxRehabilitationAPI.Controllers
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
         private ApplicationRoleManager _roleManager;
+        static long retryCatch = 0;
         public AccountController()
         {
             _UserRepository = new GenericRepository<User>(security);
@@ -68,6 +74,7 @@ namespace FoxRehabilitationAPI.Controllers
 
         public AccountController(ApplicationUserManager userManager, ApplicationRoleManager roleManager, ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
         {
+            retryCatch = 0;
             _userManager = userManager;
             _roleManager = roleManager;
             AccessTokenFormat = accessTokenFormat;
@@ -100,9 +107,9 @@ namespace FoxRehabilitationAPI.Controllers
         public UserInfoViewModel GetUserInfo()
         {
             ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
-
             return new UserInfoViewModel
             {
+
                 Email = User.Identity.GetUserName(),
                 HasRegistered = externalLogin == null,
                 LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
@@ -488,13 +495,32 @@ namespace FoxRehabilitationAPI.Controllers
         [Route("GetOtp")]
         public HttpResponseMessage GetOtp(string email)
         {
+            email = Encrypt.DecrypStringEncryptedInClient(email);
+            ApplicationUserManager userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+            UserProfile userprofile = ClaimsModel.GetUserProfile(User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
+            var invalidMFAAttempts = userManager.GetInvalidMFAAttempts(email);
+            if (invalidMFAAttempts.SENT_OTP_COUNT >= 5)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Multiple Attempts Not Allowed.");
+            }
             if (String.IsNullOrEmpty(email))
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Request with invalid parameters.");
             }
             else
             {
-                var getOtpCode = GetOtpCode(email);
+
+                //email = Encrypt.DecrypStringEncryptedInClient(email);
+                //userauthoirization = Encrypt.DecrypStringEncryptedInClient(userauthoirization);
+                UserProfile userProfile = ClaimsModel.GetUserProfile(User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
+                string verifyEmail = userProfile.EMAIL;
+                DateTime utctime = DateTime.UtcNow;
+                SqlParameter userEmail = new SqlParameter("@USER_NAME", email);
+                SqlParameter date_time_utc = new SqlParameter("@LAST_ATTEMPTUTC_DATETIME", utctime);
+                Mfa_Login_Attempts mfaLoginAttempts = SpRepository<Mfa_Login_Attempts>.GetSingleObjectWithStoreProcedure(@"Exec FOX_PROC_SET_MFA_OTP_ATTEMPTS @USER_NAME, @LAST_ATTEMPTUTC_DATETIME", userEmail, date_time_utc);
+                //var otpAttempts = userManager.AddOTPMFAAttempts(email);
+                var getOtpCode = GetOtpCode(email, verifyEmail);
+
                 if (!string.IsNullOrEmpty(getOtpCode))
                 {
                     return Request.CreateResponse(HttpStatusCode.OK, getOtpCode);
@@ -509,8 +535,10 @@ namespace FoxRehabilitationAPI.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("VerifyOTP")]
-        public HttpResponseMessage VerifyOTP(string otp, string otpIdentifier)
+        public async Task<HttpResponseMessage> VerifyOTP(string otp, string otpIdentifier, string eResponse, string utcDateTime, OAuthGrantResourceOwnerCredentialsContext context)
         {
+            var LAST_ATTEMPTUTC_DATETIME = Convert.ToDateTime(utcDateTime);
+            int randomValue = new Random().Next();
             if (String.IsNullOrEmpty(otp) || String.IsNullOrEmpty(otpIdentifier))
             {
                 if (String.IsNullOrEmpty(otp) && String.IsNullOrEmpty(otpIdentifier))
@@ -528,26 +556,93 @@ namespace FoxRehabilitationAPI.Controllers
             }
             else
             {
-                var verifyOtpCode = VerifyOtpCode(otp, otpIdentifier);
+                var verifyOtpCode = await VerifyOtpCode(otp, otpIdentifier, eResponse, LAST_ATTEMPTUTC_DATETIME.ToString());
                 if (verifyOtpCode != null)
                 {
                     OtpModel obj = JsonConvert.DeserializeObject<OtpModel>(verifyOtpCode);
+
                     if (obj != null)
                     {
+                        obj.data = randomValue.ToString();
+                        UserProfile userprofile = ClaimsModel.GetUserProfile(User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
+                        ApplicationUserManager userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+                        //var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
+                        var invalidMFAAttempts = userManager.GetInvalidMFAAttempts(userprofile.UserName);
+                        if (invalidMFAAttempts != null && invalidMFAAttempts.FAIL_ATTEMPT_COUNT >= 5)
+                        {
+                            obj.loginCount = Convert.ToInt32(invalidMFAAttempts.FAIL_ATTEMPT_COUNT);
+                            if (invalidMFAAttempts.FAIL_ATTEMPT_COUNT >= 5)
+                            {
+                                obj.ErrorMessage = "Your Account Will be Blocked for 1 Hours if more invalid attempts performed.";
+                                obj.message = "Your Account Will be Blocked for 1 Hours if more invalid attempts performed.";
+                                obj.loginCount = Convert.ToInt32(invalidMFAAttempts.FAIL_ATTEMPT_COUNT);
+                                obj.otpkey = otpIdentifier;
+                                SqlParameter email = new SqlParameter("@Email", userprofile.EMAIL);
+                                SqlParameter last_attempt_time_utc = new SqlParameter("@LAST_ATTEMPTUTC_DATETIME", LAST_ATTEMPTUTC_DATETIME.ToString());
+                                var mfa_Login_Attempts = SpRepository<Mfa_Login_Attempts>.GetSingleObjectWithStoreProcedure(@"Exec FOX_PROC_SET_MFA_INVALID_LOGIN_ATTEMPTS @Email, @LAST_ATTEMPTUTC_DATETIME", email, last_attempt_time_utc);
+                                var response = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+                                response = Encrypt.EncryptionForClient(response);
+                                return Request.CreateResponse(HttpStatusCode.OK, response);
+
+                            }
+                        }
+                        if (String.IsNullOrEmpty(eResponse) || eResponse != "undefined")
+                        {
+
+                            GoogleRecaptchaResponse captcharesponse = await ValidateCaptcha(eResponse);
+                            if (!captcharesponse.Success)
+                            {
+                                obj.OtpCaptcha = false;
+                                obj.ErrorMessage = "Please send a valid request.";
+                                obj.message = "OTP verification failed. Session Expired";
+                                obj.loginCount = Convert.ToInt32(invalidMFAAttempts.FAIL_ATTEMPT_COUNT);
+                                var response = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+                                response = Encrypt.EncryptionForClient(response);
+                                return Request.CreateResponse(HttpStatusCode.OK, response);
+
+                            }
+                        }
                         if (obj.status == true)
                         {
+                            obj.OtpCaptcha = true;
+                            obj.otpkey = otpIdentifier;
+                            obj.loginCount = Convert.ToInt32(invalidMFAAttempts.FAIL_ATTEMPT_COUNT);
+                            verifyOtpCode = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
                             UserProfile profile = ClaimsModel.GetUserProfile(User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
+                            SqlParameter userName = new SqlParameter("@USER_NAME", profile.UserName);
+                            Mfa_Login_Attempts mfa_Login_Attempts = SpRepository<Mfa_Login_Attempts>.GetSingleObjectWithStoreProcedure(@"Exec FOX_PROC_RESET_COUNT_FOR_MFA_USER @USER_NAME", userName);
                             ResponseModel resp = _userManagementService.UpdateOtpEnableDate(profile.userID);
                             if (resp != null)
                             {
+                                
+                                verifyOtpCode = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+                                verifyOtpCode = Encrypt.EncryptionForClient(verifyOtpCode);
                                 return Request.CreateResponse(HttpStatusCode.OK, verifyOtpCode);
                             }
+
                         }
                         else
                         {
+                            UserProfile profile = ClaimsModel.GetUserProfile(User.Identity as System.Security.Claims.ClaimsIdentity) ?? new UserProfile();
+                            try
+                            {
+                                SqlParameter email = new SqlParameter("@USER_NAME", profile.EMAIL);
+                                SqlParameter last_attempt_time_utc = new SqlParameter("@LAST_ATTEMPTUTC_DATETIME", LAST_ATTEMPTUTC_DATETIME.ToString());
+                                var mfa_Login_Attempts = SpRepository<Mfa_Login_Attempts>.GetSingleObjectWithStoreProcedure(@"Exec FOX_PROC_SET_MFA_INVALID_LOGIN_ATTEMPTS @USER_NAME, @LAST_ATTEMPTUTC_DATETIME", email, last_attempt_time_utc);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw ex;
+                            }
+                            // SqlParameter email = new SqlParameter("@Email", profile.EMAIL);
+                            //var mfa_Login_Attempts = SpRepository<Mfa_Login_Attempts>.GetSingleObjectWithStoreProcedure(@"Exec FOX_PROC_SET_MFA_INVALID_LOGIN_ATTEMPTS @Email", email);
                             if (obj.message.Contains("failed"))
                             {
                                 obj.message = "OTP verification failed.";
+                                obj.ErrorMessage = "OTP verification failed.";
+                                obj.OtpCaptcha = true;
+                                obj.loginCount = Convert.ToInt32(invalidMFAAttempts.FAIL_ATTEMPT_COUNT);
+                                obj.otpkey = randomValue.ToString();
                             }
                         }
                     }
@@ -559,19 +654,18 @@ namespace FoxRehabilitationAPI.Controllers
                     var token = UserDetailsAuthToken.AuthToken;
                     if (obj.status == true)
                     {
-                      
+
                         TokenService tokenupdate = new TokenService();
                         bool isSecondCall = true;
                         tokenupdate.UpdateToken(usrProfile.UserName, token, isSecondCall);
                     }
                     else
                     {
-                         TokenService tokenupdate = new TokenService();
-                         bool isSecondCall = false;
-                         tokenupdate.UpdateToken(usrProfile.UserName, token, isSecondCall);
+                        TokenService tokenupdate = new TokenService();
+                        bool isSecondCall = false;
+                        tokenupdate.UpdateToken(usrProfile.UserName, token, isSecondCall);
                     }
-                        result = Encrypt.EncryptionForClient(result);
-
+                    result = Encrypt.EncryptionForClient(result);
                     return Request.CreateResponse(HttpStatusCode.OK, result);
                 }
                 else
@@ -580,7 +674,6 @@ namespace FoxRehabilitationAPI.Controllers
                 }
             }
         }
-
 
         [HttpGet]
         [AllowAnonymous]
@@ -1099,27 +1192,37 @@ namespace FoxRehabilitationAPI.Controllers
             }
 
         }
+
         // Description: This function is used to get otp code 
-        private static string GetOtpCode(string email)
+        private static string GetOtpCode(string email, string verifyEmail)
         {
-            var getOtpUrl = ConfigurationManager.AppSettings["GetOtpURL"];
-            var body = @"{" + "\n" +
-                        @"  ""applicationName"": ""Fox""," + "\n" +
-                        @"  ""userName"": """ + email + "\",\n" +
-                        @"  ""deviceInfo"": ""12345""," + "\n" +
-                        @"  ""appDisplayName"": ""FOX Portal""" + "\n" +
-                        @"}";
-            string convertedBody = body.ToString();
-            HttpClient client = new HttpClient();
-            var response = client.PostAsync(
-                    getOtpUrl,
-                     new StringContent(convertedBody, Encoding.UTF8, "application/json")).GetAwaiter().GetResult();
-            var result = response.Content.ReadAsStringAsync().Result;
-            return result;
+            if (email == verifyEmail)
+            {
+                var getOtpUrl = ConfigurationManager.AppSettings["GetOtpURL"];
+                var body = @"{" + "\n" +
+                            @"  ""applicationName"": ""Fox""," + "\n" +
+                            @"  ""userName"": """ + email + "\",\n" +
+                            @"  ""deviceInfo"": ""12345""," + "\n" +
+                            @"  ""appDisplayName"": ""FOX Portal""" + "\n" +
+                            @"}";
+                string convertedBody = body.ToString();
+                HttpClient client = new HttpClient();
+                var response = client.PostAsync(
+                        getOtpUrl,
+                         new StringContent(convertedBody, Encoding.UTF8, "application/json")).GetAwaiter().GetResult();
+                var result = response.Content.ReadAsStringAsync().Result;
+                return result;
+            }
+            else
+            {
+                return null;
+            }
         }
+
         // Description: This function is used to verfify otp code 
-        private static string VerifyOtpCode(string otp, string otpIdentifier)
+        private async Task<string> VerifyOtpCode(string otp, string otpIdentifier, string eResponse, string utcDateTime)
         {
+
             var verifyOtpUrl = ConfigurationManager.AppSettings["VerifyOtpURL"];
             var body = @"{" + "\n" +
                         @"  ""deviceInfo"": ""12345""," + "\n" +
