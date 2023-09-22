@@ -799,6 +799,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             if (signedReviceToSameDiscipline.Count != 0)
             {
                 statusName = signedReviceToSameDiscipline[0].STATUS_NAME;
+                alreadySentToSameDiscipline[0].CASE_NO = signedReviceToSameDiscipline[0].CASE_NO;
             }
             else
             {
@@ -851,6 +852,9 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 HtmlDocument htmlDoc = new HtmlDocument();
                 htmlDoc.LoadHtml(updatedHtml);
                 htmlDoc.GetElementbyId("consent-to-care-foxrehab-url")?.Remove();
+                updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+                htmlDoc.LoadHtml(updatedHtml);
+                htmlDoc.GetElementbyId("consent-to-care-checkbox")?.Remove();
                 updatedHtml = htmlDoc.DocumentNode.OuterHtml;
                 htmlDoc.LoadHtml(updatedHtml);
                 htmlDoc.GetElementbyId("consent-to-care-sign-form")?.Remove();
@@ -1137,6 +1141,9 @@ namespace FOX.BusinessOperations.ConsentToCareService
             HtmlDocument htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(updatedHtml);
             htmlDoc.GetElementbyId("consent-to-care-foxrehab-url")?.Remove();
+            updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+            htmlDoc.LoadHtml(updatedHtml);
+            htmlDoc.GetElementbyId("consent-to-care-checkbox")?.Remove();
             updatedHtml = htmlDoc.DocumentNode.OuterHtml;
             htmlDoc.LoadHtml(updatedHtml);
             htmlDoc.GetElementbyId("consent-to-care-sign-form")?.Remove();
