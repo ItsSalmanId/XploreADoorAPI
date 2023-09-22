@@ -1749,9 +1749,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         {
             try
             {
-                //var _user = _UserRepository.Get(t => t.EMAIL.Equals(data.Email));
-                var Email = new SqlParameter("USERNAME", SqlDbType.VarChar) { Value = data.Email };
-                var _user = SpRepository<User>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_USER @USERNAME", Email);
+                var _user = _UserRepository.Get(t => t.EMAIL.Equals(data.Email));
                 DateTime tempDateTime = new DateTime(long.Parse(data.Ticks));
                 tempDateTime = tempDateTime.AddHours(1);
 
