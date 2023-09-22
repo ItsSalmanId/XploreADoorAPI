@@ -31,10 +31,6 @@ using System.Text;
 using System.Configuration;
 using FOX.DataModels.Models.Settings.ClinicianSetup;
 using FOX.DataModels.Models.SenderType;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using System.Net;
-using FOX.DataModels.Models.FoxPHD;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 
 namespace FOX.BusinessOperations.SettingsService.UserMangementService
 {
@@ -538,7 +534,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     /* user.Is_Electronic_POC = */
                     SqlDataAdapter result = SpRepository<object>.getSpSqlDataAdapter("select Is_Electronic_POC from FOX_TBL_APP_USER_ADDITIONAL_INFO where deleted=0 and FOX_TBL_APPLICATION_USER_Id=" + user.USER_ID);
 
-                    System.Data.DataTable dt = new System.Data.DataTable();
+                    DataTable dt = new DataTable();
                     result.Fill(dt);
                     if (dt.Rows.Count > 0)
                     {
