@@ -755,8 +755,6 @@ namespace FoxRehabilitationAPI.Controllers
         {
             UserProfile obj = GetProfile();
             //var _user = _UserRepository.Get(t => t.EMAIL.Equals(data.Email));
-            var Email = new SqlParameter("USERNAME", SqlDbType.VarChar) { Value = data.Email };
-            var _user = SpRepository<User>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_USER @USERNAME", Email);
             this.ValidatePasswordResetKey(new ValidatePasswordResetKeyModel() { key = data.Key }, ref data);
             string _body = string.Empty;
             string _subject = "Reset Password Confirmation for your FOX Portal";
