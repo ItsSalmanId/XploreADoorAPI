@@ -723,7 +723,7 @@ namespace FoxRehabilitationAPI.Controllers
                         }
 
                         FOX.BusinessOperations.CommonServices.EncryptionDecryption encrypt = new FOX.BusinessOperations.CommonServices.EncryptionDecryption();
-                        obj.EncryptEmailWithTicks = encrypt.EncryptString(obj.EncryptEmailWithTicks.ToString());
+                        obj.EncryptEmailWithTicks = Encrypt.EncryptionForClient(obj.EncryptEmailWithTicks.ToString());
                         //obj.EncryptEmailWithTicks = StringCipher.Encrypt(Email + "^" + DateTime.Now.Ticks.ToString());
                         _userManagementService.SavePasswordResetTicks(ticks, Email);
                         obj.IsValidate = true;
@@ -754,12 +754,9 @@ namespace FoxRehabilitationAPI.Controllers
         public HttpResponseMessage UpdatePassword(ResetPasswordViewModel data)
         {
             UserProfile obj = GetProfile();
-            var _user = _UserRepository.Get(t => t.EMAIL.Equals(data.Email));
-            if (_user.USER_NAME != obj.UserName && obj.IsAdmin != true && obj.RoleId != 103)
-            {
-                var errorResponse = Request.CreateResponse(HttpStatusCode.BadRequest, "Error");
-                return errorResponse;
-            }
+            //var _user = _UserRepository.Get(t => t.EMAIL.Equals(data.Email));
+            var Email = new SqlParameter("USERNAME", SqlDbType.VarChar) { Value = data.Email };
+            var _user = SpRepository<User>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_USER @USERNAME", Email);
             this.ValidatePasswordResetKey(new ValidatePasswordResetKeyModel() { key = data.Key }, ref data);
             string _body = string.Empty;
             string _subject = "Reset Password Confirmation for your FOX Portal";
@@ -795,7 +792,7 @@ namespace FoxRehabilitationAPI.Controllers
         {
             //string decoded = HttpUtility.UrlDecode(key.key);
             FOX.BusinessOperations.CommonServices.EncryptionDecryption decrypt = new FOX.BusinessOperations.CommonServices.EncryptionDecryption();
-            string decryptedVal = decrypt.DecryptString(key.key);
+            string decryptedVal = Encrypt.DecrypStringEncryptedInClient(key.key);
             string[] splitArry = decryptedVal.Split('^');
             string email = splitArry.Length > 0 ? splitArry[0] : "";
             string ticks = splitArry.Length > 1 ? splitArry[1] : "";

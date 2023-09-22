@@ -791,7 +791,15 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         }
 
         public int UpdatePassword(PasswordChangeRequest request, UserProfile profile)
-        {
+        {  
+
+            //var _userDetails = _UserRepository.Get(t => t.EMAIL.Equals(profile.EMAIL));
+            var Email = new SqlParameter("USERNAME", SqlDbType.VarChar) { Value = profile.EMAIL };
+            var _userDetails = SpRepository<User>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_USER @USERNAME", Email);
+            if (_userDetails.ROLE_ID != 103)
+            {
+                return 0;
+            }
             var _user = _UserRepository.GetByID(request.User_id);
             if (_user != null)
             {
@@ -1741,7 +1749,9 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         {
             try
             {
-                var _user = _UserRepository.Get(t => t.EMAIL.Equals(data.Email));
+                //var _user = _UserRepository.Get(t => t.EMAIL.Equals(data.Email));
+                var Email = new SqlParameter("USERNAME", SqlDbType.VarChar) { Value = data.Email };
+                var _user = SpRepository<User>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_USER @USERNAME", Email);
                 DateTime tempDateTime = new DateTime(long.Parse(data.Ticks));
                 tempDateTime = tempDateTime.AddHours(1);
 
