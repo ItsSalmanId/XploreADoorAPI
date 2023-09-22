@@ -31,6 +31,10 @@ using System.Text;
 using System.Configuration;
 using FOX.DataModels.Models.Settings.ClinicianSetup;
 using FOX.DataModels.Models.SenderType;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using System.Net;
+using FOX.DataModels.Models.FoxPHD;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 
 namespace FOX.BusinessOperations.SettingsService.UserMangementService
 {
@@ -534,7 +538,7 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                     /* user.Is_Electronic_POC = */
                     SqlDataAdapter result = SpRepository<object>.getSpSqlDataAdapter("select Is_Electronic_POC from FOX_TBL_APP_USER_ADDITIONAL_INFO where deleted=0 and FOX_TBL_APPLICATION_USER_Id=" + user.USER_ID);
 
-                    DataTable dt = new DataTable();
+                    System.Data.DataTable dt = new System.Data.DataTable();
                     result.Fill(dt);
                     if (dt.Rows.Count > 0)
                     {
@@ -791,7 +795,15 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         }
 
         public int UpdatePassword(PasswordChangeRequest request, UserProfile profile)
-        {
+        {  
+
+            //var _userDetails = _UserRepository.Get(t => t.EMAIL.Equals(profile.EMAIL));
+            var Email = new SqlParameter("USERNAME", SqlDbType.VarChar) { Value = profile.EMAIL };
+            var _userDetails = SpRepository<User>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_USER @USERNAME", Email);
+            if (_userDetails.ROLE_ID != 103)
+            {
+                return 0;
+            }
             var _user = _UserRepository.GetByID(request.User_id);
             if (_user != null)
             {
@@ -1741,7 +1753,9 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         {
             try
             {
-                var _user = _UserRepository.Get(t => t.EMAIL.Equals(data.Email));
+                //var _user = _UserRepository.Get(t => t.EMAIL.Equals(data.Email));
+                var Email = new SqlParameter("USERNAME", SqlDbType.VarChar) { Value = data.Email };
+                var _user = SpRepository<User>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_USER @USERNAME", Email);
                 DateTime tempDateTime = new DateTime(long.Parse(data.Ticks));
                 tempDateTime = tempDateTime.AddHours(1);
 
