@@ -99,7 +99,7 @@ namespace FOX.BusinessOperations.Security
             var isMFAVerify = new SqlParameter("ISMFAVERIFIED", SqlDbType.BigInt) { Value = isMFAVerified };
             var isLogout = new SqlParameter("ISLOGOUT", SqlDbType.BigInt) { Value = isLogoutValue };
             var validate = new SqlParameter("ISVALIDATE", SqlDbType.BigInt) { Value = isValidate };
-            var tokenModel = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GENERATE_INSERT_TOKEN @USERNAME, @TOKEN , @USER_PROFILE, @ISMFAVERIFIED, @ISLOGOUT, @ISVALIDATE", userNameToken, userToken, userProfile, isMFAVerify, islogout, validate);
+            var tokenModel = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GENERATE_INSERT_TOKEN @USERNAME, @TOKEN , @USER_PROFILE, @ISMFAVERIFIED, @ISLOGOUT, @ISVALIDATE", userNameToken, userToken, userProfile, isMFAVerify, isLogout, validate);
             tokenModel.isLogOut = false;
             return tokenModel;
 
@@ -128,7 +128,7 @@ namespace FOX.BusinessOperations.Security
                 var userNameToken = new SqlParameter("@USERNAME", SqlDbType.BigInt) { Value = UserDetailsAuth.userID };
                 var userToken = new SqlParameter("@TOKEN", SqlDbType.VarChar) { Value = token };
                 var userProfile = new SqlParameter("@USER_PROFILE", SqlDbType.VarChar) { Value = JsonConvert.SerializeObject(UserDetailsAuth).ToString() };
-                var tokenModel = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_UPDATE_TOKEN @ISLOGOUT, @ISVALIDATE, @ISMFAVERIFIED, @USERNAME, @TOKEN , @USER_PROFILE", islogout, isUserValidate, isMFAVerify, userNameToken, userToken, userProfile);
+                var tokenModel = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_UPDATE_TOKEN @ISLOGOUT, @ISVALIDATE, @ISMFAVERIFIED, @USERNAME, @TOKEN , @USER_PROFILE", isLogout, isUserValidate, isMFAVerify, userNameToken, userToken, userProfile);
 
                 return tokenModel;
             }
