@@ -1177,11 +1177,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 {
                     SqlParameter pPractice_Code = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
                     SqlParameter pGroupName = new SqlParameter("GROUP_NAME", "05CO");
-                    var group02CC2 = SpRepository<GROUP>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_GET_GROUP_ID @PRACTICE_CODE, @GROUP_NAME", pPractice_Code, pGroupName);
+                    var group05CO = SpRepository<GROUP>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_GET_GROUP_ID @PRACTICE_CODE, @GROUP_NAME", pPractice_Code, pGroupName);
                     //var group02CC2 = _groupRepository.GetFirst(t=> t.DELETED == false && t.PRACTICE_CODE == profile.PracticeCode && t.GROUP_NAME == "02CC2");
-                    if (group02CC2 != null)
+                    if (group05CO != null)
                     {
-                        task.SEND_TO_ID = group02CC2.GROUP_ID;
+                        task.SEND_TO_ID = group05CO.GROUP_ID;
                     }
                 }
                 else
@@ -4076,9 +4076,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
     if (taskLoglist.Count() > 0)
     {
-        //foreach (var taskLog in taskLoglist)
-        //{
-        if(task.TASK_TYPE_ID == 605161)
+                //foreach (var taskLog in taskLoglist)
+                //{
+                var documentType = GetDocumentType(WORK_QUEUE);
+                if (documentType.NAME == "Medical Record Request")
                 {
                     taskLoglist[0].ACTION = "Task comment";
                     taskLoglist[0].ACTION_DETAIL = "Medical Record Request";
