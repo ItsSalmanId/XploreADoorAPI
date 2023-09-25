@@ -85,7 +85,11 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 string subject = string.Empty;
                 if (consentToCareObj.disciplineName != null)
                 {
-                    subject = "FOX Rehabilitation - Your "+ consentToCareObj.disciplineName + " Services PLEASE READ!"; 
+                    if(consentToCareObj.disciplineName == "Contracted Services")
+                    {
+                        consentToCareObj.disciplineName = "Contracted";
+                    }
+                    subject = "FOX Rehabilitation - Your " + consentToCareObj.disciplineName +" Services PLEASE READ!";
                 }
                 consentToCareObj.PATIENT_ACCOUNT = long.Parse(consentToCareObj.PATIENT_ACCOUNT_Str == null ? "0" : consentToCareObj.PATIENT_ACCOUNT_Str);
                 if (consentToCareObj.SEND_TO == "Patient")
@@ -206,6 +210,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                         {
                             consentToCareTask.SEND_TO_ID = Convert.ToInt64(sendToId);
                             consentToCareTask.IS_SEND_TO_USER = true;
+                            consentToCareTask.IS_FINAL_ROUTE_USER = true;
                         }
                     }
                     ////Add Update Task 
@@ -586,8 +591,9 @@ namespace FOX.BusinessOperations.ConsentToCareService
             } 
             else
             {
-                task.SEND_TO_ID = objConsentToCare.TREATING_PROVIDER_ID;
-                task.LOC_ID = objConsentToCare.POS_ID;
+                task.PROVIDER_ID = objConsentToCare.TREATING_PROVIDER_ID;
+                //task.LOC_ID = objConsentToCare.POS_ID;
+                task.LOC_ID = null;
             }
             task.TASK_TYPE_ID = Task_type_Id?.TASK_TYPE_ID ?? 0;
             task.PRACTICE_CODE = profile.PracticeCode;
