@@ -1186,7 +1186,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             {
                 consentToCareObj.STATUS_ID = consentStatus.CONSENT_TO_CARE_STATUS_ID;
             }
-            consentToCareObj.MODIFIED_DATE = Helper.GetCurrentDate();
+          consentToCareObj.MODIFIED_DATE = Helper.GetCurrentDate();
             //HTML to PDF
             htmlToPdfResponseObj = new ResponseHTMLToPDF();
             htmlToPdfResponseObj = HTMLToPDF(config, updatedHtml, consentToCareObj.CONSENT_TO_CARE_ID.ToString(), "email", "");
