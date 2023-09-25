@@ -942,12 +942,16 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     {
                         tasktypeHBR = "STRATEGIC";
                     }
+                    else if (documentType.NAME == "Medical Record Request")
+                    {
+                        tasktypeHBR = "ADMMR";
+                    }
                     else
                     {
                         tasktypeHBR = "PORTA";
                     }
                     //Change by arqam
-                    if (documentType != null && documentType.RT_CODE != null && (documentType.RT_CODE.ToLower() == "00001" || documentType.RT_CODE.ToLower() == "unsig" || documentType.RT_CODE.ToLower() == "forms" || documentType.RT_CODE.ToLower() == "order"))
+                    if (documentType != null && documentType.RT_CODE != null && (documentType.RT_CODE.ToLower() == "00001" || documentType.RT_CODE.ToLower() == "unsig" || documentType.RT_CODE.ToLower() == "forms" || documentType.RT_CODE.ToLower() == "order" || documentType.RT_CODE.ToLower() == "mrreq"))
                     {
                         var interfaceTaskStrategic = setTaskData(profile, pat_account, tasktypeHBR, obj.CURRENT_DATE_STR);
                         var taskInterfaceStrategic = AddUpdateTask(interfaceTaskStrategic, profile, obj);
@@ -1132,6 +1136,10 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 //task.TASK_TYPE_ID = _taskTypeRepository.GetFirst(t => t.NAME.ToLower() == "block" && t.PRACTICE_CODE == profile.PracticeCode && !t.DELETED)?.TASK_TYPE_ID ?? 0;
 
             }
+            if(tasktypeHBR == "ADMMR")
+            {
+                pTaskTypeName.Value = "admmr";
+            }
             else if (tasktypeHBR == "PORTA" || tasktypeHBR == "STRATEGIC")
             {
                 pTaskTypeName.Value = "porta";
@@ -1151,7 +1159,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
             var _taskTypeId = new SqlParameter { ParameterName = "TASK_TYPE_ID", SqlDbType = SqlDbType.Int, Value = task.TASK_TYPE_ID };
             var _isTemplate = new SqlParameter { ParameterName = "IS_TEMPLATE", SqlDbType = SqlDbType.Bit, Value = true };
             var taskTemplate = SpRepository<FOX_TBL_TASK>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_TASK_BY_TASK_TYPE_ID 
-                               @PRACTICE_CODE, @TASK_ID, @TASK_TYPE_ID, @IS_TEMPLATE", PracticeCode, _taskTId, _taskTypeId, _isTemplate);
+                    @PRACTICE_CODE, @TASK_ID, @TASK_TYPE_ID, @IS_TEMPLATE", PracticeCode, _taskTId, _taskTypeId, _isTemplate);
             if (taskTemplate != null)
             {
                 if (tasktypeHBR == "STRATEGIC")
@@ -1165,10 +1173,22 @@ namespace FOX.BusinessOperations.IndexInfoServices
                         task.SEND_TO_ID = group02CC2.GROUP_ID;
                     }
                 }
+                else if(tasktypeHBR == "ADMMR")
+                {
+                    SqlParameter pPractice_Code = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
+                    SqlParameter pGroupName = new SqlParameter("GROUP_NAME", "05CO");
+                    var group02CC2 = SpRepository<GROUP>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_GET_GROUP_ID @PRACTICE_CODE, @GROUP_NAME", pPractice_Code, pGroupName);
+                    //var group02CC2 = _groupRepository.GetFirst(t=> t.DELETED == false && t.PRACTICE_CODE == profile.PracticeCode && t.GROUP_NAME == "02CC2");
+                    if (group02CC2 != null)
+                    {
+                        task.SEND_TO_ID = group02CC2.GROUP_ID;
+                    }
+                }
                 else
                 {
                     task.SEND_TO_ID = taskTemplate.SEND_TO_ID;
                 }
+
                 task.IS_SEND_TO_USER = taskTemplate.IS_SEND_TO_USER;
                 task.FINAL_ROUTE_ID = taskTemplate.FINAL_ROUTE_ID;
                 task.IS_FINAL_ROUTE_USER = taskTemplate.IS_FINAL_ROUTE_USER;
@@ -3245,61 +3265,61 @@ namespace FOX.BusinessOperations.IndexInfoServices
         public FOX_TBL_TASK AddUpdateTask(FOX_TBL_TASK task, UserProfile profile, OriginalQueue WORK_QUEUE)
         {
 
-            if (!string.IsNullOrEmpty(task.PATIENT_ACCOUNT_STR))
+    if (!string.IsNullOrEmpty(task.PATIENT_ACCOUNT_STR))
+    {
+        task.PATIENT_ACCOUNT = Convert.ToInt64(task.PATIENT_ACCOUNT_STR);
+    }
+    if (task != null && profile != null)
+    {
+        FOX_TBL_TASK dbTask = GetTask(profile.PracticeCode, task.TASK_ID);
+        //FOX_TBL_TASK dbTask = _TaskRepository.GetFirst(t => t.PRACTICE_CODE == profile.PracticeCode && t.TASK_ID == task.TASK_ID);
+        if (dbTask == null)
+        {
+            SqlParameter sendToId;
+            if (profile.isTalkRehab)
             {
-                task.PATIENT_ACCOUNT = Convert.ToInt64(task.PATIENT_ACCOUNT_STR);
-            }
-            if (task != null && profile != null)
-            {
-                FOX_TBL_TASK dbTask = GetTask(profile.PracticeCode, task.TASK_ID);
-                //FOX_TBL_TASK dbTask = _TaskRepository.GetFirst(t => t.PRACTICE_CODE == profile.PracticeCode && t.TASK_ID == task.TASK_ID);
-                if (dbTask == null)
+                try
                 {
-                    SqlParameter sendToId;
-                    if (profile.isTalkRehab)
-                    {
-                        try
-                        {
-                            long talkRehabGroupID = AddTalkRehabGroup(profile);
-                            sendToId = new SqlParameter("SEND_TO_ID", talkRehabGroupID);
-                        }
-                        catch (Exception)
-                        {
-                            sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID ?? (object)DBNull.Value);
-                        }
-                    }
+                    long talkRehabGroupID = AddTalkRehabGroup(profile);
+                    sendToId = new SqlParameter("SEND_TO_ID", talkRehabGroupID);
+                }
+                catch (Exception)
+                {
+                    sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID ?? (object)DBNull.Value);
+                }
+            }
                     else
-                    {
-                        sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID ?? (object)DBNull.Value);
-                    }
-                    long primaryKey = Helper.getMaximumId("FOX_TASK_ID");
-                    SqlParameter id = new SqlParameter("ID", primaryKey);
-                    SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
-                    SqlParameter patientAccount = new SqlParameter("PATIENT_ACCOUNT", task.PATIENT_ACCOUNT);
-                    SqlParameter isCompletedInt = new SqlParameter("IS_COMPLETED_INT", SqlDbType.Int);
-                    isCompletedInt.Value = 0;// new SqlParameter("IS_COMPLETED_INT", 0);/*0: Initiated 1:Sender Completed 2:Final Route Completed*/
-                    SqlParameter userName = new SqlParameter("USER_NAME", profile.UserName);
-                    SqlParameter isTemplate = new SqlParameter("IS_TEMPLATE", task.IS_TEMPLATE);
-                    SqlParameter taskTypeId = new SqlParameter("TASK_TYPE_ID", task.TASK_TYPE_ID);
-                    SqlParameter finalRouteId = new SqlParameter("FINAL_ROUTE_ID", task.FINAL_ROUTE_ID ?? (object)DBNull.Value);
-                    SqlParameter priority = new SqlParameter("PRIORITY", string.IsNullOrEmpty(task.PRIORITY) ? string.Empty : task.PRIORITY);
-                    SqlParameter dueDateTime = new SqlParameter("DUE_DATE_TIME", string.IsNullOrEmpty(task.DUE_DATE_TIME_str) ? (object)DBNull.Value : Helper.ConvertStingToDateTime(task.DUE_DATE_TIME_str) ?? Helper.GetCurrentDate());
-                    task.DUE_DATE_TIME = Helper.ConvertStingToDateTime(task.DUE_DATE_TIME_str);
-                    SqlParameter categoryID = new SqlParameter("CATEGORY_ID", task.CATEGORY_ID ?? (object)DBNull.Value);
-                    SqlParameter isReqSignedoff = new SqlParameter("IS_REQ_SIGNOFF", task.IS_REQ_SIGNOFF ?? (object)DBNull.Value);
-                    SqlParameter isSendingRouteDetails = new SqlParameter("IS_SENDING_ROUTE_DETAILS", task.IS_SENDING_ROUTE_DETAILS ?? (object)DBNull.Value);
-                    SqlParameter sendContextId = new SqlParameter("SEND_CONTEXT_ID", task.SEND_CONTEXT_ID ?? (object)DBNull.Value);
-                    SqlParameter contextInfo = new SqlParameter("CONTEXT_INFO", task.CONTEXT_INFO ?? (object)DBNull.Value);
-                    SqlParameter deliveryId = new SqlParameter("DEVELIVERY_ID", task.DEVELIVERY_ID ?? (object)DBNull.Value);
-                    SqlParameter destinations = new SqlParameter("DESTINATIONS", task.DESTINATIONS ?? (object)DBNull.Value);
-                    SqlParameter loc_Id = new SqlParameter("LOC_ID", task.LOC_ID ?? (object)DBNull.Value);
-                    SqlParameter provider_ID = new SqlParameter("PROVIDER_ID", task.PROVIDER_ID ?? (object)DBNull.Value);
-                    SqlParameter isSendMailAuto = new SqlParameter("IS_SEND_EMAIL_AUTO", task.IS_SEND_EMAIL_AUTO ?? (object)DBNull.Value);
-                    SqlParameter deleted = new SqlParameter("DELETED", task.DELETED);
-                    SqlParameter isSendToUser = new SqlParameter("IS_SEND_TO_USER", task.IS_SEND_TO_USER);
-                    SqlParameter isFinalRouteUser = new SqlParameter("IS_FINAL_ROUTE_USER", task.IS_FINAL_ROUTE_USER);
-                    SqlParameter isFinalRouteMarkComplete = new SqlParameter("IS_FINALROUTE_MARK_COMPLETE", task.IS_FINALROUTE_MARK_COMPLETE);
-                    SqlParameter isSendToMarkComplete = new SqlParameter("IS_SENDTO_MARK_COMPLETE", task.IS_SENDTO_MARK_COMPLETE);
+            {
+                sendToId = new SqlParameter("SEND_TO_ID", task.SEND_TO_ID ?? (object)DBNull.Value);
+            }
+            long primaryKey = Helper.getMaximumId("FOX_TASK_ID");
+            SqlParameter id = new SqlParameter("ID", primaryKey);
+            SqlParameter practiceCode = new SqlParameter("PRACTICE_CODE", profile.PracticeCode);
+            SqlParameter patientAccount = new SqlParameter("PATIENT_ACCOUNT", task.PATIENT_ACCOUNT);
+            SqlParameter isCompletedInt = new SqlParameter("IS_COMPLETED_INT", SqlDbType.Int);
+            isCompletedInt.Value = 0;// new SqlParameter("IS_COMPLETED_INT", 0);/*0: Initiated 1:Sender Completed 2:Final Route Completed*/
+            SqlParameter userName = new SqlParameter("USER_NAME", profile.UserName);
+            SqlParameter isTemplate = new SqlParameter("IS_TEMPLATE", task.IS_TEMPLATE);
+            SqlParameter taskTypeId = new SqlParameter("TASK_TYPE_ID", task.TASK_TYPE_ID);
+            SqlParameter finalRouteId = new SqlParameter("FINAL_ROUTE_ID", task.FINAL_ROUTE_ID ?? (object)DBNull.Value);
+            SqlParameter priority = new SqlParameter("PRIORITY", string.IsNullOrEmpty(task.PRIORITY) ? string.Empty : task.PRIORITY);
+            SqlParameter dueDateTime = new SqlParameter("DUE_DATE_TIME", string.IsNullOrEmpty(task.DUE_DATE_TIME_str) ? (object)DBNull.Value : Helper.ConvertStingToDateTime(task.DUE_DATE_TIME_str) ?? Helper.GetCurrentDate());
+            task.DUE_DATE_TIME = Helper.ConvertStingToDateTime(task.DUE_DATE_TIME_str);
+            SqlParameter categoryID = new SqlParameter("CATEGORY_ID", task.CATEGORY_ID ?? (object)DBNull.Value);
+            SqlParameter isReqSignedoff = new SqlParameter("IS_REQ_SIGNOFF", task.IS_REQ_SIGNOFF ?? (object)DBNull.Value);
+            SqlParameter isSendingRouteDetails = new SqlParameter("IS_SENDING_ROUTE_DETAILS", task.IS_SENDING_ROUTE_DETAILS ?? (object)DBNull.Value);
+            SqlParameter sendContextId = new SqlParameter("SEND_CONTEXT_ID", task.SEND_CONTEXT_ID ?? (object)DBNull.Value);
+            SqlParameter contextInfo = new SqlParameter("CONTEXT_INFO", task.CONTEXT_INFO ?? (object)DBNull.Value);
+            SqlParameter deliveryId = new SqlParameter("DEVELIVERY_ID", task.DEVELIVERY_ID ?? (object)DBNull.Value);
+            SqlParameter destinations = new SqlParameter("DESTINATIONS", task.DESTINATIONS ?? (object)DBNull.Value);
+            SqlParameter loc_Id = new SqlParameter("LOC_ID", task.LOC_ID ?? (object)DBNull.Value);
+            SqlParameter provider_ID = new SqlParameter("PROVIDER_ID", task.PROVIDER_ID ?? (object)DBNull.Value);
+            SqlParameter isSendMailAuto = new SqlParameter("IS_SEND_EMAIL_AUTO", task.IS_SEND_EMAIL_AUTO ?? (object)DBNull.Value);
+            SqlParameter deleted = new SqlParameter("DELETED", task.DELETED);
+            SqlParameter isSendToUser = new SqlParameter("IS_SEND_TO_USER", task.IS_SEND_TO_USER);
+            SqlParameter isFinalRouteUser = new SqlParameter("IS_FINAL_ROUTE_USER", task.IS_FINAL_ROUTE_USER);
+            SqlParameter isFinalRouteMarkComplete = new SqlParameter("IS_FINALROUTE_MARK_COMPLETE", task.IS_FINALROUTE_MARK_COMPLETE);
+            SqlParameter isSendToMarkComplete = new SqlParameter("IS_SENDTO_MARK_COMPLETE", task.IS_SENDTO_MARK_COMPLETE);
 
                     dbTask = SpRepository<FOX_TBL_TASK>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_INSERT_TASK @ID, @PRACTICE_CODE,@PATIENT_ACCOUNT ,@IS_COMPLETED_INT ,@USER_NAME,@IS_TEMPLATE,@TASK_TYPE_ID,@SEND_TO_ID,@FINAL_ROUTE_ID,@PRIORITY,@DUE_DATE_TIME,@CATEGORY_ID,@IS_REQ_SIGNOFF,@IS_SENDING_ROUTE_DETAILS,@SEND_CONTEXT_ID,@CONTEXT_INFO,@DEVELIVERY_ID,@DESTINATIONS,@LOC_ID,@PROVIDER_ID,@IS_SEND_EMAIL_AUTO,@DELETED,@IS_SEND_TO_USER,@IS_FINAL_ROUTE_USER,@IS_FINALROUTE_MARK_COMPLETE,@IS_SENDTO_MARK_COMPLETE",
                                                                                                                     id, practiceCode, patientAccount, isCompletedInt, userName, isTemplate, taskTypeId, sendToId, finalRouteId, priority, dueDateTime, categoryID, isReqSignedoff, isSendingRouteDetails, sendContextId, contextInfo, deliveryId, destinations, loc_Id, provider_ID, isSendMailAuto, deleted, isSendToUser, isFinalRouteUser, isFinalRouteMarkComplete, isSendToMarkComplete);
@@ -4034,14 +4054,14 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     }
 
 
-                    //taskLoglist.Add(new TaskLog() { ACTION = "Name ", ACTION_DETAIL = " Name : " + patient.First_Name + ' ' + patient.Last_Name });
-                    porta_logs.Add(" Name : " + patient.First_Name + ' ' + patient.Last_Name);
-                    //taskLoglist.Add(new TaskLog() { ACTION = "+ Patient Information", ACTION_DETAIL = "Patient Information >" });
-                    porta_logs.Add(" <br>Patient Information >");
-                }
-            }
-            porta_logs.Reverse();
-            StringBuilder portalog = new StringBuilder();
+                        //taskLoglist.Add(new TaskLog() { ACTION = "Name ", ACTION_DETAIL = " Name : " + patient.First_Name + ' ' + patient.Last_Name });
+                        porta_logs.Add(" Name : " + patient.First_Name + ' ' + patient.Last_Name);
+                        //taskLoglist.Add(new TaskLog() { ACTION = "+ Patient Information", ACTION_DETAIL = "Patient Information >" });
+                        porta_logs.Add(" <br>Patient Information >");
+                    }
+        }
+    porta_logs.Reverse();
+    StringBuilder portalog = new StringBuilder();
 
             foreach (string str in porta_logs)
             {
@@ -4054,13 +4074,18 @@ namespace FOX.BusinessOperations.IndexInfoServices
             }
                         );
 
-            if (taskLoglist.Count() > 0)
-            {
-                //foreach (var taskLog in taskLoglist)
-                //{
+    if (taskLoglist.Count() > 0)
+    {
+        //foreach (var taskLog in taskLoglist)
+        //{
+        if(task.TASK_TYPE_ID == 605161)
+                {
+                    taskLoglist[0].ACTION = "Task comment";
+                    taskLoglist[0].ACTION_DETAIL = "Medical Record Request";
+                }
                 InsertTaskLog(dbtask.TASK_ID, taskLoglist, profile);
-                //}
-            }
+        //}
+    }
 
             //    taskLoglist.ForEach(row =>
             //    {
@@ -5374,21 +5399,22 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     dbTask = SpRepository<FOX_TBL_TASK>.GetSingleObjectWithStoreProcedure(@"FOX_PROC_INSERT_TASK @ID, @PRACTICE_CODE,@PATIENT_ACCOUNT ,@IS_COMPLETED_INT ,@USER_NAME,@IS_TEMPLATE,@TASK_TYPE_ID,@SEND_TO_ID,@FINAL_ROUTE_ID,@PRIORITY,@DUE_DATE_TIME,@CATEGORY_ID,@IS_REQ_SIGNOFF,@IS_SENDING_ROUTE_DETAILS,@SEND_CONTEXT_ID,@CONTEXT_INFO,@DEVELIVERY_ID,@DESTINATIONS,@LOC_ID,@PROVIDER_ID,@IS_SEND_EMAIL_AUTO,@DELETED,@IS_SEND_TO_USER,@IS_FINAL_ROUTE_USER,@IS_FINALROUTE_MARK_COMPLETE,@IS_SENDTO_MARK_COMPLETE",
                     id, practiceCode, patientAccount, isCompletedInt, userName, isTemplate, taskTypeId, sendToId, finalRouteId, priority, dueDateTime, categoryID, isReqSignedoff, isSendingRouteDetails, sendContextId, contextInfo, deliveryId, destinations, loc_Id, provider_ID, isSendMailAuto, deleted, isSendToUser, isFinalRouteUser, isFinalRouteMarkComplete, isSendToMarkComplete);
 
-                    if (WORK_QUEUE != null)
-                    {
-                        AddTaskLogsForPORTA(dbTask, task, profile, WORK_QUEUE);
-                    }
 
-                    var taskSubTypeList = GetTaskSubTypes(profile.PracticeCode, task.TASK_TYPE_ID);
-                    foreach (var taskSubType in taskSubTypeList)
-                    {
-                        if (!string.IsNullOrEmpty(taskSubType.NAME) && taskSubType.NAME.ToLower() == "existing client")
-                        {
-                            InsertTaskTaskSubType(profile, dbTask.TASK_ID, taskSubType.TASK_SUB_TYPE_ID);
-                        }
-                    }
-                    dbTask.dbChangeMsg = "TaskInsertSuccessed";
-                    dbTask.CATEGORY_CODE = _taskTypeRepository.GetByID(dbTask?.TASK_TYPE_ID)?.CATEGORY_CODE;
+            if (WORK_QUEUE != null)
+            {
+                AddTaskLogsForPORTA(dbTask, task, profile, WORK_QUEUE);
+            }
+         
+            var taskSubTypeList = GetTaskSubTypes(profile.PracticeCode, task.TASK_TYPE_ID);
+            foreach (var taskSubType in taskSubTypeList)
+            {
+                if (!string.IsNullOrEmpty(taskSubType.NAME) && taskSubType.NAME.ToLower() == "existing client")
+                {
+                    InsertTaskTaskSubType(profile, dbTask.TASK_ID, taskSubType.TASK_SUB_TYPE_ID);
+                }
+            }
+            dbTask.dbChangeMsg = "TaskInsertSuccessed";
+            dbTask.CATEGORY_CODE = _taskTypeRepository.GetByID(dbTask?.TASK_TYPE_ID)?.CATEGORY_CODE;
 
                 }
                 return dbTask;
