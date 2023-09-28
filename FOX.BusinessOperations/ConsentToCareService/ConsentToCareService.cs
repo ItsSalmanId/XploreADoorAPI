@@ -1334,7 +1334,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             List<InsuranceDetails> insuranceDetailsList = new List<InsuranceDetails>();
             var patientAccount = new SqlParameter("@PATINET_ACCOUNT", SqlDbType.BigInt) { Value = long.Parse(insuranceDetailsObj.PATIENT_ACCOUNT_Str) };
             var caseID = new SqlParameter("@CASE_ID", SqlDbType.VarChar) { Value = insuranceDetailsObj.CASE_ID };
-            insuranceDetailsList = SpRepository<InsuranceDetails>.GetListWithStoreProcedure(@"EXEC FOX_PROC_GET_INSURANCE_DETAILS_FOR_CONSENT_TO_CARE_UPDATED @PATINET_ACCOUNT, @CASE_ID", patientAccount, caseID);
+            insuranceDetailsList = SpRepository<InsuranceDetails>.GetListWithStoreProcedure(@"EXEC FOX_PROC_GET_INSURANCE_DETAILS_FOR_CONSENT_TO_CARE @PATINET_ACCOUNT, @CASE_ID", patientAccount, caseID);
             foreach (var insuranceDetail in insuranceDetailsList)
             {
                 if (insuranceDetail.Pri_Sec_Oth_Type == "P")
