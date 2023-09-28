@@ -152,7 +152,8 @@ namespace FOX.DataModels.Models.ConsentToCare
         public class ConsentToCareResponse
         {
             public FoxTblConsentToCare consentToCareObj { get; set; }
-            public InsuranceDetails InsuranceDetailsObj { get; set; }
+            public InsuranceDetails primaryInsuranceDetailsObj { get; set; }
+            public InsuranceDetails secondaryInsuranceDetailsObj { get; set; }
             public List<InsuranceDetails> InsuranceDetailsListObj { get; set; }
             public bool Success { get; set; }
             public string Message { get; set; }
@@ -164,27 +165,27 @@ namespace FOX.DataModels.Models.ConsentToCare
         public class InsuranceDetails
         {
             public string INSURANCE_NAME { get; set; }
-            public long? Co_Payment { get; set; }
+            public string Co_Payment { get; set; }
             public bool? IS_COPAY_PER { get; set; }
             public string GENERAL_COMMENTS { get; set; }
-            public long? PT_ST_TOT_AMT_USED { get; set; }
-            public long? OT_TOT_AMT_USED { get; set; }
-            public long? YEARLY_DED_AMT { get; set; }
+            public string PT_ST_TOT_AMT_USED { get; set; }
+            public string OT_TOT_AMT_USED { get; set; }
+            public string YEARLY_DED_AMT { get; set; }
             public bool? Is_Authorization_Required { get; set; } = false;
-            public long? DED_REMAINING { get; set; }
+            public string DED_REMAINING { get; set; }
             public DateTime? EFFECTIVE_FROM { get; set; }
             public DateTime? EFFECTIVE_TO { get; set; }
-            public long? MULT_USED { get; set; }
-            public long? MULT_REMAINING { get; set; }
-            public long? MULT_VALUE { get; set; }
-            public long? DED_MET { get; set; }
+            public string MULT_USED { get; set; }
+            public string MULT_REMAINING { get; set; }
+            public string MULT_VALUE { get; set; }
+            public string DED_MET { get; set; }
             public string AUTH_NUMBER { get; set; }
             public string Pri_Sec_Oth_Type { get; set; }
             public string BENEFIT_COMMENTS { get; set; }
-            public long? MOP_AMT { get; set; }
-            public long? MYB_LIMIT_VISI { get; set; }
-            public long? MYB_LIMIT_DOLLARS { get; set; }
-            public long? MOP_AMT_REMAINING { get; set; }
+            public string MOP_AMT { get; set; }
+            public string MYB_LIMIT_VISIT { get; set; }
+            public string MYB_LIMIT_DOLLARS { get; set; }
+            public string MOP_AMT_REMAINING { get; set; }
         }
         public class PatientContactDetails
         {
@@ -192,5 +193,24 @@ namespace FOX.DataModels.Models.ConsentToCare
             public string Type_Name { get; set; }
             public string Last_Name { get; set; }
         }
+        [Table("FOX_TBL_CONSENT_TO_CARE_EMAIL_SMS_LOGS")]
+        public class ConsentToCareEmailSmsLog
+        {
+            [Key]
+            public long CCARE_EMAIL_SMS_LOG_ID { get; set; }
+            public long? PATIENT_ACCOUNT { get; set; }
+            public long? CASE_ID { get; set; }
+            public string CELL_NUMBER { get; set; }
+            public string SMS_RESPONSE { get; set; }
+            public string EMAIL_ADDRESS { get; set; }
+            public string EMAIL_RESPONSE { get; set; }
+            public string SOURCE_TYPE { get; set; }
+            public string FULL_SMS_RESPONSE { get; set; }
+            public string CREATED_BY { get; set; }
+            public DateTime CREATED_DATE { get; set; }
+            public DateTime MODIFIED_DATE { get; set; }
+            public string MODIFIED_BY { get; set; }
+        }
+
     }
 }

@@ -23,10 +23,12 @@ namespace FOX.DataModels.Context
             modelBuilder.Entity<FoxTblConsentToCare>().Property(t => t.CONSENT_TO_CARE_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<ConsentToCareDocument>().Property(t => t.DOCUMENTS_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
             modelBuilder.Entity<ConsentToCareStatus>().Property(t => t.CONSENT_TO_CARE_STATUS_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
+            modelBuilder.Entity<ConsentToCareEmailSmsLog>().Property(t => t.CCARE_EMAIL_SMS_LOG_ID).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
         }
 
         public virtual DbSet<FoxTblConsentToCare> foxTblConsentToCare { get; set; }
         public virtual DbSet<ConsentToCareDocument> ConsentToCareDocument { get; set; }
         public virtual DbSet<ConsentToCareStatus> ConsentToCareStatus{ get; set; }
+        public virtual DbSet<ConsentToCareEmailSmsLog> ConsentToCareEmailSmsLog { get; set; }
     }
 }

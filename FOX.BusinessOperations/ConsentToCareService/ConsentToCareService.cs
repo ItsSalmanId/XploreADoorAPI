@@ -51,6 +51,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
         private readonly DBContextPatientDocuments _patientDocument = new DBContextPatientDocuments();
         private readonly GenericRepository<FoxDocumentType> _foxDocumentTypeRepository;
         private readonly GenericRepository<Patient> _PatientRepository;
+        private readonly GenericRepository<ConsentToCareEmailSmsLog> _consentToCareEmailSmsLogRepository;
         public static string SurveyMethod = string.Empty;
         private static List<Thread> threadsList = new List<Thread>();
         // To handle encryption/decryption Objective-C,C#
@@ -71,6 +72,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             _PatientContactRepository = new GenericRepository<PatientContact>(_PatientContext);
             _PatientRepository = new GenericRepository<Patient>(_PatientContext);
             _foxDocumentTypeRepository = new GenericRepository<FoxDocumentType>(_patientDocument);
+            _consentToCareEmailSmsLogRepository = new GenericRepository<ConsentToCareEmailSmsLog>(_consentToCareContext);
         }
         #endregion
         #region FUNCTIONS
@@ -89,7 +91,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     {
                         consentToCareObj.disciplineName = "Contracted";
                     }
-                    subject = "FOX Rehabilitation - Your " + consentToCareObj.disciplineName +" Services PLEASE READ!";
+                    subject = "FOX Rehabilitation - " + consentToCareObj.disciplineName + " Services, Action Required!";
                 }
                 consentToCareObj.PATIENT_ACCOUNT = long.Parse(consentToCareObj.PATIENT_ACCOUNT_Str == null ? "0" : consentToCareObj.PATIENT_ACCOUNT_Str);
                 if (consentToCareObj.SEND_TO == "Patient")
@@ -398,7 +400,14 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 converter.Options.MarginRight = 10;
                 converter.Options.DisplayHeader = false;
                 converter.Options.DisplayHeader = false;
-                converter.Options.WebPageWidth = 1580;
+                if (type == "Submit Consent")
+                {
+                    converter.Options.WebPageWidth = 1580;
+                }
+                else
+                {
+                    converter.Options.WebPageWidth = 1565;
+                }
                 converter.Options.PdfPageOrientation = PdfPageOrientation.Landscape;
                 PdfDocument doc = converter.ConvertHtmlString(htmlDoc.DocumentNode.OuterHtml);
                 string pdfPath = config.ORIGINAL_FILES_PATH_SERVER;
@@ -787,34 +796,36 @@ namespace FOX.BusinessOperations.ConsentToCareService
         public ConsentToCareList GetConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile)
         {
             ConsentToCareList response = new ConsentToCareList();
-            string statusName = string.Empty;
-            var patinetAccount = new SqlParameter("@PATINET_ACCOUNT", SqlDbType.BigInt) { Value = long.Parse(consentToCareObj.PATIENT_ACCOUNT_Str) };
-            var selectedCaseId = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CASE_ID };
-            var pracCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
-            var patinetAccountForCheckSignedConcent = new SqlParameter("@PATINET_ACCOUNT", SqlDbType.BigInt) { Value = long.Parse(consentToCareObj.PATIENT_ACCOUNT_Str) };
-            var selectedCaseIdForCheckSignedConcent = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CASE_ID };
-            var pracCodeForCheckSignedConcent = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
-            var alreadySentToSameDiscipline = SpRepository<FoxTblConsentToCare>.GetListWithStoreProcedure(@"EXEC FOX_PROC_CHECK_IF_CCARE_ALREADY_SENT_TO_SAME_DISCIPLINE @PATINET_ACCOUNT, @CASE_ID, @PRACTICE_CODE", patinetAccount, selectedCaseId, pracCode);
-            var signedReviceToSameDiscipline = SpRepository<FoxTblConsentToCare>.GetListWithStoreProcedure(@"EXEC FOX_PROC_CHECK_IF_CCARE_ALREADY_SIGNED_SENT_TO_SAME_DISCIPLINE @PATINET_ACCOUNT, @CASE_ID, @PRACTICE_CODE", patinetAccountForCheckSignedConcent, selectedCaseIdForCheckSignedConcent, pracCodeForCheckSignedConcent);
+            //string statusName = string.Empty;
+            //var patinetAccount = new SqlParameter("@PATINET_ACCOUNT", SqlDbType.BigInt) { Value = long.Parse(consentToCareObj.PATIENT_ACCOUNT_Str) };
+            //var selectedCaseId = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CASE_ID };
+            //var pracCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
+            //var patinetAccountForCheckSignedConcent = new SqlParameter("@PATINET_ACCOUNT", SqlDbType.BigInt) { Value = long.Parse(consentToCareObj.PATIENT_ACCOUNT_Str) };
+            //var selectedCaseIdForCheckSignedConcent = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CASE_ID };
+            //var pracCodeForCheckSignedConcent = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
+            //
+            // var alreadySentToSameDiscipline = SpRepository<FoxTblConsentToCare>.GetListWithStoreProcedure(@"EXEC FOX_PROC_CHECK_IF_CCARE_ALREADY_SENT_TO_SAME_DISCIPLINE @PATINET_ACCOUNT, @CASE_ID, @PRACTICE_CODE", patinetAccount, selectedCaseId, pracCode);
+            //var signedReviceToSameDiscipline = SpRepository<FoxTblConsentToCare>.GetListWithStoreProcedure(@"EXEC FOX_PROC_CHECK_IF_CCARE_ALREADY_SIGNED_SENT_TO_SAME_DISCIPLINE @PATINET_ACCOUNT, @CASE_ID, @PRACTICE_CODE", patinetAccountForCheckSignedConcent, selectedCaseIdForCheckSignedConcent, pracCodeForCheckSignedConcent);
             if (consentToCareObj != null)
             {
                 var caseId = new SqlParameter("@CASE_ID", SqlDbType.BigInt) { Value = consentToCareObj.CASE_ID };
                 var practiceCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
                 response.ConsentToCareDbList = SpRepository<FoxTblConsentToCare>.GetListWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CASE_ID @CASE_ID, @PRACTICE_CODE", caseId, practiceCode);
             }
-            if (signedReviceToSameDiscipline.Count != 0)
-            {
-                statusName = signedReviceToSameDiscipline[0].STATUS_NAME;
-                alreadySentToSameDiscipline[0].CASE_NO = signedReviceToSameDiscipline[0].CASE_NO;
-            }
-            else
-            {
-                statusName = "";
-            }
-            if(alreadySentToSameDiscipline[0].alreadySentToSameDiscipline == 1 && response.ConsentToCareDbList.Count == 0 && statusName != "Signed")
-            {
-                response.ConsentToCareDbList = alreadySentToSameDiscipline;
-            }
+            //   per Case Per dicipline condition hide 
+            //if (signedReviceToSameDiscipline.Count != 0)
+            //{
+            //    statusName = signedReviceToSameDiscipline[0].STATUS_NAME;
+            //    alreadySentToSameDiscipline[0].CASE_NO = signedReviceToSameDiscipline[0].CASE_NO;
+            //}
+            //else
+            //{
+            //    statusName = "";
+            //}
+            //if(alreadySentToSameDiscipline[0].alreadySentToSameDiscipline == 1 && response.ConsentToCareDbList.Count == 0 && statusName != "Signed")
+            //{
+            //    response.ConsentToCareDbList = alreadySentToSameDiscipline;
+            //}
             return response;
         }
             public ConsentToCareList GetConsentToCareDocumentsInfo(FoxTblConsentToCare consentToCareObj, UserProfile profile)
@@ -855,7 +866,10 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 var htmlTemplate = consentToCareObj.TemplateHtmlWithInsuranceDetails;
                 var consentToCareIdStr = consentToCareObj.CONSENT_TO_CARE_ID.ToString();
                 var updatedHtml = consentToCareObj.TemplateHtmlWithInsuranceDetails;
-                HtmlDocument htmlDoc = new HtmlDocument();
+                HtmlDocument htmlDoc = new HtmlDocument();  
+                var priviousCodeOfSignSpan = "id=\"consent-to-care-sign-td-span\" style=\"display: inline-block; border-bottom: 1px solid #12222E; width: 100%; padding-top: 30px; position: relative;";
+                var currentCodeOfSignSpan = "id=\"consent-to-care-sign-td-span\" style=\"display: inline-block; border-bottom: 1px solid #12222E; width: 100%; padding-top: 20px; position: relative;";
+                updatedHtml = updatedHtml.Replace(priviousCodeOfSignSpan, currentCodeOfSignSpan);
                 htmlDoc.LoadHtml(updatedHtml);
                 htmlDoc.GetElementbyId("consent-to-care-foxrehab-url")?.Remove();
                 updatedHtml = htmlDoc.DocumentNode.OuterHtml;
@@ -888,6 +902,12 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 updatedHtml = htmlDoc.DocumentNode.OuterHtml;
                 htmlDoc.LoadHtml(updatedHtml);
                 htmlDoc.GetElementbyId("consent-to-care-sign-form-br")?.Remove();
+                updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+                htmlDoc.LoadHtml(updatedHtml);
+                htmlDoc.GetElementbyId("consent-to-care-foxrehab-checkbox")?.Remove();
+                updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+                htmlDoc.LoadHtml(updatedHtml);
+                htmlDoc.GetElementbyId("consent-to-care-foxrehab-checkbox-bill")?.Remove();
                 updatedHtml = htmlDoc.DocumentNode.OuterHtml;
                 htmlDoc.LoadHtml(updatedHtml);
                 htmlDoc.GetElementbyId("consent-to-care-contactus-questions-br")?.Remove();
@@ -1110,7 +1130,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 List<TaskLog> taskLoglist = new List<TaskLog>();
                 List<string> consentTocarelogs = new List<string>();
                 StringBuilder consentTocarelogsString = new StringBuilder();
-                consentTocarelogs.Add("Patient need to talk with someone before showing consent");
+                consentTocarelogs.Add("Patient/POA/FRP selected they would like to speak to someone prior to signing the Consent to Care");
                 foreach (string str in consentTocarelogs)
                 {
                     consentTocarelogsString.Append(str + "<br>");
@@ -1145,6 +1165,9 @@ namespace FOX.BusinessOperations.ConsentToCareService
             var config = GetServiceConfiguration(AppConfiguration.GetPracticeCode);
             var updatedHtml = consentToCareObj.TEMPLATE_HTML;
             HtmlDocument htmlDoc = new HtmlDocument();
+            var priviousCodeOfSignSpan = "id=\"consent-to-care-sign-td-span\" style=\"display: inline-block; border-bottom: 1px solid #12222E; width: 100%; padding-top: 30px; position: relative;";
+            var currentCodeOfSignSpan = "id=\"consent-to-care-sign-td-span\" style=\"display: inline-block; border-bottom: 1px solid #12222E; width: 100%; padding-top: 22px; position: relative;";
+            updatedHtml = updatedHtml.Replace(priviousCodeOfSignSpan, currentCodeOfSignSpan);
             htmlDoc.LoadHtml(updatedHtml);
             htmlDoc.GetElementbyId("consent-to-care-foxrehab-url")?.Remove();
             updatedHtml = htmlDoc.DocumentNode.OuterHtml;
@@ -1179,6 +1202,12 @@ namespace FOX.BusinessOperations.ConsentToCareService
             htmlDoc.GetElementbyId("consent-to-care-sign-form-br")?.Remove();
             updatedHtml = htmlDoc.DocumentNode.OuterHtml;
             htmlDoc.LoadHtml(updatedHtml);
+            htmlDoc.GetElementbyId("consent-to-care-foxrehab-checkbox")?.Remove();
+            updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+            htmlDoc.LoadHtml(updatedHtml);
+            htmlDoc.GetElementbyId("consent-to-care-foxrehab-checkbox-bill")?.Remove();
+            updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+            htmlDoc.LoadHtml(updatedHtml);
             htmlDoc.GetElementbyId("consent-to-care-contactus-questions-br")?.Remove();
             updatedHtml = htmlDoc.DocumentNode.OuterHtml;
             htmlDoc.LoadHtml(updatedHtml);
@@ -1195,7 +1224,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
           consentToCareObj.MODIFIED_DATE = Helper.GetCurrentDate();
             //HTML to PDF
             htmlToPdfResponseObj = new ResponseHTMLToPDF();
-            htmlToPdfResponseObj = HTMLToPDF(config, updatedHtml, consentToCareObj.CONSENT_TO_CARE_ID.ToString(), "email", "");
+            htmlToPdfResponseObj = HTMLToPDF(config, updatedHtml, consentToCareObj.CONSENT_TO_CARE_ID.ToString(), "Submit Consent", "");
             var coverFilePath = htmlToPdfResponseObj.FilePath + "\\" + htmlToPdfResponseObj.FileName;
             var consentToCareID = consentToCareObj.CONSENT_TO_CARE_ID;
             var CASE_ID = consentToCareObj.CASE_ID;
@@ -1299,14 +1328,55 @@ namespace FOX.BusinessOperations.ConsentToCareService
             return smsBody ?? "";
         }
         // Description: This function is decrypt patient account number & handle the flow of Unsubscribe Email & SMS
-        public List<InsuranceDetails> GetInsuranceDetails(FoxTblConsentToCare insuranceDetailsObj, UserProfile profile)
+        public ConsentToCareResponse GetInsuranceDetails(FoxTblConsentToCare insuranceDetailsObj, UserProfile profile)
         {
+            ConsentToCareResponse consentToCareResponse = new ConsentToCareResponse();
             List<InsuranceDetails> insuranceDetailsList = new List<InsuranceDetails>();
             var patientAccount = new SqlParameter("@PATINET_ACCOUNT", SqlDbType.BigInt) { Value = long.Parse(insuranceDetailsObj.PATIENT_ACCOUNT_Str) };
             var caseID = new SqlParameter("@CASE_ID", SqlDbType.VarChar) { Value = insuranceDetailsObj.CASE_ID };
-            var practiceCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
-            insuranceDetailsList = SpRepository<InsuranceDetails>.GetListWithStoreProcedure(@"EXEC FOX_PROC_GET_INSURANCE_DETAILS_FOR_CONSENT_TO_CARE @PATINET_ACCOUNT, @CASE_ID", patientAccount, caseID);
-            return insuranceDetailsList;
+            insuranceDetailsList = SpRepository<InsuranceDetails>.GetListWithStoreProcedure(@"EXEC FOX_PROC_GET_INSURANCE_DETAILS_FOR_CONSENT_TO_CARE_UPDATED @PATINET_ACCOUNT, @CASE_ID", patientAccount, caseID);
+            foreach (var insuranceDetail in insuranceDetailsList)
+            {
+                if (insuranceDetail.Pri_Sec_Oth_Type == "P")
+                {
+                    insuranceDetail.Co_Payment = insuranceDetail.Co_Payment == null ? "N/A" : (insuranceDetail.Co_Payment + "%").ToString();
+                    insuranceDetail.DED_REMAINING = insuranceDetail.DED_REMAINING == null ? "N/A" : ("$"+insuranceDetail.DED_REMAINING).ToString();
+                    insuranceDetail.PT_ST_TOT_AMT_USED = insuranceDetail.PT_ST_TOT_AMT_USED == null ? "N/A" : ("$"+insuranceDetail.PT_ST_TOT_AMT_USED).ToString();
+                    insuranceDetail.OT_TOT_AMT_USED = insuranceDetail.OT_TOT_AMT_USED == null ? "N/A" : ("$"+insuranceDetail.OT_TOT_AMT_USED).ToString();
+                    insuranceDetail.YEARLY_DED_AMT = insuranceDetail.YEARLY_DED_AMT == null ? "N/A" : ("$"+insuranceDetail.YEARLY_DED_AMT).ToString();
+                    insuranceDetail.MULT_USED = insuranceDetail.MULT_USED == null ? "N/A" : ("$"+insuranceDetail.MULT_USED).ToString();
+                    insuranceDetail.MULT_REMAINING = insuranceDetail.MULT_REMAINING == null ? "N/A" : ("$"+insuranceDetail.MULT_REMAINING).ToString();
+                    insuranceDetail.MULT_VALUE = insuranceDetail.MULT_VALUE == null ? "N/A" : ("$"+insuranceDetail.MULT_VALUE).ToString();
+                    insuranceDetail.INSURANCE_NAME = insuranceDetail.INSURANCE_NAME == null ? "N/A" : (insuranceDetail.INSURANCE_NAME).ToString();
+                    insuranceDetail.DED_MET = insuranceDetail.DED_MET == null ? "N/A" : ("$"+insuranceDetail.DED_MET).ToString();
+                    insuranceDetail.BENEFIT_COMMENTS = insuranceDetail.BENEFIT_COMMENTS == null ? "N/A" : ("$"+insuranceDetail.BENEFIT_COMMENTS).ToString();
+                    insuranceDetail.MOP_AMT = insuranceDetail.MOP_AMT == null ? "N/A" : ("$"+insuranceDetail.MOP_AMT).ToString();
+                    insuranceDetail.MYB_LIMIT_VISIT = insuranceDetail.MYB_LIMIT_VISIT == null ? "N/A" : ("$"+insuranceDetail.MYB_LIMIT_VISIT).ToString();
+                    insuranceDetail.MYB_LIMIT_DOLLARS = insuranceDetail.MYB_LIMIT_DOLLARS == null ? "N/A" : ("$"+insuranceDetail.MYB_LIMIT_DOLLARS).ToString();
+                    insuranceDetail.MOP_AMT_REMAINING = insuranceDetail.MOP_AMT_REMAINING == null ? "N/A" : ("$"+insuranceDetail.MOP_AMT_REMAINING).ToString();
+                    consentToCareResponse.primaryInsuranceDetailsObj = insuranceDetail;
+                }
+                else if (insuranceDetail.Pri_Sec_Oth_Type == "S")
+                {
+                    insuranceDetail.Co_Payment = insuranceDetail.Co_Payment == null ? "N/A" : (insuranceDetail.Co_Payment + "%").ToString();
+                    insuranceDetail.DED_REMAINING = insuranceDetail.DED_REMAINING == null ? "N/A" : ("$" + insuranceDetail.DED_REMAINING).ToString();
+                    insuranceDetail.PT_ST_TOT_AMT_USED = insuranceDetail.PT_ST_TOT_AMT_USED == null ? "N/A" : ("$" + insuranceDetail.PT_ST_TOT_AMT_USED).ToString();
+                    insuranceDetail.OT_TOT_AMT_USED = insuranceDetail.OT_TOT_AMT_USED == null ? "N/A" : ("$" + insuranceDetail.OT_TOT_AMT_USED).ToString();
+                    insuranceDetail.YEARLY_DED_AMT = insuranceDetail.YEARLY_DED_AMT == null ? "N/A" : ("$" + insuranceDetail.YEARLY_DED_AMT).ToString();
+                    insuranceDetail.MULT_USED = insuranceDetail.MULT_USED == null ? "N/A" : ("$" + insuranceDetail.MULT_USED).ToString();
+                    insuranceDetail.MULT_REMAINING = insuranceDetail.MULT_REMAINING == null ? "N/A" : ("$" + insuranceDetail.MULT_REMAINING).ToString();
+                    insuranceDetail.MULT_VALUE = insuranceDetail.MULT_VALUE == null ? "N/A" : ("$" + insuranceDetail.MULT_VALUE).ToString();
+                    insuranceDetail.INSURANCE_NAME = insuranceDetail.INSURANCE_NAME == null ? "N/A" : (insuranceDetail.INSURANCE_NAME).ToString();
+                    insuranceDetail.DED_MET = insuranceDetail.DED_MET == null ? "N/A" : ("$" + insuranceDetail.DED_MET).ToString();
+                    insuranceDetail.BENEFIT_COMMENTS = insuranceDetail.BENEFIT_COMMENTS == null ? "N/A" : ("$" + insuranceDetail.BENEFIT_COMMENTS).ToString();
+                    insuranceDetail.MOP_AMT = insuranceDetail.MOP_AMT == null ? "N/A" : ("$" + insuranceDetail.MOP_AMT).ToString();
+                    insuranceDetail.MYB_LIMIT_VISIT = insuranceDetail.MYB_LIMIT_VISIT == null ? "N/A" : ("$" + insuranceDetail.MYB_LIMIT_VISIT).ToString();
+                    insuranceDetail.MYB_LIMIT_DOLLARS = insuranceDetail.MYB_LIMIT_DOLLARS == null ? "N/A" : ("$" + insuranceDetail.MYB_LIMIT_DOLLARS).ToString();
+                    insuranceDetail.MOP_AMT_REMAINING = insuranceDetail.MOP_AMT_REMAINING == null ? "N/A" : ("$" + insuranceDetail.MOP_AMT_REMAINING).ToString();
+                    consentToCareResponse.secondaryInsuranceDetailsObj = insuranceDetail;
+                }
+            }
+            return consentToCareResponse;
         }
         #endregion
     }

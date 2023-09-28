@@ -15,7 +15,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
         FoxTblConsentToCare SubmitConsentToCare(FoxTblConsentToCare consentToCareObj, UserProfile profile);
         ConsentToCareList GetConsentToCareImagePath(FoxTblConsentToCare consentToCareObj, UserProfile profile);
         bool CommentOnCallTap(FoxTblConsentToCare consentToCareObj, UserProfile profile);
-        List<InsuranceDetails> GetInsuranceDetails(FoxTblConsentToCare consentToCareObj, UserProfile profile);
+        ConsentToCareResponse GetInsuranceDetails(FoxTblConsentToCare consentToCareObj, UserProfile profile);
         #endregion
     }
 }
