@@ -913,6 +913,9 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 htmlDoc.GetElementbyId("consent-to-care-contactus-questions-br")?.Remove();
                 updatedHtml = htmlDoc.DocumentNode.OuterHtml;
                 htmlDoc.LoadHtml(updatedHtml);
+                htmlDoc.GetElementbyId("consent-to-care-contactus-questions-br")?.Remove();
+                updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+                htmlDoc.LoadHtml(updatedHtml);
                 htmlDoc.GetElementbyId("consent-to-care-check-eligibility-br")?.Remove();
                 updatedHtml = htmlDoc.DocumentNode.OuterHtml;
                 htmlDoc.LoadHtml(updatedHtml);
@@ -1206,6 +1209,9 @@ namespace FOX.BusinessOperations.ConsentToCareService
             updatedHtml = htmlDoc.DocumentNode.OuterHtml;
             htmlDoc.LoadHtml(updatedHtml);
             htmlDoc.GetElementbyId("consent-to-care-foxrehab-checkbox-bill")?.Remove();
+            updatedHtml = htmlDoc.DocumentNode.OuterHtml;
+            htmlDoc.LoadHtml(updatedHtml);
+            htmlDoc.GetElementbyId("consent-to-care-contactus-questions-br")?.Remove();
             updatedHtml = htmlDoc.DocumentNode.OuterHtml;
             htmlDoc.LoadHtml(updatedHtml);
             htmlDoc.GetElementbyId("consent-to-care-contactus-questions-br")?.Remove();
