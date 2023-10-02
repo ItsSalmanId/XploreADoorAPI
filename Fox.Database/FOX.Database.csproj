@@ -115,6 +115,7 @@
     <Content Include="StoredProcedure\FOX_PROC_DELETE_NOTIFICATIONS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_DELETE_REC_FROM_MTBC_CREDENTIALS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_EXISTING_SURVEY_DETAIL.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_EXPIRE_CONSENT_TO_CARE_LINK.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GENERATE_INSERT_TOKEN.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GETMAXCOLUMNID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_ACTIVE_CATEGORY_DESCRIPTION_CREDENTIAL.sql" />
@@ -162,8 +163,10 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_CITY_STATE_COUNTY_REGION_BY_ZIP_CODE_NEW.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_COMPLETED_QUEUE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_COMPLETED_QUEUE_TASK.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_CONSENT_STATUS_ID_BY_NAME.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_CONSENT_TO_CARE_DETAILS_BY_CASE_ID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_CONSENT_TO_CARE_DOCUMENTS_INFO.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_CONSENT_TO_CARE_FOR_EXPIRY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CASE_ID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CASE_ID_AND_SEND_TO.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CONSENT_TO_CARE_ID.sql" />
