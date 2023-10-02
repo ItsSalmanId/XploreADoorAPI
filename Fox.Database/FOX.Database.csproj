@@ -152,6 +152,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_BEST_TIME_TO_CALL.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_CALL_HANDLING_DEFAULT_VALUES.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_CALL_LIST_FOR_AUDIT.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_CASE_TRATEMENT_TEAM.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_CHECKED_RIGHTS_OF_ROLE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_CITY_BY_ZIP_CODE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_CITY_STATE_BY_ZIP_CODE.sql" />
@@ -161,6 +162,11 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_CITY_STATE_COUNTY_REGION_BY_ZIP_CODE_NEW.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_COMPLETED_QUEUE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_COMPLETED_QUEUE_TASK.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_CONSENT_TO_CARE_DETAILS_BY_CASE_ID.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_CONSENT_TO_CARE_DOCUMENTS_INFO.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CASE_ID.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CASE_ID_AND_SEND_TO.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CONSENT_TO_CARE_ID.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_CONTACT_TYPES.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_CORRECTED_CLAIM_LOG.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_COUNTIES_BY_REFERRAL_REGION_ID.sql" />
@@ -205,6 +211,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_INDEXER_FULL_NAME.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_INDEX_INFO_INDEXER.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_INSURANCE.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_INSURANCE_DETAILS_FOR_CONSENT_TO_CARE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_INSURANCE_PAYERS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_INSURANCE_PAYER_NAME.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_INTERFACE_FAILED_PATIENT.sql" />
@@ -270,6 +277,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_SURVEY_REGIONS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_SURVEY_STATES.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PATIENT_UPDATE_HISTORY_LIST.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_PATINET_CONTACT_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PENDING_DETAILED_REPORT.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PENDING_HIGH_BALANCE_DETAILED_REPORT.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_PENDING_HIGH_BALANCE_DETAILED_REPORT_NEW_LOGIC.sql" />
@@ -354,6 +362,7 @@
     <Content Include="StoredProcedure\FOX_PROC_GET_RO_REFERRAL_PROCEDURE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SCHEDULER_LIST.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SERVICE_CONFIGURATION.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_GET_SERVICE_CONFIGURATION_CONSENT_TO_CARE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SMART_CITY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SMART_COUNTY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_GET_SMART_GROUPS.sql" />
@@ -443,6 +452,7 @@
     <Content Include="StoredProcedure\FOX_PROC_INSERT_ANNOUNCEMENT_ROLE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_AVAYA_CALL_RECORD.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_CLIENT_EXPERIENCE_SERVICE_LOG.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_INSERT_CONSENT_TO_CARE_TASK.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_DUPLICATE_CALL_RECORD.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_DUPLICATE_CALL_RECORDING_SERVICE.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_EMAIL_LOG_OF_AM_NOTIFICATION_FOR_SERVICE.sql" />
@@ -493,6 +503,7 @@
     <Content Include="StoredProcedure\FOX_PROC_UPDATE_PATIENT_OPENED_BY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_UPDATE_PHD_CALL_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_UPDATE_SURVEY_SERVICE_LAST_EXECUTION_DATE.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_UPDATE_TASK_LOG.sql" />
     <Content Include="StoredProcedure\FOX_PROC_UPDATE_TOKEN.sql" />
     <Content Include="StoredProcedure\FOX_PROC_UPDATE_USER_TEAM_DETAILS.sql" />
     <Content Include="StoredProcedure\FOX_PROC_UPDATE_WORK_QUEUE.sql" />
@@ -568,6 +579,9 @@
     <Content Include="Tables\FOX_TBL_COMMUNICATION_CALL_STATUS.sql" />
     <Content Include="Tables\FOX_TBL_COMMUNICATION_CALL_TYPE.sql" />
     <Content Include="Tables\FOX_TBL_COMMUNICATION_STATUS_OF_CARE.sql" />
+    <Content Include="Tables\FOX_TBL_CONSENT_TO_CARE.sql" />
+    <Content Include="Tables\FOX_TBL_CONSENT_TO_CARE_DOCUMENTS.sql" />
+    <Content Include="Tables\FOX_TBL_CONSENT_TO_CARE_STATUS.sql" />
     <Content Include="Tables\FOX_TBL_CORRECTED_CLAIM.sql" />
     <Content Include="Tables\FOX_TBL_CORRECTED_CLAIM_LOG.sql" />
     <Content Include="Tables\FOX_TBL_CORRECTED_CLAIM_TYPE.sql" />
