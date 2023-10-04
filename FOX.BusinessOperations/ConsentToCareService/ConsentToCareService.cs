@@ -924,7 +924,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 htmlToPdfResponseObj = new ResponseHTMLToPDF();
                 htmlToPdfResponseObj = HTMLToPDF(config, updatedHtml, consentToCareObj.CONSENT_TO_CARE_ID.ToString(), "email", "");
                 var coverFilePath = htmlToPdfResponseObj.FilePath + "\\" + htmlToPdfResponseObj.FileName;
-                //var coverFilePath = HTMLToPDFSautinsoft(config, htmlTemplate, consentToCareIdStr);
                 var consentToCareID = consentToCareObj.CONSENT_TO_CARE_ID;
                 var CASE_ID = consentToCareObj.CASE_ID;
                 var currentConsentToCareId = consentToCareObj.CONSENT_TO_CARE_ID;
@@ -1048,7 +1047,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
             if (consentToCareObj != null)
             {
                 consentToCareObj.PATIENT_ACCOUNT_Str = consentToCareObj.PATIENT_ACCOUNT.ToString();
-                consentToCareObj.OrderingRefNotes = consentToCareObj.OrderingRefNotes == null ? "" : " from " + consentToCareObj.OrderingRefNotes;
+                consentToCareObj.OrderingRefNotes = consentToCareObj.OrderingRefNotes == null ? "" : consentToCareObj.OrderingRefNotes;
             }    
             return consentToCareObj;
         }
@@ -1364,22 +1363,23 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 }
                 else if (insuranceDetail.Pri_Sec_Oth_Type == "S")
                 {
-                    insuranceDetail.Co_Payment = insuranceDetail.Co_Payment == null ? "N/A" : (insuranceDetail.Co_Payment + "%").ToString();
-                    insuranceDetail.DED_REMAINING = insuranceDetail.DED_REMAINING == null ? "N/A" : ("$" + insuranceDetail.DED_REMAINING).ToString();
-                    insuranceDetail.PT_ST_TOT_AMT_USED = insuranceDetail.PT_ST_TOT_AMT_USED == null ? "N/A" : ("$" + insuranceDetail.PT_ST_TOT_AMT_USED).ToString();
-                    insuranceDetail.OT_TOT_AMT_USED = insuranceDetail.OT_TOT_AMT_USED == null ? "N/A" : ("$" + insuranceDetail.OT_TOT_AMT_USED).ToString();
-                    insuranceDetail.YEARLY_DED_AMT = insuranceDetail.YEARLY_DED_AMT == null ? "N/A" : ("$" + insuranceDetail.YEARLY_DED_AMT).ToString();
-                    insuranceDetail.MULT_USED = insuranceDetail.MULT_USED == null ? "N/A" : ("$" + insuranceDetail.MULT_USED).ToString();
-                    insuranceDetail.MULT_REMAINING = insuranceDetail.MULT_REMAINING == null ? "N/A" : ("$" + insuranceDetail.MULT_REMAINING).ToString();
-                    insuranceDetail.MULT_VALUE = insuranceDetail.MULT_VALUE == null ? "N/A" : ("$" + insuranceDetail.MULT_VALUE).ToString();
-                    insuranceDetail.INSURANCE_NAME = insuranceDetail.INSURANCE_NAME == null ? "N/A" : (insuranceDetail.INSURANCE_NAME).ToString();
-                    insuranceDetail.DED_MET = insuranceDetail.DED_MET == null ? "N/A" : ("$" + insuranceDetail.DED_MET).ToString();
-                    insuranceDetail.BENEFIT_COMMENTS = insuranceDetail.BENEFIT_COMMENTS == null ? "N/A" : ("$" + insuranceDetail.BENEFIT_COMMENTS).ToString();
-                    insuranceDetail.MOP_AMT = insuranceDetail.MOP_AMT == null ? "N/A" : ("$" + insuranceDetail.MOP_AMT).ToString();
-                    insuranceDetail.MYB_LIMIT_VISIT = insuranceDetail.MYB_LIMIT_VISIT == null ? "N/A" : ("$" + insuranceDetail.MYB_LIMIT_VISIT).ToString();
-                    insuranceDetail.MYB_LIMIT_DOLLARS = insuranceDetail.MYB_LIMIT_DOLLARS == null ? "N/A" : ("$" + insuranceDetail.MYB_LIMIT_DOLLARS).ToString();
-                    insuranceDetail.MOP_AMT_REMAINING = insuranceDetail.MOP_AMT_REMAINING == null ? "N/A" : ("$" + insuranceDetail.MOP_AMT_REMAINING).ToString();
-                    consentToCareResponse.secondaryInsuranceDetailsObj = insuranceDetail;
+                    InsuranceDetails secondaryInsuranceDetails = new InsuranceDetails();
+                    secondaryInsuranceDetails.Co_Payment = insuranceDetail.Co_Payment == null ? "N/A" : (insuranceDetail.Co_Payment + "%").ToString();
+                    secondaryInsuranceDetails.DED_REMAINING = insuranceDetail.DED_REMAINING == null ? "N/A" : ("$" + insuranceDetail.DED_REMAINING).ToString();
+                    secondaryInsuranceDetails.PT_ST_TOT_AMT_USED = insuranceDetail.PT_ST_TOT_AMT_USED == null ? "N/A" : ("$" + insuranceDetail.PT_ST_TOT_AMT_USED).ToString();
+                    secondaryInsuranceDetails.OT_TOT_AMT_USED = insuranceDetail.OT_TOT_AMT_USED == null ? "N/A" : ("$" + insuranceDetail.OT_TOT_AMT_USED).ToString();
+                    secondaryInsuranceDetails.YEARLY_DED_AMT = insuranceDetail.YEARLY_DED_AMT == null ? "N/A" : ("$" + insuranceDetail.YEARLY_DED_AMT).ToString();
+                    secondaryInsuranceDetails.MULT_USED = insuranceDetail.MULT_USED == null ? "N/A" : ("$" + insuranceDetail.MULT_USED).ToString();
+                    secondaryInsuranceDetails.MULT_REMAINING = insuranceDetail.MULT_REMAINING == null ? "N/A" : ("$" + insuranceDetail.MULT_REMAINING).ToString();
+                    secondaryInsuranceDetails.MULT_VALUE = insuranceDetail.MULT_VALUE == null ? "N/A" : ("$" + insuranceDetail.MULT_VALUE).ToString();
+                    secondaryInsuranceDetails.INSURANCE_NAME = insuranceDetail.INSURANCE_NAME == null ? "N/A" : (insuranceDetail.INSURANCE_NAME).ToString();
+                    secondaryInsuranceDetails.DED_MET = insuranceDetail.DED_MET == null ? "N/A" : ("$" + insuranceDetail.DED_MET).ToString();
+                    secondaryInsuranceDetails.BENEFIT_COMMENTS = insuranceDetail.BENEFIT_COMMENTS == null ? "N/A" : ("$" + insuranceDetail.BENEFIT_COMMENTS).ToString();
+                    secondaryInsuranceDetails.MOP_AMT = insuranceDetail.MOP_AMT == null ? "N/A" : ("$" + insuranceDetail.MOP_AMT).ToString();
+                    secondaryInsuranceDetails.MYB_LIMIT_VISIT = insuranceDetail.MYB_LIMIT_VISIT == null ? "N/A" : ("$" + insuranceDetail.MYB_LIMIT_VISIT).ToString();
+                    secondaryInsuranceDetails.MYB_LIMIT_DOLLARS = insuranceDetail.MYB_LIMIT_DOLLARS == null ? "N/A" : ("$" + insuranceDetail.MYB_LIMIT_DOLLARS).ToString();
+                    secondaryInsuranceDetails.MOP_AMT_REMAINING = insuranceDetail.MOP_AMT_REMAINING == null ? "N/A" : ("$" + insuranceDetail.MOP_AMT_REMAINING).ToString();
+                    consentToCareResponse.secondaryInsuranceDetailsObj = secondaryInsuranceDetails;
                 }
             }
             return consentToCareResponse;
