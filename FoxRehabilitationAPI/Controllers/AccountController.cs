@@ -537,7 +537,7 @@ namespace FoxRehabilitationAPI.Controllers
         [Route("VerifyOTP")]
         public async Task<HttpResponseMessage> VerifyOTP(string otp, string otpIdentifier, string captchaResponse, string utcDateTime, OAuthGrantResourceOwnerCredentialsContext context)
         {
-            var LAST_ATTEMPTUTC_DATETIME = Convert.ToDateTime(utcDateTime);
+            var LAST_ATTEMPTUTC_DATETIME = Convert.ToDateTime(DateTime.UtcNow.AddHours(1));
             int randomValue = new Random().Next();
             if (String.IsNullOrEmpty(otp) || String.IsNullOrEmpty(otpIdentifier))
             {
