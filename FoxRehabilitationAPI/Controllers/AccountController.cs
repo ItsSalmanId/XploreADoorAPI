@@ -604,6 +604,7 @@ namespace FoxRehabilitationAPI.Controllers
                         }
                         if (obj.status == true)
                         {
+                            Helper.TokenTaskCancellationExceptionLog("WHEN ENTERED VALID CODE BELOW CODE RUNED ");
                             obj.OtpCaptcha = true;
                             obj.otpkey = otpIdentifier;
                             obj.loginCount = Convert.ToInt32(invalidMFAAttempts.FAIL_ATTEMPT_COUNT);

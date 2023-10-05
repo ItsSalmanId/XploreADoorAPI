@@ -90,20 +90,28 @@ namespace FoxRehabilitationAPI.Providers
                     }
                 }
                 var invalidMFAAttempts = userManager.GetInvalidMFAAttempts(context.UserName);
+                Helper.TokenTaskCancellationExceptionLog("start of line 93 Invlaid attempts are " + invalidMFAAttempts);
                 if (invalidMFAAttempts != null)
                 {
                     DateTime currentDateTime = DateTime.UtcNow;
+                    Helper.TokenTaskCancellationExceptionLog("UTC Time on Staging " + currentDateTime);
                     DateTime modifiedDateTime = invalidMFAAttempts.LAST_ATTEMPT_DATE_UTC;
+                    Helper.TokenTaskCancellationExceptionLog("modifiedDateTime " + modifiedDateTime);
                     TimeSpan timeDifference = modifiedDateTime - currentDateTime;
+                    Helper.TokenTaskCancellationExceptionLog("timeDifference " + timeDifference);
                     int differenceInMinutes = (int)timeDifference.TotalMinutes;
-                    if (modifiedDateTime.Date < currentDateTime.Date || differenceInMinutes < 0)
+                    Helper.TokenTaskCancellationExceptionLog("differenceInMinutes " + differenceInMinutes);
+                    if (modifiedDateTime.Date < currentDateTime.Date || differenceInMinutes <= 0)
                     {
+                        Helper.TokenTaskCancellationExceptionLog("Called AddMFAValidLoginAttempt method ");
                         userManager.AddMFAValidLoginAttempt(context.UserName);
                     }
                 }
                 var invalidMFAAttempt = userManager.GetInvalidMFAAttempts(context.UserName);
+                Helper.TokenTaskCancellationExceptionLog("invalidMFAAttempt.FAIL_ATTEMPT_COUNT" + invalidMFAAttempt.FAIL_ATTEMPT_COUNT);
                 if (invalidMFAAttempt.FAIL_ATTEMPT_COUNT >= 5)
                 {
+                    Helper.TokenTaskCancellationExceptionLog("Called SetError");
                     context.SetError("invalid_grant", invalidAttempts + 1 + "Your Account has been locked by Invalid MFA attempts, please try again in," + invalidMFAAttempts.LAST_ATTEMPT_DATE_UTC);
                     return;
                 }
@@ -116,6 +124,7 @@ namespace FoxRehabilitationAPI.Providers
                         userManager.AddInvalidLoginAttempt(context.UserName);
                         return;
                     }
+                    Helper.TokenTaskCancellationExceptionLog("AddInvalidLoginAttempt Called at Line 127 ");
                     userManager.AddInvalidLoginAttempt(context.UserName);
                     if (context.UserName.Contains("@"))
                     {
