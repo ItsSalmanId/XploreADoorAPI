@@ -92,11 +92,11 @@ namespace FoxRehabilitationAPI.Providers
                 var invalidMFAAttempts = userManager.GetInvalidMFAAttempts(context.UserName);
                 if (invalidMFAAttempts != null)
                 {
-                    DateTime currentDateTime = DateTime.UtcNow;
+                    DateTime currentDateTime = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now, TimeZoneInfo.Utc);
                     DateTime modifiedDateTime = invalidMFAAttempts.LAST_ATTEMPT_DATE_UTC;
                     TimeSpan timeDifference = modifiedDateTime - currentDateTime;
                     int differenceInMinutes = (int)timeDifference.TotalMinutes;
-                    if (modifiedDateTime <= currentDateTime)
+                    if (modifiedDateTime <= currentDateTime || differenceInMinutes <= 0)
                     {
                         userManager.AddMFAValidLoginAttempt(context.UserName);
                     }
