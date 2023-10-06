@@ -619,7 +619,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
         {
             try
             {
-                var consentDocuments = _consentToCareDocumentRepository.GetFirst(x => x.CONSENT_TO_CARE_ID == consentToCareId && x.PRACTICE_CODE == AppConfiguration.GetPracticeCode && !x.DELETED);
+                var consentDocuments = _consentToCareDocumentRepository.GetFirst(x => x.CONSENT_TO_CARE_ID == consentToCareId && x.PRACTICE_CODE == AppConfiguration.GetPracticeCode && !(x.DELETED ?? false));
                 if (consentDocuments == null)
                 {
                     ConsentToCareDocument consentToCareDocumentObj = new ConsentToCareDocument();

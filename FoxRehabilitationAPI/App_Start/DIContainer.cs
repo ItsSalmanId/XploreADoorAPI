@@ -72,7 +72,6 @@ namespace FoxRehabilitationAPI.App_Start
             container.RegisterType<ISupportStaffService, SupportStaffService>();
             container.RegisterType<FOX.BusinessOperations.SurveyAutomationService.ISurveyAutomationService, FOX.BusinessOperations.SurveyAutomationService.SurveyAutomationService>();
             container.RegisterType<IConsentToCareService, ConsentToCareService>();
-            container.RegisterType<IPowerOfAttorneyService, PowerOfAttorneyService>();
             return container;
         }
     }
