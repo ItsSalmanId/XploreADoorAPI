@@ -11410,6 +11410,10 @@ namespace FOX.BusinessOperations.PatientServices
             }
             return response;
         }
+        public Patient GetPatientDetails(long patientAccount, UserProfile profile)
+        {
+            var patientDetails = _PatientRepository.GetFirst(p => p.Patient_Account == patientAccount && (p.DELETED ?? false) == false);
+            return patientDetails;
+        }
     }
-
 }

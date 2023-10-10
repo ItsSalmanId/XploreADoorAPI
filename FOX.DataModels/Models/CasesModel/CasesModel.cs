@@ -110,7 +110,6 @@ namespace FOX.DataModels.Models.CasesModel
 
 
     }
-
     [Table("FOX_VW_CASE")]
     public class FOX_VW_CASE
     {
@@ -495,48 +494,6 @@ namespace FOX.DataModels.Models.CasesModel
         public System.DateTime MODIFIED_DATE { get; set; }
         public bool DELETED { get; set; }
     }
-
-    //[Table("FOX_TBL_SENDER_NAME")]
-    //public class FOX_TBL_SENDER_NAME
-    //{
-    //    [Key]
-    //    public long FOX_TBL_SENDER_NAME_ID { get; set; }
-    //    public Nullable<long> FOX_TBL_SENDER_TYPE_ID { get; set; }
-    //    public string SENDER_NAME_CODE { get; set; }
-    //    public string SENDER_NAME_DESCRIPTION { get; set; }
-    //    public Nullable<long> PRACTICE_CODE { get; set; }
-    //    public string CREATED_BY { get; set; }
-    //    public System.DateTime CREATED_DATE { get; set; }
-    //    public string MODIFIED_BY { get; set; }
-    //    public System.DateTime MODIFIED_DATE { get; set; }
-    //    public bool DELETED { get; set; }
-    //}
-
-    //[Table("FOX_TBL_SENDER_TYPE")]
-    //public class FOX_TBL_SENDER_TYPE
-    //{
-    //    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-    //    public FOX_TBL_SENDER_TYPE()
-    //    {
-    //        this.FOX_TBL_SENDER_NAME = new HashSet<FOX_TBL_SENDER_NAME>();
-    //    }
-
-    //    public long FOX_TBL_SENDER_TYPE_ID { get; set; }
-    //    public string SENDER_TYPE_NAME { get; set; }
-    //    public string SENDER_TYPE_DESCRIPTION { get; set; }
-    //    public Nullable<long> PRACTICE_CODE { get; set; }
-    //    public Nullable<int> DISPLAY_ORDER { get; set; }
-    //    public Nullable<bool> IsInternal { get; set; }
-    //    public string CREATED_BY { get; set; }
-    //    public System.DateTime CREATED_DATE { get; set; }
-    //    public string MODIFIED_BY { get; set; }
-    //    public System.DateTime MODIFIED_DATE { get; set; }
-    //    public bool DELETED { get; set; }
-
-    //    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-    //    public virtual ICollection<FOX_TBL_SENDER_NAME> FOX_TBL_SENDER_NAME { get; set; }
-    //}
-
     [Table("FOX_TBL_SOURCE_OF_REFERRAL")]
     public class FOX_TBL_SOURCE_OF_REFERRAL
     {
@@ -564,7 +521,6 @@ namespace FOX.DataModels.Models.CasesModel
         [NotMapped]
         public int TOTAL_RECORDS { get; set; }
     }
-
     public class ResponseGetCasesDDL : ResponseModel
     {
         public List<FOX_TBL_CASE_TYPE> FOX_TBL_CASE_TYPEList { get; set; }
@@ -634,7 +590,6 @@ namespace FOX.DataModels.Models.CasesModel
     {
         public long CASE_ID { get; set; }
     }
-
     public class SmartIdentifierReq : BaseModel
     {
         public long PRACTICE_CODE { get; set; }
@@ -660,7 +615,6 @@ namespace FOX.DataModels.Models.CasesModel
             }
         }
     }
-
     public class OpenIssueViewModel
     {
         public Nullable<long> TASK_ID { get; set; }
@@ -671,7 +625,6 @@ namespace FOX.DataModels.Models.CasesModel
         public bool IS_CHECKED { get; set; }
         public string RT_CODE { get; set; }
     }
-
     public class OpenIssueList
     {
         public int TASK_TYPE_ID { get; set; }
@@ -683,7 +636,6 @@ namespace FOX.DataModels.Models.CasesModel
         public List<FOX_TBL_TASK> Tasks { get; set; }
         public string Notes { get; set; }
     }
-
     public class NONandHOLDIssueList
     {
         public int HOLD_NON_REASONS_ID { get; set; }
@@ -694,14 +646,12 @@ namespace FOX.DataModels.Models.CasesModel
         public string RT_CODE { get; set; }
 
     }
-
     public class OpenIssueNotes
     {
         public int TASK_TYPE_ID { get; set; }
         public string TaskTypeName { get; set; }
         public string NOTES { get; set; }
     }
-
     public class OpenIssueListToDelete
     {
         public long CASE_ID { get; set; }
@@ -713,7 +663,6 @@ namespace FOX.DataModels.Models.CasesModel
         public long CASE_ID { get; set; }
         public List<OpenIssueList> openIssueList = new List<OpenIssueList>();
     }
-
     public class GetNONandHOLDAllListRes : ResponseModel
     {
         public long CASE_ID { get; set; }
@@ -721,7 +670,6 @@ namespace FOX.DataModels.Models.CasesModel
         public string Notes { get; set; }
 
     }
-
     public class GetSmartPoslocRes
     {
         public long LOC_ID { get; set; }
@@ -748,20 +696,17 @@ namespace FOX.DataModels.Models.CasesModel
         public long POS_ID { get; set; }
         public string CASE_DISCIPLINE_NAME { get; set; }
     }
-
     public class GetTreatingProviderRes : BaseModel
     {
         public long Treating_Provider_Id { get; set; }
         public string TreatingProviderName { get; set; }
     }
-
     public class GetTotalDisciplineRes
     {
         public int DISCIPLINE_ID { get; set; }
         public string NAME { get; set; }
         public int TOTAL { get; set; }
     }
-
     public class NotesViewModel
     {
         public string NotesType { get; set; }
@@ -950,14 +895,12 @@ namespace FOX.DataModels.Models.CasesModel
             }
         }
     }
-
     public class SmartSearchReq
     {
         public string Keyword { get; set; }
         public string TYPE { get; set; }
 
     }
-
     [Table("FOX_TBL_INTERFACE_SYNCH")]
     public class InterfaceSynchModel
     {
@@ -978,14 +921,11 @@ namespace FOX.DataModels.Models.CasesModel
         public long? APPOINTMENT_ID { get; set; }
         public long? GENERAL_NOTE_ID { get; set; }
     }
-
     public class CaseAndOpenIssues
     {
         public FOX_VW_CASE CaseDetail { get; set; }
         public GetOpenIssueAllListRes OpenIssues { get; set; }
     }
-
-
     public class Referral_Region_View
     {
         public long? REFERRAL_REGION_ID { get; set; }
@@ -1005,8 +945,6 @@ namespace FOX.DataModels.Models.CasesModel
         public int PageSize { get; set; }
         public long PracticeCode { get; set; }    
     }
-
-
     [Table("FOX_TBL_CASE_TREATMENT_TEAM")]
     public class FOX_TBL_CASE_TREATMENT_TEAM
     {
@@ -1032,7 +970,6 @@ namespace FOX.DataModels.Models.CasesModel
         public DateTime MODIFIED_DATE { get; set; }
         public bool DELETED { get; set; }
     }
-
     [Table("FOX_TBL_HOLD_NON_REASONS")]
     public partial class FOX_TBL_HOLD_NON_REASONS : BaseModel
     {
@@ -1049,6 +986,4 @@ namespace FOX.DataModels.Models.CasesModel
         public bool DELETED { get; set; }
         public string RT_CODE { get; set; }
     }
-
-
 }
