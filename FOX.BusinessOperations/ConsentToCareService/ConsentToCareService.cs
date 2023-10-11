@@ -276,6 +276,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     var email = concentToCareReceiverEmail;
                     var number = concentToCareHomePhone;
                     var smsBody = SmsBody(consentReceiverName, encryptedEmailURL, consentToCareObj.disciplineName);
+                    string encodedMessage = Uri.EscapeDataString(smsBody);
                     if (!string.IsNullOrEmpty(concentToCareReceiverEmail))
                     {
                         Thread emailThread = new Thread(() =>
@@ -288,7 +289,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     {
                         Thread smsThread = new Thread(() =>
                         {
-                            var status = SmsService.SMSTwilio(number, smsBody);
+                            var status = SmsService.SMSTwilio(number, encodedMessage);
                         });
                         smsThread.Start();
                     }
@@ -318,6 +319,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     var email = concentToCareReceiverEmail;
                     var number = concentToCareHomePhone;
                     var smsBody = SmsBody(consentReceiverName, encryptedEmailURL, consentToCareObj.disciplineName);
+                    string encodedMessage = Uri.EscapeDataString(smsBody);
                     if (!string.IsNullOrEmpty(concentToCareReceiverEmail))
                     {
                         Thread emailThread = new Thread(() =>
@@ -330,7 +332,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                     {
                         Thread smsThread = new Thread(() =>
                         {
-                            var status = SmsService.SMSTwilio(number, smsBody);
+                            var status = SmsService.SMSTwilio(number, encodedMessage);
                         });
                         smsThread.Start();
                     }
