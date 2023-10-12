@@ -72,7 +72,8 @@ namespace FOX.BusinessOperations.Security
 
                 return tokenModel;
             }
-            catch (Exception) {
+            catch (Exception)
+            {
                 return new ProfileToken();
             }
         }
@@ -82,21 +83,52 @@ namespace FOX.BusinessOperations.Security
             var userNameToken = new SqlParameter("USERNAME", SqlDbType.BigInt) { Value = profile.userID };
             var userToken = new SqlParameter("TOKEN", SqlDbType.VarChar) { Value = token };
             var userProfile = new SqlParameter("USER_PROFILE", SqlDbType.VarChar) { Value = JsonConvert.SerializeObject(profile).ToString() };
-            var tokenModel = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GENERATE_INSERT_TOKEN @USERNAME, @TOKEN , @USER_PROFILE", userNameToken, userToken, userProfile);
+
+            int isLogoutValue = 0;
+            int isMFAVerified = 0;
+            int isValidate = 0;
+            if (profile.MFA == true && profile.showMfaEanbleScreen == 1)
+            {
+                isLogoutValue = 1;
+                isValidate = 0;
+            }
+            if (profile.MFA == false && profile.showMfaEanbleScreen == 0)
+            {
+                isValidate = 1;
+            }
+            var isMFAVerify = new SqlParameter("ISMFAVERIFIED", SqlDbType.BigInt) { Value = isMFAVerified };
+            var isLogout = new SqlParameter("ISLOGOUT", SqlDbType.BigInt) { Value = isLogoutValue };
+            var validate = new SqlParameter("ISVALIDATE", SqlDbType.BigInt) { Value = isValidate };
+            var tokenModel = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GENERATE_INSERT_TOKEN @USERNAME, @TOKEN , @USER_PROFILE, @ISMFAVERIFIED, @ISLOGOUT, @ISVALIDATE", userNameToken, userToken, userProfile, isMFAVerify, isLogout, validate);
+            tokenModel.isLogOut = false;
             return tokenModel;
+
         }
 
-        public ProfileToken UpdateToken(string userName, string token)
+        public ProfileToken UpdateToken(string userName, string token, bool isSecondCall)
         {
             try
             {
                 var usrParmAuth = new SqlParameter("UserName", SqlDbType.VarChar) { Value = userName };
                 var UserDetailsAuth = SpRepository<UserProfile>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_USER_PROFILING_DATA @UserName", usrParmAuth).FirstOrDefault();
                 UserDetailsAuth.Token = token;
+                int isLogoutValue = 1;
+                int isMFAVerified = 0;
+                int isValidate = 0;
+                var isLogout = new SqlParameter("ISLOGOUT", SqlDbType.BigInt) { Value = isLogoutValue }; 
+                if (isSecondCall == true)
+                {
+                    isLogoutValue = 1;
+                    isMFAVerified = 1;
+                    isValidate = 1;
+                    isLogout = new SqlParameter("ISLOGOUT", SqlDbType.BigInt) { Value = isLogoutValue }; 
+                }
+                var isUserValidate = new SqlParameter("@ISVALIDATE", SqlDbType.BigInt) { Value = isValidate };
+                var isMFAVerify = new SqlParameter("@ISMFAVERIFIED", SqlDbType.BigInt) { Value = isMFAVerified };
                 var userNameToken = new SqlParameter("@USERNAME", SqlDbType.BigInt) { Value = UserDetailsAuth.userID };
                 var userToken = new SqlParameter("@TOKEN", SqlDbType.VarChar) { Value = token };
                 var userProfile = new SqlParameter("@USER_PROFILE", SqlDbType.VarChar) { Value = JsonConvert.SerializeObject(UserDetailsAuth).ToString() };
-                var tokenModel = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_UPDATE_TOKEN @USERNAME, @TOKEN , @USER_PROFILE", userNameToken, userToken, userProfile);
+                var tokenModel = SpRepository<ProfileToken>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_UPDATE_TOKEN @ISLOGOUT, @ISVALIDATE, @ISMFAVERIFIED, @USERNAME, @TOKEN , @USER_PROFILE", isLogout, isUserValidate, isMFAVerify, userNameToken, userToken, userProfile);
 
                 return tokenModel;
             }
@@ -108,7 +140,7 @@ namespace FOX.BusinessOperations.Security
 
         public ProfileToken GetProfile(string token)
         {
-           return _TokenRepository.Get(t => t.AuthToken == token);
+            return _TokenRepository.Get(t => t.AuthToken == token);
         }
 
         public bool Kill(string tokenId)
