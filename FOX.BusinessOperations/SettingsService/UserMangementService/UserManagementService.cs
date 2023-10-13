@@ -1913,8 +1913,8 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             {
                 if (!string.IsNullOrEmpty(username))
                 {
-                    var user = _UserRepository.Get(x => x.USER_NAME.Equals(username));
-                    if (user != null)
+                    var UserName = new SqlParameter("USERNAME", SqlDbType.VarChar) { Value = username };
+                    var user = SpRepository<User>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_USER @USERNAME", UserName); if (user != null)
                     {
                         user.SIGNATURE_PATH = path;
                         user.MODIFIED_BY = profile.UserName;
