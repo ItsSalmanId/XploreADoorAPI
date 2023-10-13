@@ -1995,15 +1995,21 @@ namespace FOX.BusinessOperations.TaskServices
             var result = SpRepository<string>.GetListWithStoreProcedure(@"exec FOX_PROC_GET_NOTIFICATIONS_OF_TASKS_LIST @USER_ID, @PRACTICE_CODE, @DATE_FROM, @DATE_TO",
                     userid, pracCode, dateFrom, dateTo);
             ListResponseModel response = new ListResponseModel();
-            response.DATE = result;
+            if (result != null)
+            {
+                response.DATE = result;
             response.NotificationList = new List<List<FOX_TBL_NOTIFICATIONS>>();
             var allData = GetTasksNotifications(req, profile);
+                if (allData != null)
+                {
 
-            foreach (var item in response.DATE)
+
+                    foreach (var item in response.DATE)
             {
                 var list = allData.FindAll(x => x.SENT_ON_STR == item);
                 response.NotificationList.Add(list);
-
+                    }
+                }
             }
             return response;
         }

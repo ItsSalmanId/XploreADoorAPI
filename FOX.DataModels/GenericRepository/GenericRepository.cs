@@ -21,6 +21,7 @@ namespace FOX.DataModels.GenericRepository
         #region Private member variables...
         internal DbContext Context;
         internal DbSet<TEntity> DbSet;
+        static long retrycatch = 0;
         #endregion
 
         #region Public Constructor...
@@ -259,7 +260,12 @@ namespace FOX.DataModels.GenericRepository
             }
             catch (DbEntityValidationException e)
             {
+                if (retrycatch <= 2 && !string.IsNullOrEmpty(e.Message) && e.Message.ToLower().Contains("timeout"))
+                {
+                    retrycatch = retrycatch + 1;
+                    Save();
 
+                }
                 var outputLines = new List<string>();
                 foreach (var eve in e.EntityValidationErrors)
                 {
@@ -331,7 +337,7 @@ namespace FOX.DataModels.GenericRepository
                 {
                     Context.Database.Connection.ConnectionString = ConfigurationManager.ConnectionStrings["FOXConnection"].ConnectionString;
                 }
-            }            
+            }
         }
     }
 

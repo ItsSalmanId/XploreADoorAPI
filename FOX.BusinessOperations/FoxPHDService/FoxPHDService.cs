@@ -118,8 +118,7 @@ namespace FOX.BusinessOperations.FoxPHDService
         }
         public List<Patient> GetPatientInformation(PatientsSearchRequest ObjPatientSearchRequest, UserProfile profile)
         {
-            try
-            {
+            
                 if (!string.IsNullOrEmpty(ObjPatientSearchRequest.DATE_OF_BIRTH_STR))
                 {
                     ObjPatientSearchRequest.DATE_OF_BIRTH = Convert.ToDateTime(ObjPatientSearchRequest.DATE_OF_BIRTH_STR);
@@ -156,11 +155,7 @@ namespace FOX.BusinessOperations.FoxPHDService
                     a.USER_ID = profile.userID;
                 }
                 return PatientsInfoList;
-            }
-            catch (Exception ex)
-            {
-                    throw ex;
-            }
+          
         }
         public ResponseModel DeleteCallDetailRecordInformation(PHDCallDetail ObjPHDCallDetailRequest, UserProfile profile)
         {
@@ -196,8 +191,7 @@ namespace FOX.BusinessOperations.FoxPHDService
         }
         public List<PHDCallDetail> GetPHDCallDetailsInformation(CallDetailsSearchRequest ObjCallDetailsSearchRequest, UserProfile profile)
         {
-            try
-            {
+            
                 if (!string.IsNullOrEmpty(ObjCallDetailsSearchRequest.CALL_DATE_FROM_STR))
                 {
                     ObjCallDetailsSearchRequest.CALL_DATE_FROM = Convert.ToDateTime(ObjCallDetailsSearchRequest.CALL_DATE_FROM_STR);
@@ -293,12 +287,6 @@ namespace FOX.BusinessOperations.FoxPHDService
                     }
                 }
                 return PHDDetailsList;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
         }
         /// <summary>
         /// This function is return the PDF Page Number Count

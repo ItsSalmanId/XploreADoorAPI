@@ -1489,7 +1489,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 _body += "<br />📞Mobile: ";
                 if (!string.IsNullOrEmpty(emailData.PATIENT_PHONE_NO))
                 {
-                    emailData.PATIENT_PHONE_NO = String.Format("{0:(###) ###-####}", Int64.Parse(emailData.PATIENT_PHONE_NO.Trim()));
+                    emailData.PATIENT_PHONE_NO = String.Format("{0:(###) ###-####}", Int64.Parse(emailData.PATIENT_PHONE_NO.Trim().Replace(" ", "")));
                     _body += emailData.PATIENT_PHONE_NO;
                 }
                 _body += "<br />Pri. Ins: ";
@@ -1987,8 +1987,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
         public List<SmartOrderSource> GetSmartOrderingSource(SmartReq obj, UserProfile Profile)
         {
-            try
-            {
+            
                 var parmPracticeCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
                 var smartvalue = new SqlParameter("@SEARCHVALUE", SqlDbType.VarChar) { Value = obj.SEARCHVALUE };
                 var result = new List<SmartOrderSource>();
@@ -2023,32 +2022,21 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 }
                 else
                     return new List<SmartOrderSource>();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
         }
         
         public SmartOrderSource GetSmartOrderingSourceByID(long Source_ID, UserProfile Profile)
         {
-            try
-            {
+           
                 var parmPracticeCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
                 var id = new SqlParameter("@SOURCE_ID", SqlDbType.BigInt) { Value = Source_ID };
                 var result = SpRepository<SmartOrderSource>.GetSingleObjectWithStoreProcedure(@"exec [CCR_GET_SMART_ORDERING_SOURCE_BY_ID] @PRACTICE_CODE, @SOURCE_ID", parmPracticeCode, id);
                 return result; 
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+               
         }
 
         public List<SmartRefRegion> GetSmartRefRegion(SmartReq obj, UserProfile Profile)
         {
-            try
-            {
+            
                 var parmPracticeCode = new SqlParameter("PRACTICE_CODE", SqlDbType.BigInt) { Value = Profile.PracticeCode };
                 var smartvalue = new SqlParameter("SEARCHVALUE", SqlDbType.VarChar) { Value = obj.SEARCHVALUE };
                 var result = SpRepository<SmartRefRegion>.GetListWithStoreProcedure(@"exec [FOX_GET_SMART_REF_REGION] @PRACTICE_CODE, @SEARCHVALUE", parmPracticeCode, smartvalue).ToList();
@@ -2056,17 +2044,12 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     return result;
                 else
                     return new List<SmartRefRegion>();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+          
         }
 
         public GETtAll_IndexifoRes GetAllIndexinfo(Index_infoReq obj, UserProfile Profile)
         {
-            try
-            {
+          
                 var wORK_ID = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = obj.WORK_ID };
                 var wORK_IDProc = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = obj.WORK_ID };
                 var wORK_IDCpt = new SqlParameter("WORK_ID", SqlDbType.BigInt) { Value = obj.WORK_ID };
@@ -2132,17 +2115,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
                 {
                     return new GETtAll_IndexifoRes();
                 }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
         }
 
         public List<AnalaysisReportRes> GetAnalysisRPT(AnalaysisReportReq obj, UserProfile Profile)
         {
-            try
-            {
+           
 
                 if (obj.DATEFROM_In_String == null)
                     obj.DATEFROM_In_String = "";
@@ -2195,11 +2172,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                         return new List<AnalaysisReportRes>();
 
                 }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+       
 
         }
 
@@ -2210,8 +2183,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
 
         public List<SlotAnalysisRes> GetSlotData(SlotAnalysisReq obj, UserProfile Profile)
         {
-            try
-            {
+           
 
                 var dATE = new SqlParameter("DATE", SqlDbType.VarChar) { Value = obj.DATE.Value.ToString("MM/dd/yyyy") };
                 var sTART_VALUE = new SqlParameter("START_VALUE", SqlDbType.VarChar) { Value = obj.START_VALUE };
@@ -2226,17 +2198,12 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     return result;
                 else
                     return new List<SlotAnalysisRes>();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+          
 
         }
         public List<SlotAnalysisRes> GetSlotData16_30(SlotAnalysisReq obj, UserProfile Profile)
         {
-            try
-            {
+           
 
 
                 var dATE = new SqlParameter("DATE", SqlDbType.VarChar) { Value = obj.DATE.Value.ToString("MM/dd/yyyy") };
@@ -2252,11 +2219,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     return result;
                 else
                     return new List<SlotAnalysisRes>();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+          
         }
         public List<SlotAnalysisRes> GetSlotData0_15(SlotAnalysisReq obj, UserProfile Profile)
         {
@@ -2359,9 +2322,6 @@ namespace FOX.BusinessOperations.IndexInfoServices
         }
         public List<SlotAnalysisRes> GetSlotDataGreater_2HR(SlotAnalysisReq obj, UserProfile Profile)
         {
-            try
-            {
-
                 var dATE = new SqlParameter("DATE", SqlDbType.VarChar) { Value = obj.DATE.Value.ToString("MM/dd/yyyy") };
                 var sTART_VALUE = new SqlParameter("START_VALUE", SqlDbType.VarChar) { Value = obj.START_VALUE };
                 var eND_VALUE = new SqlParameter("END_VALUE", SqlDbType.VarChar) { Value = obj.END_VALUE };
@@ -2375,16 +2335,11 @@ namespace FOX.BusinessOperations.IndexInfoServices
                     return result;
                 else
                     return new List<SlotAnalysisRes>();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+         
         }
         public string Export(AnalaysisReportReq obj, UserProfile profile)
         {
-            try
-            {
+           
                 string fileName = "Analysis_Report";
                 string exportPath = "";
                 string path = string.Empty;
@@ -2426,11 +2381,7 @@ namespace FOX.BusinessOperations.IndexInfoServices
                         #endregion
                 }
                 return virtualPath + fileName;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+         
         }
 
         public QRCodeModel GenerateQRCode(QRCodeModel obj, UserProfile profile)
