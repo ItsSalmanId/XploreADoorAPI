@@ -133,6 +133,10 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             var dateTo = Helper.getDBNullOrValue("@DATE_TO", request.DATE_TO.ToString());
             var callScanario = new SqlParameter { ParameterName = "PHD_CALL_SCENARIO_ID", SqlDbType = SqlDbType.VarChar, Value = request.PHD_CALL_SCENARIO_ID };
             var readOnlyMode = new SqlParameter { ParameterName = "IS_READ_ONLY_MODE", SqlDbType = SqlDbType.Bit, Value = request.IS_READ_ONLY_MODE };
+            if (request.PAGE_NUMBER == null || request.PAGE_NUMBER == 0)
+            {
+                request.PAGE_NUMBER = 1;
+            }
             var CurrentPage = new SqlParameter { ParameterName = "@PAGE_NUMBER", SqlDbType = SqlDbType.Int, Value = request.PAGE_NUMBER };
             var RecordPerPage = new SqlParameter { ParameterName = "@PAGE_SIZE", SqlDbType = SqlDbType.Int, Value = 500 };
 
