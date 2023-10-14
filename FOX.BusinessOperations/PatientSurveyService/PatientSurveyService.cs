@@ -976,6 +976,27 @@ namespace FOX.BusinessOperations.PatientSurveyService
             }
         }
 
+        public void UpdateProvider(PatientSurveyUpdateProvider PatientSurveyUpdateProvider, UserProfile profile)
+        {
+            var dbSurveyCall = _patientSurveyRepository.GetByID(PatientSurveyUpdateProvider.SURVEY_ID);
+            if (dbSurveyCall != null)
+            {
+
+
+                var surveryId = new SqlParameter { ParameterName = "SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = PatientSurveyUpdateProvider.SURVEY_ID };
+                var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                var providerName = new SqlParameter { ParameterName = "PROVIDER", SqlDbType = SqlDbType.VarChar, Value = PatientSurveyUpdateProvider.providerName };
+                var modifiedBy = new SqlParameter { ParameterName = "MODIFIED_BY", SqlDbType = SqlDbType.VarChar, Value = profile.UserName };
+                var patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = PatientSurveyUpdateProvider.PATIENT_ACCOUNT_NUMBER };
+
+                var response = SpRepository<PatientSurveyCallLog>.GetListWithStoreProcedure(@"FOX_PROC_UPDATE_PROVIDER_NAME @SURVEY_ID, @PRACTICE_CODE, @PROVIDER, @MODIFIED_BY, @PATIENT_ACCOUNT", surveryId, practiceCode, providerName, modifiedBy, patientAccount);
+            }
+            else
+            {
+                return;
+            }
+
+        }
         public List<PatientSurveyCallLog> GetSurveyCallList(long patientAccount, long practiceCode)
         {
             var PracticeCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = practiceCode };

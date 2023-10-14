@@ -18,6 +18,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
         List<PatientSurveyHistory> GetSurveyHistoryList(long patientAccount, long practiceCode);
         string MakeSurveyCall(PatientSurveyCall patientSurveyCall);
         void AddUpdateSurveyCall(PatientSurveyCallLog patientSurveyCallLog, UserProfile profile);
+        void UpdateProvider(PatientSurveyUpdateProvider PatientSurveyUpdateProvider, UserProfile profile);
         List<PatientSurveyCallLog> GetSurveyCallList(long patientAccount, long practiceCode);
         PSSearchData GetPSSearchData(long practiceCode);
         PSInitialData GetPSInitialData(PatientSurveySearchRequest patientSurveySearchRequest, UserProfile profile);

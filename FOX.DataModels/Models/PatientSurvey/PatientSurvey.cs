@@ -221,6 +221,13 @@ namespace FOX.DataModels.Models.PatientSurvey
         public bool? IS_EMAIL { get; set; }
     }
 
+    public class PatientSurveyUpdateProvider
+    {
+        public long SURVEY_ID { get; set; }
+        public string providerName { get; set; }
+        public long? PATIENT_ACCOUNT_NUMBER { get; set; }
+    }
+
     [Table("FOX_TBL_PATIENT_SURVEY_CALL_LOG")]
     public class PatientSurveyCallLog: BaseModel
     {
