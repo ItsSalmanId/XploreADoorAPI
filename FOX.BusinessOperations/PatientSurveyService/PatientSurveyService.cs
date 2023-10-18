@@ -989,12 +989,9 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 var modifiedBy = new SqlParameter { ParameterName = "MODIFIED_BY", SqlDbType = SqlDbType.VarChar, Value = profile.UserName };
                 var patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = PatientSurveyUpdateProvider.PATIENT_ACCOUNT_NUMBER };
 
-                var response = SpRepository<PatientSurveyCallLog>.GetListWithStoreProcedure(@"FOX_PROC_UPDATE_PROVIDER_NAME @SURVEY_ID, @PRACTICE_CODE, @PROVIDER, @MODIFIED_BY, @PATIENT_ACCOUNT", surveryId, practiceCode, providerName, modifiedBy, patientAccount);
+                SpRepository<PatientSurveyCallLog>.GetListWithStoreProcedure(@"exec FOX_PROC_UPDATE_PROVIDER_NAME @SURVEY_ID, @PRACTICE_CODE, @PROVIDER, @MODIFIED_BY, @PATIENT_ACCOUNT", surveryId, practiceCode, providerName, modifiedBy, patientAccount);
             }
-            else
-            {
-                return;
-            }
+           
 
         }
         public List<PatientSurveyCallLog> GetSurveyCallList(long patientAccount, long practiceCode)
