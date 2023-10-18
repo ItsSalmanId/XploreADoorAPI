@@ -985,7 +985,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
 
                 var surveryId = new SqlParameter { ParameterName = "SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = PatientSurveyUpdateProvider.SURVEY_ID };
                 var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
-                var providerName = new SqlParameter { ParameterName = "PROVIDER", SqlDbType = SqlDbType.VarChar, Value = PatientSurveyUpdateProvider.providerName };
+                var providerName = new SqlParameter { ParameterName = "PROVIDER", SqlDbType = SqlDbType.VarChar, Value = PatientSurveyUpdateProvider.PROVIDER_NAME };
                 var modifiedBy = new SqlParameter { ParameterName = "MODIFIED_BY", SqlDbType = SqlDbType.VarChar, Value = profile.UserName };
                 var patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = PatientSurveyUpdateProvider.PATIENT_ACCOUNT_NUMBER };
 

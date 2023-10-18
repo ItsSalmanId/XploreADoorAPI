@@ -224,7 +224,7 @@ namespace FOX.DataModels.Models.PatientSurvey
     public class PatientSurveyUpdateProvider
     {
         public long SURVEY_ID { get; set; }
-        public string providerName { get; set; }
+        public string PROVIDER_NAME { get; set; }
         public long? PATIENT_ACCOUNT_NUMBER { get; set; }
     }
 
