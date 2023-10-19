@@ -2,6 +2,7 @@
 using FOX.DataModels.Models.PatientSurvey;
 using FOX.DataModels.Models.Security;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 using System;
 
 namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
@@ -180,6 +181,28 @@ namespace FoxRehabilitation.UnitTest.PatientSurveyServiceUnitTest
             {
                 Assert.IsFalse(false);
             }
+        }
+        [Test]
+        [TestCase(101116399910002, "John Doe", 1122334456)]
+        public void UpdateProvider_DbSurveyCallNotNull_Success(long SURVEY_ID, string PROVIDER_NAME, long PATIENT_ACCOUNT_NUMBER)
+        {
+            // Arrange
+            var patientSurveyUpdateProvider = new PatientSurveyUpdateProvider
+            {
+                SURVEY_ID = SURVEY_ID,
+                PROVIDER_NAME = PROVIDER_NAME,
+                PATIENT_ACCOUNT_NUMBER = PATIENT_ACCOUNT_NUMBER
+            };
+            var userProfile = new UserProfile
+            {
+                PracticeCode = 1012714,
+                UserName = "6455testing"
+            };
+            // Act
+            _patientSurveyService.UpdateProvider(patientSurveyUpdateProvider, userProfile);
+
+            // Assert 
+                Assert.IsTrue(true);
         }
         [Test]
         [TestCase(1011163)]
