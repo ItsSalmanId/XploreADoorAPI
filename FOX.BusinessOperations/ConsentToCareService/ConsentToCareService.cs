@@ -258,7 +258,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                         if (existingConsentCaseId != null)
                         {
                             interfaceSynch.TASK_ID = existingConsentCaseId.TASK_ID;
-                            currentTaskId = Convert.ToInt32(existingConsentCaseId.TASK_ID);
+                            currentTaskId = existingConsentCaseId.TASK_ID ?? 0;
                             interfaceSynch.PATIENT_ACCOUNT = existingConsentCaseId.PATIENT_ACCOUNT;
                             interfaceSynch.CASE_ID = existingConsentCaseId.CASE_ID;
                             ////Task Interface
@@ -1040,12 +1040,18 @@ namespace FOX.BusinessOperations.ConsentToCareService
         // Description: This function is decrypt patient account number & handle the flow of Unsubscribe Email & SMS
         public FoxTblConsentToCare DecryptionUrl(FoxTblConsentToCare consentToCareObj)
         {
-            ConsentToCareResponse consentToCareResponse = new ConsentToCareResponse();
-            var decryptioUrl = Decryption(consentToCareObj.encryptedCaseId.ToString());
-            consentToCareObj.CONSENT_TO_CARE_ID = int.Parse(decryptioUrl);
-            var consentToCareId = new SqlParameter("@CONSENT_TO_CARE_ID", SqlDbType.VarChar) { Value = consentToCareObj.CONSENT_TO_CARE_ID };
-            var practiceCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
-                consentToCareObj = SpRepository<FoxTblConsentToCare>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CONSENT_TO_CARE_ID @CONSENT_TO_CARE_ID, @PRACTICE_CODE", consentToCareId, practiceCode);
+            if (!string.IsNullOrEmpty(consentToCareObj.encryptedCaseId))
+            {
+                var isBase64StringOrNot = Helper.IsBase64String(consentToCareObj.encryptedCaseId.ToString());
+                if (isBase64StringOrNot == true)
+                {
+                    var decryptioUrl = Decryption(consentToCareObj.encryptedCaseId.ToString());
+                    consentToCareObj.CONSENT_TO_CARE_ID = int.Parse(decryptioUrl);
+                    var consentToCareId = new SqlParameter("@CONSENT_TO_CARE_ID", SqlDbType.VarChar) { Value = consentToCareObj.CONSENT_TO_CARE_ID };
+                    var practiceCode = new SqlParameter("@PRACTICE_CODE", SqlDbType.BigInt) { Value = GetPracticeCode() };
+                    consentToCareObj = SpRepository<FoxTblConsentToCare>.GetSingleObjectWithStoreProcedure(@"EXEC FOX_PROC_GET_CONSENT_TO_CARE_INFO_BY_CONSENT_TO_CARE_ID @CONSENT_TO_CARE_ID, @PRACTICE_CODE", consentToCareId, practiceCode);
+                }
+            }
             if (consentToCareObj != null)
             {
                 consentToCareObj.PATIENT_ACCOUNT_Str = consentToCareObj.PATIENT_ACCOUNT.ToString();
