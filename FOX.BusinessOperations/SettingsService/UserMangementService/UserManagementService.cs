@@ -299,14 +299,13 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
             if (!string.IsNullOrEmpty(profile.UserName))
             {
                 user = _UserRepository.Get(x => !string.IsNullOrEmpty(x.USER_NAME) && x.USER_NAME.ToLower().Equals(profile.UserName.ToLower()));
-                try
-                {
+                if(user != null) { 
                     user.AUTO_LOCK_TIME_SPAN = time;
                     _UserRepository.Update(user);
                     _UserRepository.Save();
                     return true;
                 }
-                catch (Exception)
+                else
                 {
                     return false;
                 }

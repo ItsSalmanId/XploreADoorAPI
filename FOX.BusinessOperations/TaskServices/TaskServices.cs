@@ -2006,7 +2006,7 @@ namespace FOX.BusinessOperations.TaskServices
 
                     foreach (var item in response.DATE)
             {
-                var list = allData.FindAll(x => x.SENT_ON_STR == item);
+                var list = allData.FindAll(x => x.SENT_ON_STR == item.ToString());
                 response.NotificationList.Add(list);
                     }
                 }
