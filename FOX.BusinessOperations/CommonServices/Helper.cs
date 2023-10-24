@@ -1336,5 +1336,20 @@ namespace FOX.BusinessOperations.CommonService
             }
             return IsMailSent;
         }
+        // Description: This function is trigger to check is provided string is "IsBase64String" or not
+        public static bool IsBase64String(string s)
+        {
+            try
+            {
+                // Attempt to decode the string
+                byte[] data = Convert.FromBase64String(s);
+                return true;
+            }
+            catch (FormatException)
+            {
+                // If an exception is thrown, the string is not a valid Base64 string
+                return false;
+            }
+        }
     }
 }
