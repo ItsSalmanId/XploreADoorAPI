@@ -36,7 +36,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
             _psFormatTypeRepository = new GenericRepository<PatientSurveyFormatType>(_patientSurveyContext);
             _roleRepository = new GenericRepository<RoleToAdd>(_patientSurveyContext);
             _surveyServiceLogRepository = new GenericRepository<SurveyServiceLog>(_patientSurveyContext);
-            _patientSurveyNotAnswered = new GenericRepository<PatientSurveyNotAnswered>(_patientSurveyContext);   
+            _patientSurveyNotAnswered = new GenericRepository<PatientSurveyNotAnswered>(_patientSurveyContext);
         }
 
         public bool SetSurveytProgress(long patientAccount, bool progressStatus)
@@ -82,7 +82,7 @@ namespace FOX.BusinessOperations.PatientSurveyService
                 PatientSurveyNotAnswered getPatientSurveyNotAnswered = new PatientSurveyNotAnswered();
                 var surveyIdNotAnswered = patientSurvey.SURVEY_ID;
                 getPatientSurveyNotAnswered = _patientSurveyNotAnswered.GetFirst(r => r.SURVEY_ID == surveyIdNotAnswered && r.PRACTICE_CODE == AppConfiguration.GetPracticeCode && r.DELETED == false);
-                
+
                 if(patientSurvey.SURVEY_STATUS_CHILD != "Not Answered" && getPatientSurveyNotAnswered != null && !string.IsNullOrEmpty(getPatientSurveyNotAnswered.NOT_ANSWERED_REASON))
                 {
                     getPatientSurveyNotAnswered.DELETED = true;
@@ -975,6 +975,22 @@ namespace FOX.BusinessOperations.PatientSurveyService
                  , surveyCallId, practiceCode, acuID, surveyId, patientAccount, fileName, isReceived, callOutCome, callDuration, isToPatient, createdBy, createdDate, modifiedBy, modifiedDate, delete, dailedType, additionalNumberID);
             }
         }
+
+        public void UpdateProvider(PatientSurveyUpdateProvider PatientSurveyUpdateProvider, UserProfile profile)
+        {
+            var dbSurveyCall = _patientSurveyRepository.GetFirst(t => t.SURVEY_ID == PatientSurveyUpdateProvider.SURVEY_ID && t.PRACTICE_CODE == profile.PracticeCode && t.DELETED == false);
+            if (dbSurveyCall != null)
+            {
+                var surveryId = new SqlParameter { ParameterName = "SURVEY_ID", SqlDbType = SqlDbType.BigInt, Value = PatientSurveyUpdateProvider.SURVEY_ID };
+                var practiceCode = new SqlParameter { ParameterName = "PRACTICE_CODE", SqlDbType = SqlDbType.BigInt, Value = profile.PracticeCode };
+                var providerName = new SqlParameter { ParameterName = "PROVIDER", SqlDbType = SqlDbType.VarChar, Value = PatientSurveyUpdateProvider.PROVIDER_NAME };
+                var modifiedBy = new SqlParameter { ParameterName = "MODIFIED_BY", SqlDbType = SqlDbType.VarChar, Value = profile.UserName };
+                var patientAccount = new SqlParameter { ParameterName = "PATIENT_ACCOUNT", SqlDbType = SqlDbType.BigInt, Value = PatientSurveyUpdateProvider.PATIENT_ACCOUNT_NUMBER };
+                SpRepository<PatientSurveyCallLog>.GetListWithStoreProcedure(@"exec FOX_PROC_UPDATE_PROVIDER_NAME @SURVEY_ID, @PRACTICE_CODE, @PROVIDER, @MODIFIED_BY, @PATIENT_ACCOUNT", surveryId, practiceCode, providerName, modifiedBy, patientAccount);
+            }
+
+        }
+
 
         public List<PatientSurveyCallLog> GetSurveyCallList(long patientAccount, long practiceCode)
         {

@@ -141,6 +141,14 @@ namespace FoxRehabilitationAPI.Controllers
             return response;
         }
 
+        [HttpPost]
+        public HttpResponseMessage updateProvider(PatientSurveyUpdateProvider PatientSurveyUpdateProvider)
+        {
+            _patientSurveyService.UpdateProvider(PatientSurveyUpdateProvider, GetProfile());
+            var response = Request.CreateResponse(HttpStatusCode.OK, "Ok");
+            return response;
+        }
+
         [HttpGet]
         public HttpResponseMessage GetSurveyCallList(string patientAccount)
         {
