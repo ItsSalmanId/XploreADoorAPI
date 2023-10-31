@@ -475,6 +475,7 @@
     <Content Include="StoredProcedure\FOX_PROC_INSERT_RECONCILIATION_EXCEL_DATA_NEW.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_RECONCILIATION_UPLOAD_LOG.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_REFERRAL_ASSIGNMENT_DETAILS.sql" />
+    <Content Include="StoredProcedure\FOX_PROC_INSERT_SINGLE_WORK_ORDER_HISTORY.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_SURVEY_SERVICE_LOG.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_TASK.sql" />
     <Content Include="StoredProcedure\FOX_PROC_INSERT_TASK_LOG.sql" />
