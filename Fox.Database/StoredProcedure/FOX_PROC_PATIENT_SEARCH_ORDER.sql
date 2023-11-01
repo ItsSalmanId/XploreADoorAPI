@@ -143,12 +143,12 @@ AS
  WHEN wq.INDEXED_BY IS NULL AND wq.WORK_STATUS != 'INDEX PENDING' AND wq.IS_TRASH_REFERRAL != 1 THEN 'In Progress'      
  WHEN wq.IS_TRASH_REFERRAL = 1 THEN 'Index Pending'       
  ELSE ''                  
- END AS Indexing_Status,   
+END AS Indexing_Status,   
  CASE    
- WHEN wq.WORK_STATUS = 'INDEX PENDING' THEN 'Pending'    
+    WHEN wq.WORK_STATUS = 'INDEX PENDING' THEN 'Pending'    
  WHEN wq.WORK_STATUS = 'CREATED' THEN 'Pending'    
- ELSE wq.WORK_STATUS    
- END AS WORK_STATUS,    
+    ELSE wq.WORK_STATUS    
+END AS WORK_STATUS,    
    
                     wq.COMPLETED_DATE,           
      convert(varchar, wq.COMPLETED_DATE) AS Completed_Date_Str,                        

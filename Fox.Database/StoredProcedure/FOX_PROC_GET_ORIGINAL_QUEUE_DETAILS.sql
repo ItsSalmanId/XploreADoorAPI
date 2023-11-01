@@ -2,7 +2,6 @@ IF (OBJECT_ID('FOX_PROC_GET_ORIGINAL_QUEUE_DETAILS') IS NOT NULL ) DROP PROCEDUR
 GO  
         
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------          
----------------------------------------------------------------------------------------------------------------------        
 -- =============================================        
 -- Author:  <Author,Mehmood ul Hassan>        
 -- Create date: <Create Date,12/10/2017>        
@@ -20,10 +19,12 @@ BEGIN
  SELECT WORK_ID        
   ,UNIQUE_ID,       
 CASE                  
-    WHEN IS_TRASH_REFERRAL = 1 AND WORK_STATUS != 'Completed' THEN 'Index Pending'  
-    WHEN WORK_STATUS = 'Completed' THEN 'Indexed'  
+    WHEN IS_TRASH_REFERRAL = 1 AND WORK_STATUS != 'Completed'                 
+        THEN 'Index Pending'  
+    WHEN WORK_STATUS = 'Completed'   
+        THEN 'Indexed'  
     ELSE WORK_STATUS        
-    END AS WORK_STATUS,  
+END AS WORK_STATUS,  
   TOTAL_PAGES NO_OF_PAGES        
   ,AT.LAST_NAME + ', ' + AT.FIRST_NAME AS ASSIGNED_TO        
   ,wq.IS_EMERGENCY_ORDER        
