@@ -27,6 +27,8 @@ namespace FOX.DataModels.Models.SearchOrderModel
         public DateTime? RECEIVE_DATE { get; set; }
         [NotMapped]
         public string Received_Date_Str { get; set; }
+        [NotMapped]
+        public string Indexing_Status { get; set; }
         public string WORK_STATUS { get; set; }
         public DateTime? COMPLETED_DATE { get; set; }
         [NotMapped]
