@@ -35,6 +35,9 @@ namespace FOX.DataModels.Models.RequestForOrder
         public long WorkId { get; set; }
         public bool _isFromIndexInfo { get; set; }
         public string Patient_Last_Name { get; set; }
+        [NotMapped]
+        public string uniqueWorkId { get; set; }
+
     }
     public class RequestSendFAXModel : BaseModel
     {
@@ -47,6 +50,8 @@ namespace FOX.DataModels.Models.RequestForOrder
         public string FileName { get; set; }
         public long WorkId { get; set; }
         public bool _isFromIndexInfo { get; set; }
+        [NotMapped]
+        public string uniqueWorkId { get; set; }
     }
     //public class ResponseModel
     //{

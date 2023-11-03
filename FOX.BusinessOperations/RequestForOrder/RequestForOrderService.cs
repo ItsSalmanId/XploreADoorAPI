@@ -571,7 +571,7 @@ namespace FOX.BusinessOperations.RequestForOrder
                         //SavePdfToImages(deliveryfilePath, config, requestSendFAXModel.WorkId, 1, "DR:Fax", requestSendFAXModel.ReceipientFaxNumber, Profile.UserName, requestSendFAXModel._isFromIndexInfo);
 
                         var commonService = new CommonServices.CommonServices();
-                        AttachmentData attachmentPath = commonService.GeneratePdfForSupportedDoc(config, requestSendFAXModel.WorkId.ToString(), Profile);
+                        AttachmentData attachmentPath = commonService.GeneratePdfForSupportedDoc(config, requestSendFAXModel.uniqueWorkId, Profile);
                         if (!attachmentPath.FILE_PATH.EndsWith("\\"))
                         {
                             attachmentPath.FILE_PATH = attachmentPath.FILE_PATH + "\\";
