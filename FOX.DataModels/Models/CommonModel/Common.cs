@@ -72,6 +72,14 @@ namespace FOX.DataModels.Models.CommonModel
         public bool AU { get; set; }
         public string FilePath { get; set; }
     }
+    public class MfaResponse
+    {
+        public string Message { get; set; }
+        public string ErrorMessage { get; set; }
+        public bool Success { get; set; }
+        public string otpresult { get; set; }
+        public string Hostname { get; set; }
+    }
     public class SmartSearch
     {
         [NotMapped]

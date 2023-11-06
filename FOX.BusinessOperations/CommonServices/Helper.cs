@@ -251,34 +251,6 @@ namespace FOX.BusinessOperations.CommonService
                         IsMailSent = true;
                     }
                 }
-
-                /////////////////////////////////////
-                //SmtpClient smtp = new SmtpClient();
-                //MailMessage mail = new MailMessage();
-                //mail.From = new MailAddress(from);
-                //mail.To.Add(new MailAddress(to));
-                //mail.Subject = subject;
-                //mail.Body = body;
-                //mail.IsBodyHtml = true;
-                //mail.SubjectEncoding = Encoding.UTF8;
-                //if (CC != null && CC.Count > 0)
-                //{
-                //    foreach (var item in CC) { mail.CC.Add(item); }
-                //}
-                //if (BCC != null && BCC.Count > 0)
-                //{
-                //    foreach (var item in BCC) { mail.Bcc.Add(item); }
-                //}
-                //if (AttachmentFilePaths != null && AttachmentFilePaths.Count > 0)
-                //{
-                //    foreach (string filePth in AttachmentFilePaths)
-                //    {
-                //        if (File.Exists(filePth)) { mail.Attachments.Add(new Attachment(filePth)); }
-                //    }
-                //}
-                //smtp.Send(mail);
-                //LogEmailData(to,"Success",profile,CC,BCC, from,null,WORK_ID, AttachmentFilePaths);
-                //IsMailSent = true;
             }
             catch (Exception ex)
             {
@@ -1311,6 +1283,73 @@ namespace FOX.BusinessOperations.CommonService
                 }
             }
             return sb.ToString();
+        }
+        public static bool ConcentToCareEmail(string to, string subject, string body, UserProfile profile = null, long? WORK_ID = null, List<string> CC = null, List<string> BCC = null, List<string> AttachmentFilePaths = null, string from = "foxrehab@carecloud.com")
+        {
+            bool IsMailSent = false;
+            try
+            {
+
+                using (SmtpClient smtp = new SmtpClient())
+                {
+                    using (MailMessage mail = new MailMessage())
+                    {
+                        mail.From = new MailAddress(from);
+                        mail.To.Add(new MailAddress(to));
+                        mail.Subject = subject;
+                        mail.Body = body;
+                        mail.IsBodyHtml = true;
+                        mail.SubjectEncoding = Encoding.UTF8;
+                        if (CC != null && CC.Count > 0)
+                        {
+                            foreach (var item in CC) { mail.CC.Add(item); }
+                        }
+                        if (BCC != null && BCC.Count > 0)
+                        {
+                            foreach (var item in BCC) { mail.Bcc.Add(item); }
+                        }
+                        if (AttachmentFilePaths != null && AttachmentFilePaths.Count > 0)
+                        {
+                            foreach (string filePth in AttachmentFilePaths)
+                            {
+                                if (File.Exists(filePth)) { mail.Attachments.Add(new Attachment(filePth)); }
+                            }
+                        }
+                        if (profile != null && profile.isTalkRehab)
+                        {
+                            smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["NoReplyUserName"], WebConfigurationManager.AppSettings["NoReplyPassword"]);
+                        }
+                        else
+                        {
+                            smtp.Credentials = new System.Net.NetworkCredential(WebConfigurationManager.AppSettings["FoxRehabUserName"], WebConfigurationManager.AppSettings["FoxRehabPassword"]);
+                        }
+                        smtp.Send(mail);
+                        LogEmailData(to, "Success", profile, CC, BCC, from, null, WORK_ID, AttachmentFilePaths);
+                        IsMailSent = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogEmailData(to, "Failed", profile, CC, BCC, from, ex, WORK_ID, AttachmentFilePaths);
+                IsMailSent = false;
+            }
+            return IsMailSent;
+        }
+        // Description: This function is trigger to check is provided string is "IsBase64String" or not
+        public static bool IsBase64String(string s)
+        {
+            try
+            {
+                // Attempt to decode the string
+                byte[] data = Convert.FromBase64String(s);
+                return true;
+            }
+            catch (FormatException)
+            {
+                // If an exception is thrown, the string is not a valid Base64 string
+                return false;
+            }
         }
     }
 }

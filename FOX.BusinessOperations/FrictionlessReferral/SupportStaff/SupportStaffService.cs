@@ -613,6 +613,97 @@ namespace FOX.BusinessOperations.FrictionlessReferral.SupportStaff
                 throw exception;
             }
         }
+
+        private ResponseHTMLToPDF HTMLToPDFSautinsoft(ServiceConfiguration conf, string htmlString, string fileName, string linkMessage = null)
+        {
+            try
+            {
+                string signatureFirstNode = string.Empty;
+                string dateFirstNode = string.Empty;
+                string dateAndSignature = string.Empty;
+                string orininalHtml = htmlString;
+                string referralHtmlBody = htmlString;
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(referralHtmlBody);
+                //Replace Bottom Border
+                HtmlNode bottomBorderLineNode = doc.GetElementbyId("stringTopBorderLine");
+                HtmlNode signatureLineFirstNode = doc.GetElementbyId("SignatureLineFirstNode");
+                HtmlNode dateLineFirstNode = doc.GetElementbyId("DateLineFirstNode");
+                HtmlNode dateAndSignatureNode = doc.GetElementbyId("td-PrintSendSubmitOrder-signature");
+                string bottomBorder = bottomBorderLineNode.OuterHtml;
+                string replaceBottomBorder = "<tr><td colspan=\"2\" style=\"width: 100%; height: 1px; border-top: 1px solid #000\" id=\"replaceStringTopBorderLine\"></td></ tr > ";
+                referralHtmlBody = referralHtmlBody.Replace(bottomBorder, replaceBottomBorder);
+                string replaceString = "<td _ngcontent-dpq-c151=\"\" style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\" class=\"ng-star-inserted\"></td>";
+                string temp = "<td id=\"td-PrintSendSubmitOrder-signature\"> Signature:</td><td style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\"></td><td> Date:</td><td style=\"width:90%; height: 1px; border-bottom: 1px solid #000;\"></td>";
+                if (signatureLineFirstNode != null)
+                {
+                    signatureFirstNode = signatureLineFirstNode.OuterHtml;
+                }
+                if (dateAndSignatureNode != null)
+                {
+                    dateAndSignature = dateAndSignatureNode.OuterHtml;
+                }
+                if (dateAndSignatureNode != null)
+                {
+                    referralHtmlBody = referralHtmlBody.Replace(dateAndSignature, temp);
+                }
+                if (dateLineFirstNode != null)
+                {
+                    dateFirstNode = dateLineFirstNode.OuterHtml;
+                }
+                if (signatureLineFirstNode != null)
+                {
+                    referralHtmlBody = referralHtmlBody.Replace(signatureFirstNode, replaceString);
+                }
+                if (dateLineFirstNode != null)
+                {
+                    referralHtmlBody = referralHtmlBody.Replace(dateFirstNode, replaceString);
+                }
+                //Replace Space Above Date & Signature div 
+                doc.LoadHtml(referralHtmlBody);
+                HtmlNode spaceAboveDateNode = doc.GetElementbyId("spaceAboveDateAndSign");
+                string spaceAboveDate = spaceAboveDateNode.OuterHtml;
+                string spaceAboveDateReplace = "<td><br><br><br><br><br><br><br><br><br><br><br><br></td>";
+                referralHtmlBody = referralHtmlBody.Replace(spaceAboveDate, spaceAboveDateReplace);
+                //Replace Space Below Date & Signature div
+                doc.LoadHtml(referralHtmlBody);
+                HtmlNode spaceBelowDateNode = doc.GetElementbyId("spaceBelowDateAndSign");
+                string belowSpace = spaceBelowDateNode.OuterHtml;
+                string spaceBelowDateReplace = "<td><br><br></td>";
+                referralHtmlBody = referralHtmlBody.Replace(belowSpace, spaceBelowDateReplace);
+                PdfMetamorphosis p = new PdfMetamorphosis();
+                p.Serial = "10262870570";
+                p.PageSettings.Size.A4();
+                p.PageSettings.Orientation = PdfMetamorphosis.PageSetting.Orientations.Portrait;
+                p.PageSettings.MarginLeft.Inch(0.1f);
+                p.PageSettings.MarginRight.Inch(0.1f);
+                if (p != null)
+                {
+                    string pdfFilePath = Path.Combine(conf.ORIGINAL_FILES_PATH_SERVER);
+                    if (!Directory.Exists(pdfFilePath))
+                    {
+                        Directory.CreateDirectory(pdfFilePath);
+                    }
+                    fileName = fileName + DateTime.Now.Ticks + ".pdf";
+                    string pdfFilePathnew = pdfFilePath + "\\" + fileName;
+                    if (p.HtmlToPdfConvertStringToFile(referralHtmlBody, pdfFilePathnew) == 0)
+                    {
+                        return new ResponseHTMLToPDF() { FileName = fileName, FilePath = pdfFilePath, Success = true, ErrorMessage = "" };
+                    }
+                    else
+                    {
+                        var ex = p.TraceSettings.ExceptionList.Count > 0 ? p.TraceSettings.ExceptionList[0] : null;
+                        var msg = ex != null ? ex.Message + Environment.NewLine + ex.StackTrace : "An error occured during converting HTML to PDF!";
+                        return new ResponseHTMLToPDF() { FileName = "", FilePath = "", Success = false, ErrorMessage = "failed" };
+                    }
+                }
+                return new ResponseHTMLToPDF() { FileName = "", FilePath = "", Success = false, ErrorMessage = "failed" };
+            }
+            catch (Exception exception)
+            {
+                return new ResponseHTMLToPDF() { FileName = "", FilePath = "", Success = false, ErrorMessage = exception.ToString() };
+            }
+        }
         private ResponseHTMLToPDF HTMLToPDF(ServiceConfiguration config, string htmlString, string fileName, string type, string linkMessage = null)
         {
             try

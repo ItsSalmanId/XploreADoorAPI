@@ -538,5 +538,11 @@ namespace FoxRehabilitationAPI.Controllers
             var profile = GetProfile();
             return Request.CreateResponse(HttpStatusCode.OK, _patientServices.ResetCoordinates(loc, GetProfile()));
         }
+        [HttpGet]
+        public HttpResponseMessage GetPatientDetails(string patientAccount)
+        {
+            var profile = GetProfile();
+            return Request.CreateResponse(HttpStatusCode.OK, _patientServices.GetPatientDetails(long.Parse(patientAccount), profile));
+        }
     }
 }

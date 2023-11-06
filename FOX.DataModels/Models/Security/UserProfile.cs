@@ -44,6 +44,14 @@ namespace FOX.DataModels.Models.Security
 
     }
 
+    public class MFAAuthToken
+    {
+        public DateTime IssuedOn { get; set; }
+        public DateTime ExpiresOn { get; set; }
+        public string AuthToken { get; set; }
+        public long UserId { get; set; }
+    }
+
     public class ResetPasswordViewModel
     {
         public string NewPassword { get; set; }

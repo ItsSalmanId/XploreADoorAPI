@@ -15,6 +15,7 @@ namespace FOX.DataModels.Models.ServiceConfiguration
         public string ORIGINAL_FILES_PATH_DB { get; set; }
         public string IMAGES_PATH_SERVER { get; set; }
         public string ORIGINAL_FILES_PATH_SERVER { get; set; }
+        public string DOCUMENTS_PATH_SERVER { get; set; }
         public bool LOAD_FAXES { get; set; }
         public bool LOAD_EMAILS { get; set; }
     }

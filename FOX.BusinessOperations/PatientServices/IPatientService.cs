@@ -24,10 +24,7 @@ namespace FOX.BusinessOperations.PatientServices
         List<PatientInsuranceDetail> GetInsurancePayers(SmartSearchInsuranceReq obj);
         List<string> CheckNecessaryDataForEligibility(long patientAccount);
         List<string> CheckNecessaryDataForLoadEligibility(PatientEligibilitySearchModel searchReq);
-
-        //string CheckPatientInsuranceEligibility(long patientAccount, string userId);
         string CheckPatientInsuranceEligibility(PatientEligibilitySearchModel patientEligibilitySearchModel, string userId);
-
         Patient GetCurrentPatientDemographics(long patient_Account, UserProfile profile);
         List<PatientPOSLocation> AddUpdatePatientPOSLocation(PatientPOSLocation POSData, UserProfile profile);
         List<ContactTypesForDropdown> GetPatientContactTypes(long practiceCode);
@@ -71,25 +68,16 @@ namespace FOX.BusinessOperations.PatientServices
         List<PHR> GetPatientInviteStatus(string PatientAccount, UserProfile profile);
         ResponseModel SendInviteToPatient(PHR obj, UserProfile profile);
         List<Patient> GetInvitedPatient(PHR obj, UserProfile profile);
-
         ResponseModel BlockPatientFromPHR(PHR obj, UserProfile profile);
         ResponseModel UnBlockPatientFromPHR(PHR obj, UserProfile profile);
-
         ResponseModel CancelPatientRequestFromPHR(PHR obj, UserProfile profile);
-
         ResponseModel ResendRequestforPHRToPatient(PHR obj, UserProfile profile);
         List<WorkOrderDocs> GetWorkOrderDocs(string patientAccountStr, UserProfile userProfile);
         PatientInsuranceDetail GetAutoPopulateInsurance(AutoPopulateModel obj, UserProfile userProfile);
         List<WORK_ORDER_INFO_RES> GetWorkOrderInfo(WORK_ORDER_INFO_REQ obj, UserProfile profile);
-
         bool checkPatientisInterfaced(long PATIENT_ACCOUNT, UserProfile profile);
-
         ZipRegionIDName GetRegionByZip(string zipCode, UserProfile profile);
-
-        //PatientDeceasedInfo GetPatientDeceaseDate(string pat_Acc, UserProfile profile);
-
         List<PatientCasesForDD> GetPatientCasesForDD(long patient_Account);
-
         ResponseModel SaveInsuranceEligibilityFromIndexInfo(PatientInsurance insuranceToCreateUpdate, UserProfile profile);
         ResponseModel PrivateHOMExists(string statecode, UserProfile profile);
         ResponseModel DeleteInsuranceInformation(PatientInsuranceDetail obj, UserProfile profile);
@@ -101,5 +89,6 @@ namespace FOX.BusinessOperations.PatientServices
         List<CheckDuplicatePatientsRes> CheckDuplicatePatients(CheckDuplicatePatientsReq documentSaveEligibility, UserProfile profile);
         FoxInsurancePayers GetInsuranc(long ID, UserProfile profile);
         POSCoordinates ResetCoordinates(FacilityLocation loc, UserProfile profile);
+        Patient GetPatientDetails(long patientAccount, UserProfile profile);
     }
 }

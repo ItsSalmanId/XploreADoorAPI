@@ -3294,7 +3294,7 @@ namespace FOX.BusinessOperations.PatientServices
                 dbContact = contact;
                 contact.Contact_ID = Helper.getMaximumId("Fox_Patient_Contact_ID");
                 contact.Created_By = contact.Modified_By = profile.UserName;
-                contact.Created_On = contact.Modified_On = Helper.GetCurrentDate();
+                contact.Created_On = contact.Modified_On = DateTime.Now;
 
                 contact.Deleted = false;
                 _PatientContactRepository.Insert(contact);
@@ -3880,7 +3880,7 @@ namespace FOX.BusinessOperations.PatientServices
                     PRpayInsurance.Deleted = true;
                 }
                 PRpayInsurance.Modified_By = profile.UserName;
-                PRpayInsurance.Modified_Date = Helper.GetCurrentDate();
+                PRpayInsurance.Modified_Date = DateTime.Now;
                 _PatientInsuranceRepository.Update(PRpayInsurance);
                 _PatientInsuranceRepository.Save();
             }
@@ -11410,6 +11410,10 @@ namespace FOX.BusinessOperations.PatientServices
             }
             return response;
         }
+        public Patient GetPatientDetails(long patientAccount, UserProfile profile)
+        {
+            var patientDetails = _PatientRepository.GetFirst(p => p.Patient_Account == patientAccount && (p.DELETED ?? false) == false);
+            return patientDetails;
+        }
     }
-
 }

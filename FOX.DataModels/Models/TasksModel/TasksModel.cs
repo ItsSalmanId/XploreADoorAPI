@@ -97,6 +97,7 @@ namespace FOX.DataModels.Models.TasksModel
         public bool IS_FINALROUTE_MARK_COMPLETE { get; set; }
         [NotMapped]
         public string dbChangeMsg { get; set; }
+        public DateTime? Completed_Date { get; set; }
     }
 
     [Table("FOX_TBL_TASK_TYPE")]
@@ -298,6 +299,7 @@ namespace FOX.DataModels.Models.TasksModel
     {
         public long? CASE_ID { get; set; }
         public long? PATIENT_ACCOUNT { get; set; }
+        public string Patient_AccountStr { get; set; }
         public string statusOption { get; set; }
         public int CurrentPage { get; set; }
         public int RecordPerPage { get; set; }
