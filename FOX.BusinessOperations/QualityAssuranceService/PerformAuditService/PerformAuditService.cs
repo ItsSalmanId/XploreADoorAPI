@@ -319,10 +319,13 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             {
                 cc = new List<string>(ConfigurationManager.AppSettings["CClistForEditAuditEmailTest"].Split(new char[] { ';' }));
             }
-            _body += "<div style='font-family:Calibri'>A helpdesk record has been audited with following specifics:<br/><br/>";
-            var link = AppConfiguration.ClientURL + @"#/PlayRecording?value=" + req.CALL_RECORDING_URL;
-            link += "&name=" + profile.UserEmailAddress;
-            _body += "<b>Date of Call: " + callDate.Value.ToString("MM/dd/yyyy") + "<a href = " + link + ">" + " Click here to listen audio call</a></b>" + "</br>";
+                _body += "<div style='font-family:Calibri'>A helpdesk record has been audited with following specifics:<br/><br/>";
+            if (req.IS_ASSOCIATED_CALL == false)
+            {
+                var link = AppConfiguration.ClientURL + @"#/PlayRecording?value=" + req.CALL_RECORDING_URL;
+                link += "&name=" + profile.UserEmailAddress;
+                _body += "<b>Date of Call: " + callDate.Value.ToString("MM/dd/yyyy") + "<a href = " + link + ">" + " Click here to listen audio call</a></b>" + "</br>";
+            }
             _body += "<b>Auditor: </b> " + req.AUDITOR_NAME + "</br>";
             _body += "<b>Audited on: </b> " + DateTime.Now.ToString("MM/dd/yyyy hh:mm tt") + "</br>";
             if (req.MRN != null && req.CALL_TYPE == "survey")
@@ -340,7 +343,7 @@ namespace FOX.BusinessOperations.QualityAssuranceService.PerformAuditService
             _body += "<b>Evaluation details: </b></br></br></br></div>";
             _body += req.HTML_TEMPLETE;
             _subject = req.CALL_TYPE.ToUpper() + " audit summary-" + (string.IsNullOrEmpty(req.AUDITOR_NAME) ? "" : req.AUDITOR_NAME + ".") + (string.IsNullOrEmpty(req.CALL_SCANARIO) ? "" : req.CALL_SCANARIO);
-            Helper.Email(req.AGENT_EMAIL, _subject, _body, profile, null, null, cc, null);
+            Helper.Email(req.AGENT_EMAIL, _subject, _body, profile, null, cc, null, null);
         }
         public List<SurveyAuditScores> ListAuditedCalls(RequestCallFromQA req, UserProfile profile)
         {

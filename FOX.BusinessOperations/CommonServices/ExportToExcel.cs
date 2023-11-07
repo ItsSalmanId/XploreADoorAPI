@@ -584,8 +584,17 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("FILE_PATH");
                 }
+                if (dc.Contains("AUDITED"))
+                {
+                    dc.Remove("AUDITED");
+                }
+                if (dc.Contains("CS_CASE_CATEGORY_NAME"))
+                {
+                    dc.Remove("CS_CASE_CATEGORY_NAME");
+                }
+                
             }
-            if(CalledFrom.Equals("Advanced_Daily_Report"))
+            if (CalledFrom.Equals("Advanced_Daily_Report"))
             {
                 if(dc.Contains("CALL_USER_ID"))
                 {
@@ -662,6 +671,10 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("MODIFIED_BY");
                 }
+                if (dc.Contains("IS_SENDTO_MARK_COMPLETE"))
+                {
+                    dc.Remove("IS_SENDTO_MARK_COMPLETE");
+                }
 
             }
             if (CalledFrom.Equals("Task"))
@@ -737,6 +750,10 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dc.Contains("MODIFIED_BY"))
                 {
                     dc.Remove("MODIFIED_BY");
+                }
+                if (dc.Contains("IS_SENDTO_MARK_COMPLETE"))
+                {
+                    dc.Remove("IS_SENDTO_MARK_COMPLETE");
                 }
             }
             if (CalledFrom.Equals("Patient_Documents"))
@@ -2842,6 +2859,62 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("OCR_STATUS");
                 }
+                if (dc.Contains("STATUS_TEXT"))
+                {
+                    dc.Remove("STATUS_TEXT");
+                }
+                if (dc.Contains("guesttextarea"))
+                {
+                    dc.Remove("guesttextarea");
+                }
+                if (dc.Contains("THERAPY_TREATMENT_REFERRAL_REQUEST_HTML"))
+                {
+                    dc.Remove("THERAPY_TREATMENT_REFERRAL_REQUEST_HTML");
+                }
+                if (dc.Contains("FileNameList"))
+                {
+                    dc.Remove("FileNameList");
+                }
+                if (dc.Contains("FOX_SOURCE_CATEGORY_ID"))
+                {
+                    dc.Remove("FOX_SOURCE_CATEGORY_ID");
+                }
+                if (dc.Contains("IS_ORS"))
+                {
+                    dc.Remove("IS_ORS");
+                }
+                if (dc.Contains("ISNoAssociate"))
+                {
+                    dc.Remove("ISNoAssociate");
+                }
+                if (dc.Contains("FOX_TBL_PHD_CALL_DETAIL_ID"))
+                {
+                    dc.Remove("FOX_TBL_PHD_CALL_DETAIL_ID");
+                }
+                if (dc.Contains("IS_INTERFACE"))
+                {
+                    dc.Remove("IS_INTERFACE");
+                }
+                if (dc.Contains("REFERRAL_EMAIL_SENT_TO"))
+                {
+                    dc.Remove("REFERRAL_EMAIL_SENT_TO");
+                }
+                if (dc.Contains("EXPECTED_DISCHARGE_DATE_STR"))
+                {
+                    dc.Remove("EXPECTED_DISCHARGE_DATE_STR");
+                }
+                if (dc.Contains("EXPECTED_DISCHARGE_DATE"))
+                {
+                    dc.Remove("EXPECTED_DISCHARGE_DATE");
+                }
+                if (dc.Contains("FINANCIAL_CLASS_ID"))
+                {
+                    dc.Remove("FINANCIAL_CLASS_ID");
+                }
+                if (dc.Contains("FINANCIAL_CLASS_NAME"))
+                {
+                    dc.Remove("FINANCIAL_CLASS_NAME");
+                }
             }
             if (CalledFrom.Equals("Unassigned_Queue"))
             {
@@ -3332,6 +3405,10 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dc.Remove("TOTAL_RECORDS");
                 }
+                if (dc.Contains("DOCUMENT_TYPE"))
+                {
+                    dc.Remove("DOCUMENT_TYPE");
+                }
             }
             if (CalledFrom.Equals("Referral_Report"))
             {
@@ -3645,6 +3722,34 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dc.Contains("HAS_CALL_PATH"))
                 {
                     dc.Remove("HAS_CALL_PATH");
+                }
+                if (dc.Contains("IS_SMS"))
+                {
+                    dc.Remove("IS_SMS");
+                }
+                if (dc.Contains("IS_EMAIL"))
+                {
+                    dc.Remove("IS_EMAIL");
+                }
+                if (dc.Contains("NOT_ANSWERED_REASON"))
+                {
+                    dc.Remove("NOT_ANSWERED_REASON");
+                }
+                if (dc.Contains("PATIENT_WORK_NUMBER"))
+                {
+                    dc.Remove("PATIENT_WORK_NUMBER");
+                }
+                if (dc.Contains("PATIENT_CELL_NUMBER"))
+                {
+                    dc.Remove("PATIENT_CELL_NUMBER");
+                }
+                if (dc.Contains("LAST_DIALED_TYPE"))
+                {
+                    dc.Remove("LAST_DIALED_TYPE");
+                }
+                if (dc.Contains("CountNo"))
+                {
+                    dc.Remove("CountNo");
                 }
             }
             if (CalledFrom.Equals("Interface_Log_Report"))
@@ -4032,6 +4137,34 @@ namespace FOX.BusinessOperations.CommonServices
                 if (dc.Contains("Is_Questioned_Answered_Str"))
                 {
                     dc.Remove("Is_Questioned_Answered_Str");
+                }
+                if (dc.Contains("IS_SMS"))
+                {
+                    dc.Remove("IS_SMS");
+                }
+                if (dc.Contains("IS_EMAIL"))
+                {
+                    dc.Remove("IS_EMAIL");
+                }
+                if (dc.Contains("NOT_ANSWERED_REASON"))
+                {
+                    dc.Remove("NOT_ANSWERED_REASON");
+                }
+                if (dc.Contains("PATIENT_WORK_NUMBER"))
+                {
+                    dc.Remove("PATIENT_WORK_NUMBER");
+                }
+                if (dc.Contains("PATIENT_CELL_NUMBER"))
+                {
+                    dc.Remove("PATIENT_CELL_NUMBER");
+                }
+                if (dc.Contains("LAST_DIALED_TYPE"))
+                {
+                    dc.Remove("LAST_DIALED_TYPE");
+                }
+                if (dc.Contains("CountNo"))
+                {
+                    dc.Remove("CountNo");
                 }
             }
             if (CalledFrom.Equals("Interface_Logs"))
@@ -7030,9 +7163,9 @@ namespace FOX.BusinessOperations.CommonServices
                 {
                     dtcol["SOURCE_NAME"].ColumnName = "Source Type";
                 }
-                if (dtcol.Contains("DOCUMENT_TYPE"))
+                if (dtcol.Contains("DOCUMENT_TYPE_NAME"))
                 {
-                    dtcol["DOCUMENT_TYPE"].ColumnName = "Document Type";
+                    dtcol["DOCUMENT_TYPE_NAME"].ColumnName = "Document Type";
                 }
                 if (dtcol.Contains("REGION_NAME"))
                 {

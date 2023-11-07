@@ -238,6 +238,7 @@ namespace FOX.BusinessOperations.OriginalQueueService
                         SORCE_NAME = obj.SORCE_NAME,
                         SORCE_NAME_FaxFormat = obj.SORCE_NAME_FaxFormat,
                         WORK_STATUS = obj.WORK_STATUS,
+                        Indexing_Status = obj.Indexing_Status,
                         RECEIVE_DATE = obj.RECEIVE_DATE,
                         Received_Date_Str = obj.Received_Date_Str,
                         TOTAL_PAGES = obj.TOTAL_PAGES,
