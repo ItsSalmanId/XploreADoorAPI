@@ -296,10 +296,12 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         public bool SetAutoLockTimeSetup(int time, UserProfile profile)
         {
             var user = new User();
-            if (!string.IsNullOrEmpty(profile.UserName))
-            {
-                user = _UserRepository.Get(x => !string.IsNullOrEmpty(x.USER_NAME) && x.USER_NAME.ToLower().Equals(profile.UserName.ToLower()));
-                if(user != null) { 
+            if (!string.IsNullOrEmpty(profile.UserName)) { 
+                var UserName = new SqlParameter("USERNAME", SqlDbType.VarChar) { Value = profile.UserName };
+            user = SpRepository<User>.GetSingleObjectWithStoreProcedure(@"exec FOX_PROC_GET_USER @USERNAME", UserName); if (user != null)
+                // user = _UserRepository.Get(x => !string.IsNullOrEmpty(x.USER_NAME) && x.USER_NAME.ToLower().Equals(profile.UserName.ToLower()));
+                if (user != null)
+                {
                     user.AUTO_LOCK_TIME_SPAN = time;
                     _UserRepository.Update(user);
                     _UserRepository.Save();
@@ -309,7 +311,8 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
                 {
                     return false;
                 }
-            }
+            return false;
+        }
             else
             {
                 return false;
