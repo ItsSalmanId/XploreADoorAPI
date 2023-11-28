@@ -973,8 +973,9 @@ namespace FOX.BusinessOperations.RequestForOrder
                         }
                         else if (pageCounter != 0 && _isFromIndexInfo == false && sorcetype.ToLower() == "fax")
                         {
-                            imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + pageCounter + ".jpg";
-                            imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + pageCounter + ".jpg";
+                            var randomString = random.Next();
+                            imgPath = config.IMAGES_PATH_DB + "\\" + workId + "_" + pageCounter + "_" + randomString + ".jpg";
+                            imgPathServer = config.IMAGES_PATH_SERVER + "\\" + workId + "_" + pageCounter + "_" + randomString + ".jpg";
                         }
                         else
                         {
@@ -989,8 +990,9 @@ namespace FOX.BusinessOperations.RequestForOrder
                         }
                         else if (pageCounter != 0 && _isFromIndexInfo == false && sorcetype.ToLower() == "fax")
                         {
-                            logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + pageCounter + ".jpg";
-                            logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + pageCounter + ".jpg";
+                            var randomString = random.Next();
+                            logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + workId + "_" + pageCounter + "_" + randomString + ".jpg";
+                            logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + workId + "_" + pageCounter + "_" + randomString + ".jpg";
                         }
                         else
                         {
