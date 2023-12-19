@@ -930,7 +930,7 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 var CASE_ID = consentToCareObj.CASE_ID;
                 var currentConsentToCareId = consentToCareObj.CONSENT_TO_CARE_ID;
                 int numberOfPages = getNumberOfPagesOfPDF(coverFilePath);
-                SavePdfToImages(coverFilePath, config, currentConsentToCareId, numberOfPages);
+                GeneratePdfToImages(coverFilePath, config, currentConsentToCareId, numberOfPages);
                 return coverFilePath;
             }
             catch (Exception ex)
@@ -1331,6 +1331,45 @@ namespace FOX.BusinessOperations.ConsentToCareService
             }
             Helper.TokenTaskCancellationExceptionLog("InterfaceSynchModel END");
             return consentToCareObj;
+        }
+        public void GeneratePdfToImages(string PdfPath, ServiceConfiguration config, long consentToCareId, int noOfPages)
+        {
+            List<int> threadCounter = new List<int>();
+            if (!Directory.Exists(config.IMAGES_PATH_SERVER))
+            {
+                Directory.CreateDirectory(config.IMAGES_PATH_SERVER);
+            }
+
+            if (System.IO.File.Exists(PdfPath))
+            {
+                for (int i = 0; i < noOfPages; i++)
+                {
+                    var imgPath = "";
+                    var logoImgPath = "";
+                    var imgPathServer = "";
+                    var logoImgPathServer = "";
+                    Random random = new Random();
+                    var randomString = random.Next();
+                    imgPath = config.IMAGES_PATH_DB + "\\" + consentToCareId + "_" + i + "_" + randomString + ".jpg";
+                    imgPathServer = config.IMAGES_PATH_SERVER + "\\" + consentToCareId + "_" + i + "_" + randomString + ".jpg";
+
+                    randomString = random.Next();
+                    logoImgPath = config.IMAGES_PATH_DB + "\\Logo_" + consentToCareId + "_" + i + "_" + randomString + ".jpg";
+                    logoImgPathServer = config.IMAGES_PATH_SERVER + "\\Logo_" + consentToCareId + "_" + i + "_" + randomString + ".jpg";
+
+                    Thread myThread = new Thread(() => this.newThreadImplementaion(ref threadCounter, PdfPath, i, imgPathServer, logoImgPathServer));
+                    myThread.Start();
+                    threadsList.Add(myThread);
+                }
+                while (noOfPages > threadCounter.Count)
+                {
+                    //loop untill record complete
+                }
+                foreach (var thread in threadsList)
+                {
+                    thread.Abort();
+                }
+            }
         }
         #endregion
         #region Email & SMS body 
