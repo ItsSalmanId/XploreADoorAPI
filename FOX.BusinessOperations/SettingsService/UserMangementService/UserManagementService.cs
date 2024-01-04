@@ -296,23 +296,30 @@ namespace FOX.BusinessOperations.SettingsService.UserMangementService
         public bool SetAutoLockTimeSetup(int time, UserProfile profile)
         {
             var user = new User();
-            if (!string.IsNullOrEmpty(profile.UserName))
-            {
-                user = _UserRepository.Get(x => !string.IsNullOrEmpty(x.USER_NAME) && x.USER_NAME.ToLower().Equals(profile.UserName.ToLower()));
-                if(user != null) { 
-                    user.AUTO_LOCK_TIME_SPAN = time;
-                    _UserRepository.Update(user);
-                    _UserRepository.Save();
-                    return true;
+            try
+            {       
+                if (!string.IsNullOrEmpty(profile.UserName))
+                {
+                    user = _UserRepository.Get(x => !string.IsNullOrEmpty(x.USER_NAME) && x.USER_NAME.ToLower().Equals(profile.UserName.ToLower()));
+                    if (user != null)
+                    {
+                        user.AUTO_LOCK_TIME_SPAN = time;
+                        _UserRepository.Update(user);
+                        _UserRepository.Save();
+                        return true;
+                    }
                 }
-                else
+                else   
                 {
                     return false;
                 }
-            }
-            else
-            {
                 return false;
+            }
+            catch(Exception ex)
+            {
+                var uProfile = Newtonsoft.Json.JsonConvert.SerializeObject(profile);
+                var uUser = Newtonsoft.Json.JsonConvert.SerializeObject(user);
+                throw new Exception($"Exception: {ex.Message}\n\n User Data: {uProfile}\n\n Query Result: {uUser}", ex);
             }
         }
         public bool DiscardAndDeleteExternalUser(User user, UserProfile profile)

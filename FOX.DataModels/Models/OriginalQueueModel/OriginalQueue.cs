@@ -54,6 +54,8 @@ namespace FOX.DataModels.Models.OriginalQueueModel
             }
         }
         public string WORK_STATUS { get; set; }
+        [NotMapped]
+        public string Indexing_Status { get; set; }
         public DateTime? RECEIVE_DATE { get; set; }
         [NotMapped]
         public string Received_Date_Str { get; set; }
@@ -506,6 +508,8 @@ namespace FOX.DataModels.Models.OriginalQueueModel
         public string SORCE_NAME { get; set; }
         public string SORCE_NAME_FaxFormat { set; get; }
         public string WORK_STATUS { get; set; }
+        [NotMapped]
+        public string Indexing_Status { get; set; }
         public DateTime? RECEIVE_DATE { get; set; }
         public string Received_Date_Str { get; set; }
         public int? TOTAL_PAGES { get; set; }

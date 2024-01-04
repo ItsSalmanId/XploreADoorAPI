@@ -926,11 +926,6 @@ namespace FOX.BusinessOperations.ConsentToCareService
                 htmlToPdfResponseObj = new ResponseHTMLToPDF();
                 htmlToPdfResponseObj = HTMLToPDF(config, updatedHtml, consentToCareObj.CONSENT_TO_CARE_ID.ToString(), "email", "");
                 var coverFilePath = htmlToPdfResponseObj.FilePath + "\\" + htmlToPdfResponseObj.FileName;
-                var consentToCareID = consentToCareObj.CONSENT_TO_CARE_ID;
-                var CASE_ID = consentToCareObj.CASE_ID;
-                var currentConsentToCareId = consentToCareObj.CONSENT_TO_CARE_ID;
-                int numberOfPages = getNumberOfPagesOfPDF(coverFilePath);
-                SavePdfToImages(coverFilePath, config, currentConsentToCareId, numberOfPages);
                 return coverFilePath;
             }
             catch (Exception ex)

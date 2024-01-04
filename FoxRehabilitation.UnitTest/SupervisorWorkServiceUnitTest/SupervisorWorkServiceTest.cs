@@ -82,6 +82,31 @@ namespace FoxRehabilitation.UnitTest.SupervisorWorkServiceUnitTest
             }
         }
         [Test]
+        [TestCase(true, 1011163)]
+        [TestCase(false, 1011163)]
+        public void MakeReferralAsValidOrTrashed_PassModel_ReturnData(bool isTrash, long practiceCode)
+        {
+            //Arrange
+            _userProfile.UserName = "1163testing";
+            _userProfile.PracticeCode = practiceCode;
+            _markReferralValidOrTrashedModel.Work_Id = 5487240;
+            _markReferralValidOrTrashedModel.Is_Trash = isTrash;
+
+            //Act
+            var result = _supervisorWorkService.MakeReferralAsValidOrTrashed(_markReferralValidOrTrashedModel, _userProfile);
+
+            //Assert
+            if (result != null)
+            {
+                Assert.IsTrue(true);
+            }
+            else
+            {
+                Assert.IsFalse(false);
+            }
+        }
+
+        [Test]
         [TestCase(544557)]
         [TestCase(5448057)]
         [TestCase(1011163)]

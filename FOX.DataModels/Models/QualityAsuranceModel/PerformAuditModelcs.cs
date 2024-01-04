@@ -125,6 +125,8 @@ namespace FOX.DataModels.Models.QualityAsuranceModel
         public decimal? SYSTEM_PROCESS_TOTAL_PER { get; set; }
         public decimal? CALL_QUALITY_TOTAL_PER { get; set; }
         public decimal? SYSTEM_USAGE_TOTAL_PER { get; set; }
+        [NotMapped]
+        public bool? IS_ASSOCIATED_CALL { get; set; }
     }
 
     //public class CallLogModel : BaseModel

@@ -61,6 +61,8 @@ namespace FOX.DataModels.Models.IndexedQueueModel
         public bool IS_EMERGENCY { get; set; }
         public string ASSIGNTO_MEMBER { get; set; }
         public bool? IS_UNSIGNED { get; set; }
+        [NotMapped]
+        public string ROLE_NAME { get; set; }
     }
 
     public class IndexedQueueRequest : BaseModel

@@ -199,9 +199,8 @@ namespace FOX.BusinessOperations.IndexedQueueService
                     //workQueue.ASSIGNED_DATE = Helper.GetCurrentDate();
                     if (!(string.IsNullOrEmpty(workQueue.ASSIGNED_TO) && string.IsNullOrEmpty(item.RE_ASSIGNED_TO)))
                     {
-                        RoleID = GetUserRole(Profile, item.RE_ASSIGNED_TO)?.ROLE_ID ?? 0;// _userRepository.GetFirst(x => x.USER_NAME == workQueue.ASSIGNED_TO).ROLE_ID;
-                        AssignToDesign = RoleID.HasValue ? GetRoleById(RoleID.Value)?.ROLE_NAME : string.Empty ?? string.Empty; //_roleRepository.GetFirst(x => x.ROLE_ID == RoleID).ROLE_NAME;
-                        AssignByDesignation = GetRoleById(Profile.RoleId)?.ROLE_NAME ?? string.Empty;
+                        AssignToDesign = item.ROLE_NAME;
+                        AssignByDesignation = Profile.ROLE_NAME ?? string.Empty;
                         if (AssignToDesign.ToLower().Equals("INDEXER".ToLower()))
                         {
                             updateIndexDate.Value = true;
